@@ -1,0 +1,118 @@
+# Occupation × deliverable × scenario taxonomy.
+#
+# Calibrated against real GDPval (220 public tasks):
+#   - 57% have input reference files (source docs, data, drafts).
+#   - 84% have a gold deliverable file (the answer artifact).
+#   - Format distribution: PDF 39%, XLSX 30%, DOCX 29%, PPTX 8%.
+#   - Rubrics have median 47 atomic [+N points] criteria, mostly +1/+2.
+#   - Prompts median ~2,024 chars; 78% start with "You are a...".
+#
+# Therefore our pipeline emphasizes:
+#   1. RICH PROMPTS with seed-grounded entities/dates/citations (not invented).
+#   2. DENSE RUBRICS (target 30-60 atomic criteria per task) as first-class output.
+#   3. GOLD DELIVERABLE artifacts as the primary file output.
+#   4. INPUT ATTACHMENTS only for tasks that genuinely need them (financial models
+#      operating on a real spreadsheet, contract redlines on an existing draft).
+#
+# Difficulty bands are calibrated to expected expert hours, matching GDPval's
+# 4-7h average. Solve-rate filter (critic.solve_rate) rejects tasks that any
+# frontier model can complete to >7/10 quality.
+
+occupations:
+  lawyer:
+    soc: "23-1011"
+    title: "Lawyer"
+    seed_sources:
+      - courtlistener     # decisions, briefs, motions
+      - recap             # PACER docs (complaints, dockets)
+      - sec_edgar_8k      # transactional / disclosure work
+    deliverables:
+      - id: motion_to_dismiss
+        format: pdf
+        typical_pages: [8, 12]
+        archetypes: [breach_of_contract, employment_dispute, ip_infringement]
+      - id: contract_redline
+        format: docx_tracked
+        typical_pages: [10, 30]
+        archetypes: [saas_msa, vendor_nda, employment_agreement]
+      - id: deposition_outline
+        format: pdf
+        typical_pages: [4, 8]
+        archetypes: [witness_prep, expert_cross]
+      - id: legal_memo
+        format: pdf
+        typical_pages: [3, 6]
+        archetypes: [client_advice, regulatory_analysis]
+    reasoning_types: [synthesis, compliance_review, adversarial_argument, fact_pattern_application]
+    difficulty_bands:
+      light:    {expected_hours: [1, 3], complexity_signals: ["single jurisdiction", "standard precedent"]}
+      medium:   {expected_hours: [3, 6], complexity_signals: ["multiple statutes", "conflicting precedent"]}
+      hard:     {expected_hours: [6, 10], complexity_signals: ["circuit split", "novel theory", "multi-jurisdictional"]}
+
+  financial_analyst:
+    soc: "13-2051"
+    title: "Financial Analyst"
+    seed_sources:
+      - sec_edgar_xbrl    # 10-K/10-Q with structured financial facts
+      - fred              # macro time series
+      - fdic_call_reports # bank-specific filings
+    deliverables:
+      - id: dcf_model
+        format: xlsx
+        typical_sheets: [4, 7]   # assumptions, IS, BS, CF, valuation, sensitivity
+        archetypes: [ma_target, ipo_pricing, equity_research]
+      - id: variance_analysis
+        format: xlsx
+        typical_sheets: [3, 5]
+        archetypes: [budget_vs_actual, qoq_margin, cost_overrun]
+      - id: credit_memo
+        format: docx
+        typical_pages: [6, 10]
+        archetypes: [middle_market_loan, covenant_review, distressed]
+      - id: investment_committee_deck
+        format: docx
+        typical_slides: [10, 18]
+        archetypes: [growth_equity_pitch, secondary_review]
+    reasoning_types: [numerical_modeling, scenario_analysis, narrative_construction, risk_assessment]
+    difficulty_bands:
+      light:    {expected_hours: [1, 3], complexity_signals: ["single segment", "clean financials"]}
+      medium:   {expected_hours: [3, 6], complexity_signals: ["non-GAAP adjustments", "segment allocation"]}
+      hard:     {expected_hours: [6, 10], complexity_signals: ["complex capital structure", "purchase accounting", "FX exposure"]}
+
+  software_engineer:
+    soc: "15-1252"
+    title: "Software Developer"
+    seed_sources:
+      - github_issues_prs # filter: stars>100, has CONTRIBUTING.md, recent activity
+    deliverables:
+      - id: bug_fix_pr
+        format: repo_tarball
+        archetypes: [race_condition, memory_leak, off_by_one, regression]
+      - id: design_doc
+        format: markdown
+        archetypes: [migration, new_feature, perf_refactor]
+      - id: code_review
+        format: markdown
+        archetypes: [security_review, api_design_review, large_pr_audit]
+      - id: incident_postmortem
+        format: markdown
+        archetypes: [outage_rca, slow_query, deploy_failure]
+    reasoning_types: [debugging, system_design, code_comprehension, tradeoff_analysis]
+    difficulty_bands:
+      light:    {expected_hours: [1, 3], complexity_signals: ["single file", "obvious symptom"]}
+      medium:   {expected_hours: [3, 6], complexity_signals: ["cross-module", "non-deterministic"]}
+      hard:     {expected_hours: [6, 10], complexity_signals: ["distributed systems", "intermittent", "subtle correctness"]}
+
+# Diversity grid configuration: how many cells to fill, balanced sampling.
+# Total candidate target = sum across occupations of (deliverables × difficulty × archetypes_per_deliverable_sample)
+diversity_grid:
+  per_cell_target: 2          # 2 tasks per (occ × deliv × difficulty × archetype) cell
+  archetypes_per_deliverable: 2  # sample 2 archetypes per deliverable per difficulty band
+  difficulty_distribution:    # bias toward medium, like real GDPval (~60% medium)
+    light: 0.20
+    medium: 0.55
+    hard: 0.25
+
+# Curation target after full pipeline funnel
+final_target_per_occupation: 8
+total_final_target: 24
