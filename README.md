@@ -57,6 +57,36 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 
 按职业区分的系统提示确保大模型使用领域恰当的语言和格式规范。
 
+#### 题目是怎么生成的？（非凭空编造）
+
+系统提示给了 LLM 一个**参考框架**，但框里的所有内容必须从种子材料里长出来：
+
+**1. 任务类型由种子内容决定（启发式映射，非硬编码）**
+
+系统提示中给 LLM 的类型判断指南：
+- **律师**：contract terms → `contract_redline`；jurisdiction → `motion_to_dismiss`；expert testimony → `deposition_outline`
+- **财务**：debt/leverage → `credit_memo`；growth/M&A → `investment_memo`；industry disruption → `industry_analysis`
+- **SWE**：bug fix → `bug_fix_pr`；new API → `design_doc`；large refactor → `code_review`
+
+LLM 根据种子材料自行判断最终类型，不是套用模板。
+
+**2. 题目结构强制模仿 GDPval 风格**
+
+系统提示强制四段式结构，与 GDPval 题目一致：
+1. **Role and context**："You are a..." 开头，交代角色、机构、背景
+2. **Materials provided**：列出附件名称和内容
+3. **Task requirements**：具体步骤，编号列表
+4. **Deliverable specification**：输出格式和结构要求
+
+语气规则：禁用 "ASAP/urgent"、禁用 "Please ensure" 等 AI 腔，要求像真实合伙人/总监给下属派活。
+
+**3. 所有事实必须来自种子材料**
+
+用户 prompt 中明确约束：
+> "ALL facts in the answer must come from the material above. Do not invent names, numbers, or citations not in the material."
+
+LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财务：完整 XBRL 数据；SWE：PR diff 6,000 字符 + description）。题目中的**所有名字、数字、引用、事实**均来自这些真实材料。
+
 ### 2.3 确定性渲染
 
 答案蓝图由代码渲染为真实文件（无大模型参与）：
@@ -249,7 +279,7 @@ data/
 
 1. **答案优先设计**：参考答案蓝图与任务题目、评分标准同步设计，而非由模型在后续"解题"生成。这保证了一致性。
 
-2. **无预设分类体系**：我们不硬编码交付物类型。大模型 inspect 种子材料后自行判断适合什么类型的任务（如：合同解释判例 → `legal_memo`；含新 API 的 PR → `design_doc`）。
+2. **无预设分类体系 + 类型映射指南**：我们不硬编码交付物类型，但在系统提示中给 LLM 提供了启发式映射（如合同条款判例 → `contract_redline`）。LLM 根据种子内容自行判断，不是套模板。这样既有结构化引导，又保留了材料驱动的灵活性。
 
 3. **金融任务为定性分析**：发现大模型在要求计算时会记错 XBRL 数字后，我们将金融任务切换为定性分析（信用备忘录、投资备忘录、行业分析），而非定量模型（DCF、差异分析）。
 
