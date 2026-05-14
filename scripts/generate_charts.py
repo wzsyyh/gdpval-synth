@@ -33,7 +33,7 @@ def chart_pipeline() -> None:
         ("LLM 统一生成", "单次结构化调用\n题目 + 答案 + Rubric", "#5CB85C"),
         ("确定性渲染", "docx / xlsx / md / pdf\n无 LLM 参与", "#F0AD4E"),
         ("质量漏斗", "6 项硬校验\n通过率 ~92%", "#D9534F"),
-        ("已验收任务", "97 道题\n3 种职业", "#5BC0DE"),
+        ("已验收任务", "96 道题\n3 种职业", "#5BC0DE"),
     ]
 
     box_w = 2.2
@@ -73,7 +73,7 @@ def chart_funnel() -> None:
     fig, ax = plt.subplots(figsize=(10, 5))
 
     stages = ["种子池", "生成任务", "通过质量门", "已验收"]
-    counts = [117, 105, 97, 97]
+    counts = [117, 105, 96, 96]
     colors = ["#B8D4E8", "#7FB3D5", "#4A90D9", "#2E6DA4"]
 
     # Draw funnel bars (centered, width proportional to count)
@@ -111,7 +111,7 @@ def chart_funnel() -> None:
     # Rate labels
     ax.text(max_w / 2 + 3.5, 2.7, "通过率\n89.7%", ha="center", va="center",
             fontsize=10, color="#666", bbox=dict(boxstyle="round,pad=0.3", facecolor="#f5f5f5", edgecolor="#ddd"))
-    ax.text(max_w / 2 + 3.5, 1.7, "通过率\n92.4%", ha="center", va="center",
+    ax.text(max_w / 2 + 3.5, 1.7, "通过率\n91.4%", ha="center", va="center",
             fontsize=10, color="#666", bbox=dict(boxstyle="round,pad=0.3", facecolor="#f5f5f5", edgecolor="#ddd"))
 
     ax.set_xlim(-1, max_w + 5)
@@ -138,7 +138,7 @@ def chart_stacked_bar() -> None:
     ]
     counts = [
         [34],
-        [13, 12],
+        [12, 12],
         [24, 12, 2],
     ]
     colors_map = {
