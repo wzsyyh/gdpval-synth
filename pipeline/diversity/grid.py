@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 _OCCUPATIONS = ["lawyer", "financial_analyst", "software_engineer"]
 
-# Difficulty distribution calibrated to real GDPval (~60% medium).
+# Difficulty distribution — a pipeline design choice.
+# Light ≈ 1-3 hr tasks, Medium ≈ 3-6 hr, Hard ≈ 6-10 hr.
+# (Public GDPval release does not contain difficulty annotations.)
 _DIFF_DIST: dict[str, float] = {
     "light": 0.20,
     "medium": 0.55,

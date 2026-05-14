@@ -79,7 +79,7 @@ Tasks pass through deterministic checks before acceptance:
 - Rubric items are specific and verifiable (not vague)
 - Input attachments have real content (≥ 100 chars)
 
-**Acceptance rate: ~95%** (111/117 in the full batch; 37/39 for the lawyer re-run with longer seeds).
+**Acceptance rate: ~92%** (97/105 in the latest full batch).
 
 ---
 
@@ -89,8 +89,8 @@ Tasks pass through deterministic checks before acceptance:
 
 ```
 Total accepted tasks: 97
-Total generated (incl. old versions): 147
-Acceptance rate through quality gate: ~95%
+Total generated: 105 (97 accepted + 8 rejected)
+Acceptance rate through quality gate: ~92%
 ```
 
 ### 3.2 By Occupation
@@ -101,7 +101,7 @@ Acceptance rate through quality gate: ~95%
 | Lawyer | 34 | 35% | Lawyers | 5 |
 | Financial Analyst | 25 | 26% | Financial and Investment Analysts | 5 |
 
-We generated **6–8x more tasks per domain** than the original GDPval benchmark, while maintaining comparable granularity and grounding.
+We generated **5–8x more tasks per domain** than the original GDPval benchmark, while maintaining comparable granularity and grounding.
 
 ### 3.3 Deliverable Types
 
@@ -130,7 +130,12 @@ We generated **6–8x more tasks per domain** than the original GDPval benchmark
 | Hard | 22 | 23% |
 | Light | 21 | 21% |
 
-Calibrated to the real GDPval distribution (~55% medium).
+Difficulty is assigned at seed-selection time (see `pipeline/seeds/selector.py`) and reinforced by time-guidance in the LLM prompt:
+- **Light** (1–3 hours): Straightforward seeds with limited scope.
+- **Medium** (3–6 hours): Standard complexity — the bulk of professional work.
+- **Hard** (6–10 hours): Appellate opinions, large-cap financials, or high-impact PRs with broad implications.
+
+The 55%/25%/20% target distribution is a pipeline design choice, not derived from GDPval (the public GDPval release does not contain difficulty annotations).
 
 ### 3.6 Quality Metrics
 
@@ -235,7 +240,6 @@ pipeline/
 data/
   accepted/               # Accepted task JSONs + input attachments
   deliverables/           # Rendered deliverable files
-  old/                    # Superseded task versions
   gdpval_reference/       # Real GDPval tasks for comparison
 ```
 
