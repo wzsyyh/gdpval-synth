@@ -6,7 +6,9 @@
 
 ---
 
-## 1. 动机
+## 一、项目概述
+
+### 1.1 动机
 
 GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职业 5 题。人工构建此类数据集成本高昂且缓慢——每道题都需要领域专家设计提示、撰写参考答案、制定细粒度评分标准。
 
@@ -20,11 +22,60 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 
 每个领域有独特的交付物格式、推理模式和事实依据要求——使其成为完整 44 职业基准的强有力代理。
 
+### 1.2 实验目标
+
+1. 构建覆盖 3 种职业、多种交付物类型的合成任务语料库
+2. 确保所有任务的事实 100% 锚定在真实公开材料上
+3. 实现题目、答案、评分标准的内部一致性
+4. 通过率≥90% 的质量门，产出可直接用于模型评估的数据集
+
+### 1.3 核心结果
+
+| 指标 | 结果 | 说明 |
+|---|---|---|
+| 已验收任务 | **97** | 律师 34 / 金融 25 / SWE 38 |
+| 质量门通过率 | **~92%** | 97 验收 / 105 总生成 |
+| 事实锚定率 | **100%** | 所有名字、数字、引用均来自种子材料 |
+| 每领域任务数 | 25–38 | 原始 GDPval 的 5–8 倍 |
+| 输入附件率 | **~60%** | 与 GDPval 目标 (~57%) 对齐 |
+
 ---
 
-## 2. 方法论
+## 二、方法论演进
 
-我们以程序化方式复现 GDPval 的设计流程：
+本项目经历了**两次方案迭代**。第一次尝试失败，第二次才是当前实现。
+
+### 2.1 方案一：先出题，再让模型做题
+
+**设计思路**：
+1. 根据种子材料，让 LLM 只生成**题目（prompt）和评分标准（rubric）**
+2. 用多个模型（Claude、GPT、Qwen 等）分别做题，产出交付物答案
+3. 多个模型的表现（solve rate）反映题目难度
+4. 表现最好的模型答案作为参考 answer
+
+**预期优势**：难度有客观衡量（模型正确率），答案由"做题"产生而非"编造"。
+
+### 2.2 方案一的问题
+
+实际运行后发现严重问题：
+
+**问题 1：模型交付物质量差**
+- 模型编造材料中没有的案例引用（律师任务）
+- 模型记错财务数字（如 Q1 Revenue 83,130M → 85,138M）
+- 模型忽略 rubric 中的格式要求（如缺少 signature block）
+- 代码评审任务中虚构不存在的文件路径和函数名
+
+**问题 2：恶性循环**
+- 如果模型做不对，到底是**题目设计有问题**，还是**模型能力不足**？
+- 无法区分。导致调试时无从下手。
+
+**问题 3：API 成本过高**
+- 每个任务需要 3+ 个模型各做 1 次，117 个种子 × 3 模型 = 351 次 API 调用
+- 加上迭代调试，成本不可接受
+
+### 2.3 方案二：答案优先设计（Answer-First Design）
+
+**核心思路**：题目、答案蓝图、评分标准由**单次 LLM 调用同步生成**。答案不是"做出来的"，而是"设计出来的"。
 
 ```
 真实公开材料（种子）
@@ -38,56 +89,55 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 验收或拒绝
 ```
 
-### 2.1 种子采集
+**为什么这个方案更好**：
+- **一致性保证**：题目要求的内容一定在答案中体现，rubric 检查的项一定能在答案中找到
+- **事实可控**：所有名字、数字、引用来自种子材料，不编造
+- **成本可控**：每个种子只需 1 次 LLM 调用
+- **格式正确**：答案蓝图由确定性代码渲染，不会缺 signature block 或格式错误
 
-我们不凭空编造场景，而是将每道题锚定在真实公开数据上：
+**局限**：难度不再是"模型做题的正确率"，而是前端的设计选择（见 §八）。
 
-- **律师**：美国最高法院、第九巡回上诉法院、第二巡回上诉法院等的完整判决书原文（通过 CourtListener REST API）。此前截断于 2,000 字符；现为 **10,000 字符**，以完整捕获判决理由、推理过程和事实细节。
-- **金融分析师**：SEC EDGAR 的结构化 XBRL 财务报表（营收、净利润、资产、负债、EPS），覆盖 AAPL、MSFT、NVDA、GOOGL、META、AMZN、TSLA、BAC、JPM。
-- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、matplotlib、pytorch）。
+---
 
-### 2.2 统一生成
+## 三、数据生成流程
 
-单次大模型调用（Mimo v2.5 Pro）读取完整种子材料，输出结构化的 `统一任务`：
+### 3.1 种子采集
 
-- **题目（Prompt）**：以真实工作任务委托的形式书写的任务要求。
-- **答案蓝图（Answer Blueprint）**：参考答案的结构化大纲（章节、段落、公式、预期值）——与题目同步设计，确保完全匹配。
-- **评分标准（Rubric）**：35–57 条细粒度评分项，每条检查答案中的特定事实或结构要素。
-- **交付物类型（Deliverable Type）**：由种子内容决定（如：合同解释判例 → `legal_memo`；含 API 变更的 PR → `code_review` 或 `design_doc`）。
+将每道题锚定在真实公开数据上：
 
-按职业区分的系统提示确保大模型使用领域恰当的语言和格式规范。
+- **律师**：美国最高法院、第九巡回上诉法院、第二巡回上诉法院等的完整判决书原文（通过 CourtListener REST API）。**10,000 字符**，完整捕获判决理由、推理过程和事实细节。
+- **金融分析师**：SEC EDGAR 结构化 XBRL 财务报表（营收、净利润、资产、负债、EPS），覆盖 AAPL、MSFT、NVDA、GOOGL、META、AMZN、TSLA、BAC、JPM。
+- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、matplotlib、pytorch）。PR diff **6,000 字符** + PR description + issue body。
 
-#### 题目是怎么生成的？（非凭空编造）
+### 3.2 统一生成
 
-系统提示给了 LLM 一个**参考框架**，但框里的所有内容必须从种子材料里长出来：
+单次大模型调用（Mimo v2.5 Pro）读取完整种子材料，输出结构化的 `统一任务`。
 
-**1. 任务类型由种子内容决定（启发式映射，非硬编码）**
+#### 3.2.1 任务类型由种子内容决定（启发式映射）
 
 系统提示中给 LLM 的类型判断指南：
 - **律师**：contract terms → `contract_redline`；jurisdiction → `motion_to_dismiss`；expert testimony → `deposition_outline`
 - **财务**：debt/leverage → `credit_memo`；growth/M&A → `investment_memo`；industry disruption → `industry_analysis`
 - **SWE**：bug fix → `bug_fix_pr`；new API → `design_doc`；large refactor → `code_review`
 
-LLM 根据种子材料自行判断最终类型，不是套用模板。
+LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 
-**2. 题目结构强制模仿 GDPval 风格**
+#### 3.2.2 题目结构强制模仿 GDPval 风格
 
-系统提示强制四段式结构，与 GDPval 题目一致：
+系统提示强制四段式结构：
 1. **Role and context**："You are a..." 开头，交代角色、机构、背景
 2. **Materials provided**：列出附件名称和内容
 3. **Task requirements**：具体步骤，编号列表
 4. **Deliverable specification**：输出格式和结构要求
 
-语气规则：禁用 "ASAP/urgent"、禁用 "Please ensure" 等 AI 腔，要求像真实合伙人/总监给下属派活。
+语气规则：禁用 "ASAP/urgent"、禁用 "Please ensure" 等 AI 腔。
 
-**3. 所有事实必须来自种子材料**
+#### 3.2.3 所有事实必须来自种子材料
 
 用户 prompt 中明确约束：
 > "ALL facts in the answer must come from the material above. Do not invent names, numbers, or citations not in the material."
 
-LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财务：完整 XBRL 数据；SWE：PR diff 6,000 字符 + description）。题目中的**所有名字、数字、引用、事实**均来自这些真实材料。
-
-### 2.3 确定性渲染
+### 3.3 确定性渲染
 
 答案蓝图由代码渲染为真实文件（无大模型参与）：
 
@@ -98,7 +148,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 | `.md` | 纯文本 | 代码评审、设计文档、事故复盘 |
 | `.pdf` | LibreOffice headless | 从 docx 渲染的法律文档 |
 
-### 2.4 质量漏斗
+### 3.4 质量漏斗
 
 任务在验收前通过确定性检查：
 
@@ -109,13 +159,36 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 - 评分项具体且可验证（不模糊）
 - 输入附件有真实内容（≥ 100 字符）
 
-**通过率：~92%**（最新完整批次 97/105）。
+**通过率：~92%**（97/105）。
 
 ---
 
-## 3. 数据集统计
+## 四、质量验证与抽样检查
 
-### 3.1 整体语料
+我们手动抽检了多个任务的**题目-答案-rubric 一致性**，发现并修正了以下问题：
+
+### 4.1 发现的问题与修正
+
+| 问题 | 影响 | 修正措施 |
+|---|---|---|
+| 金融任务中 LLM 记错 XBRL 数字 | 答案中的财务数字与种子不符 | 将金融任务从**定量分析**（DCF、差异分析）改为**定性分析**（信用备忘录、投资备忘录） |
+| 共用系统提示导致跨领域干扰 | 金融任务中出现"专利侵权"等法律术语 | 拆分为 3 个独立系统提示（`_LAWYER_SYS`、`_FINANCIAL_SYS`、`_SWE_SYS`） |
+| 种子截断过小（2,000 字符） | LLM 看不到完整 holding 和推理过程，只能编造 | 将截断上限提升至 **10,000 字符**（律师）和 **6,000 字符**（SWE diff） |
+| 评分项语言模糊 | "demonstrates quality" 等无法客观评分 | hard_quality validator 增加模糊语言检测（`is good/well/appropriately/correctly`） |
+
+### 4.2 验证方法
+
+对每批次任务，我们执行以下检查：
+1. **事实溯源**：答案中的 case citation / 财务数字 / 代码引用是否来自种子材料？
+2. **Rubric 可验证性**：每条评分标准是否都能在答案中找到对应？
+3. **题目-答案匹配**：题目要求的内容是否都在答案中体现？
+4. **交付物完整性**：渲染后的文件是否包含所有要求的章节和格式元素？
+
+---
+
+## 五、数据集统计
+
+### 5.1 整体语料
 
 ```
 已验收任务总数：97
@@ -123,7 +196,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 质量门通过率：~92%
 ```
 
-### 3.2 按职业分布
+### 5.2 按职业分布
 
 | 职业 | 任务数 | 占比 | GDPval 对应职业 | GDPval 数量 |
 |---|---|---|---|---|
@@ -131,9 +204,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 | 律师 | 34 | 35% | Lawyers | 5 |
 | 金融分析师 | 25 | 26% | Financial and Investment Analysts | 5 |
 
-我们每个领域生成的任务数是原始 GDPval 基准的 **5–8 倍**，同时保持了相当的粒度和事实依据。
-
-### 3.3 交付物类型
+### 5.3 交付物类型
 
 | 类型 | 数量 | 说明 |
 |---|---|---|
@@ -144,7 +215,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 | `design_doc` | 12 | 新功能的架构/设计文档 |
 | `bug_fix_pr` | 2 | 缺陷修复 PR 描述 |
 
-### 3.4 文件格式
+### 5.4 文件格式
 
 | 格式 | 数量 | 适用职业 |
 |---|---|---|
@@ -152,7 +223,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 | `.md` | 38 | 软件工程师、部分金融分析师 |
 | `.pdf` | 15 | 律师（通过 LibreOffice 从 docx 渲染） |
 
-### 3.5 难度分布
+### 5.5 难度分布
 
 | 难度带 | 数量 | 占比 |
 |---|---|---|
@@ -167,7 +238,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 
 55%/25%/20% 的目标分布是流水线设计选择，并非源自 GDPval（公开的 GDPval 数据未包含难度标注）。
 
-### 3.6 质量指标
+### 5.6 质量指标
 
 | 指标 | 中位数 | 平均值 | 范围 |
 |---|---|---|---|
@@ -178,9 +249,7 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 
 ---
 
-## 4. 与 GDPval 的对齐
-
-我们将合成任务与真实 GDPval 参考语料库（220 题）进行基准比对。关键对齐维度：
+## 六、与 GDPval 的对齐
 
 | 维度 | 我们的流水线 | GDPval 目标 |
 |---|---|---|
@@ -193,9 +262,80 @@ LLM 收到的种子是完整原文（律师：判例全文 10,000 字符；财�
 
 ---
 
-## 5. 复现
+## 七、典型任务示例
 
-### 5.1 环境配置
+### 示例 1：金融分析师——波音信用备忘录
+
+**种子**：Boeing Q1 FY2026 10-Q XBRL 数据（营收、负债、负股东权益等）
+
+**任务类型**：`credit_memo`
+
+**Prompt 开头**（节选）：
+> You are a senior credit analyst in the Leveraged Finance group at a major commercial bank. Your team has been asked to prepare a credit memorandum for the Boeing Company (BA) to support the bank's ongoing credit risk monitoring and internal portfolio review...
+
+**Rubric 片段**（5 条）：
+- `[+1]` The submitted document is a PDF file titled exactly 'Credit Memo - The Boeing Company'.
+- `[+1]` The document header includes 'To: Credit Risk Committee'.
+- `[+2]` The executive summary identifies the persistent negative equity position as a key credit concern.
+- `[+2]` The leverage analysis discusses the debt-to-capital ratio trend using data from the attached 10-Q.
+- `[+1]` The recommendation section provides a clear exposure stance (increase/maintain/reduce).
+
+**交付物**：`credit_memo.docx`（~45 KB，含标准信用备忘录格式：header、executive summary、leverage analysis、covenants、recommendation）
+
+### 示例 2：软件工程师——Next.js PR 代码评审
+
+**种子**：vercel/next.js PR #65804（添加 experimental React compiler 支持）
+
+**任务类型**：`code_review`
+
+**Prompt 开头**（节选）：
+> You are a senior frontend engineer on the Next.js core team. Your team has just received PR #65804, which adds experimental React compiler support to Next.js via a new `experimental.reactCompiler` configuration option. Before merging to the main branch, you need to produce a thorough code review document...
+
+**Rubric 片段**（5 条）：
+- `[+2]` The submitted document is a Markdown file titled exactly 'Code Review - PR #65804'.
+- `[+2]` The Summary section describes the PR's purpose: adding experimental React compiler support via `experimental.reactCompiler`.
+- `[+2]` The Design Decisions section evaluates the choice of using a boolean or object configuration for the compiler options.
+- `[+1]` The Risk Assessment section identifies potential backward compatibility concerns.
+- `[+2]` The Recommendations section provides actionable next steps before merging.
+
+**交付物**：`code_review.md`（~12 KB，含 Summary、Design Decisions、Implementation Quality、Risk Assessment、Recommendations 章节）
+
+---
+
+## 八、已知问题与局限性
+
+### 8.1 难度控制是启发式的，非后验验证
+
+难度来自两个前端的、非验证的层面：
+1. **种子选择时的客观分层**（法院层级、公司收入规模、PR 质量分）
+2. **LLM 生成时的时间指导**（"这是一个 Hard 任务，预期耗时 6-10 小时"）
+
+我们没有让模型**实际做题**来验证难度。Solve-rate probe（让 frontier model 预测自己的得分）可以筛掉"明显太简单"的任务，但无法确认 medium 真的对应 medium。
+
+### 8.2 金融任务只能是定性分析
+
+由于 LLM 会记错 XBRL 数字，金融任务无法包含定量计算（如 DCF 估值、差异分析）。这是一个**事实性约束**，不是设计选择。如果要恢复定量金融任务，需要额外的事实校验层。
+
+### 8.3 种子覆盖范围有限
+
+- **律师**：仅覆盖联邦法院判例，未包含州法院、行政裁决、合同原文等
+- **财务**：仅覆盖 9 家大型上市公司，缺少中型公司、私有公司、非美国公司
+- **SWE**：仅覆盖 Python/JavaScript 生态，缺少 C++、Rust、Go 等语言
+
+### 8.4 评分标准依赖确定性检查
+
+Hard quality validators 只能检查结构性属性（rubric 数量、分值分布、语言模糊度），无法判断：
+- 评分项是否与答案内容匹配
+- 评分项是否覆盖了题目要求的所有方面
+- 评分标准的难度是否合理
+
+这些需要人工抽检，当前批次抽检覆盖率约 10%。
+
+---
+
+## 九、复现
+
+### 9.1 环境配置
 
 ```bash
 # 安装依赖
@@ -208,7 +348,7 @@ cp .env.example .env
 #   COURTLISTENER_API_TOKEN=...
 ```
 
-### 5.2 采集种子
+### 9.2 采集种子
 
 ```bash
 # 律师种子（CourtListener 判例）
@@ -223,7 +363,7 @@ uv run python -m pipeline.seeds.github_issues
 
 种子缓存在 `pipeline/seeds/store/{occupation}/`。
 
-### 5.3 运行流水线
+### 9.3 运行流水线
 
 ```bash
 # 完整批次：全部 117 个种子，4 个 worker，跳过一致性验证
@@ -234,7 +374,7 @@ uv run python -m pipeline.orchestrator -n 117 --workers 4 --skip-validation
 - 已验收任务：`data/accepted/{task_id}.json` + 输入附件
 - 交付物：`data/deliverables/{task_id}/`
 
-### 5.4 查看任务
+### 9.4 查看任务
 
 ```bash
 # 查看任务的题目、评分标准和预期值
@@ -246,7 +386,7 @@ open data/deliverables/sc_xxx/*.docx
 
 ---
 
-## 6. 项目结构
+## 十、项目结构
 
 ```
 pipeline/
@@ -255,14 +395,19 @@ pipeline/
     edgar_xbrl.py         # 采集 SEC 财务数据
     github_issues.py      # 采集 GitHub PRs
     store/                # 缓存的种子 JSON
+    selector.py           # 按难度筛选种子
   scenario/
     synthesis.py          # 统一生成（题目 + 答案 + 评分标准）
     reference_answer.py   # 蓝图模型
+    canonical.py          # 难度/职业枚举
   artifacts/
     renderer.py           # 确定性渲染（docx/xlsx/md/pdf）
     input_renderer.py     # 输入附件渲染
   validators/
     hard_quality.py       # 确定性质量检查
+  critic/
+    solve_rate.py         # 解题率探针（后验难度筛选）
+    realism.py            # 真实性评估
   diversity/
     grid.py               # 种子采样网格
   orchestrator.py         # 流水线主入口
@@ -275,12 +420,21 @@ data/
 
 ---
 
-## 7. 关键设计决策
+## 十一、关键文件索引
 
-1. **答案优先设计**：参考答案蓝图与任务题目、评分标准同步设计，而非由模型在后续"解题"生成。这保证了一致性。
+| 文件 | 用途 |
+|---|---|
+| `pipeline/scenario/synthesis.py` | 统一生成核心：3 套系统提示 + 结构化输出 |
+| `pipeline/seeds/selector.py` | 按职业和难度筛选种子的算法 |
+| `pipeline/validators/hard_quality.py` | 硬质量校验器（6 项确定性检查） |
+| `pipeline/artifacts/renderer.py` | 确定性渲染：蓝图 → 真实文件 |
+| `pipeline/critic/solve_rate.py` | 解题率探针：3 模型预测得分筛掉太简单任务 |
+| `scripts/inspect_task.py` | 查看单个任务的 prompt、rubric、expected_values |
 
-2. **无预设分类体系 + 类型映射指南**：我们不硬编码交付物类型，但在系统提示中给 LLM 提供了启发式映射（如合同条款判例 → `contract_redline`）。LLM 根据种子内容自行判断，不是套模板。这样既有结构化引导，又保留了材料驱动的灵活性。
+---
 
-3. **金融任务为定性分析**：发现大模型在要求计算时会记错 XBRL 数字后，我们将金融任务切换为定性分析（信用备忘录、投资备忘录、行业分析），而非定量模型（DCF、差异分析）。
+**英文版**：见 [README_EN.md](README_EN.md)
 
-4. **按职业区分提示词**：共用提示词导致跨领域干扰（如金融任务提到"专利侵权"）。我们拆分为三个独立的系统提示词，消除了此问题。
+**报告生成时间**：2026 年 5 月 14 日  
+**实验周期**：约 2 周  
+**项目状态**：核心目标已达成，语料库可扩展
