@@ -573,11 +573,7 @@ def unified_generate(
     client = client or default_client()
     rng = random.Random(seed.seed_id)
 
-    sys_prompt = _OCCUPATION_SYS.get(
-        occupation, _SWE_SYS
-    ).format(
-        occupation_name=_OCCUPATION_NAMES.get(occupation, occupation),
-    )
+    sys_prompt = _OCCUPATION_SYS.get(occupation, _SWE_SYS)
     user_prompt = _build_user_prompt(seed, occupation, difficulty)
 
     logger.info("unified generation for seed %s (%s)", seed.seed_id, seed.source)

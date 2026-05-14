@@ -29,10 +29,6 @@ class Settings(BaseModel):
     # Model routing: if mimo is configured, use it; else fall back to openrouter
     generator_model: str = "mimo-v2.5-pro"
     critic_model: str = "mimo-v2.5-pro"
-    solve_rate_models: list[str] = [
-        "mimo-v2.5-pro",
-    ]
-    embed_model: str = "BAAI/bge-small-en-v1.5"
 
 
 @lru_cache(maxsize=1)
@@ -74,7 +70,7 @@ def settings() -> Settings:
         kwargs["generator_model"] = gen
     if crit := os.environ.get("CRITIC_MODEL"):
         kwargs["critic_model"] = crit
-    for opt in ("generator_model", "critic_model", "embed_model"):
+    for opt in ("generator_model", "critic_model"):
         if v := os.environ.get(opt.upper()):
             kwargs[opt] = v
     return Settings(**kwargs)  # type: ignore[arg-type]

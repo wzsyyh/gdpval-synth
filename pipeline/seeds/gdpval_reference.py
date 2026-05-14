@@ -1,7 +1,6 @@
 """Download the 220 public real GDPval tasks for dedup + anchor calibration.
 
 Used by:
-  - diversity.embed_dedup: reject candidates within ε of any real task
   - report blind Turing study: mix real + synthetic for human evaluators
   - human anchor calibration during pipeline tuning
 """

@@ -384,7 +384,7 @@ uv run python scripts/generate_charts.py
 
 ```bash
 # 查看单个任务的题目、评分标准和预期值
-uv run python scripts/inspect_task.py --task-id sc_xxx
+uv run python scripts/verify_deliverables.py --task-id sc_xxx
 
 # 打开渲染后的交付物
 open data/deliverables/sc_xxx/*.docx
@@ -411,9 +411,6 @@ pipeline/
     input_renderer.py     # 输入附件渲染
   validators/
     hard_quality.py       # 确定性质量检查
-  critic/
-    solve_rate.py         # 解题率探针（后验难度筛选）
-    realism.py            # 真实性评估
   diversity/
     grid.py               # 种子采样网格
   orchestrator.py         # 流水线主入口
@@ -434,8 +431,7 @@ data/
 | `pipeline/seeds/selector.py` | 按职业和难度筛选种子的算法 |
 | `pipeline/validators/hard_quality.py` | 硬质量校验器（6 项确定性检查） |
 | `pipeline/artifacts/renderer.py` | 确定性渲染：蓝图 → 真实文件 |
-| `pipeline/critic/solve_rate.py` | 解题率探针：3 模型预测得分筛掉太简单任务 |
-| `scripts/inspect_task.py` | 查看单个任务的 prompt、rubric、expected_values |
+| `scripts/validate_deliverables.py` | 验证交付物文件完整性（docx/xlsx/md） |
 
 ---
 
