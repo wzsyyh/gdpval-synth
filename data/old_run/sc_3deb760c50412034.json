@@ -1,0 +1,924 @@
+{
+  "candidate_id": "sc_3deb760c50412034",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "3deb760c50412034",
+  "prompt": "You are a senior software engineer on the Docker Engine team. The team has received PR #34263 from the moby/moby repository, which adds a `--chown` flag to the `ADD` and `COPY` commands in Dockerfiles. Your manager has asked you to review this pull request and produce a design document that evaluates the proposed change, identifies potential issues, and recommends a path forward for the team.\n\nThe design document should serve as a technical reference for the team to understand the implications of this change, assess its completeness, and plan any necessary follow-up work. It will be reviewed by the engineering lead and used to guide the PR review process.\n\n**Materials provided:**\n1. The PR description from moby/moby#34263, which explains the feature, its purpose, and the format of the `--chown` flag.\n2. The diff for the changed files, showing the implementation of the `--chown` flag in `builder/dockerfile/copy.go` and `builder/dockerfile/copy_unix.go`.\n\n**Task requirements:**\n1. Create a design document in Markdown format.\n2. The document must include the following sections:\n   - **Overview**: A brief description of the PR, its purpose, and the problem it solves. Reference the carried PRs (#28499 and #27303).\n   - **Proposed Design**: Explain how the `--chown` flag is implemented, including the new `chownStr` field in `copyInstruction`, the `chownPair` in `copyFileOptions`, and the changes to `copyDirectory` and `copyFile` functions. Describe the supported formats for the `--chown` flag.\n   - **Technical Analysis**: Analyze the implementation details, including how user/group lookups are performed, handling of numeric IDs versus name lookups, support for user namespaces and ID shifting, and the change in `fixPermissions` function call signatures.\n   - **Issues and Risks**: Identify potential issues mentioned in the PR description or evident from the diff, including Windows compatibility, testing gaps, and other risks.\n   - **Recommendations**: Propose specific actions the team should take, such as adding Windows compatibility, writing additional tests, or approving the PR with conditions.\n3. Use bullet points and numbered lists where appropriate for clarity.\n4. Ensure all claims are directly supported by the provided materials.\n\n**Deliverable specification:**\n- Output a single Markdown file named `design_doc_chown_flag.md`.\n- The document should be professional and concise, targeting a technical audience familiar with Docker and container internals.\n- Total length should be approximately 1500-2000 words.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title includes the string 'PR #34263'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title includes the phrase 'Add --chown flag'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an 'Overview' section with a level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references PR #28499.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references PR #27303.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Proposed Design' section with a level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Design section lists the format example '--chown=someuser:555'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Design section lists the format example '--chown=anyuser:anygroup'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Design section lists the format example '--chown=1001:1002'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Design section lists the format example '--chown=333:agroupname'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Design section identifies 'chownStr' as a new field in the copyInstruction struct.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Design section identifies 'chownPair' as a new field in the copyFileOptions struct.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Design section identifies 'copyDirectory' as a changed function.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Design section identifies 'copyFile' as a changed function.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Design section mentions the update to the 'fixPermissions' function call.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Technical Analysis' section with a level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section states that lookups use '/etc/passwd' and '/etc/group'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section explains that numeric IDs skip lookups.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section mentions user namespace support.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section references ID shifting based on daemon mappings.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section references the 'isExistingDirectory' function from the diff.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section references the 'MkdirAllAndChownNew' function from the diff.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an 'Issues and Risks' section with a level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Issues and Risks section identifies Windows compatibility as a risk due to missing /etc/passwd and /etc/group files.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Issues and Risks section references the author's note about needing more tests.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Issues and Risks section mentions backward compatibility as a concern.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Recommendations' section with a level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section includes an action item for Windows compatibility.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section includes an action item for expanding test coverage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section includes an action item for approving the PR with conditions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section includes an action item for updating documentation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document uses bullet points or numbered lists in the Recommendations section.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's overall length is between 1500 and 2000 words (approximate).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The document correctly identifies that the PR is a carry of #28499 and #27303, and explains that the feature adds --chown to ADD and COPY commands.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accurately describes the supported formats for the --chown flag as colon-separated user:group strings with mixed name and ID combinations.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accurately explains that the implementation uses the container's /etc/passwd and /etc/group for name-to-ID lookups.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The document correctly notes that user namespace support is included and IDs are shifted based on daemon mappings.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accurately identifies the change in the fixPermissions function signature to include a new boolean parameter.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accurately states that the copyDirectory function now checks if the destination exists before copying.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accurately identifies that the copyFile function uses chownPair instead of rootIDs for directory creation.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document invents information not present in the provided materials, such as specific code behavior, function names, or test details not mentioned in the PR description or diff.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_3deb760c50412034",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:moby/moby#34263",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Review of PR #34263 - Add --chown flag to ADD/COPY commands",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#28499",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "#27303",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "--chown=someuser:555",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "--chown=anyuser:anygroup",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "--chown=1001:1002",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "--chown=333:agroupname",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "chownStr",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "chownPair",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "copyDirectory",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "copyFile",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "fixPermissions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "/etc/passwd and /etc/group files",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "no lookups are performed",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "User namespace support is explicitly mentioned",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "shifted based on the user namespace mappings configured in the Docker daemon",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "isExistingDirectory(dest)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "MkdirAllAndChownNew",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "Windows containers will not have the /etc/passwd and /etc/group files",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "a few more tests are necessary to fully test the behavior",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "backward compatibility is also a concern",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "Address Windows Compatibility",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "Expand Test Coverage",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "Approve with Conditions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "Update Documentation",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Review of PR #34263 - Add --chown flag to ADD/COPY commands",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#28499",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#27303",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "--chown=someuser:555",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "--chown=anyuser:anygroup",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "--chown=1001:1002",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "--chown=333:agroupname",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "chownStr",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "chownPair",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "copyDirectory",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "copyFile",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "fixPermissions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "/etc/passwd and /etc/group files",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "no lookups are performed",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "User namespace support is explicitly mentioned",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "shifted based on the user namespace mappings configured in the Docker daemon",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "isExistingDirectory(dest)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "MkdirAllAndChownNew",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "Windows containers will not have the /etc/passwd and /etc/group files",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "a few more tests are necessary to fully test the behavior",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "backward compatibility is also a concern",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "Address Windows Compatibility",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "Expand Test Coverage",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "Approve with Conditions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "Update Documentation",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to carried PRs #28499 and #27303",
+            "Purpose: adds --chown flag to ADD and COPY commands in Dockerfiles",
+            "Problem solved: allows setting ownership during file copy operations"
+          ],
+          "paragraphs": [
+            "This design document reviews PR #34263 from the moby/moby repository, titled \"Add --chown flag to ADD/COPY commands.\" The PR carries work from earlier efforts, specifically #28499 and #27303, to implement a long-requested feature for Dockerfile syntax.",
+            "The core purpose of this change is to add a `--chown` flag to the `ADD` and `COPY` instructions in Dockerfiles. This allows users to specify the ownership (user and group) of files and directories as they are copied into the container filesystem. Previously, users had to follow a `COPY` instruction with a separate `RUN chown` command, which created an extra layer in the image and increased complexity. The `--chown` flag streamlines this process, enabling more efficient and secure image building."
+          ]
+        },
+        {
+          "heading": "Proposed Design",
+          "heading_level": 2,
+          "required_content": [
+            "Format examples: --chown=someuser:555, --chown=anyuser:anygroup, --chown=1001:1002, --chown=333:agroupname",
+            "New fields: chownStr in copyInstruction, chownPair in copyFileOptions",
+            "Changed functions: copyDirectory and copyFile signatures updated to include chownPair",
+            "fixPermissions function call updated with new boolean parameter"
+          ],
+          "paragraphs": [
+            "The implementation introduces a `--chown` flag that accepts a colon-separated string defining the target user and group. The supported formats include combinations of names and numeric IDs, such as `--chown=someuser:555`, `--chown=anyuser:anygroup`, `--chown=1001:1002`, and `--chown=333:agroupname`. This flexibility allows users to specify ownership by name, ID, or a mix.",
+            "In the code, the `copyInstruction` struct gains a new field `chownStr` to hold the raw flag value. The `copyFileOptions` struct adds a `chownPair` field of type `idtools.IDPair`, which represents the resolved numeric user and group IDs. The core copy functions, `copyDirectory` and `copyFile`, are modified to accept this `chownPair` as a parameter, replacing the previous use of `archiver.IDMappings.RootPair()` for setting directory and file ownership.",
+            "The `fixPermissions` function is also updated. Its call signature now includes the `chownPair` and an additional boolean parameter. In `copyDirectory`, this boolean is set to `!destExists`, indicating whether the destination directory was newly created. In `copyFile`, it is set to `false`. This change suggests that permission fixing logic may differ based on whether the destination already existed."
+          ]
+        },
+        {
+          "heading": "Technical Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "User/group lookups via /etc/passwd and /etc/group in container filesystem",
+            "Numeric IDs skip lookups; name translation requires container's passwd/group files",
+            "User namespace support with ID shifting based on daemon mappings",
+            "Changes to fixPermissions and copyDirectory/copyFile functions"
+          ],
+          "paragraphs": [
+            "The PR description states that name-to-ID lookups will use the `/etc/passwd` and `/etc/group` files found in the container's filesystem. This is a critical detail: it means the resolution happens at build time using the filesystem context of the image being built, not the host system. If only numeric IDs are provided, no lookups are performed, which simplifies the process and avoids potential failures.",
+            "User namespace support is explicitly mentioned. After names are translated to integer IDs, those IDs are shifted based on the user namespace mappings configured in the Docker daemon. This ensures that ownership is correctly set within namespaced containers, maintaining security and consistency.",
+            "The diff shows concrete changes. In `copy.go`, the `copyDirectory` function now first checks if the destination directory exists (`destExists, err := isExistingDirectory(dest)`). It then passes `options.chownPair` to `archiver.CopyWithTar` and `fixPermissions`. The `fixPermissions` call now includes a new boolean parameter, which in the directory case is `!destExists`. This indicates that the function's behavior may be conditional on whether the directory was newly created, though the exact logic is not fully visible in the provided diff snippet.",
+            "Similarly, `copyFile` replaces the previous `rootIDs` (obtained from `archiver.IDMappings.RootPair()`) with the provided `chownPair`. It uses this pair when creating the parent directory via `idtools.MkdirAllAndChownNew` and when calling `fixPermissions`. This ensures consistent ownership application across both files and directories."
+          ]
+        },
+        {
+          "heading": "Issues and Risks",
+          "heading_level": 2,
+          "required_content": [
+            "Windows containers lack /etc/passwd and /etc/group; need graceful failure handling",
+            "PR author notes more tests are necessary",
+            "Potential gaps in error handling, backward compatibility, and coverage"
+          ],
+          "paragraphs": [
+            "The PR description highlights a significant risk: Windows containers will not have the `/etc/passwd` and `/etc/group` files. Currently, the build will fail if these files are missing during a name lookup. The author suggests the need for a way to fail gracefully or ignore failures on Windows. This is a critical compatibility issue that must be addressed before merging.",
+            "Another risk is noted by the author: \"a few more tests are necessary to fully test the behavior.\" This indicates that the current test suite is incomplete. Given the complexity of the feature—handling mixed name/ID formats, user namespaces, and different operating systems—comprehensive testing is essential to ensure reliability and prevent regressions.",
+            "Additional risks include potential gaps in error handling. For example, what happens if the `--chown` string is malformed? The diff does not show parsing logic, so we must assume it is handled elsewhere, but it should be verified. Backward compatibility is also a concern: existing Dockerfiles without the `--chown` flag must continue to work unchanged, and the default behavior (using root ownership) should be preserved when the flag is omitted."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Address Windows compatibility by implementing graceful failure or conditional logic",
+            "Add comprehensive tests for various --chown formats, user namespaces, and edge cases",
+            "Approve PR with conditions after addressing gaps",
+            "Consider documentation updates for the new flag"
+          ],
+          "paragraphs": [
+            "Based on this analysis, we recommend the following actions:\n1. **Address Windows Compatibility**: Implement a graceful failure mechanism for Windows containers where `/etc/passwd` and `/etc/group` do not exist. This could involve skipping lookups when numeric IDs are used, or providing a clear error message for name-based lookups on unsupported platforms.\n2. **Expand Test Coverage**: Add integration and unit tests to cover all supported `--chown` formats (`--chown=user:group`, `--chown=user:ID`, `--chown=ID:group`, `--chown=ID:ID`), user namespace scenarios, and error conditions (malformed strings, missing files). The author's note confirms this is needed.\n3. **Approve with Conditions**: The core design is sound and addresses a long-standing need. We recommend approving the PR contingent on the resolution of the Windows compatibility issue and the addition of sufficient tests.\n4. **Update Documentation**: Ensure that the official Docker documentation is updated to describe the new `--chown` flag, its supported formats, and its behavior with user namespaces."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Review of PR #34263 - Add --chown flag to ADD/COPY commands",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR description from moby/moby#34263 explaining the --chown flag feature and its supported formats.",
+          "content_blueprint": {
+            "title": "PR description from moby/moby#34263 explaining the --chown flag feature and its supported formats",
+            "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "Diff for builder/dockerfile/copy.go showing implementation changes to copyInstruction, copyFileOptions, copyDirectory, and copyFile.",
+          "content_blueprint": {
+            "title": "Diff for builder/dockerfile/copy",
+            "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "Partial diff for builder/dockerfile/copy_unix.go showing beginning of changes.",
+          "content_blueprint": {
+            "title": "Partial diff for builder/dockerfile/copy_unix",
+            "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Design document title includes the PR number and feature name",
+          "value": "Design Document: Review of PR #34263 - Add --chown flag to ADD/COPY commands",
+          "tolerance": null,
+          "location": "Document title"
+        },
+        {
+          "description": "Overview section references the carried PRs from the PR description",
+          "value": "#28499",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section references the second carried PR",
+          "value": "#27303",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Proposed Design section lists one of the format examples from the PR description",
+          "value": "--chown=someuser:555",
+          "tolerance": null,
+          "location": "Proposed Design section, first paragraph"
+        },
+        {
+          "description": "Proposed Design section lists another format example from the PR description",
+          "value": "--chown=anyuser:anygroup",
+          "tolerance": null,
+          "location": "Proposed Design section, first paragraph"
+        },
+        {
+          "description": "Proposed Design section lists numeric format example from the PR description",
+          "value": "--chown=1001:1002",
+          "tolerance": null,
+          "location": "Proposed Design section, first paragraph"
+        },
+        {
+          "description": "Proposed Design section lists mixed format example from the PR description",
+          "value": "--chown=333:agroupname",
+          "tolerance": null,
+          "location": "Proposed Design section, first paragraph"
+        },
+        {
+          "description": "Proposed Design section mentions the new field added to copyInstruction struct",
+          "value": "chownStr",
+          "tolerance": null,
+          "location": "Proposed Design section, second paragraph"
+        },
+        {
+          "description": "Proposed Design section mentions the new field added to copyFileOptions struct",
+          "value": "chownPair",
+          "tolerance": null,
+          "location": "Proposed Design section, second paragraph"
+        },
+        {
+          "description": "Proposed Design section identifies the changed functions in the diff",
+          "value": "copyDirectory",
+          "tolerance": null,
+          "location": "Proposed Design section, second paragraph"
+        },
+        {
+          "description": "Proposed Design section identifies the other changed function in the diff",
+          "value": "copyFile",
+          "tolerance": null,
+          "location": "Proposed Design section, second paragraph"
+        },
+        {
+          "description": "Proposed Design section notes the update to fixPermissions function call",
+          "value": "fixPermissions",
+          "tolerance": null,
+          "location": "Proposed Design section, third paragraph"
+        },
+        {
+          "description": "Technical Analysis section explains name-to-ID lookup mechanism",
+          "value": "/etc/passwd and /etc/group files",
+          "tolerance": null,
+          "location": "Technical Analysis section, first paragraph"
+        },
+        {
+          "description": "Technical Analysis section states that numeric IDs skip lookups",
+          "value": "no lookups are performed",
+          "tolerance": null,
+          "location": "Technical Analysis section, first paragraph"
+        },
+        {
+          "description": "Technical Analysis section mentions user namespace support",
+          "value": "User namespace support is explicitly mentioned",
+          "tolerance": null,
+          "location": "Technical Analysis section, second paragraph"
+        },
+        {
+          "description": "Technical Analysis section references the ID shifting based on daemon mappings",
+          "value": "shifted based on the user namespace mappings configured in the Docker daemon",
+          "tolerance": null,
+          "location": "Technical Analysis section, second paragraph"
+        },
+        {
+          "description": "Technical Analysis section references the isExistingDirectory check from the diff",
+          "value": "isExistingDirectory(dest)",
+          "tolerance": null,
+          "location": "Technical Analysis section, third paragraph"
+        },
+        {
+          "description": "Technical Analysis section references the MkdirAllAndChownNew function from the diff",
+          "value": "MkdirAllAndChownNew",
+          "tolerance": null,
+          "location": "Technical Analysis section, fourth paragraph"
+        },
+        {
+          "description": "Issues and Risks section identifies Windows compatibility as a risk",
+          "value": "Windows containers will not have the /etc/passwd and /etc/group files",
+          "tolerance": null,
+          "location": "Issues and Risks section, first paragraph"
+        },
+        {
+          "description": "Issues and Risks section references the author's note about testing",
+          "value": "a few more tests are necessary to fully test the behavior",
+          "tolerance": null,
+          "location": "Issues and Risks section, second paragraph"
+        },
+        {
+          "description": "Issues and Risks section mentions backward compatibility as a concern",
+          "value": "backward compatibility is also a concern",
+          "tolerance": null,
+          "location": "Issues and Risks section, third paragraph"
+        },
+        {
+          "description": "Recommendations section proposes addressing Windows compatibility",
+          "value": "Address Windows Compatibility",
+          "tolerance": null,
+          "location": "Recommendations section, first list item"
+        },
+        {
+          "description": "Recommendations section proposes expanding test coverage",
+          "value": "Expand Test Coverage",
+          "tolerance": null,
+          "location": "Recommendations section, second list item"
+        },
+        {
+          "description": "Recommendations section proposes approving with conditions",
+          "value": "Approve with Conditions",
+          "tolerance": null,
+          "location": "Recommendations section, third list item"
+        },
+        {
+          "description": "Recommendations section proposes updating documentation",
+          "value": "Update Documentation",
+          "tolerance": null,
+          "location": "Recommendations section, fourth list item"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1348018559
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR description from moby/moby#34263 explaining the --chown flag feature and its supported formats.",
+      "content_blueprint": {
+        "title": "PR description from moby/moby#34263 explaining the --chown flag feature and its supported formats",
+        "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "Diff for builder/dockerfile/copy.go showing implementation changes to copyInstruction, copyFileOptions, copyDirectory, and copyFile.",
+      "content_blueprint": {
+        "title": "Diff for builder/dockerfile/copy",
+        "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "Partial diff for builder/dockerfile/copy_unix.go showing beginning of changes.",
+      "content_blueprint": {
+        "title": "Partial diff for builder/dockerfile/copy_unix",
+        "body": "# Seed Material: moby/moby#34263: Add --chown flag to ADD/COPY commands\nSource: github_issue_pr\nIdentifier: pr:moby/moby#34263\n\nRepository: moby/moby\nPR Number: #34263\nPR Title: Add --chown flag to ADD/COPY commands\nMerged At: 2017-08-28T16:50:45Z\nChanged Files: 7\nAdditions: +293, Deletions: -15\n\n## PR Description\nCarry #28499 (which was a carry of #27303)\r\n\r\nThis adds `--chown` function to the `ADD` and `COPY` commands in `Dockerfile`. The format of the `--chown` flag allows any uid/username and gid/groupname combination separated by a colon, e.g.:\r\n```\r\n--chown=someuser:555\r\n--chown=anyuser:anygroup\r\n--chown=1001:1002\r\n--chown=333:agroupname\r\n```\r\n\r\nLookups (to translate name -> ID integer) will use the `/etc/passwd` and `/etc/group` files found in the container filesystem. Currently if they do not exist, then the `docker build` will fail. This PR probably needs a way to fail gracefully (or ignore failures) on Windows as those containers will not have these files. If only numeric IDs are used, no lookups will be performed.\r\n\r\nUser namespaces are supported and IDs will be shifted (after translated names to integers) based on the user namespace mappings set in the daemon.\r\n\r\nI also think a few more tests are necessary to fully test the behavior, but wanted to get the rebased code available for review initially.\n\n## Diff (first 3000 chars)\ndiff --git a/builder/dockerfile/copy.go b/builder/dockerfile/copy.go\nindex c7db943f5c08f..223623ccd6be9 100644\n--- a/builder/dockerfile/copy.go\n+++ b/builder/dockerfile/copy.go\n@@ -56,6 +56,7 @@ type copyInstruction struct {\n \tcmdName                 string\n \tinfos                   []copyInfo\n \tdest                    string\n+\tchownStr                string\n \tallowLocalDecompression bool\n }\n \n@@ -369,6 +370,7 @@ func downloadSource(output io.Writer, stdout io.Writer, srcURL string) (remote b\n type copyFileOptions struct {\n \tdecompress bool\n \tarchiver   *archive.Archiver\n+\tchownPair  idtools.IDPair\n }\n \n func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions) error {\n@@ -388,7 +390,7 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\treturn errors.Wrapf(err, \"source path not found\")\n \t}\n \tif src.IsDir() {\n-\t\treturn copyDirectory(archiver, srcPath, destPath)\n+\t\treturn copyDirectory(archiver, srcPath, destPath, options.chownPair)\n \t}\n \tif options.decompress && archive.IsArchivePath(srcPath) && !source.noDecompress {\n \t\treturn archiver.UntarPath(srcPath, destPath)\n@@ -405,26 +407,28 @@ func performCopyForInfo(dest copyInfo, source copyInfo, options copyFileOptions)\n \t\t// is a symlink\n \t\tdestPath = filepath.Join(destPath, filepath.Base(source.path))\n \t}\n-\treturn copyFile(archiver, srcPath, destPath)\n+\treturn copyFile(archiver, srcPath, destPath, options.chownPair)\n }\n \n-func copyDirectory(archiver *archive.Archiver, source, dest string) error {\n+func copyDirectory(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tdestExists, err := isExistingDirectory(dest)\n+\tif err != nil {\n+\t\treturn errors.Wrapf(err, \"failed to query destination path\")\n+\t}\n \tif err := archiver.CopyWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy directory\")\n \t}\n-\treturn fixPermissions(source, dest, archiver.IDMappings.RootPair())\n+\treturn fixPermissions(source, dest, chownPair, !destExists)\n }\n \n-func copyFile(archiver *archive.Archiver, source, dest string) error {\n-\trootIDs := archiver.IDMappings.RootPair()\n-\n-\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, rootIDs); err != nil {\n+func copyFile(archiver *archive.Archiver, source, dest string, chownPair idtools.IDPair) error {\n+\tif err := idtools.MkdirAllAndChownNew(filepath.Dir(dest), 0755, chownPair); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to create new directory\")\n \t}\n \tif err := archiver.CopyFileWithTar(source, dest); err != nil {\n \t\treturn errors.Wrapf(err, \"failed to copy file\")\n \t}\n-\treturn fixPermissions(source, dest, rootIDs)\n+\treturn fixPermissions(source, dest, chownPair, false)\n }\n \n func endsInSlash(path string) bool {\ndiff --git a/builder/dockerfile/copy_unix.go b/builder/dockerfile/copy_unix.go\nindex 326d95bb39dfd..a4a5e05235d59 100644\n--- a/builder/dockerfile/copy_unix.go\n+++ b/builder/dockerfile/copy_unix.go\n@@ -9,10 +9,16 @@ import (\n \t\"github.com/docker/docker/"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_3deb760c50412034/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_3deb760c50412034/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_3deb760c50412034/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_3deb760c50412034/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:45:56.535155+00:00"
+}

@@ -69,7 +69,7 @@ class LLMClient:
             headers["X-Title"] = "gdpval-data-pipeline"
 
         self._client = httpx.Client(
-            timeout=httpx.Timeout(120.0, connect=10.0),
+            timeout=httpx.Timeout(300.0, connect=10.0),
             headers=headers,
         )
         logger.info("LLMClient initialized: backend=%s model=%s", self.backend, self.default_model)

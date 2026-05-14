@@ -1,0 +1,888 @@
+{
+  "candidate_id": "sc_aa4f08e853e8f509",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "light",
+  "seed_id": "aa4f08e853e8f509",
+  "prompt": "You are a senior software engineer on the Node.js core team. The Technical Steering Committee (TSC) has asked you to write a design document for the decision to unflag the `--experimental-strip-types` flag, making TypeScript type-stripping enabled by default in Node.js. This document will serve as the architectural record for the change and will be shared with the broader ecosystem to explain the rationale, scope, and implications.\n\nYou have been provided with the PR #56350 diff and description, which shows the actual code and documentation changes made to the nodejs/node repository. Your task is to synthesize this information into a structured design document.\n\nThe document should cover the following:\n\n1. **Overview**: Explain the change in plain terms—what is being unflagged, what it means for users, and why this is being done now (referencing the PR author's stated rationale).\n\n2. **Motivation and Context**: Describe the motivation behind enabling TypeScript support by default. Reference the linked issue from the nodejs/typescript repository (issue #17) as the motivating bug. Discuss the experimental nature of the feature and its stability classification (1.1 - Active development).\n\n3. **Technical Details**: Based on the diff, document the specific changes made:\n   - The benchmark file `benchmark/ts/strip-typescript.js` no longer passes `--experimental-strip-types`.\n   - Documentation in `doc/api/cli.md` was updated: the `--experimental-strip-types` section was removed, and a new `--no-experimental-strip-types` section was added to allow disabling the now-default behavior.\n   - The `--experimental-strip-types` flag was removed from the `--entry-url` example and from the `--input-type` description.\n   - The `--experimental-typescript-transform` description was updated to remove the implication of `--experimental-strip-types`.\n\n4. **Semver Classification**: The PR author states this is a semver minor change. Explain why this classification is appropriate—it enables new functionality by default but does not break existing behavior for users who were not opting in.\n\n5. **Limitations and Future Work**: Reference the documented limitations at `https://nodejs.org/api/typescript.html#type-stripping`. Note that the feature remains experimental and subject to change.\n\nWrite this as a single Markdown document. Keep the tone professional and technical, suitable for a repository wiki or internal engineering document. Do not invent details beyond what is present in the PR diff and description.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document is a Markdown file with a title referencing PR #56350 and the `--experimental-strip-types` feature.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a top-level heading (H1) that includes the phrase \"Unflagging `--experimental-strip-types`\".",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a second-level heading \"Overview\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a second-level heading \"Motivation and Context\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a second-level heading \"Technical Details\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a second-level heading \"Semver Classification\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a second-level heading \"Limitations and Future Work\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section states that the `--experimental-strip-types` flag is now enabled by default.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references the PR author's rationale that enabling the flag by default will help catch more bugs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section mentions that currently there are no open issues, as stated in the PR description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section identifies `--no-experimental-strip-types` as the flag to opt out of the default behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Context section references issue #17 in the nodejs/typescript repository as the motivating issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Context section mentions the feature's stability classification as \"1.1 - Active development\".",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation and Context section states the feature remains experimental.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section correctly identifies the number of changed files as 22.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section correctly states the change count as 64 additions and 114 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section describes the change to `benchmark/ts/strip-typescript.js` where `--experimental-strip-types` was removed from the flags array.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Details section mentions that the remaining flag in the benchmark's flags array is `--disable-warning=ExperimentalWarning`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section states that the existing `--experimental-strip-types` documentation section was removed from `doc/api/cli.md`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section describes the addition of a new `--no-experimental-strip-types` section in `doc/api/cli.md`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Details section references the YAML metadata `added: v22.6.0` for the new section.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section describes the update to the `--entry-url` example removing the explicit `--experimental-strip-types` flag.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section describes the update to the `--input-type` description changing the condition from requiring `--experimental-strip-types` to being unavailable with `--no-experimental-strip-types`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Details section describes the update to `--experimental-typescript-transform` to remove the implication of `--experimental-strip-types`, noting it now only implies `--enable-source-maps`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Semver Classification section identifies this as a semver minor change per the PR author.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Semver Classification section explains why the classification is appropriate: it adds functionality without breaking existing behavior for non-opt-in users.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Semver Classification section notes that users already passing `--experimental-strip-types` will see no change in behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section references the documented limitations URL: https://nodejs.org/api/typescript.html#type-stripping.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section states that the feature is experimental and subject to change.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not invent author names, team names, or specific version numbers not present in the PR description or diff.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document maintains a professional technical tone appropriate for an engineering design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not include speculative future features beyond what can be reasonably inferred from the material (e.g., expanding supported syntax, stabilizing the feature).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Details section correctly identifies `doc/api/cli.md` as the documentation file that was modified.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the `--experimental-strip-types` flag was added in v22.6.0 (referenced in the YAML metadata).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Details section notes that the `--input-type` default is \"commonjs\" as stated in the diff.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly states that the PR fixes issue #17 in the nodejs/typescript repository.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that Node.js will try to detect syntax by running input as CommonJS first, as described in the `--input-type` diff.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the `\"-typescript\"` input type values (`\"module-typescript\"` and `\"commonjs-typescript\"`) in the context of the `--input-type` changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations section notes that the feature was merged on 2024-12-26.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses inline code formatting for flag names and file paths (e.g., `--experimental-strip-types`, `doc/api/cli.md`).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -3,
+      "criterion": "The document fabricates author names, specific commit hashes, or version numbers not present in the provided material.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document states the change is semver major or semver patch instead of semver minor.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_aa4f08e853e8f509",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:nodejs/node#56350",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "PR #56350",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "--experimental-strip-types",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "by default",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "catch more bugs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "no open issues",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "--no-experimental-strip-types",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "issue #17",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "1.1 - Active development",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "22 files",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "64 additions and 114 deletions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "benchmark/ts/strip-typescript.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "--disable-warning=ExperimentalWarning",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "removed entirely",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "new section for --no-experimental-strip-types",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "added: v22.6.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "--entry-url",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "--input-type",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "--experimental-typescript-transform",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "--enable-source-maps",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "semver minor",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "without breaking existing behavior",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "https://nodejs.org/api/typescript.html#type-stripping",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "experimental and is subject to change",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "PR #56350",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "--experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "by default",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "catch more bugs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "no open issues",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "--no-experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "issue #17",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "1.1 - Active development",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "22 files",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "64 additions and 114 deletions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "benchmark/ts/strip-typescript.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "--experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "--disable-warning=ExperimentalWarning",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "removed entirely",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "new section for --no-experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "added: v22.6.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "--entry-url",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "--input-type",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "--experimental-typescript-transform",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "--enable-source-maps",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "semver minor",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "without breaking existing behavior",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "https://nodejs.org/api/typescript.html#type-stripping",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "experimental and is subject to change",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Unflagging `--experimental-strip-types`",
+          "heading_level": 1,
+          "required_content": [
+            "Title of the document with the feature name",
+            "Context about this being for PR #56350 in the nodejs/node repository"
+          ],
+          "paragraphs": [
+            "This document describes the architectural decision and implementation details for PR #56350, which unflags the `--experimental-strip-types` option in Node.js, enabling TypeScript type-stripping by default."
+          ]
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "What the change does in plain terms",
+            "What it means for Node.js users",
+            "Reference to the PR author's stated rationale about catching more bugs"
+          ],
+          "paragraphs": [
+            "PR #56350 enables the `--experimental-strip-types` flag by default in Node.js. Previously, users had to explicitly pass `--experimental-strip-types` to run TypeScript files. With this change, Node.js can execute TypeScript files containing inline type annotations without any additional configuration.",
+            "The PR author's rationale is that it is time to enable the feature by default to catch more bugs, noting that currently there are no open issues. By exposing the feature to a wider user base by default, the team can identify edge cases and regressions more effectively before the feature is eventually stabilized.",
+            "Users who do not wish to use this feature can opt out by passing the new `--no-experimental-strip-types` flag."
+          ]
+        },
+        {
+          "heading": "Motivation and Context",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to nodejs/typescript issue #17 as the motivating bug",
+            "Mention of the feature's experimental status and stability classification (1.1 - Active development)"
+          ],
+          "paragraphs": [
+            "This change is motivated by the need to move the TypeScript type-stripping feature toward broader adoption. The PR fixes issue #17 in the nodejs/typescript repository, which tracked the goal of enabling the feature by default.",
+            "The feature retains its experimental classification (Stability: 1.1 - Active development). This means it remains subject to change, but is considered stable enough for default enablement. The documentation notes that TypeScript type-stripping is experimental and users should be aware of its limitations."
+          ]
+        },
+        {
+          "heading": "Technical Details",
+          "heading_level": 2,
+          "required_content": [
+            "Changes to benchmark/ts/strip-typescript.js: removal of --experimental-strip-types flag from the flags array",
+            "Removal of the --experimental-strip-types section from doc/api/cli.md",
+            "Addition of a new --no-experimental-strip-types section in doc/api/cli.md",
+            "Updates to --entry-url example removing the explicit flag",
+            "Updates to --input-type description removing the flag requirement",
+            "Updates to --experimental-typescript-transform description"
+          ],
+          "paragraphs": [
+            "The changes span 22 files with 64 additions and 114 deletions. The key modifications are as follows:",
+            "In `benchmark/ts/strip-typescript.js`, the `flags` array was changed from `['--experimental-strip-types', '--disable-warning=ExperimentalWarning']` to `['--disable-warning=ExperimentalWarning']`. This reflects that the benchmark no longer needs to explicitly enable the flag since it is now on by default.",
+            "In `doc/api/cli.md`, the existing section documenting `--experimental-strip-types` was removed entirely. In its place, a new section for `--no-experimental-strip-types` was added, allowing users to disable the default behavior. The YAML metadata for the new section references `added: v22.6.0` with a changes entry for the version when it was unflagged.",
+            "The `--entry-url` example was updated. Previously it showed `node --entry-url --experimental-strip-types 'file.ts?query#hash'`; it now shows `node --entry-url 'file.ts?query#hash'`, removing the explicit flag.",
+            "The `--input-type` description was updated. The sentence stating that the `\"-typescript\"` values are available only in combination with `--experimental-strip-types` was changed to state that they are not available with `--no-experimental-strip-types`. The conditional about `--experimental-strip-types` being enabled and `--input-type` not being provided was also simplified.",
+            "The `--experimental-typescript-transform` description was updated to remove the statement that it implies `--experimental-strip-types`, since that flag is no longer a separate opt-in. It now only implies `--enable-source-maps`."
+          ]
+        },
+        {
+          "heading": "Semver Classification",
+          "heading_level": 2,
+          "required_content": [
+            "PR author's statement that this is a semver minor change",
+            "Explanation of why this classification is appropriate"
+          ],
+          "paragraphs": [
+            "The PR author classifies this change as semver minor. This classification is appropriate because the change enables new functionality by default without breaking existing behavior for users who were not previously opting in.",
+            "Users who were already passing `--experimental-strip-types` will see no change in behavior—their TypeScript files continue to work. Users who were not passing the flag and not using TypeScript will also see no change. The only new behavior is that users who run `.ts` files without the flag will now have them executed, which is additive functionality."
+          ]
+        },
+        {
+          "heading": "Limitations and Future Work",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to documented limitations at https://nodejs.org/api/typescript.html#type-stripping",
+            "Statement that the feature remains experimental and subject to change"
+          ],
+          "paragraphs": [
+            "The feature has documented limitations in supported TypeScript syntax, detailed at https://nodejs.org/api/typescript.html#type-stripping. Users and library authors should consult this documentation to understand what TypeScript constructs are supported by the type-stripping approach.",
+            "As noted in the PR description, this feature is experimental and is subject to change. The TSC and core team will continue to monitor for issues and regressions now that the feature is enabled by default. Future work may include expanding supported syntax, improving performance, and eventually stabilizing the feature."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Unflagging `--experimental-strip-types` (PR #56350)",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #56350 diff showing changes to benchmark/ts/strip-typescript.js, doc/api/cli.md, and other files (22 files changed, +64/-114 lines)",
+          "content_blueprint": {
+            "title": "PR #56350 diff showing changes to benchmark/ts/strip-typescript",
+            "body": "# Seed Material: nodejs/node#56350: module: unflag --experimental-strip-types\nSource: github_issue_pr\nIdentifier: pr:nodejs/node#56350\n\nRepository: nodejs/node\nPR Number: #56350\nPR Title: module: unflag --experimental-strip-types\nMerged At: 2024-12-26T18:46:06Z\nChanged Files: 22\nAdditions: +64, Deletions: -114\n\n## PR Description\nIt's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.\n\n## Diff (first 3000 chars)\ndiff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description stating the rationale, semver classification, and link to nodejs/typescript issue #17",
+          "content_blueprint": {
+            "title": "PR description stating the rationale, semver classification, and link to nodejs/typescript issue #17",
+            "body": "# Seed Material: nodejs/node#56350: module: unflag --experimental-strip-types\nSource: github_issue_pr\nIdentifier: pr:nodejs/node#56350\n\nRepository: nodejs/node\nPR Number: #56350\nPR Title: module: unflag --experimental-strip-types\nMerged At: 2024-12-26T18:46:06Z\nChanged Files: 22\nAdditions: +64, Deletions: -114\n\n## PR Description\nIt's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.\n\n## Diff (first 3000 chars)\ndiff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title references the correct PR number",
+          "value": "PR #56350",
+          "tolerance": null,
+          "location": "Title section"
+        },
+        {
+          "description": "Document identifies the feature being unflagged",
+          "value": "--experimental-strip-types",
+          "tolerance": null,
+          "location": "Overview section, first sentence"
+        },
+        {
+          "description": "Overview states the feature is enabled by default",
+          "value": "by default",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview references the rationale about catching more bugs",
+          "value": "catch more bugs",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview mentions there are no open issues as stated by PR author",
+          "value": "no open issues",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview mentions the opt-out flag name",
+          "value": "--no-experimental-strip-types",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Motivation section references nodejs/typescript issue #17",
+          "value": "issue #17",
+          "tolerance": null,
+          "location": "Motivation and Context section"
+        },
+        {
+          "description": "Motivation section references the stability classification",
+          "value": "1.1 - Active development",
+          "tolerance": null,
+          "location": "Motivation and Context section"
+        },
+        {
+          "description": "Technical Details references the correct number of changed files",
+          "value": "22 files",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details references correct additions and deletions count",
+          "value": "64 additions and 114 deletions",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details describes the benchmark file change correctly",
+          "value": "benchmark/ts/strip-typescript.js",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details shows the old flags array value for the benchmark",
+          "value": "--experimental-strip-types",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details shows the new flags array removes the explicit flag",
+          "value": "--disable-warning=ExperimentalWarning",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details notes removal of the --experimental-strip-types section from cli.md",
+          "value": "removed entirely",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details notes addition of new --no-experimental-strip-types section",
+          "value": "new section for --no-experimental-strip-types",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details references the added: v22.6.0 YAML metadata",
+          "value": "added: v22.6.0",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details describes the --entry-url example update",
+          "value": "--entry-url",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details describes the --input-type description update",
+          "value": "--input-type",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details describes the --experimental-typescript-transform update",
+          "value": "--experimental-typescript-transform",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Technical Details states --experimental-typescript-transform now only implies --enable-source-maps",
+          "value": "--enable-source-maps",
+          "tolerance": null,
+          "location": "Technical Details section"
+        },
+        {
+          "description": "Semver Classification states this is a semver minor change",
+          "value": "semver minor",
+          "tolerance": null,
+          "location": "Semver Classification section"
+        },
+        {
+          "description": "Semver Classification explains why it is appropriate",
+          "value": "without breaking existing behavior",
+          "tolerance": null,
+          "location": "Semver Classification section"
+        },
+        {
+          "description": "Limitations section references the documented limitations URL",
+          "value": "https://nodejs.org/api/typescript.html#type-stripping",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        },
+        {
+          "description": "Limitations section states the feature remains experimental",
+          "value": "experimental and is subject to change",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1212863118
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #56350 diff showing changes to benchmark/ts/strip-typescript.js, doc/api/cli.md, and other files (22 files changed, +64/-114 lines)",
+      "content_blueprint": {
+        "title": "PR #56350 diff showing changes to benchmark/ts/strip-typescript",
+        "body": "# Seed Material: nodejs/node#56350: module: unflag --experimental-strip-types\nSource: github_issue_pr\nIdentifier: pr:nodejs/node#56350\n\nRepository: nodejs/node\nPR Number: #56350\nPR Title: module: unflag --experimental-strip-types\nMerged At: 2024-12-26T18:46:06Z\nChanged Files: 22\nAdditions: +64, Deletions: -114\n\n## PR Description\nIt's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.\n\n## Diff (first 3000 chars)\ndiff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description stating the rationale, semver classification, and link to nodejs/typescript issue #17",
+      "content_blueprint": {
+        "title": "PR description stating the rationale, semver classification, and link to nodejs/typescript issue #17",
+        "body": "# Seed Material: nodejs/node#56350: module: unflag --experimental-strip-types\nSource: github_issue_pr\nIdentifier: pr:nodejs/node#56350\n\nRepository: nodejs/node\nPR Number: #56350\nPR Title: module: unflag --experimental-strip-types\nMerged At: 2024-12-26T18:46:06Z\nChanged Files: 22\nAdditions: +64, Deletions: -114\n\n## PR Description\nIt's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.\n\n## Diff (first 3000 chars)\ndiff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_aa4f08e853e8f509/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_aa4f08e853e8f509/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_aa4f08e853e8f509/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T17:57:27.946001+00:00"
+}

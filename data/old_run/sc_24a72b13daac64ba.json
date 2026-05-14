@@ -1,0 +1,887 @@
+{
+  "candidate_id": "sc_24a72b13daac64ba",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "light",
+  "seed_id": "24a72b13daac64ba",
+  "prompt": "You are a Senior Rust Engineer on the Language Features team at the Rust Foundation. The team is preparing documentation for the stabilization of `#![feature(min_const_generics)]` in Rust 1.51. The release engineering team has requested a formal Design Document to accompany the stabilization, summarizing the feature's design, scope, usage, and limitations for internal review and future reference.\n\nMaterials provided:\n- PR #79135: 'stabilize `#![feature(min_const_generics)]` in 1.51' with its stabilization report, summary, motivation, and example code.\n- Tracking issue #74878 (referenced in the PR) for `min_const_generics`.\n- RFC #2000 (referenced in the PR) that proposed the const generics feature.\n\nTask requirements:\n1. Create a Markdown document with the following sections:\n   a. **Overview**: State the feature name, the stabilization target version (1.51), and the core capability added (parameterizing functions, types, traits, and implementations by constants).\n   b. **Scope and Syntax**: Describe the allowed parameter types for const generics (integers, char, bool) and the syntax (`const IDENT: Type`). Note the restriction that const generic arguments cannot involve computations depending on generic parameters.\n   c. **Motivation**: Explain the primary use case—enabling trait implementations for arrays of arbitrary length, eliminating the previous limit of 32. Mention the replacement of the `typenum` crate as a benefit.\n   d. **Example Walkthrough**: Include the provided Rust code example from the PR. Add a line-by-line or section-by-section explanation of how it demonstrates const generics in a trait, struct, impl block, and function. Explain the inference of `M` and the explicit specification of `N`.\n   e. **Limitations**: List the constraints: only `usize`, `bool`, and `char` const parameters are allowed; generic const arguments cannot depend on generic parameters; only const expressions not depending on generic parameters or standalone const parameters are permitted.\n   f. **References**: List the key references: PR #79135, tracking issue #74878, and RFC #2000.\n2. The document must be self-contained and use only information from the provided materials. Do not invent additional examples or details.\n3. The final file should be named `Design_Document_Min_Const_Generics.md`.\n\nDeliverable specification: A single Markdown file.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title references the feature name `#![feature(min_const_generics)]`.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'Overview'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'Scope and Syntax'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'Motivation'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'Example Walkthrough'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'Limitations'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading 'References'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section explicitly states the stabilization target version is Rust 1.51.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section states the core capability is parameterizing functions, type aliases, types, traits, and implementations by constants.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references tracking issue #74878.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references PR #79135.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section specifies the syntax for const parameters as `const IDENT: Type`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section lists the allowed const parameter types as integers, char, and bool.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section states that generic const arguments cannot involve computations depending on generic parameters.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section identifies the primary use case as enabling trait implementations for arrays of different lengths.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section mentions the previous limit of 32 for array trait implementations.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section mentions that const generics can replace many uses of the `typenum` crate.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Example Walkthrough section includes the complete Rust code example from the PR.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Example Walkthrough explains that the `Foo` trait is generic over a constant `N` of type `usize`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Example Walkthrough explains that the `Bar` struct is generic over a type `T` and a constant `N`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Example Walkthrough explains that calling `bar.method(...)` infers the value of `M` from the function argument.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Example Walkthrough explains that `function::<17>()` explicitly specifies `N=17`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Example Walkthrough mentions the result of `function::<17>()` as 153.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations section lists `usize` as an allowed const parameter type.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations section lists `bool` as an allowed const parameter type.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations section lists `char` as an allowed const parameter type.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section states that generic const arguments cannot depend on generic parameters.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section lists the two permitted ways to instantiate const parameters: (a) const expressions not depending on generic parameters, (b) standalone const parameters.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section includes a bullet point for PR #79135.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section includes a bullet point for tracking issue #74878.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section includes a bullet point for RFC #2000.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown formatting (e.g., headings, code blocks, bullet points).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code example is presented within a Rust code block (e.g., ` ```rust `).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is self-contained and does not introduce information not found in the provided materials.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains fabricated facts, names, numbers, or citations not present in the provided materials.",
+      "category": "content",
+      "is_penalty": true
+    },
+    {
+      "score": 1,
+      "criterion": "The Explanation in the Example Walkthrough section is present and provides some analysis of the code.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section explains that const generics lift the previous restriction.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section notes that const parameters are allowed in all places where types and lifetimes are supported.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the feature is based on RFC #2000.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Example Walkthrough explains the `method` function within the `Foo` trait has its own const parameter `M`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Example Walkthrough explains the bitwise AND operation performed in the `method` body.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the beta and stable release dates for version 1.51 (2021-02-11 beta, 2021-03-25 stable).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section explicitly categorizes the constraints as managing complexity and ensuring stability.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is named appropriately (e.g., contains 'Min_Const_Generics' or similar).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section provides an example of a const expression not depending on generic parameters, e.g., `{ foo() + 1 }`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope and Syntax section provides an example of a standalone const parameter, e.g., `{N}`.",
+      "category": "data",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_24a72b13daac64ba",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:rust-lang/rust#79135",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Stabilization of `#![feature(min_const_generics)]`",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "1.51",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "parameterize functions, type aliases, types, traits and implementations by constants",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "#74878",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "#79135",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "integers, char, and bool",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "const IDENT: Type",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "not permitted to involve computations depending on generic parameters",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "enabling trait implementations for arrays of different lengths",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "typenum",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "trait Foo<const N: usize> {\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\n}",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "The `Foo` trait is generic over a constant `N` of type `usize`.",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "The `Bar` struct is generic over a type `T` and a constant `N`, storing an array `[T; N]`.",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "Calling `bar.method(...)` infers `M` from the 2-element arrays passed as arguments.",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "`function::<17>()` explicitly specifies `N=17`",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "153",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "usize, bool, and char",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "not allowed to involve computations that depend on other generic parameters",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "const expressions that do not depend on any generic parameters",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "standalone const parameters",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "#2000",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Stabilization of `#![feature(min_const_generics)]`",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "1.51",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "parameterize functions, type aliases, types, traits and implementations by constants",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "#74878",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "#79135",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "integers, char, and bool",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "const IDENT: Type",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "not permitted to involve computations depending on generic parameters",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "enabling trait implementations for arrays of different lengths",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "32",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "typenum",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "trait Foo<const N: usize> {\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\n}",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "The `Foo` trait is generic over a constant `N` of type `usize`.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "The `Bar` struct is generic over a type `T` and a constant `N`, storing an array `[T; N]`.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Calling `bar.method(...)` infers `M` from the 2-element arrays passed as arguments.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "`function::<17>()` explicitly specifies `N=17`",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "153",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "usize, bool, and char",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "not allowed to involve computations that depend on other generic parameters",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "const expressions that do not depend on any generic parameters",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "standalone const parameters",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "#79135",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "#74878",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "#2000",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 1,
+          "required_content": [
+            "Feature name: `#![feature(min_const_generics)]`",
+            "Stabilization version: Rust 1.51",
+            "Core capability: parameterize functions, type aliases, types, traits and implementations by constants"
+          ],
+          "paragraphs": [
+            "This design document details the stabilization of the `#![feature(min_const_generics)]` feature in Rust version 1.51. This feature introduces the ability to parameterize functions, type aliases, types, traits, and implementations by constants, in addition to the existing parameters by types and lifetimes. The stabilization is based on the subset of full const generics described in RFC #2000 and targets release 1.51, with the beta release scheduled for 2021-02-11 and the stable release for 2021-03-25.",
+            "The feature was tracked under issue #74878 and is implemented by PR #79135. It provides a foundational capability that allows for more expressive generic programming in Rust, particularly for scenarios involving arrays and other value-parameterized types."
+          ]
+        },
+        {
+          "heading": "Scope and Syntax",
+          "heading_level": 1,
+          "required_content": [
+            "Allowed const parameter types: integers, char, bool",
+            "Syntax: `const IDENT: Type`",
+            "Restriction: generic const arguments cannot involve computations depending on generic parameters"
+          ],
+          "paragraphs": [
+            "The scope of `min_const_generics` is intentionally limited to ensure a stable and well-understood initial feature set. Const parameters are permitted in all locations where types and lifetimes are supported. The syntax for declaring a const parameter is `const IDENT: Type`.",
+            "Currently, the allowed types for const parameters are restricted to integers, `char`, and `bool`. Generic const arguments are not permitted to involve computations that depend on generic parameters. This means that when instantiating a const parameter, only the following are allowed: (1) const expressions that do not depend on any generic parameters (e.g., `{ foo() + 1 }` where `foo` is a `const fn`), or (2) standalone const parameters (e.g., `{N}`)."
+          ]
+        },
+        {
+          "heading": "Motivation",
+          "heading_level": 1,
+          "required_content": [
+            "Primary use case: enabling trait implementations for arrays of arbitrary length",
+            "Eliminates previous limit of 32 for array trait implementations",
+            "Replaces many uses of the `typenum` crate"
+          ],
+          "paragraphs": [
+            "The primary motivation for const generics is Rust's built-in array type, which is parametric over a constant. Without const generics, implementing traits for arrays of different lengths was cumbersome; the standard library previously only contained trait implementations for arrays up to a length of 32. This restriction has been lifted using const generics.",
+            "Const parameters allow users to specify variants of generic types more naturally parameterized by values rather than types. This enables the replacement of many uses of the `typenum` crate with native const parameters, which improves compilation time, code readability, and diagnostics. The subset defined by `min_const_generics` is self-contained, extensive enough to address the most frequent use cases, and extends naturally to full `const_generics` once remaining design questions are resolved."
+          ]
+        },
+        {
+          "heading": "Example Walkthrough",
+          "heading_level": 1,
+          "required_content": [
+            "Include the exact Rust code example from the PR",
+            "Explain trait definition with const parameter N of type usize",
+            "Explain struct definition with const parameter N",
+            "Explain impl block with const parameter inference",
+            "Explain function using const parameter N in arithmetic",
+            "Explain main function usage with inference of M and explicit specification of N"
+          ],
+          "paragraphs": [
+            "The following example, from the stabilization report, demonstrates key aspects of `min_const_generics`.\n\n```rust\n#![feature(min_const_generics)]\n\ntrait Foo<const N: usize> {\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\n}\n\nstruct Bar<T, const N: usize> {\n    inner: [T; N],\n}\n\nimpl<const N: usize> Foo<N> for Bar<u8, N> {\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]) {\n        for (elem, s) in self.inner.iter_mut().zip(arr.iter()) {\n            for &x in s {\n                *elem &= x;\n            }\n        }\n    }\n}\n\nfn function<const N: u16>() -> u16 {\n    // Const parameters can be used freely inside of functions.\n    (N + 1) / 2 * N\n}\n\nfn main() {\n    let mut bar = Bar { inner: [0xff; 3] };\n    // This infers the value of `M` from the type of the function argument.\n    bar.method([[0b11_00, 0b01_00], [0b00_11, 0b00_01], [0b11_00, 0b00_11]]);\n    assert_eq!(bar.inner, [0b01_00, 0b00_01, 0b00_00]);\n\n    // You can also explicitly specify the value of `N`.\n    assert_eq!(function::<17>(), 153);\n}\n```",
+            "**Trait and Struct Definitions:** The `Foo` trait is generic over a constant `N` of type `usize`. Its `method` function is further generic over a constant `M`. The `Bar` struct is generic over a type `T` and a constant `N`, storing an array `[T; N]`.",
+            "**Implementation Block:** The `impl` block implements `Foo<N>` for `Bar<u8, N>`. The method body performs a bitwise AND operation across nested arrays, showcasing how const generics allow for type-safe, dimension-checked operations.",
+            "**Function:** The standalone `function<const N: u16>()` uses the const parameter `N` directly in arithmetic expressions, demonstrating that const parameters are usable as values within function bodies.",
+            "**Usage in `main`:** A `Bar` instance is created with `inner: [0xff; 3]`, fixing `N=3`. Calling `bar.method(...)` infers `M` from the 2-element arrays passed as arguments. The `assert_eq!` verifies the bitwise AND results. Finally, `function::<17>()` explicitly specifies `N=17`, and the assertion checks the calculated value 153."
+          ]
+        },
+        {
+          "heading": "Limitations",
+          "heading_level": 1,
+          "required_content": [
+            "Only usize, bool, and char const parameters are allowed",
+            "Generic const arguments cannot depend on generic parameters",
+            "Only const expressions not depending on generic parameters or standalone const parameters are permitted"
+          ],
+          "paragraphs": [
+            "The initial stabilization of `min_const_generics` includes several important limitations designed to manage complexity and ensure stability. These limitations are as follows:\n\n1.  **Parameter Types:** Only `usize`, `bool`, and `char` are permitted as types for const parameters.\n2.  **Generic Argument Restrictions:** Generic const arguments are not allowed to involve computations that depend on other generic parameters.\n3.  **Permitted Instantiations:** Const parameters may only be instantiated using either: (a) const expressions that do not depend on any generic parameters (e.g., `{ foo() + 1 }` where `foo` is a `const fn`), or (b) standalone const parameters (e.g., `{N}`).",
+            "These constraints are explicitly defined in the stabilization report to limit the feature's surface area. The subset is designed to be self-contained and sufficient for the most common use cases, such as implementing traits for arrays, while leaving a clear path for extension to full `const_generics` in the future."
+          ]
+        },
+        {
+          "heading": "References",
+          "heading_level": 1,
+          "required_content": [
+            "PR #79135",
+            "Tracking issue #74878",
+            "RFC #2000"
+          ],
+          "paragraphs": [
+            "The following references are foundational to the `min_const_generics` feature:\n\n*   **PR #79135**: 'stabilize `#![feature(min_const_generics)]` in 1.51'. This pull request contains the stabilization report and implementation.\n*   **Tracking Issue #74878**: The primary tracking issue for the `min_const_generics` feature.\n*   **RFC #2000**: The original RFC proposing the const generics feature, which `min_const_generics` is based upon."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Stabilization of `#![feature(min_const_generics)]`",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #79135 stabilization report text, including summary, motivation, example code, and in-progress in-depth description.",
+          "content_blueprint": {
+            "title": "PR #79135 stabilization report text, including summary, motivation, example code, and in-progress in-depth description",
+            "body": "# Seed Material: rust-lang/rust#79135: stabilize `#![feature(min_const_generics)]` in 1.51\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#79135\n\nRepository: rust-lang/rust\nPR Number: #79135\nPR Title: stabilize `#![feature(min_const_generics)]` in 1.51\nMerged At: 2020-12-27T09:55:59Z\nChanged Files: 478\nAdditions: +699, Deletions: -1118\n\n## PR Description\n*A new Kind*\r\n*A Sort long Prophesized*\r\n*Once Fragile, now Eternal*\r\n\r\n# Stabilization report\r\n\r\nThis is the stabilization report for `#![feature(min_const_generics)]` (tracking issue #74878), a subset of `#![feature(const_generics)]` (tracking issue #44580), based on rust-lang/rfcs#2000.\r\n\r\nThe [version target](https://forge.rust-lang.org/#current-release-versions) is ~~1.50 (2020-12-31 => beta, 2021-02-11 => stable)~~ 1.51 (2021-02-11 => beta, 2021-03-25 => stable).\r\n\r\nThis report is a collaborative effort of @varkor, @shepmaster and @lcnr.\r\n\r\n## Summary\r\n\r\nIt is currently possible to parameterize functions, type aliases, types, traits and implementations by types and lifetimes.\r\nWith `#![feature(min_const_generics)]`, it becomes possible, in addition, to parameterize these by constants.\r\n\r\nThis is done using the syntax `const IDENT: Type` in the parameter listing. Unlike full const generics, `min_const_generics` is limited to parameterization by integers, and constants of type `char` or `bool`.\r\n\r\nWe already use `#![feature(min_const_generics)]` on stable to implement many common traits for arrays. See [the documentation](https://doc.rust-lang.org/nightly/std/primitive.array.html) for specific examples.\r\n\r\nGeneric const arguments, for now, are not permitted to involve computations depending on generic parameters. This means that const parameters may only be instantiated using either:\r\n\r\n1. const expressions that do not depend on any generic parameters, e.g. `{ foo() + 1 }`, where `foo` is a `const fn`\r\n1. standalone const parameters, e.g. `{N}`\r\n\r\n### Example\r\n\r\n```rust\r\n#![feature(min_const_generics)]\r\n\r\ntrait Foo<const N: usize> {\r\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\r\n}\r\n\r\nstruct Bar<T, const N: usize> {\r\n    inner: [T; N],\r\n}\r\n\r\nimpl<const N: usize> Foo<N> for Bar<u8, N> {\r\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]) {\r\n        for (elem, s) in self.inner.iter_mut().zip(arr.iter()) {\r\n            for &x in s {\r\n                *elem &= x;\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nfn function<const N: u16>() -> u16 {\r\n    // Const parameters can be used freely inside of functions.\r\n    (N + 1) / 2 * N\r\n}\r\n\r\nfn main() {\r\n    let mut bar = Bar { inner: [0xff; 3] };\r\n    // This infers the value of `M` from the type of the function argument.\r\n    bar.method([[0b11_00, 0b01_00], [0b00_11, 0b00_01], [0b11_00, 0b00_11]]);\r\n    assert_eq!(bar.inner, [0b01_00, 0b00_01, 0b00_00]);\r\n\r\n    // You can also explicitly specify the value of `N`.\r\n    assert_eq!(function::<17>(), 153);\r\n}\r\n```\r\n\r\n## Motivation\r\n\r\nRust has the built-in array type, which is parametric over a constant. Without const generics, this type can be quite cumbersome to use as it is not possible to generically implement a trait for arrays of different lengths. For example, this meant that, for a long time, the standard library only contained trait implementations for arrays up to a length of 32. This restriction has since been lifted through the use of const generics.\r\n\r\nConst parameters allow users to naturally specify variants of a generic type which are more naturally parameterized by values, rather than by types. For example, using const generics, many of the uses of the crate [typenum](https://crates.io/crates/typenum) may now be replaced with const parameters, improving compilation time as well as code readability and diagnostics.\r\n\r\nThe subset described by `min_const_generics` is self-contained, but extensive enough to help with the most frequent issues: implementing traits for arrays and using arbitrarily-sized arrays inside of other types. Furthermore, it extends naturally to full `const_generics` once the remaining design and implementation questions have been resolved.\r\n\r\n## In-depth feature description\r\n\r\n### Declaring const parameters\r\n\r\n*Const parameters* are allowed in all places where types and lifetimes are supported. They use the syntax `const IDENT: Type`. Currently, const parameters must be declared after l"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title references the feature name",
+          "value": "Design Document: Stabilization of `#![feature(min_const_generics)]`",
+          "tolerance": null,
+          "location": "Document title (first line)"
+        },
+        {
+          "description": "Overview section mentions the stabilization target version",
+          "value": "1.51",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section mentions the core capability added",
+          "value": "parameterize functions, type aliases, types, traits and implementations by constants",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section references the tracking issue number",
+          "value": "#74878",
+          "tolerance": null,
+          "location": "Overview section, second paragraph"
+        },
+        {
+          "description": "Overview section references the PR number",
+          "value": "#79135",
+          "tolerance": null,
+          "location": "Overview section, second paragraph"
+        },
+        {
+          "description": "Scope and Syntax section specifies the allowed parameter types",
+          "value": "integers, char, and bool",
+          "tolerance": null,
+          "location": "Scope and Syntax section, second paragraph"
+        },
+        {
+          "description": "Scope and Syntax section provides the syntax for const parameters",
+          "value": "const IDENT: Type",
+          "tolerance": null,
+          "location": "Scope and Syntax section, first paragraph"
+        },
+        {
+          "description": "Scope and Syntax section states the restriction on generic const arguments",
+          "value": "not permitted to involve computations depending on generic parameters",
+          "tolerance": null,
+          "location": "Scope and Syntax section, second paragraph"
+        },
+        {
+          "description": "Motivation section mentions the primary use case related to arrays",
+          "value": "enabling trait implementations for arrays of different lengths",
+          "tolerance": null,
+          "location": "Motivation section, first paragraph"
+        },
+        {
+          "description": "Motivation section mentions the previous array length limit",
+          "value": "32",
+          "tolerance": null,
+          "location": "Motivation section, first paragraph"
+        },
+        {
+          "description": "Motivation section mentions the crate that const generics can replace",
+          "value": "typenum",
+          "tolerance": null,
+          "location": "Motivation section, second paragraph"
+        },
+        {
+          "description": "Example Walkthrough section includes the complete code example from the PR",
+          "value": "trait Foo<const N: usize> {\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\n}",
+          "tolerance": null,
+          "location": "Example Walkthrough section, code block"
+        },
+        {
+          "description": "Example Walkthrough explains the trait Foo's const parameter N",
+          "value": "The `Foo` trait is generic over a constant `N` of type `usize`.",
+          "tolerance": null,
+          "location": "Example Walkthrough section, 'Trait and Struct Definitions' paragraph"
+        },
+        {
+          "description": "Example Walkthrough explains the struct Bar's const parameter N",
+          "value": "The `Bar` struct is generic over a type `T` and a constant `N`, storing an array `[T; N]`.",
+          "tolerance": null,
+          "location": "Example Walkthrough section, 'Trait and Struct Definitions' paragraph"
+        },
+        {
+          "description": "Example Walkthrough explains inference of M in main",
+          "value": "Calling `bar.method(...)` infers `M` from the 2-element arrays passed as arguments.",
+          "tolerance": null,
+          "location": "Example Walkthrough section, 'Usage in main' paragraph"
+        },
+        {
+          "description": "Example Walkthrough explains explicit specification of N in function call",
+          "value": "`function::<17>()` explicitly specifies `N=17`",
+          "tolerance": null,
+          "location": "Example Walkthrough section, 'Usage in main' paragraph"
+        },
+        {
+          "description": "Example Walkthrough mentions the result of function::<17>()",
+          "value": "153",
+          "tolerance": null,
+          "location": "Example Walkthrough section, 'Usage in main' paragraph"
+        },
+        {
+          "description": "Limitations section lists the three allowed const parameter types",
+          "value": "usize, bool, and char",
+          "tolerance": null,
+          "location": "Limitations section, first paragraph"
+        },
+        {
+          "description": "Limitations section states that generic const arguments cannot depend on generic parameters",
+          "value": "not allowed to involve computations that depend on other generic parameters",
+          "tolerance": null,
+          "location": "Limitations section, first paragraph"
+        },
+        {
+          "description": "Limitations section lists the two permitted ways to instantiate const parameters",
+          "value": "const expressions that do not depend on any generic parameters",
+          "tolerance": null,
+          "location": "Limitations section, first paragraph"
+        },
+        {
+          "description": "Limitations section lists the second permitted way to instantiate const parameters",
+          "value": "standalone const parameters",
+          "tolerance": null,
+          "location": "Limitations section, first paragraph"
+        },
+        {
+          "description": "References section lists PR #79135",
+          "value": "#79135",
+          "tolerance": null,
+          "location": "References section, bullet point 1"
+        },
+        {
+          "description": "References section lists tracking issue #74878",
+          "value": "#74878",
+          "tolerance": null,
+          "location": "References section, bullet point 2"
+        },
+        {
+          "description": "References section lists RFC #2000",
+          "value": "#2000",
+          "tolerance": null,
+          "location": "References section, bullet point 3"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1559457355
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #79135 stabilization report text, including summary, motivation, example code, and in-progress in-depth description.",
+      "content_blueprint": {
+        "title": "PR #79135 stabilization report text, including summary, motivation, example code, and in-progress in-depth description",
+        "body": "# Seed Material: rust-lang/rust#79135: stabilize `#![feature(min_const_generics)]` in 1.51\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#79135\n\nRepository: rust-lang/rust\nPR Number: #79135\nPR Title: stabilize `#![feature(min_const_generics)]` in 1.51\nMerged At: 2020-12-27T09:55:59Z\nChanged Files: 478\nAdditions: +699, Deletions: -1118\n\n## PR Description\n*A new Kind*\r\n*A Sort long Prophesized*\r\n*Once Fragile, now Eternal*\r\n\r\n# Stabilization report\r\n\r\nThis is the stabilization report for `#![feature(min_const_generics)]` (tracking issue #74878), a subset of `#![feature(const_generics)]` (tracking issue #44580), based on rust-lang/rfcs#2000.\r\n\r\nThe [version target](https://forge.rust-lang.org/#current-release-versions) is ~~1.50 (2020-12-31 => beta, 2021-02-11 => stable)~~ 1.51 (2021-02-11 => beta, 2021-03-25 => stable).\r\n\r\nThis report is a collaborative effort of @varkor, @shepmaster and @lcnr.\r\n\r\n## Summary\r\n\r\nIt is currently possible to parameterize functions, type aliases, types, traits and implementations by types and lifetimes.\r\nWith `#![feature(min_const_generics)]`, it becomes possible, in addition, to parameterize these by constants.\r\n\r\nThis is done using the syntax `const IDENT: Type` in the parameter listing. Unlike full const generics, `min_const_generics` is limited to parameterization by integers, and constants of type `char` or `bool`.\r\n\r\nWe already use `#![feature(min_const_generics)]` on stable to implement many common traits for arrays. See [the documentation](https://doc.rust-lang.org/nightly/std/primitive.array.html) for specific examples.\r\n\r\nGeneric const arguments, for now, are not permitted to involve computations depending on generic parameters. This means that const parameters may only be instantiated using either:\r\n\r\n1. const expressions that do not depend on any generic parameters, e.g. `{ foo() + 1 }`, where `foo` is a `const fn`\r\n1. standalone const parameters, e.g. `{N}`\r\n\r\n### Example\r\n\r\n```rust\r\n#![feature(min_const_generics)]\r\n\r\ntrait Foo<const N: usize> {\r\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]);\r\n}\r\n\r\nstruct Bar<T, const N: usize> {\r\n    inner: [T; N],\r\n}\r\n\r\nimpl<const N: usize> Foo<N> for Bar<u8, N> {\r\n    fn method<const M: usize>(&mut self, arr: [[u8; M]; N]) {\r\n        for (elem, s) in self.inner.iter_mut().zip(arr.iter()) {\r\n            for &x in s {\r\n                *elem &= x;\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nfn function<const N: u16>() -> u16 {\r\n    // Const parameters can be used freely inside of functions.\r\n    (N + 1) / 2 * N\r\n}\r\n\r\nfn main() {\r\n    let mut bar = Bar { inner: [0xff; 3] };\r\n    // This infers the value of `M` from the type of the function argument.\r\n    bar.method([[0b11_00, 0b01_00], [0b00_11, 0b00_01], [0b11_00, 0b00_11]]);\r\n    assert_eq!(bar.inner, [0b01_00, 0b00_01, 0b00_00]);\r\n\r\n    // You can also explicitly specify the value of `N`.\r\n    assert_eq!(function::<17>(), 153);\r\n}\r\n```\r\n\r\n## Motivation\r\n\r\nRust has the built-in array type, which is parametric over a constant. Without const generics, this type can be quite cumbersome to use as it is not possible to generically implement a trait for arrays of different lengths. For example, this meant that, for a long time, the standard library only contained trait implementations for arrays up to a length of 32. This restriction has since been lifted through the use of const generics.\r\n\r\nConst parameters allow users to naturally specify variants of a generic type which are more naturally parameterized by values, rather than by types. For example, using const generics, many of the uses of the crate [typenum](https://crates.io/crates/typenum) may now be replaced with const parameters, improving compilation time as well as code readability and diagnostics.\r\n\r\nThe subset described by `min_const_generics` is self-contained, but extensive enough to help with the most frequent issues: implementing traits for arrays and using arbitrarily-sized arrays inside of other types. Furthermore, it extends naturally to full `const_generics` once the remaining design and implementation questions have been resolved.\r\n\r\n## In-depth feature description\r\n\r\n### Declaring const parameters\r\n\r\n*Const parameters* are allowed in all places where types and lifetimes are supported. They use the syntax `const IDENT: Type`. Currently, const parameters must be declared after l"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_24a72b13daac64ba/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_24a72b13daac64ba/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:28:16.754939+00:00"
+}

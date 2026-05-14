@@ -56,13 +56,15 @@ CLOSING_KEYWORDS = re.compile(r"\b(close[sd]?|fix(es|ed)?|resolve[sd]?)\s+#(\d+)
 class GitHubClient:
     def __init__(self) -> None:
         token = settings().github_token
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         self.client = httpx.Client(
             base_url="https://api.github.com",
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Accept": "application/vnd.github+json",
-                "X-GitHub-Api-Version": "2022-11-28",
-            },
+            headers=headers,
             timeout=httpx.Timeout(30.0, connect=10.0),
         )
 
@@ -126,7 +128,7 @@ def _extract_linked_issue(body: str | None) -> int | None:
     return None
 
 
-def harvest(target_per_repo: int = 3, max_diff_chars: int = 8000) -> list[Seed]:
+def harvest(target_per_repo: int = 3, max_diff_chars: int = 15000) -> list[Seed]:
     gh = GitHubClient()
     seeds: list[Seed] = []
     try:
@@ -185,8 +187,8 @@ def harvest(target_per_repo: int = 3, max_diff_chars: int = 8000) -> list[Seed]:
 
                 excerpt = (
                     f"Repo: {repo}\nPR #{number}: {pr.get('title')}\n\n"
-                    f"PR body:\n{pr_body[:1500]}\n\n"
-                    f"Linked issue #{issue_num}:\n{issue_body[:1500] if issue_body else '(none)'}"
+                    f"PR body:\n{pr_body[:4000]}\n\n"
+                    f"Linked issue #{issue_num}:\n{issue_body[:3000] if issue_body else '(none)'}"
                 )
 
                 seed = Seed(
@@ -211,7 +213,7 @@ def harvest(target_per_repo: int = 3, max_diff_chars: int = 8000) -> list[Seed]:
                         "diff_truncated": len(diff) > max_diff_chars,
                         "language": pr.get("base", {}).get("repo", {}).get("language"),
                     },
-                    text_excerpt=excerpt[:3000],
+                    text_excerpt=excerpt[:10000],
                 )
                 save_seed(seed)
                 seeds.append(seed)

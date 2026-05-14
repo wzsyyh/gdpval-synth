@@ -1,0 +1,1132 @@
+{
+  "candidate_id": "sc_78c9ba21b5e2644d",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "light",
+  "seed_id": "78c9ba21b5e2644d",
+  "prompt": "You are a senior software engineer on the FastAPI core team. The team has just merged PR #646, which updates the library to be compatible with Pydantic v1.0.0. Your manager has asked you to prepare a code review summary for the rest of the engineering team, focusing on the migration changes and their impact. The goal is to document the key patterns that changed, ensure no regressions, and provide a reference for future maintenance.\n\nMaterials provided:\n- The full diff for PR #646 (attached as `pr646_diff.txt`).\n- The PR metadata including title, merge date, and change statistics (attached as `pr646_metadata.md`).\n\nTask requirements:\n1. Analyze the provided diff and identify the primary categories of changes made to migrate from Pydantic 0.32.2 to 1.0.0.\n2. For each category, provide a concrete example of the code change (old vs. new) from the diff.\n3. Summarize the scope of the change: how many files were modified, lines added/deleted, and the overall risk assessment based on the change pattern (e.g., mechanical refactor vs. logic changes).\n4. Create a checklist of migration steps for any other projects that might need to perform a similar Pydantic v1 migration, based on the patterns observed in this PR.\n5. Your deliverable should be a Markdown document. Structure it with clear headings for: Overview, Migration Patterns (with subsections for each pattern), Migration Checklist, and Conclusion.\n\nDeliverable specification:\n- Output a single Markdown file named `FastAPI_PyV1_Migration_Review.md`.\n- Use Markdown headings (## for main sections, ### for subsections).\n- The document must be substantive, with each section containing at least 2-3 paragraphs of detailed analysis.\n- Reference specific file paths and line changes from the diff to support your points.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file with the correct title 'FastAPI Pydantic v1 Migration Review'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section contains the phrase 'PR #646'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section contains the exact PR title 'Make compatible with pydantic v1'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section contains the merge date '2019-11-27T19:32:02Z'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states that 66 files were changed.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states there were +802 additions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states there were -425 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section identifies the migration from Pydantic version 0.32.2 to 1.0.0.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document has a 'Migration Patterns' section with level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Under 'Migration Patterns', there is a subsection titled 'Import Path Consolidation'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Import Path Consolidation' subsection references the file 'docs/src/extra_models/tutorial001.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Import Path Consolidation' subsection shows the old import as 'from pydantic.types import EmailStr'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Import Path Consolidation' subsection shows the new import as 'from pydantic import BaseModel, EmailStr'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Under 'Migration Patterns', there is a subsection titled 'Field Definition Renaming'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Field Definition Renaming' subsection references the file 'docs/src/body_schema/tutorial001.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Field Definition Renaming' subsection shows the old field definition using 'Schema'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Field Definition Renaming' subsection shows the new field definition using 'Field'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Under 'Migration Patterns', there is a subsection titled 'Method Argument Renaming'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Method Argument Renaming' subsection references the file 'docs/src/body_updates/tutorial002.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Method Argument Renaming' subsection shows the old argument 'skip_defaults=True'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Method Argument Renaming' subsection shows the new argument 'exclude_unset=True'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Under 'Migration Patterns', there is a subsection titled 'Dependency File Update'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Dependency File Update' subsection references the 'Pipfile'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Dependency File Update' subsection shows the old version string '==0.32.2'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Dependency File Update' subsection shows the new version string '==1.0.0'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a 'Migration Checklist' section with level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' section includes a checklist item for updating the dependency specification.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' section includes a checklist item for updating import statements.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' section includes a checklist item for replacing Schema with Field.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' section includes a checklist item for renaming method arguments.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' section includes a checklist item for running tests and checking for warnings.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document has a 'Conclusion' section with level 2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Conclusion section describes the changes as a systematic refactor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Conclusion section states the PR achieved its goal of compatibility with Pydantic v1.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Conclusion section mentions that deprecation warnings were eliminated.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses level 2 Markdown headings for main sections (##).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses level 3 Markdown headings for subsections (###).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each of the four 'Migration Patterns' subsections (Import Path Consolidation, Field Definition Renaming, Method Argument Renaming, Dependency File Update) is present.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Import Path Consolidation' subsection contains a code block showing the old import syntax.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Import Path Consolidation' subsection contains a code block showing the new import syntax.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Field Definition Renaming' subsection contains a code block showing the old field syntax using Schema.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Field Definition Renaming' subsection contains a code block showing the new field syntax using Field.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Method Argument Renaming' subsection contains a code block showing the old .dict() call with skip_defaults.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Method Argument Renaming' subsection contains a code block showing the new .dict() call with exclude_unset.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Dependency File Update' subsection contains a code block showing the Pipfile version line change.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Migration Checklist' is presented as a numbered list.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' item about updating dependencies explicitly mentions changing the version to '==1.0.0'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' item about renaming method arguments explicitly mentions changing 'skip_defaults' to 'exclude_unset'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Migration Checklist' item about replacing Schema explicitly mentions using 'Field'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is substantive, with each main section (Overview, Migration Patterns, Migration Checklist, Conclusion) containing at least two paragraphs.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The 'Migration Patterns' section successfully categorizes all four distinct types of changes observed in the diff (imports, field definitions, method arguments, dependency file).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains any factual error not present in the provided material (e.g., incorrect file name, wrong version number, invented PR detail).",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_78c9ba21b5e2644d",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:fastapi/fastapi#646",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "FastAPI Pydantic v1 Migration Review",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#646",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "Make compatible with pydantic v1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "2019-11-27T19:32:02Z",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "802",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "425",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "0.32.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "Import Path Consolidation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "docs/src/extra_models/tutorial001.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "from pydantic.types import EmailStr",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "from pydantic import BaseModel, EmailStr",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "Field Definition Renaming",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "docs/src/body_schema/tutorial001.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "Schema",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Field",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "Method Argument Renaming",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "docs/src/body_updates/tutorial002.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "skip_defaults=True",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "exclude_unset=True",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "Dependency File Update",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "Pipfile",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "==0.32.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "==1.0.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "Update Dependency Specification",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "Update Import Statements",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "Replace `Schema` with `Field`",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Rename Method Arguments",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "Run Tests and Check for Warnings",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "systematic",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "compatibility",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "###",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "FastAPI Pydantic v1 Migration Review",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#646",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "Make compatible with pydantic v1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "2019-11-27T19:32:02Z",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 66,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 802,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 425,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "0.32.2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "Import Path Consolidation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "docs/src/extra_models/tutorial001.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "from pydantic.types import EmailStr",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "from pydantic import BaseModel, EmailStr",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "Field Definition Renaming",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "docs/src/body_schema/tutorial001.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Schema",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "Field",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "Method Argument Renaming",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "docs/src/body_updates/tutorial002.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "skip_defaults=True",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "exclude_unset=True",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "Dependency File Update",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "Pipfile",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "==0.32.2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "==1.0.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "Update Dependency Specification",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "Update Import Statements",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Replace `Schema` with `Field`",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "Rename Method Arguments",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "Run Tests and Check for Warnings",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "systematic",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "compatibility",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "##",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "###",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "State the PR number and title (#646: Make compatible with pydantic v1)",
+            "Mention the merge date (2019-11-27T19:32:02Z)",
+            "Summarize the change statistics (66 files changed, +802 additions, -425 deletions)",
+            "Explain the high-level goal of the PR: migrate from pydantic 0.32.2 to 1.0.0 to eliminate deprecation warnings and ensure test compatibility"
+          ],
+          "paragraphs": [
+            "This document reviews Pull Request #646, titled \"Make compatible with pydantic v1\", which was merged on November 27, 2019. The PR updated the FastAPI codebase to be compatible with the newly released Pydantic version 1.0.0, replacing the previous dependency on Pydantic 0.32.2.",
+            "The change was substantial, touching 66 files across the project with a total of 802 line additions and 425 line deletions. The primary objective was to ensure all tests pass without triggering Pydantic deprecation warnings, a necessary step for maintaining a clean and future-proof codebase.",
+            "The migration was largely mechanical, involving systematic updates to import paths, function names, and argument names as specified by the new Pydantic v1 API. No fundamental logic changes were required, indicating a well-structured library update."
+          ]
+        },
+        {
+          "heading": "Migration Patterns",
+          "heading_level": 2,
+          "required_content": [
+            "Identify and describe the main migration patterns observed in the diff"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "1. Import Path Consolidation",
+          "heading_level": 3,
+          "required_content": [
+            "Show the change from separate imports (pydantic.types.EmailStr) to consolidated import from pydantic (from pydantic import BaseModel, EmailStr)",
+            "Provide the exact example from docs/src/extra_models/tutorial001.py"
+          ],
+          "paragraphs": [
+            "The most frequent change in this PR was the consolidation of Pydantic import paths. In Pydantic v0.32.2, types like `EmailStr` were located in a submodule `pydantic.types`. Pydantic v1.0.0 moved these types to be directly importable from the main `pydantic` package.",
+            "For example, in `docs/src/extra_models/tutorial001.py`, the import changed from:\n```python\nfrom pydantic import BaseModel\nfrom pydantic.types import EmailStr\n```\nto:\n```python\nfrom pydantic import BaseModel, EmailStr\n```\nThis pattern was applied consistently across tutorial files and likely throughout the entire codebase to align with the new API structure."
+          ]
+        },
+        {
+          "heading": "2. Field Definition Renaming",
+          "heading_level": 3,
+          "required_content": [
+            "Show the change from Schema to Field for defining model fields with constraints",
+            "Provide the exact example from docs/src/body_schema/tutorial001.py"
+          ],
+          "paragraphs": [
+            "Pydantic v1 renamed the `Schema` function used for adding metadata and constraints to model fields. It was replaced with the more descriptive `Field` function. This is a direct API rename with identical functionality.",
+            "In `docs/src/body_schema/tutorial001.py`, the field definitions were updated. The old code used `Schema`:\n```python\ndescription: str = Schema(None, title=\"The description of the item\", max_length=300)\nprice: float = Schema(..., gt=0, description=\"The price must be greater than zero\")\n```\nThe new code uses `Field`:\n```python\ndescription: str = Field(None, title=\"The description of the item\", max_length=300)\nprice: float = Field(..., gt=0, description=\"The price must be greater than zero\")\n```\nThe arguments (`title`, `max_length`, `gt`, `description`) and their behavior remain unchanged."
+          ]
+        },
+        {
+          "heading": "3. Method Argument Renaming",
+          "heading_level": 3,
+          "required_content": [
+            "Show the change in the .dict() method argument from skip_defaults to exclude_unset",
+            "Provide the exact example from docs/src/body_updates/tutorial002.py"
+          ],
+          "paragraphs": [
+            "Pydantic v1 introduced more precise naming for arguments controlling the serialization of model instances. The `skip_defaults` argument for the `.dict()` method was renamed to `exclude_unset` to better reflect its behavior.",
+            "In `docs/src/body_updates/tutorial002.py`, this change is made in the `update_item` endpoint:\n```python\n# Old code\nupdate_data = item.dict(skip_defaults=True)\n\n# New code\nupdate_data = item.dict(exclude_unset=True)\n```\nThis ensures that only fields explicitly set in the incoming data are included when updating the stored item, which is the desired behavior for PATCH-like updates."
+          ]
+        },
+        {
+          "heading": "4. Dependency File Update",
+          "heading_level": 3,
+          "required_content": [
+            "Show the change in Pipfile from pydantic==0.32.2 to pydantic==1.0.0"
+          ],
+          "paragraphs": [
+            "The foundational change in any dependency migration is updating the version pin in the project's dependency specification file. For FastAPI, this was the `Pipfile`.",
+            "The change was straightforward, as seen in the `Pipfile` diff:\n```diff\n-pydantic = \"==0.32.2\"\n+pydantic = \"==1.0.0\"\n```\nThis explicit pin ensures that all environments, including CI and development, use the new version, making the subsequent code changes necessary and testable."
+          ]
+        },
+        {
+          "heading": "Migration Checklist",
+          "heading_level": 2,
+          "required_content": [
+            "Provide a actionable checklist for performing a similar Pydantic v1 migration based on observed patterns",
+            "Include steps for updating imports, field definitions, method arguments, and dependency files"
+          ],
+          "paragraphs": [
+            "Based on the patterns observed in PR #646, the following checklist can be used to migrate a project from Pydantic v0.32.x to v1.0.0:",
+            "1.  **Update Dependency Specification**: Change the Pydantic version pin in your dependency file (e.g., `requirements.txt`, `Pipfile`, `pyproject.toml`) from the 0.32.x version to `==1.0.0`.",
+            "2.  **Update Import Statements**: Search for all imports from `pydantic.types` and change them to import directly from `pydantic`. For example, change `from pydantic.types import EmailStr` to `from pydantic import BaseModel, EmailStr` (consolidating imports where possible).",
+            "3.  **Replace `Schema` with `Field`**: Find all uses of `Schema(...)` for defining model fields and replace them with `Field(...)`. All arguments (`title`, `description`, `gt`, `lt`, `max_length`, etc.) remain the same.",
+            "4.  **Rename Method Arguments**: Update the arguments for Pydantic model methods. Crucially, change `.dict(skip_defaults=True)` to `.dict(exclude_unset=True)`. Review other method signatures for similar argument renames.",
+            "5.  **Run Tests and Check for Warnings**: After making the changes, run your full test suite. Ensure all tests pass and that no Pydantic deprecation warnings are raised, as this indicates a complete migration."
+          ]
+        },
+        {
+          "heading": "Conclusion",
+          "heading_level": 2,
+          "required_content": [
+            "Summarize the nature of the changes as a systematic refactor",
+            "Note that the PR achieved its goal of compatibility and eliminated deprecation warnings",
+            "Mention the value of the migration patterns for future reference"
+          ],
+          "paragraphs": [
+            "PR #646 represents a successful, large-scale dependency migration. The changes were systematic and repetitive, focusing on adapting to API surface changes rather than modifying core business logic. This low-risk refactor pattern is ideal for automated or semi-automated tooling.",
+            "The PR achieved its stated goal: FastAPI became compatible with Pydantic v1.0.0, and the test suite passes without deprecation warnings. This ensures the project can leverage future Pydantic improvements and provides a clean maintenance path.",
+            "The patterns identified—import consolidation, field function renaming, and method argument renaming—provide a clear and repeatable template for migrating other Python projects that depend on Pydantic. Documenting these patterns, as done in this review, creates valuable institutional knowledge for the engineering team."
+          ]
+        }
+      ],
+      "md_title": "FastAPI Pydantic v1 Migration Review",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "pr646_diff.txt: The first 3000 characters of the diff for PR #646, showing changes across 66 files with +802 additions and -425 deletions.",
+          "content_blueprint": {
+            "title": "pr646_diff",
+            "body": "# Seed Material: fastapi/fastapi#646: Make compatible with pydantic v1\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#646\n\nRepository: fastapi/fastapi\nPR Number: #646\nPR Title: Make compatible with pydantic v1\nMerged At: 2019-11-27T19:32:02Z\nChanged Files: 66\nAdditions: +802, Deletions: -425\n\n## PR Description\nStill needs docs updates, but tests pass and raise no deprecation warnings.\n\n## Diff (first 3000 chars)\ndiff --git a/Pipfile b/Pipfile\nindex 9b8d31bea80d5..4f1ba44d8b2a4 100644\n--- a/Pipfile\n+++ b/Pipfile\n@@ -26,7 +26,7 @@ uvicorn = \"*\"\n \n [packages]\n starlette = \"==0.12.9\"\n-pydantic = \"==0.32.2\"\n+pydantic = \"==1.0.0\"\n databases = {extras = [\"sqlite\"],version = \"*\"}\n hypercorn = \"*\"\n orjson = \"*\"\ndiff --git a/docs/src/body_schema/tutorial001.py b/docs/src/body_schema/tutorial001.py\nindex 6c8b101ba220a..7b2c9454d82f4 100644\n--- a/docs/src/body_schema/tutorial001.py\n+++ b/docs/src/body_schema/tutorial001.py\n@@ -1,13 +1,13 @@\n from fastapi import Body, FastAPI\n-from pydantic import BaseModel, Schema\n+from pydantic import BaseModel, Field\n \n app = FastAPI()\n \n \n class Item(BaseModel):\n     name: str\n-    description: str = Schema(None, title=\"The description of the item\", max_length=300)\n-    price: float = Schema(..., gt=0, description=\"The price must be greater than zero\")\n+    description: str = Field(None, title=\"The description of the item\", max_length=300)\n+    price: float = Field(..., gt=0, description=\"The price must be greater than zero\")\n     tax: float = None\n \n \ndiff --git a/docs/src/body_updates/tutorial002.py b/docs/src/body_updates/tutorial002.py\nindex e10fbb9213cdd..56cb8c4dce663 100644\n--- a/docs/src/body_updates/tutorial002.py\n+++ b/docs/src/body_updates/tutorial002.py\n@@ -31,7 +31,7 @@ async def read_item(item_id: str):\n async def update_item(item_id: str, item: Item):\n     stored_item_data = items[item_id]\n     stored_item_model = Item(**stored_item_data)\n-    update_data = item.dict(skip_defaults=True)\n+    update_data = item.dict(exclude_unset=True)\n     updated_item = stored_item_model.copy(update=update_data)\n     items[item_id] = jsonable_encoder(updated_item)\n     return updated_item\ndiff --git a/docs/src/extra_models/tutorial001.py b/docs/src/extra_models/tutorial001.py\nindex aa8e7dad456b1..08d3659b0148d 100644\n--- a/docs/src/extra_models/tutorial001.py\n+++ b/docs/src/extra_models/tutorial001.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/extra_models/tutorial002.py b/docs/src/extra_models/tutorial002.py\nindex 605baf91f05e9..ab680eca0adc3 100644\n--- a/docs/src/extra_models/tutorial002.py\n+++ b/docs/src/extra_models/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial002.py b/docs/src/response_model/tutorial002.py\nindex 3fb475b9d9cc7..b36b2a347cdbd 100644\n--- a/docs/src/response_model/tutorial002.py\n+++ b/docs/src/response_model/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial003.py b/docs/src/response_mode"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "pr646_metadata.md: Metadata for PR #646 including title 'Make compatible with pydantic v1', merge date '2019-11-27T19:32:02Z', and change statistics.",
+          "content_blueprint": {
+            "title": "pr646_metadata",
+            "body": "# Seed Material: fastapi/fastapi#646: Make compatible with pydantic v1\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#646\n\nRepository: fastapi/fastapi\nPR Number: #646\nPR Title: Make compatible with pydantic v1\nMerged At: 2019-11-27T19:32:02Z\nChanged Files: 66\nAdditions: +802, Deletions: -425\n\n## PR Description\nStill needs docs updates, but tests pass and raise no deprecation warnings.\n\n## Diff (first 3000 chars)\ndiff --git a/Pipfile b/Pipfile\nindex 9b8d31bea80d5..4f1ba44d8b2a4 100644\n--- a/Pipfile\n+++ b/Pipfile\n@@ -26,7 +26,7 @@ uvicorn = \"*\"\n \n [packages]\n starlette = \"==0.12.9\"\n-pydantic = \"==0.32.2\"\n+pydantic = \"==1.0.0\"\n databases = {extras = [\"sqlite\"],version = \"*\"}\n hypercorn = \"*\"\n orjson = \"*\"\ndiff --git a/docs/src/body_schema/tutorial001.py b/docs/src/body_schema/tutorial001.py\nindex 6c8b101ba220a..7b2c9454d82f4 100644\n--- a/docs/src/body_schema/tutorial001.py\n+++ b/docs/src/body_schema/tutorial001.py\n@@ -1,13 +1,13 @@\n from fastapi import Body, FastAPI\n-from pydantic import BaseModel, Schema\n+from pydantic import BaseModel, Field\n \n app = FastAPI()\n \n \n class Item(BaseModel):\n     name: str\n-    description: str = Schema(None, title=\"The description of the item\", max_length=300)\n-    price: float = Schema(..., gt=0, description=\"The price must be greater than zero\")\n+    description: str = Field(None, title=\"The description of the item\", max_length=300)\n+    price: float = Field(..., gt=0, description=\"The price must be greater than zero\")\n     tax: float = None\n \n \ndiff --git a/docs/src/body_updates/tutorial002.py b/docs/src/body_updates/tutorial002.py\nindex e10fbb9213cdd..56cb8c4dce663 100644\n--- a/docs/src/body_updates/tutorial002.py\n+++ b/docs/src/body_updates/tutorial002.py\n@@ -31,7 +31,7 @@ async def read_item(item_id: str):\n async def update_item(item_id: str, item: Item):\n     stored_item_data = items[item_id]\n     stored_item_model = Item(**stored_item_data)\n-    update_data = item.dict(skip_defaults=True)\n+    update_data = item.dict(exclude_unset=True)\n     updated_item = stored_item_model.copy(update=update_data)\n     items[item_id] = jsonable_encoder(updated_item)\n     return updated_item\ndiff --git a/docs/src/extra_models/tutorial001.py b/docs/src/extra_models/tutorial001.py\nindex aa8e7dad456b1..08d3659b0148d 100644\n--- a/docs/src/extra_models/tutorial001.py\n+++ b/docs/src/extra_models/tutorial001.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/extra_models/tutorial002.py b/docs/src/extra_models/tutorial002.py\nindex 605baf91f05e9..ab680eca0adc3 100644\n--- a/docs/src/extra_models/tutorial002.py\n+++ b/docs/src/extra_models/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial002.py b/docs/src/response_model/tutorial002.py\nindex 3fb475b9d9cc7..b36b2a347cdbd 100644\n--- a/docs/src/response_model/tutorial002.py\n+++ b/docs/src/response_model/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial003.py b/docs/src/response_mode"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The document title is 'FastAPI Pydantic v1 Migration Review'.",
+          "value": "FastAPI Pydantic v1 Migration Review",
+          "tolerance": null,
+          "location": "Document title or first heading"
+        },
+        {
+          "description": "The Overview section mentions PR number #646.",
+          "value": "#646",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section mentions the PR title 'Make compatible with pydantic v1'.",
+          "value": "Make compatible with pydantic v1",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section includes the merge date '2019-11-27T19:32:02Z'.",
+          "value": "2019-11-27T19:32:02Z",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section includes the change statistics: 66 files changed.",
+          "value": 66,
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section includes the change statistics: +802 additions.",
+          "value": 802,
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section includes the change statistics: -425 deletions.",
+          "value": 425,
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview section states the migration is from pydantic 0.32.2 to 1.0.0.",
+          "value": "0.32.2",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Migration Patterns section includes a subsection on 'Import Path Consolidation'.",
+          "value": "Import Path Consolidation",
+          "tolerance": null,
+          "location": "Migration Patterns section"
+        },
+        {
+          "description": "The Import Path Consolidation subsection references the file 'docs/src/extra_models/tutorial001.py'.",
+          "value": "docs/src/extra_models/tutorial001.py",
+          "tolerance": null,
+          "location": "Import Path Consolidation subsection"
+        },
+        {
+          "description": "The Import Path Consolidation subsection shows the old import 'from pydantic.types import EmailStr'.",
+          "value": "from pydantic.types import EmailStr",
+          "tolerance": null,
+          "location": "Import Path Consolidation subsection"
+        },
+        {
+          "description": "The Import Path Consolidation subsection shows the new import 'from pydantic import BaseModel, EmailStr'.",
+          "value": "from pydantic import BaseModel, EmailStr",
+          "tolerance": null,
+          "location": "Import Path Consolidation subsection"
+        },
+        {
+          "description": "The Migration Patterns section includes a subsection on 'Field Definition Renaming'.",
+          "value": "Field Definition Renaming",
+          "tolerance": null,
+          "location": "Migration Patterns section"
+        },
+        {
+          "description": "The Field Definition Renaming subsection references the file 'docs/src/body_schema/tutorial001.py'.",
+          "value": "docs/src/body_schema/tutorial001.py",
+          "tolerance": null,
+          "location": "Field Definition Renaming subsection"
+        },
+        {
+          "description": "The Field Definition Renaming subsection shows the old field definition using 'Schema'.",
+          "value": "Schema",
+          "tolerance": null,
+          "location": "Field Definition Renaming subsection"
+        },
+        {
+          "description": "The Field Definition Renaming subsection shows the new field definition using 'Field'.",
+          "value": "Field",
+          "tolerance": null,
+          "location": "Field Definition Renaming subsection"
+        },
+        {
+          "description": "The Migration Patterns section includes a subsection on 'Method Argument Renaming'.",
+          "value": "Method Argument Renaming",
+          "tolerance": null,
+          "location": "Migration Patterns section"
+        },
+        {
+          "description": "The Method Argument Renaming subsection references the file 'docs/src/body_updates/tutorial002.py'.",
+          "value": "docs/src/body_updates/tutorial002.py",
+          "tolerance": null,
+          "location": "Method Argument Renaming subsection"
+        },
+        {
+          "description": "The Method Argument Renaming subsection shows the old argument 'skip_defaults=True'.",
+          "value": "skip_defaults=True",
+          "tolerance": null,
+          "location": "Method Argument Renaming subsection"
+        },
+        {
+          "description": "The Method Argument Renaming subsection shows the new argument 'exclude_unset=True'.",
+          "value": "exclude_unset=True",
+          "tolerance": null,
+          "location": "Method Argument Renaming subsection"
+        },
+        {
+          "description": "The Migration Patterns section includes a subsection on 'Dependency File Update'.",
+          "value": "Dependency File Update",
+          "tolerance": null,
+          "location": "Migration Patterns section"
+        },
+        {
+          "description": "The Dependency File Update subsection references the 'Pipfile'.",
+          "value": "Pipfile",
+          "tolerance": null,
+          "location": "Dependency File Update subsection"
+        },
+        {
+          "description": "The Dependency File Update subsection shows the old version '==0.32.2'.",
+          "value": "==0.32.2",
+          "tolerance": null,
+          "location": "Dependency File Update subsection"
+        },
+        {
+          "description": "The Dependency File Update subsection shows the new version '==1.0.0'.",
+          "value": "==1.0.0",
+          "tolerance": null,
+          "location": "Dependency File Update subsection"
+        },
+        {
+          "description": "The Migration Checklist section includes a step to update dependency specification.",
+          "value": "Update Dependency Specification",
+          "tolerance": null,
+          "location": "Migration Checklist section"
+        },
+        {
+          "description": "The Migration Checklist section includes a step to update import statements.",
+          "value": "Update Import Statements",
+          "tolerance": null,
+          "location": "Migration Checklist section"
+        },
+        {
+          "description": "The Migration Checklist section includes a step to replace Schema with Field.",
+          "value": "Replace `Schema` with `Field`",
+          "tolerance": null,
+          "location": "Migration Checklist section"
+        },
+        {
+          "description": "The Migration Checklist section includes a step to rename method arguments.",
+          "value": "Rename Method Arguments",
+          "tolerance": null,
+          "location": "Migration Checklist section"
+        },
+        {
+          "description": "The Migration Checklist section includes a step to run tests and check for warnings.",
+          "value": "Run Tests and Check for Warnings",
+          "tolerance": null,
+          "location": "Migration Checklist section"
+        },
+        {
+          "description": "The Conclusion section summarizes the changes as a systematic refactor.",
+          "value": "systematic",
+          "tolerance": null,
+          "location": "Conclusion section"
+        },
+        {
+          "description": "The Conclusion section states the PR achieved compatibility and eliminated deprecation warnings.",
+          "value": "compatibility",
+          "tolerance": null,
+          "location": "Conclusion section"
+        },
+        {
+          "description": "The document uses Markdown heading level 2 for main sections (Overview, Migration Patterns, Migration Checklist, Conclusion).",
+          "value": "##",
+          "tolerance": null,
+          "location": "Main section headings"
+        },
+        {
+          "description": "The document uses Markdown heading level 3 for subsections under Migration Patterns.",
+          "value": "###",
+          "tolerance": null,
+          "location": "Subsection headings under Migration Patterns"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 574848402
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "pr646_diff.txt: The first 3000 characters of the diff for PR #646, showing changes across 66 files with +802 additions and -425 deletions.",
+      "content_blueprint": {
+        "title": "pr646_diff",
+        "body": "# Seed Material: fastapi/fastapi#646: Make compatible with pydantic v1\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#646\n\nRepository: fastapi/fastapi\nPR Number: #646\nPR Title: Make compatible with pydantic v1\nMerged At: 2019-11-27T19:32:02Z\nChanged Files: 66\nAdditions: +802, Deletions: -425\n\n## PR Description\nStill needs docs updates, but tests pass and raise no deprecation warnings.\n\n## Diff (first 3000 chars)\ndiff --git a/Pipfile b/Pipfile\nindex 9b8d31bea80d5..4f1ba44d8b2a4 100644\n--- a/Pipfile\n+++ b/Pipfile\n@@ -26,7 +26,7 @@ uvicorn = \"*\"\n \n [packages]\n starlette = \"==0.12.9\"\n-pydantic = \"==0.32.2\"\n+pydantic = \"==1.0.0\"\n databases = {extras = [\"sqlite\"],version = \"*\"}\n hypercorn = \"*\"\n orjson = \"*\"\ndiff --git a/docs/src/body_schema/tutorial001.py b/docs/src/body_schema/tutorial001.py\nindex 6c8b101ba220a..7b2c9454d82f4 100644\n--- a/docs/src/body_schema/tutorial001.py\n+++ b/docs/src/body_schema/tutorial001.py\n@@ -1,13 +1,13 @@\n from fastapi import Body, FastAPI\n-from pydantic import BaseModel, Schema\n+from pydantic import BaseModel, Field\n \n app = FastAPI()\n \n \n class Item(BaseModel):\n     name: str\n-    description: str = Schema(None, title=\"The description of the item\", max_length=300)\n-    price: float = Schema(..., gt=0, description=\"The price must be greater than zero\")\n+    description: str = Field(None, title=\"The description of the item\", max_length=300)\n+    price: float = Field(..., gt=0, description=\"The price must be greater than zero\")\n     tax: float = None\n \n \ndiff --git a/docs/src/body_updates/tutorial002.py b/docs/src/body_updates/tutorial002.py\nindex e10fbb9213cdd..56cb8c4dce663 100644\n--- a/docs/src/body_updates/tutorial002.py\n+++ b/docs/src/body_updates/tutorial002.py\n@@ -31,7 +31,7 @@ async def read_item(item_id: str):\n async def update_item(item_id: str, item: Item):\n     stored_item_data = items[item_id]\n     stored_item_model = Item(**stored_item_data)\n-    update_data = item.dict(skip_defaults=True)\n+    update_data = item.dict(exclude_unset=True)\n     updated_item = stored_item_model.copy(update=update_data)\n     items[item_id] = jsonable_encoder(updated_item)\n     return updated_item\ndiff --git a/docs/src/extra_models/tutorial001.py b/docs/src/extra_models/tutorial001.py\nindex aa8e7dad456b1..08d3659b0148d 100644\n--- a/docs/src/extra_models/tutorial001.py\n+++ b/docs/src/extra_models/tutorial001.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/extra_models/tutorial002.py b/docs/src/extra_models/tutorial002.py\nindex 605baf91f05e9..ab680eca0adc3 100644\n--- a/docs/src/extra_models/tutorial002.py\n+++ b/docs/src/extra_models/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial002.py b/docs/src/response_model/tutorial002.py\nindex 3fb475b9d9cc7..b36b2a347cdbd 100644\n--- a/docs/src/response_model/tutorial002.py\n+++ b/docs/src/response_model/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial003.py b/docs/src/response_mode"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "pr646_metadata.md: Metadata for PR #646 including title 'Make compatible with pydantic v1', merge date '2019-11-27T19:32:02Z', and change statistics.",
+      "content_blueprint": {
+        "title": "pr646_metadata",
+        "body": "# Seed Material: fastapi/fastapi#646: Make compatible with pydantic v1\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#646\n\nRepository: fastapi/fastapi\nPR Number: #646\nPR Title: Make compatible with pydantic v1\nMerged At: 2019-11-27T19:32:02Z\nChanged Files: 66\nAdditions: +802, Deletions: -425\n\n## PR Description\nStill needs docs updates, but tests pass and raise no deprecation warnings.\n\n## Diff (first 3000 chars)\ndiff --git a/Pipfile b/Pipfile\nindex 9b8d31bea80d5..4f1ba44d8b2a4 100644\n--- a/Pipfile\n+++ b/Pipfile\n@@ -26,7 +26,7 @@ uvicorn = \"*\"\n \n [packages]\n starlette = \"==0.12.9\"\n-pydantic = \"==0.32.2\"\n+pydantic = \"==1.0.0\"\n databases = {extras = [\"sqlite\"],version = \"*\"}\n hypercorn = \"*\"\n orjson = \"*\"\ndiff --git a/docs/src/body_schema/tutorial001.py b/docs/src/body_schema/tutorial001.py\nindex 6c8b101ba220a..7b2c9454d82f4 100644\n--- a/docs/src/body_schema/tutorial001.py\n+++ b/docs/src/body_schema/tutorial001.py\n@@ -1,13 +1,13 @@\n from fastapi import Body, FastAPI\n-from pydantic import BaseModel, Schema\n+from pydantic import BaseModel, Field\n \n app = FastAPI()\n \n \n class Item(BaseModel):\n     name: str\n-    description: str = Schema(None, title=\"The description of the item\", max_length=300)\n-    price: float = Schema(..., gt=0, description=\"The price must be greater than zero\")\n+    description: str = Field(None, title=\"The description of the item\", max_length=300)\n+    price: float = Field(..., gt=0, description=\"The price must be greater than zero\")\n     tax: float = None\n \n \ndiff --git a/docs/src/body_updates/tutorial002.py b/docs/src/body_updates/tutorial002.py\nindex e10fbb9213cdd..56cb8c4dce663 100644\n--- a/docs/src/body_updates/tutorial002.py\n+++ b/docs/src/body_updates/tutorial002.py\n@@ -31,7 +31,7 @@ async def read_item(item_id: str):\n async def update_item(item_id: str, item: Item):\n     stored_item_data = items[item_id]\n     stored_item_model = Item(**stored_item_data)\n-    update_data = item.dict(skip_defaults=True)\n+    update_data = item.dict(exclude_unset=True)\n     updated_item = stored_item_model.copy(update=update_data)\n     items[item_id] = jsonable_encoder(updated_item)\n     return updated_item\ndiff --git a/docs/src/extra_models/tutorial001.py b/docs/src/extra_models/tutorial001.py\nindex aa8e7dad456b1..08d3659b0148d 100644\n--- a/docs/src/extra_models/tutorial001.py\n+++ b/docs/src/extra_models/tutorial001.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/extra_models/tutorial002.py b/docs/src/extra_models/tutorial002.py\nindex 605baf91f05e9..ab680eca0adc3 100644\n--- a/docs/src/extra_models/tutorial002.py\n+++ b/docs/src/extra_models/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial002.py b/docs/src/response_model/tutorial002.py\nindex 3fb475b9d9cc7..b36b2a347cdbd 100644\n--- a/docs/src/response_model/tutorial002.py\n+++ b/docs/src/response_model/tutorial002.py\n@@ -1,6 +1,5 @@\n from fastapi import FastAPI\n-from pydantic import BaseModel\n-from pydantic.types import EmailStr\n+from pydantic import BaseModel, EmailStr\n \n app = FastAPI()\n \ndiff --git a/docs/src/response_model/tutorial003.py b/docs/src/response_mode"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_78c9ba21b5e2644d/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_78c9ba21b5e2644d/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_78c9ba21b5e2644d/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:56:32.587271+00:00"
+}

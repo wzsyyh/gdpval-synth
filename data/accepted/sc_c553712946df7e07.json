@@ -1,0 +1,986 @@
+{
+  "candidate_id": "sc_c553712946df7e07",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "light",
+  "seed_id": "c553712946df7e07",
+  "prompt": "You are a senior Rust systems engineer on the Rust Language Core team. The team is preparing to merge a major stabilization PR (#63209) that will make `async/await` syntax available in the stable Rust 1.39.0 release. Before final sign-off, you've been asked to perform a thorough code review of the changes. This is a high-visibility change affecting 181 files, so the review must be precise and well-structured.\n\nMaterials provided:\n- PR #63209 diff (first 3000 characters of the changes)\n- PR description listing the stabilization scope and blocker issues\n\nTask requirements:\n\n1. Write a code review document in Markdown format.\n2. The review must contain the following sections with these exact headings:\n   - **Review Summary**\n   - **Scope of Changes**\n   - **Technical Analysis**\n   - **Documentation Updates**\n   - **Risk Assessment**\n   - **Recommendation**\n\n3. In the Review Summary section:\n   - State the PR number (63209) and the target Rust version (1.39.0)\n   - List the three language features being stabilized: free/inherent async fns, `<expr>.await` expression form, and `async move? { ... }` block form\n   - Mention the two issues this PR closes: #62149 and #50547\n\n4. In the Scope of Changes section:\n   - State the total number of changed files (181), additions (+271), and deletions (-605)\n   - Describe the general nature of the changes: removing `#![feature(async_await)]` attributes and `#[unstable]` annotations from documentation and test code\n\n5. In the Technical Analysis section:\n   - Analyze the pattern of changes visible in the diff: removal of feature gates from error code examples, type checker documentation, and keyword documentation\n   - Specifically call out the files shown in the diff: `src/librustc/error_codes.rs`, `src/librustc_typeck/check/mod.rs`, `src/librustc_typeck/error_codes.rs`, and `src/libstd/keyword_docs.rs`\n   - Note the typo fix in `src/librustc_typeck/error_codes.rs` where `foo_desugered` was corrected to `foo_desugared`\n\n6. In the Documentation Updates section:\n   - Identify which error codes had their documentation updated (E0698, E0733, E0720)\n   - Note the removal of `#[unstable(feature = \"async_await\", issue = \"50547\")]` from the `async` and `await` keyword documentation in `keyword_docs.rs`\n\n7. In the Risk Assessment section:\n   - Evaluate the risk level of this stabilization PR\n   - Note that all listed blockers were resolved (issues #61949, #62517, #63225, #63388, #63500)\n\n8. In the Recommendation section:\n   - Provide a clear approve/request-changes recommendation\n\nDeliverable specification:\n- Output a single Markdown file\n- Use consistent Markdown heading levels (## for main sections)\n- Include specific file paths, line references, issue numbers, and PR numbers from the material\n- Maintain professional, concise technical tone",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document has the title 'Code Review: PR #63209 - Stabilize async_await in Rust 1.39.0' or equivalent wording that includes both PR number and target version.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Review Summary section uses a level-2 Markdown heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Changes section uses a level-2 Markdown heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section uses a level-2 Markdown heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Updates section uses a level-2 Markdown heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section uses a level-2 Markdown heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section uses a level-2 Markdown heading.",
+      "category": "criterion",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Review Summary section mentions PR number 63209.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Review Summary section states the target Rust version as 1.39.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Review Summary section lists free/inherent async fns as one of the stabilized features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Review Summary section lists the <expr>.await expression form as one of the stabilized features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Review Summary section lists the async move? { ... } block form as one of the stabilized features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Review Summary section references issue #62149 as a closed issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Review Summary section references issue #50547 as a closed issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Changes section states the total number of changed files as 181.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Changes section states the number of additions as +271.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Changes section states the number of deletions as -605.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Changes section describes the removal of feature gates as the primary type of change.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Changes section mentions removal of #![feature(async_await)] attributes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section references the file src/librustc/error_codes.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section references the file src/librustc_typeck/check/mod.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section references the file src/librustc_typeck/error_codes.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section references the file src/libstd/keyword_docs.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Technical Analysis section identifies the typo correction from foo_desugered to foo_desugared in src/librustc_typeck/error_codes.rs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section explains that src/librustc/error_codes.rs changes relate to error E0698.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Analysis section explains that src/librustc_typeck/check/mod.rs changes relate to documentation about forgetting .await.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Analysis section notes that src/libstd/keyword_docs.rs removes #![unstable] attributes from async and await keyword documentation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Updates section identifies error code E0698 as having updated documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Updates section identifies error code E0733 as having updated documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Updates section identifies error code E0720 as having updated documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Updates section mentions the removal of #[unstable(feature = \"async_await\", issue = \"50547\")] from keyword_docs.rs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Updates section references issue #50547 as the original tracking issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section evaluates the risk as low.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section explains that changes are mechanical removals with no logic changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions that issue #61949 was resolved via PR #62849.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions that issue #62517 was resolved via PR #63376.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions that issue #63225 was resolved via PR #63501.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions that issue #63388 was resolved via PR #63499.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions that issue #63500 was resolved via PR #63501.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section mentions PR #63387 for control flow tests.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendation section provides a clear approve recommendation.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section justifies the approval based on mechanical nature of changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section mentions the typo fix as a positive aspect.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document omits any of the six required section headings (Review Summary, Scope of Changes, Technical Analysis, Documentation Updates, Risk Assessment, Recommendation).",
+      "category": "completeness",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document incorrectly identifies the stabilized features (e.g., listing features not in the PR or omitting features that are in the PR).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses consistent professional technical tone throughout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes specific file paths with the src/ prefix as shown in the diff.",
+      "category": "reference",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_c553712946df7e07",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:rust-lang/rust#63209",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "63209",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "1.39.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "free and inherent async fns",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "<expr>.await expression form",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "async move? { ... } block form",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "#62149",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "#50547",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "181",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "+271",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "-605",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "src/librustc/error_codes.rs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "src/librustc_typeck/check/mod.rs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "src/librustc_typeck/error_codes.rs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "src/libstd/keyword_docs.rs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "foo_desugered",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "foo_desugared",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "E0698",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "E0733",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "E0720",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "#[unstable(feature = \"async_await\", issue = \"50547\")]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "#61949",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "#62517",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "#63225",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "#63388",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "#63500",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "#63387",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Approve",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "63209",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "1.39.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "free and inherent async fns",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "<expr>.await expression form",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "async move? { ... } block form",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "#62149",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "#50547",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "181",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "+271",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "-605",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "src/librustc/error_codes.rs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "src/librustc_typeck/check/mod.rs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "src/librustc_typeck/error_codes.rs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "src/libstd/keyword_docs.rs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "foo_desugered",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "foo_desugared",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "E0698",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "E0733",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "E0720",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "#[unstable(feature = \"async_await\", issue = \"50547\")]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "#61949",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "#62517",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "#63225",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "#63388",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "#63500",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "#63387",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Approve",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Review Summary",
+          "heading_level": 2,
+          "required_content": [
+            "PR number 63209",
+            "Target Rust version 1.39.0",
+            "Three stabilized features: free/inherent async fns, <expr>.await expression form, async move? { ... } block form",
+            "Closed issues #62149 and #50547"
+          ],
+          "paragraphs": [
+            "This review covers PR #63209, which stabilizes the `async/await` syntax for inclusion in Rust 1.39.0. The PR represents the culmination of extensive work to bring first-class async/await support to stable Rust.",
+            "Three language features are being stabilized in this PR: free and inherent `async fn`s, the `<expr>.await` expression form, and the `async move? { ... }` block form. This PR closes issue #62149 (the primary stabilization tracking issue) and issue #50547."
+          ]
+        },
+        {
+          "heading": "Scope of Changes",
+          "heading_level": 2,
+          "required_content": [
+            "181 changed files",
+            "+271 additions, -605 deletions",
+            "Removal of feature gates and unstable annotations"
+          ],
+          "paragraphs": [
+            "The PR modifies 181 files with +271 additions and -605 deletions. The net reduction of 334 lines reflects the removal of now-unnecessary feature gate attributes and unstable annotations across the codebase.",
+            "The predominant pattern of changes involves removing `#![feature(async_await)]` attributes from test files, documentation examples, and error code illustrations. Additionally, `#[unstable]` attributes marking the `async` and `await` keywords as unstable are removed from the standard library keyword documentation."
+          ]
+        },
+        {
+          "heading": "Technical Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Changes in src/librustc/error_codes.rs",
+            "Changes in src/librustc_typeck/check/mod.rs",
+            "Changes in src/librustc_typeck/error_codes.rs",
+            "Changes in src/libstd/keyword_docs.rs",
+            "Typo fix: foo_desugered to foo_desugared"
+          ],
+          "paragraphs": [
+            "The diff reveals a systematic and consistent pattern of feature gate removal across multiple compiler and standard library components. In `src/librustc/error_codes.rs`, the `#![feature(async_await)]` line is removed from erroneous and corrected code examples for error E0698, which documents issues with type inference in async contexts.",
+            "In `src/librustc_typeck/check/mod.rs`, the feature gate is removed from the documentation comment on the `FnCtxt` type that illustrates a common error of forgetting `.await` when using futures. This change ensures the documentation example reflects stable Rust syntax.",
+            "The changes in `src/librustc_typeck/error_codes.rs` are particularly noteworthy. The feature gate is removed from examples for error E0733 (recursion in async fns requiring boxing) and the desugared alternative example. Additionally, a pre-existing typo is corrected: `foo_desugered` is fixed to `foo_desugared` in both the function name and its recursive call. This is a valuable incidental cleanup that improves documentation quality.",
+            "In `src/libstd/keyword_docs.rs`, the `#[unstable(feature = \"async_await\", issue = \"50547\")]` attribute is removed from both the `async` and `await` keyword documentation modules. This marks these keywords as fully stable in the standard library documentation."
+          ]
+        },
+        {
+          "heading": "Documentation Updates",
+          "heading_level": 2,
+          "required_content": [
+            "Error codes E0698, E0733, E0720",
+            "Removal of #[unstable] from async and await keyword docs",
+            "keyword_docs.rs changes"
+          ],
+          "paragraphs": [
+            "Three error codes have their documentation updated in this PR. Error E0698 in `src/librustc/error_codes.rs` has its code examples updated to remove the async_await feature gate, making the examples valid for stable Rust. Error E0733 in `src/librustc_typeck/error_codes.rs` similarly has its examples updated, covering the async recursion documentation. The related E0720 desugared example is also updated.",
+            "The keyword documentation in `src/libstd/keyword_docs.rs` undergoes a structural change: the `#[unstable(feature = \"async_await\", issue = \"50547\")]` annotation is removed from both the `async` keyword module and the `await` keyword module. This is the change that will cause these keywords to appear as stable in the generated Rust documentation for 1.39.0. The issue number 50547 referenced in these annotations corresponds to the original tracking issue for async/await stabilization."
+          ]
+        },
+        {
+          "heading": "Risk Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Risk level evaluation",
+            "All blockers resolved",
+            "Issues #61949, #62517, #63225, #63388, #63500"
+          ],
+          "paragraphs": [
+            "The risk level of this stabilization PR is low. The changes are predominantly mechanical removals of feature gate attributes and unstable annotations. There are no changes to compiler logic, type checking rules, or runtime behavior. The actual implementation of async/await was completed in prior PRs; this PR simply removes the feature gates that previously restricted async/await to nightly builds.",
+            "The PR description confirms that all identified blockers have been resolved. These include issue #61949 (addressed by PR #62849), issue #62517 (addressed by PR #63376), issue #63225 (addressed by PR #63501), issue #63388 (addressed by PR #63499), and issue #63500 (addressed by PR #63501). Additionally, control flow tests for `?`, `return` in async blocks, and `break` were added in PR #63387. The FCP (Final Comment Period) in issue #62149 has been completed."
+          ]
+        },
+        {
+          "heading": "Recommendation",
+          "heading_level": 2,
+          "required_content": [
+            "Clear recommendation"
+          ],
+          "paragraphs": [
+            "Recommendation: **Approve**. The changes are clean, consistent, and mechanically sound. All feature gate removals follow the established pattern for stabilizing language features in the Rust compiler. The incidental typo correction in `src/librustc_typeck/error_codes.rs` is a welcome bonus. With all blockers resolved and the FCP completed, this PR is ready for merge to enable async/await in Rust 1.39.0."
+          ]
+        }
+      ],
+      "md_title": "Code Review: PR #63209 - Stabilize async_await in Rust 1.39.0",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #63209 diff (first 3000 characters) showing changes across src/librustc/error_codes.rs, src/librustc_typeck/check/mod.rs, src/librustc_typeck/error_codes.rs, and src/libstd/keyword_docs.rs",
+          "content_blueprint": {
+            "title": "PR #63209 diff (first 3000 characters) showing changes across src/librustc/error_codes",
+            "body": "# Seed Material: rust-lang/rust#63209: Stabilize `async_await` in Rust 1.39.0\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#63209\n\nRepository: rust-lang/rust\nPR Number: #63209\nPR Title: Stabilize `async_await` in Rust 1.39.0\nMerged At: 2019-08-20T22:16:08Z\nChanged Files: 181\nAdditions: +271, Deletions: -605\n\n## PR Description\nHere we stabilize:\r\n- free and inherent `async fn`s,\r\n- the `<expr>.await` expression form,\r\n- and the `async move? { ... }` block form.\r\n\r\nCloses https://github.com/rust-lang/rust/issues/62149.\r\nCloses https://github.com/rust-lang/rust/issues/50547.\r\n\r\nAll the blockers are now closed.\r\n\r\n<details>\r\n\r\n- [x] FCP in https://github.com/rust-lang/rust/issues/62149\r\n- [x] https://github.com/rust-lang/rust/issues/61949; PR in https://github.com/rust-lang/rust/pull/62849.\r\n- [x] https://github.com/rust-lang/rust/issues/62517; PR in https://github.com/rust-lang/rust/pull/63376.\r\n- [x] https://github.com/rust-lang/rust/issues/63225; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/63388; PR in https://github.com/rust-lang/rust/pull/63499\r\n- [x] https://github.com/rust-lang/rust/issues/63500; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/62121#issuecomment-506884048\r\n    - [x] Some tests for control flow (PR https://github.com/rust-lang/rust/pull/63387):\r\n          - `?`\r\n          - `return` in `async` blocks\r\n          - `break`\r\n    - [x] https://github.com/rust-lang/rust/pull/61775#issuecomment-506883180, i.e. tests for https://github.com/rust-lang/rust/pull/60944 with `async fn`s instead). PR in https://github.com/rust-lang/rust/pull/63383\r\n\r\n</details>\r\n\r\nr? @cramertj \n\n## Diff (first 3000 chars)\ndiff --git a/src/librustc/error_codes.rs b/src/librustc/error_codes.rs\nindex b3eee7c346489..a200a058f4f99 100644\n--- a/src/librustc/error_codes.rs\n+++ b/src/librustc/error_codes.rs\n@@ -2088,7 +2088,6 @@ generator can be constructed.\n Erroneous code example:\n \n ```edition2018,compile-fail,E0698\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\n@@ -2101,7 +2100,6 @@ To fix this you must bind `T` to a concrete type such as `String`\n so that a generator can then be constructed:\n \n ```edition2018\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\ndiff --git a/src/librustc_typeck/check/mod.rs b/src/librustc_typeck/check/mod.rs\nindex fc1ee649e287f..9c7ac83e82e97 100644\n--- a/src/librustc_typeck/check/mod.rs\n+++ b/src/librustc_typeck/check/mod.rs\n@@ -4197,8 +4197,6 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {\n     /// A possible error is to forget to add `.await` when using futures:\n     ///\n     /// ```\n-    /// #![feature(async_await)]\n-    ///\n     /// async fn make_u32() -> u32 {\n     ///     22\n     /// }\ndiff --git a/src/librustc_typeck/error_codes.rs b/src/librustc_typeck/error_codes.rs\nindex ca9ce3d22b5cb..b52183d4b1b56 100644\n--- a/src/librustc_typeck/error_codes.rs\n+++ b/src/librustc_typeck/error_codes.rs\n@@ -4751,7 +4751,6 @@ E0733: r##\"\n Recursion in an `async fn` requires boxing. For example, this will not compile:\n \n ```edition2018,compile_fail,E0733\n-#![feature(async_await)]\n async fn foo(n: usize) {\n     if n > 0 {\n         foo(n - 1).await;\n@@ -4763,12 +4762,11 @@ To achieve async recursion, the `async fn` needs to be desugared\n such that the `Future` is explicit in the return type:\n \n ```edition2018,compile_fail,E0720\n-# #![feature(async_await)]\n use std::future::Future;\n-fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n+fn foo_desugared(n: usize) -> impl Future<Output = ()> {\n     async move {\n         if n > 0 {\n-            foo_desugered(n - 1).await;\n+            foo_desugared(n - 1).await;\n         }\n     }\n }\n@@ -4777,7 +4775,6 @@ fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n Finally, the future is wrapped in a pinned box:\n \n ```edition2018\n-# #![feature(async_await)]\n use std::future::Future;\n use std::pin::Pin;\n fn foo_recursive(n: usize) -> Pin<Box<dyn Future<Output = ()>>> {\ndiff --git a/src/libstd/keyword_docs.rs b/src/libstd/keyword_docs.rs\nindex f5018485ef7bc..85a9dea09ed0d 100644\n--- a/src/libstd/keyword_docs.rs\n+++ b/src/libstd/keyword_docs.rs\n@@ -984,7 +984,6 @@ mod where_keyword { }\n \n // 2018 Edition keywords\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"async\")]\n //\n /// Return a [`Future`] instead of blocking the current thread.\n@@ -995,7 +994,6 @@ mod where_keyword { }\n /// [not yet complete]: https://github.com/rust-lang/rust/issues/34601\n mod async_keyword { }\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"await\")]\n //\n /// Suspend execution until the result of a [`Future`] is ready.\ndiff --git a/src"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR #63209 description listing stabilized features, closed issues, and blocker checklist",
+          "content_blueprint": {
+            "title": "PR #63209 description listing stabilized features, closed issues, and blocker checklist",
+            "body": "# Seed Material: rust-lang/rust#63209: Stabilize `async_await` in Rust 1.39.0\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#63209\n\nRepository: rust-lang/rust\nPR Number: #63209\nPR Title: Stabilize `async_await` in Rust 1.39.0\nMerged At: 2019-08-20T22:16:08Z\nChanged Files: 181\nAdditions: +271, Deletions: -605\n\n## PR Description\nHere we stabilize:\r\n- free and inherent `async fn`s,\r\n- the `<expr>.await` expression form,\r\n- and the `async move? { ... }` block form.\r\n\r\nCloses https://github.com/rust-lang/rust/issues/62149.\r\nCloses https://github.com/rust-lang/rust/issues/50547.\r\n\r\nAll the blockers are now closed.\r\n\r\n<details>\r\n\r\n- [x] FCP in https://github.com/rust-lang/rust/issues/62149\r\n- [x] https://github.com/rust-lang/rust/issues/61949; PR in https://github.com/rust-lang/rust/pull/62849.\r\n- [x] https://github.com/rust-lang/rust/issues/62517; PR in https://github.com/rust-lang/rust/pull/63376.\r\n- [x] https://github.com/rust-lang/rust/issues/63225; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/63388; PR in https://github.com/rust-lang/rust/pull/63499\r\n- [x] https://github.com/rust-lang/rust/issues/63500; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/62121#issuecomment-506884048\r\n    - [x] Some tests for control flow (PR https://github.com/rust-lang/rust/pull/63387):\r\n          - `?`\r\n          - `return` in `async` blocks\r\n          - `break`\r\n    - [x] https://github.com/rust-lang/rust/pull/61775#issuecomment-506883180, i.e. tests for https://github.com/rust-lang/rust/pull/60944 with `async fn`s instead). PR in https://github.com/rust-lang/rust/pull/63383\r\n\r\n</details>\r\n\r\nr? @cramertj \n\n## Diff (first 3000 chars)\ndiff --git a/src/librustc/error_codes.rs b/src/librustc/error_codes.rs\nindex b3eee7c346489..a200a058f4f99 100644\n--- a/src/librustc/error_codes.rs\n+++ b/src/librustc/error_codes.rs\n@@ -2088,7 +2088,6 @@ generator can be constructed.\n Erroneous code example:\n \n ```edition2018,compile-fail,E0698\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\n@@ -2101,7 +2100,6 @@ To fix this you must bind `T` to a concrete type such as `String`\n so that a generator can then be constructed:\n \n ```edition2018\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\ndiff --git a/src/librustc_typeck/check/mod.rs b/src/librustc_typeck/check/mod.rs\nindex fc1ee649e287f..9c7ac83e82e97 100644\n--- a/src/librustc_typeck/check/mod.rs\n+++ b/src/librustc_typeck/check/mod.rs\n@@ -4197,8 +4197,6 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {\n     /// A possible error is to forget to add `.await` when using futures:\n     ///\n     /// ```\n-    /// #![feature(async_await)]\n-    ///\n     /// async fn make_u32() -> u32 {\n     ///     22\n     /// }\ndiff --git a/src/librustc_typeck/error_codes.rs b/src/librustc_typeck/error_codes.rs\nindex ca9ce3d22b5cb..b52183d4b1b56 100644\n--- a/src/librustc_typeck/error_codes.rs\n+++ b/src/librustc_typeck/error_codes.rs\n@@ -4751,7 +4751,6 @@ E0733: r##\"\n Recursion in an `async fn` requires boxing. For example, this will not compile:\n \n ```edition2018,compile_fail,E0733\n-#![feature(async_await)]\n async fn foo(n: usize) {\n     if n > 0 {\n         foo(n - 1).await;\n@@ -4763,12 +4762,11 @@ To achieve async recursion, the `async fn` needs to be desugared\n such that the `Future` is explicit in the return type:\n \n ```edition2018,compile_fail,E0720\n-# #![feature(async_await)]\n use std::future::Future;\n-fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n+fn foo_desugared(n: usize) -> impl Future<Output = ()> {\n     async move {\n         if n > 0 {\n-            foo_desugered(n - 1).await;\n+            foo_desugared(n - 1).await;\n         }\n     }\n }\n@@ -4777,7 +4775,6 @@ fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n Finally, the future is wrapped in a pinned box:\n \n ```edition2018\n-# #![feature(async_await)]\n use std::future::Future;\n use std::pin::Pin;\n fn foo_recursive(n: usize) -> Pin<Box<dyn Future<Output = ()>>> {\ndiff --git a/src/libstd/keyword_docs.rs b/src/libstd/keyword_docs.rs\nindex f5018485ef7bc..85a9dea09ed0d 100644\n--- a/src/libstd/keyword_docs.rs\n+++ b/src/libstd/keyword_docs.rs\n@@ -984,7 +984,6 @@ mod where_keyword { }\n \n // 2018 Edition keywords\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"async\")]\n //\n /// Return a [`Future`] instead of blocking the current thread.\n@@ -995,7 +994,6 @@ mod where_keyword { }\n /// [not yet complete]: https://github.com/rust-lang/rust/issues/34601\n mod async_keyword { }\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"await\")]\n //\n /// Suspend execution until the result of a [`Future`] is ready.\ndiff --git a/src"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number referenced in the review",
+          "value": "63209",
+          "tolerance": null,
+          "location": "Review Summary section, first paragraph"
+        },
+        {
+          "description": "Target Rust version mentioned in the review",
+          "value": "1.39.0",
+          "tolerance": null,
+          "location": "Review Summary section, first paragraph"
+        },
+        {
+          "description": "First stabilized feature listed",
+          "value": "free and inherent async fns",
+          "tolerance": null,
+          "location": "Review Summary section, second paragraph"
+        },
+        {
+          "description": "Second stabilized feature listed",
+          "value": "<expr>.await expression form",
+          "tolerance": null,
+          "location": "Review Summary section, second paragraph"
+        },
+        {
+          "description": "Third stabilized feature listed",
+          "value": "async move? { ... } block form",
+          "tolerance": null,
+          "location": "Review Summary section, second paragraph"
+        },
+        {
+          "description": "First closed issue number",
+          "value": "#62149",
+          "tolerance": null,
+          "location": "Review Summary section, second paragraph"
+        },
+        {
+          "description": "Second closed issue number",
+          "value": "#50547",
+          "tolerance": null,
+          "location": "Review Summary section, second paragraph"
+        },
+        {
+          "description": "Total number of changed files",
+          "value": "181",
+          "tolerance": null,
+          "location": "Scope of Changes section, first paragraph"
+        },
+        {
+          "description": "Number of additions",
+          "value": "+271",
+          "tolerance": null,
+          "location": "Scope of Changes section, first paragraph"
+        },
+        {
+          "description": "Number of deletions",
+          "value": "-605",
+          "tolerance": null,
+          "location": "Scope of Changes section, first paragraph"
+        },
+        {
+          "description": "First file from the diff referenced in the review",
+          "value": "src/librustc/error_codes.rs",
+          "tolerance": null,
+          "location": "Technical Analysis section, first paragraph"
+        },
+        {
+          "description": "Second file from the diff referenced in the review",
+          "value": "src/librustc_typeck/check/mod.rs",
+          "tolerance": null,
+          "location": "Technical Analysis section, second paragraph"
+        },
+        {
+          "description": "Third file from the diff referenced in the review",
+          "value": "src/librustc_typeck/error_codes.rs",
+          "tolerance": null,
+          "location": "Technical Analysis section, third paragraph"
+        },
+        {
+          "description": "Fourth file from the diff referenced in the review",
+          "value": "src/libstd/keyword_docs.rs",
+          "tolerance": null,
+          "location": "Technical Analysis section, fourth paragraph"
+        },
+        {
+          "description": "Original typo name before correction",
+          "value": "foo_desugered",
+          "tolerance": null,
+          "location": "Technical Analysis section, third paragraph"
+        },
+        {
+          "description": "Corrected function name",
+          "value": "foo_desugared",
+          "tolerance": null,
+          "location": "Technical Analysis section, third paragraph"
+        },
+        {
+          "description": "Error code with documentation updated in librustc",
+          "value": "E0698",
+          "tolerance": null,
+          "location": "Documentation Updates section, first paragraph"
+        },
+        {
+          "description": "Error code with documentation updated in librustc_typeck",
+          "value": "E0733",
+          "tolerance": null,
+          "location": "Documentation Updates section, first paragraph"
+        },
+        {
+          "description": "Second error code with documentation updated in librustc_typeck",
+          "value": "E0720",
+          "tolerance": null,
+          "location": "Documentation Updates section, first paragraph"
+        },
+        {
+          "description": "Unstable feature annotation removed from keyword docs",
+          "value": "#[unstable(feature = \"async_await\", issue = \"50547\")]",
+          "tolerance": null,
+          "location": "Documentation Updates section, second paragraph"
+        },
+        {
+          "description": "Blocker issue addressed by PR #62849",
+          "value": "#61949",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "Blocker issue addressed by PR #63376",
+          "value": "#62517",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "Blocker issue addressed by PR #63501 (first)",
+          "value": "#63225",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "Blocker issue addressed by PR #63499",
+          "value": "#63388",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "Blocker issue addressed by PR #63501 (second)",
+          "value": "#63500",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "PR that added control flow tests",
+          "value": "#63387",
+          "tolerance": null,
+          "location": "Risk Assessment section, second paragraph"
+        },
+        {
+          "description": "Final recommendation provided",
+          "value": "Approve",
+          "tolerance": null,
+          "location": "Recommendation section, first paragraph"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1642052309
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #63209 diff (first 3000 characters) showing changes across src/librustc/error_codes.rs, src/librustc_typeck/check/mod.rs, src/librustc_typeck/error_codes.rs, and src/libstd/keyword_docs.rs",
+      "content_blueprint": {
+        "title": "PR #63209 diff (first 3000 characters) showing changes across src/librustc/error_codes",
+        "body": "# Seed Material: rust-lang/rust#63209: Stabilize `async_await` in Rust 1.39.0\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#63209\n\nRepository: rust-lang/rust\nPR Number: #63209\nPR Title: Stabilize `async_await` in Rust 1.39.0\nMerged At: 2019-08-20T22:16:08Z\nChanged Files: 181\nAdditions: +271, Deletions: -605\n\n## PR Description\nHere we stabilize:\r\n- free and inherent `async fn`s,\r\n- the `<expr>.await` expression form,\r\n- and the `async move? { ... }` block form.\r\n\r\nCloses https://github.com/rust-lang/rust/issues/62149.\r\nCloses https://github.com/rust-lang/rust/issues/50547.\r\n\r\nAll the blockers are now closed.\r\n\r\n<details>\r\n\r\n- [x] FCP in https://github.com/rust-lang/rust/issues/62149\r\n- [x] https://github.com/rust-lang/rust/issues/61949; PR in https://github.com/rust-lang/rust/pull/62849.\r\n- [x] https://github.com/rust-lang/rust/issues/62517; PR in https://github.com/rust-lang/rust/pull/63376.\r\n- [x] https://github.com/rust-lang/rust/issues/63225; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/63388; PR in https://github.com/rust-lang/rust/pull/63499\r\n- [x] https://github.com/rust-lang/rust/issues/63500; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/62121#issuecomment-506884048\r\n    - [x] Some tests for control flow (PR https://github.com/rust-lang/rust/pull/63387):\r\n          - `?`\r\n          - `return` in `async` blocks\r\n          - `break`\r\n    - [x] https://github.com/rust-lang/rust/pull/61775#issuecomment-506883180, i.e. tests for https://github.com/rust-lang/rust/pull/60944 with `async fn`s instead). PR in https://github.com/rust-lang/rust/pull/63383\r\n\r\n</details>\r\n\r\nr? @cramertj \n\n## Diff (first 3000 chars)\ndiff --git a/src/librustc/error_codes.rs b/src/librustc/error_codes.rs\nindex b3eee7c346489..a200a058f4f99 100644\n--- a/src/librustc/error_codes.rs\n+++ b/src/librustc/error_codes.rs\n@@ -2088,7 +2088,6 @@ generator can be constructed.\n Erroneous code example:\n \n ```edition2018,compile-fail,E0698\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\n@@ -2101,7 +2100,6 @@ To fix this you must bind `T` to a concrete type such as `String`\n so that a generator can then be constructed:\n \n ```edition2018\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\ndiff --git a/src/librustc_typeck/check/mod.rs b/src/librustc_typeck/check/mod.rs\nindex fc1ee649e287f..9c7ac83e82e97 100644\n--- a/src/librustc_typeck/check/mod.rs\n+++ b/src/librustc_typeck/check/mod.rs\n@@ -4197,8 +4197,6 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {\n     /// A possible error is to forget to add `.await` when using futures:\n     ///\n     /// ```\n-    /// #![feature(async_await)]\n-    ///\n     /// async fn make_u32() -> u32 {\n     ///     22\n     /// }\ndiff --git a/src/librustc_typeck/error_codes.rs b/src/librustc_typeck/error_codes.rs\nindex ca9ce3d22b5cb..b52183d4b1b56 100644\n--- a/src/librustc_typeck/error_codes.rs\n+++ b/src/librustc_typeck/error_codes.rs\n@@ -4751,7 +4751,6 @@ E0733: r##\"\n Recursion in an `async fn` requires boxing. For example, this will not compile:\n \n ```edition2018,compile_fail,E0733\n-#![feature(async_await)]\n async fn foo(n: usize) {\n     if n > 0 {\n         foo(n - 1).await;\n@@ -4763,12 +4762,11 @@ To achieve async recursion, the `async fn` needs to be desugared\n such that the `Future` is explicit in the return type:\n \n ```edition2018,compile_fail,E0720\n-# #![feature(async_await)]\n use std::future::Future;\n-fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n+fn foo_desugared(n: usize) -> impl Future<Output = ()> {\n     async move {\n         if n > 0 {\n-            foo_desugered(n - 1).await;\n+            foo_desugared(n - 1).await;\n         }\n     }\n }\n@@ -4777,7 +4775,6 @@ fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n Finally, the future is wrapped in a pinned box:\n \n ```edition2018\n-# #![feature(async_await)]\n use std::future::Future;\n use std::pin::Pin;\n fn foo_recursive(n: usize) -> Pin<Box<dyn Future<Output = ()>>> {\ndiff --git a/src/libstd/keyword_docs.rs b/src/libstd/keyword_docs.rs\nindex f5018485ef7bc..85a9dea09ed0d 100644\n--- a/src/libstd/keyword_docs.rs\n+++ b/src/libstd/keyword_docs.rs\n@@ -984,7 +984,6 @@ mod where_keyword { }\n \n // 2018 Edition keywords\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"async\")]\n //\n /// Return a [`Future`] instead of blocking the current thread.\n@@ -995,7 +994,6 @@ mod where_keyword { }\n /// [not yet complete]: https://github.com/rust-lang/rust/issues/34601\n mod async_keyword { }\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"await\")]\n //\n /// Suspend execution until the result of a [`Future`] is ready.\ndiff --git a/src"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR #63209 description listing stabilized features, closed issues, and blocker checklist",
+      "content_blueprint": {
+        "title": "PR #63209 description listing stabilized features, closed issues, and blocker checklist",
+        "body": "# Seed Material: rust-lang/rust#63209: Stabilize `async_await` in Rust 1.39.0\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#63209\n\nRepository: rust-lang/rust\nPR Number: #63209\nPR Title: Stabilize `async_await` in Rust 1.39.0\nMerged At: 2019-08-20T22:16:08Z\nChanged Files: 181\nAdditions: +271, Deletions: -605\n\n## PR Description\nHere we stabilize:\r\n- free and inherent `async fn`s,\r\n- the `<expr>.await` expression form,\r\n- and the `async move? { ... }` block form.\r\n\r\nCloses https://github.com/rust-lang/rust/issues/62149.\r\nCloses https://github.com/rust-lang/rust/issues/50547.\r\n\r\nAll the blockers are now closed.\r\n\r\n<details>\r\n\r\n- [x] FCP in https://github.com/rust-lang/rust/issues/62149\r\n- [x] https://github.com/rust-lang/rust/issues/61949; PR in https://github.com/rust-lang/rust/pull/62849.\r\n- [x] https://github.com/rust-lang/rust/issues/62517; PR in https://github.com/rust-lang/rust/pull/63376.\r\n- [x] https://github.com/rust-lang/rust/issues/63225; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/63388; PR in https://github.com/rust-lang/rust/pull/63499\r\n- [x] https://github.com/rust-lang/rust/issues/63500; PR in https://github.com/rust-lang/rust/pull/63501\r\n- [x] https://github.com/rust-lang/rust/issues/62121#issuecomment-506884048\r\n    - [x] Some tests for control flow (PR https://github.com/rust-lang/rust/pull/63387):\r\n          - `?`\r\n          - `return` in `async` blocks\r\n          - `break`\r\n    - [x] https://github.com/rust-lang/rust/pull/61775#issuecomment-506883180, i.e. tests for https://github.com/rust-lang/rust/pull/60944 with `async fn`s instead). PR in https://github.com/rust-lang/rust/pull/63383\r\n\r\n</details>\r\n\r\nr? @cramertj \n\n## Diff (first 3000 chars)\ndiff --git a/src/librustc/error_codes.rs b/src/librustc/error_codes.rs\nindex b3eee7c346489..a200a058f4f99 100644\n--- a/src/librustc/error_codes.rs\n+++ b/src/librustc/error_codes.rs\n@@ -2088,7 +2088,6 @@ generator can be constructed.\n Erroneous code example:\n \n ```edition2018,compile-fail,E0698\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\n@@ -2101,7 +2100,6 @@ To fix this you must bind `T` to a concrete type such as `String`\n so that a generator can then be constructed:\n \n ```edition2018\n-#![feature(async_await)]\n async fn bar<T>() -> () {}\n \n async fn foo() {\ndiff --git a/src/librustc_typeck/check/mod.rs b/src/librustc_typeck/check/mod.rs\nindex fc1ee649e287f..9c7ac83e82e97 100644\n--- a/src/librustc_typeck/check/mod.rs\n+++ b/src/librustc_typeck/check/mod.rs\n@@ -4197,8 +4197,6 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {\n     /// A possible error is to forget to add `.await` when using futures:\n     ///\n     /// ```\n-    /// #![feature(async_await)]\n-    ///\n     /// async fn make_u32() -> u32 {\n     ///     22\n     /// }\ndiff --git a/src/librustc_typeck/error_codes.rs b/src/librustc_typeck/error_codes.rs\nindex ca9ce3d22b5cb..b52183d4b1b56 100644\n--- a/src/librustc_typeck/error_codes.rs\n+++ b/src/librustc_typeck/error_codes.rs\n@@ -4751,7 +4751,6 @@ E0733: r##\"\n Recursion in an `async fn` requires boxing. For example, this will not compile:\n \n ```edition2018,compile_fail,E0733\n-#![feature(async_await)]\n async fn foo(n: usize) {\n     if n > 0 {\n         foo(n - 1).await;\n@@ -4763,12 +4762,11 @@ To achieve async recursion, the `async fn` needs to be desugared\n such that the `Future` is explicit in the return type:\n \n ```edition2018,compile_fail,E0720\n-# #![feature(async_await)]\n use std::future::Future;\n-fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n+fn foo_desugared(n: usize) -> impl Future<Output = ()> {\n     async move {\n         if n > 0 {\n-            foo_desugered(n - 1).await;\n+            foo_desugared(n - 1).await;\n         }\n     }\n }\n@@ -4777,7 +4775,6 @@ fn foo_desugered(n: usize) -> impl Future<Output = ()> {\n Finally, the future is wrapped in a pinned box:\n \n ```edition2018\n-# #![feature(async_await)]\n use std::future::Future;\n use std::pin::Pin;\n fn foo_recursive(n: usize) -> Pin<Box<dyn Future<Output = ()>>> {\ndiff --git a/src/libstd/keyword_docs.rs b/src/libstd/keyword_docs.rs\nindex f5018485ef7bc..85a9dea09ed0d 100644\n--- a/src/libstd/keyword_docs.rs\n+++ b/src/libstd/keyword_docs.rs\n@@ -984,7 +984,6 @@ mod where_keyword { }\n \n // 2018 Edition keywords\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"async\")]\n //\n /// Return a [`Future`] instead of blocking the current thread.\n@@ -995,7 +994,6 @@ mod where_keyword { }\n /// [not yet complete]: https://github.com/rust-lang/rust/issues/34601\n mod async_keyword { }\n \n-#[unstable(feature = \"async_await\", issue = \"50547\")]\n #[doc(keyword = \"await\")]\n //\n /// Suspend execution until the result of a [`Future`] is ready.\ndiff --git a/src"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_c553712946df7e07/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_c553712946df7e07/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_c553712946df7e07/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:20:43.740271+00:00"
+}

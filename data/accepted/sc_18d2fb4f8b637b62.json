@@ -1,0 +1,831 @@
+{
+  "candidate_id": "sc_18d2fb4f8b637b62",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "light",
+  "seed_id": "18d2fb4f8b637b62",
+  "prompt": "You are a senior software engineer on the PyTorch Core team at Meta. The team recently merged PR #1370, which introduces a unified learning rate scheduler framework to the `torch.optim` module. The PR includes six new scheduler classes and a corresponding documentation update. Your team lead has asked you to create a short technical design document that summarizes the architectural decisions, usage patterns, and testing approach shown in this PR. This document will be used to onboard new engineers and serve as a reference for future scheduler development.\n\n**Materials provided:**\n1. The PR #1370 diff and description from the pytorch/pytorch repository, showing the addition of `torch.optim.lr_scheduler` module with `ReduceLROnPlateau`, `LambdaLR`, `StepLR`, `MultiStepLR`, `ExponentialLR`, and `GroupLambdaLR` schedulers.\n2. The documentation update to `docs/source/optim.rst` that adds a \"How to adjust Learning Rate\" section.\n3. The test file changes in `test/test_optim.py` showing the `TestLRScheduler` test class and helper network `SchedulerTestNet`.\n\n**Task requirements:**\n- Create a Markdown document titled \"Design Doc - Learning Rate Scheduler Framework\".\n- Include the following sections with the specified content:\n  1. **Overview**: Describe the purpose of the LR scheduler framework and list all six supported scheduler types mentioned in the PR description.\n  2. **Architecture**: Explain how schedulers interact with an optimizer (e.g., `torch.optim.SGD`), referencing the `SchedulerTestNet` and the parameter group setup shown in the test's `setUp` method. Mention that schedulers adjust the `lr` attribute of parameter groups.\n  3. **Scheduler Catalog**: For each of the six schedulers, provide a one-sentence description of its behavior based on its name and the PR context. Include the Keras porting note for `ReduceLROnPlateau`.\n  4. **Testing Strategy**: Describe the testing approach seen in `TestLRScheduler`, including the use of a helper network with two convolutional layers, the `setUp` method that creates an SGD optimizer with two parameter groups (one with default lr, one with lr=0.5), and the `_test` method pattern that validates expected learning rate targets over multiple epochs.\n  5. **Documentation Integration**: Explain how the schedulers are exposed to users via the Sphinx documentation in `docs/source/optim.rst`, including the section heading \"How to adjust Learning Rate\" and the `autoclass` directives.\n- The document must be self-contained and reference only information present in the provided PR materials.\n- Use professional technical writing tone.\n\n**Deliverable specification:**\n- Output a single Markdown file.\n- Use `#` for the document title and `##` for each major section.\n- Include code snippets where appropriate (e.g., the optimizer setup from the test, the Sphinx directive examples).\n- Total length should be 800-1200 words.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title is exactly 'Design Doc - Learning Rate Scheduler Framework'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an 'Overview' section with a level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an 'Architecture' section with a level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Scheduler Catalog' section with a level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Testing Strategy' section with a level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Documentation Integration' section with a level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions PR #1370 as the source of the framework.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section lists all six scheduler types: ReduceLROnPlateau, LambdaLR, StepLR, MultiStepLR, ExponentialLR, and GroupLambdaLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scheduler Catalog section notes that ReduceLROnPlateau was ported from the Keras framework.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture section references the SchedulerTestNet class from the test file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes a code snippet showing the SGD optimizer initialization with two parameter groups.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The code snippet in the Architecture section shows the base learning rate as 0.05.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The code snippet in the Architecture section shows the custom learning rate for conv2 parameters as 0.5.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions the TestLRScheduler class.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section describes the SchedulerTestNet as having two convolutional layers (conv1 and conv2).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section states that the setUp method creates an SGD optimizer with two parameter groups, one with default lr and one with lr=0.5.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section provides the example target learning rates for test_step_lr: [0.05]*3 + [0.005]*3 + [0.0005]*3 + [0.00005]*3.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section mentions the scaling factor (10) used for the second parameter group's targets.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section mentions the StepLR gamma value as 0.1 and step_size as 3 in the test example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions the MultiStepLR milestones as [2, 5, 9] in the test example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Integration section mentions the file name 'optim.rst'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Integration section includes the section heading 'How to adjust Learning Rate'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Integration section mentions the use of Sphinx autoclass directives for the schedulers.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for ReduceLROnPlateau.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for LambdaLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for StepLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for MultiStepLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for ExponentialLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scheduler Catalog includes a description for GroupLambdaLR.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the module path 'torch.optim.lr_scheduler' at least once.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions the _test method pattern used to validate learning rate targets.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is self-contained and does not reference external sources beyond the PR materials.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document uses professional technical writing tone without informal language.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a code snippet for the optimizer setup in the Architecture section.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a code snippet for the Sphinx directives in the Documentation Integration section.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that schedulers modify the lr attribute of parameter groups.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that ReduceLROnPlateau supports dynamic adjustment based on validation measurements.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that GroupLambdaLR requires further testing as noted in the PR description.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies the kernel size of convolutional layers in SchedulerTestNet as 1.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that scheduler.step() is called after each epoch.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document provides a brief description of the purpose of the LR scheduler framework in the Overview section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document mentions that ReduceLROnPlateau was ported from Keras in the Scheduler Catalog section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document describes the _test method as asserting that actual learning rates match predefined targets.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes the phrase 'parameter groups' in the context of optimizer configuration.",
+      "category": "terminology",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly notes that the second parameter group in the test setup has a learning rate of 0.5 for conv2 parameters.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the SchedulerTestNet uses torch.nn.Conv2d layers.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that each scheduler is initialized with an optimizer instance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that schedulers allow users to attach a scheduler to an optimizer and call scheduler.step().",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document mentions that the documentation section is added after the existing Algorithms section in optim.rst.",
+      "category": "data",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_18d2fb4f8b637b62",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:pytorch/pytorch#1370",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Doc - Learning Rate Scheduler Framework",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "1370",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "ReduceLROnPlateau, LambdaLR, StepLR, MultiStepLR, ExponentialLR, GroupLambdaLR",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "Keras",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "torch.optim.lr_scheduler",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "conv1, conv2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "0.05",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "0.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "SGD",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "0.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "[0.05]*3 + [0.005]*3 + [0.0005]*3 + [0.00005]*3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "[2, 5, 9]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "optim.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "How to adjust Learning Rate",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "autoclass",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "TestLRScheduler",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "SchedulerTestNet",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "two parameter groups",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Doc - Learning Rate Scheduler Framework",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "1370",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "ReduceLROnPlateau, LambdaLR, StepLR, MultiStepLR, ExponentialLR, GroupLambdaLR",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "Keras",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "torch.optim.lr_scheduler",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "conv1, conv2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "0.05",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "0.5",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "SGD",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "0.1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "[0.05]*3 + [0.005]*3 + [0.0005]*3 + [0.00005]*3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "[2, 5, 9]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "10",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "optim.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "How to adjust Learning Rate",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "autoclass",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "TestLRScheduler",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "SchedulerTestNet",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "two parameter groups",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Doc - Learning Rate Scheduler Framework",
+          "heading_level": 1,
+          "required_content": [
+            "Document title matches expected format"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Purpose of the LR scheduler framework",
+            "List of all six scheduler types",
+            "Reference to PR #1370"
+          ],
+          "paragraphs": [
+            "The learning rate scheduler framework introduced in PR #1370 provides a unified interface for adjusting learning rates during neural network training. This framework, housed in the `torch.optim.lr_scheduler` module, enables practitioners to systematically modify the learning rate across training epochs without manual intervention. The primary goal is to offer standard learning rate scheduling strategies that are commonly used in deep learning, improving convergence behavior and final model performance.",
+            "The PR introduces six scheduler implementations: `ReduceLROnPlateau`, `LambdaLR`, `StepLR`, `MultiStepLR`, `ExponentialLR`, and `GroupLambdaLR`. Each scheduler follows a consistent API pattern, allowing users to attach a scheduler to an optimizer and call `scheduler.step()` after each epoch. The `ReduceLROnPlateau` scheduler is notable as it was ported from the Keras framework and supports dynamic adjustment based on validation metrics rather than a fixed epoch schedule."
+          ]
+        },
+        {
+          "heading": "Architecture",
+          "heading_level": 2,
+          "required_content": [
+            "Interaction between schedulers and optimizers",
+            "Reference to SchedulerTestNet and parameter groups",
+            "How lr attribute is modified"
+          ],
+          "paragraphs": [
+            "Schedulers are designed to work in conjunction with PyTorch optimizers. They modify the learning rate of parameter groups within an optimizer. A scheduler is initialized with an optimizer instance and, optionally, configuration parameters such as `gamma` or `milestones`. At each training step, the user calls `scheduler.step()`, which updates the `lr` attribute of each parameter group in the attached optimizer.",
+            "The test code demonstrates this interaction through a helper neural network `SchedulerTestNet` defined in `test/test_optim.py`. This network consists of two convolutional layers (`conv1` and `conv2`). The corresponding optimizer is set up with two distinct parameter groups, as shown in the `setUp` method of `TestLRScheduler`:\n\n```python\nself.opt = SGD(\n    [{'params': self.net.conv1.parameters()}, {'params': self.net.conv2.parameters(), 'lr': 0.5}],\n    lr=0.05)\n```\n\nHere, `conv1` parameters inherit the base learning rate of 0.05, while `conv2` parameters have a custom learning rate of 0.5. This setup tests that schedulers correctly apply differential learning rates across parameter groups, which is essential for techniques like fine-tuning where different layers may require different learning rates."
+          ]
+        },
+        {
+          "heading": "Scheduler Catalog",
+          "heading_level": 2,
+          "required_content": [
+            "Description of each scheduler",
+            "Keras porting note for ReduceLROnPlateau"
+          ],
+          "paragraphs": [
+            "The framework includes six schedulers, each implementing a distinct learning rate adjustment strategy:",
+            "- **ReduceLROnPlateau**: Adjusts the learning rate when a metric (e.g., validation loss) has stopped improving. This scheduler was ported from the Keras framework.",
+            "- **LambdaLR**: Adjusts the learning rate by multiplying it by a user-defined function that takes the epoch number as input.",
+            "- **StepLR**: Decays the learning rate by a multiplicative factor (`gamma`) every `step_size` epochs.",
+            "- **MultiStepLR**: Decays the learning rate by `gamma` at each milestone epoch specified in a list.",
+            "- **ExponentialLR**: Decays the learning rate by `gamma` every epoch, following an exponential decay schedule.",
+            "- **GroupLambdaLR**: Provides lambda-based learning rate adjustment at the parameter group level. As noted in the PR description, this scheduler requires further testing."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Description of TestLRScheduler class",
+            "Use of SchedulerTestNet with two conv layers",
+            "setUp method with SGD and two parameter groups",
+            "_test method pattern with target learning rates"
+          ],
+          "paragraphs": [
+            "The testing approach is centered around the `TestLRScheduler` class in `test/test_optim.py`. Tests use a consistent helper network and optimizer setup to validate scheduler behavior. The `SchedulerTestNet` is a simple neural network with two convolutional layers (`conv1` and `conv2`), each having a single input and output channel with kernel size 1. This simple architecture allows for clear testing of learning rate schedules without complex model dependencies.",
+            "The `setUp` method initializes the network and creates an SGD optimizer with two parameter groups. The first group uses the default learning rate (0.05), while the second group (for `conv2` parameters) explicitly sets the learning rate to 0.5. This dual-rate setup verifies that schedulers correctly handle heterogeneous learning rates across parameter groups, which is a common scenario in practice.",
+            "Each scheduler test (e.g., `test_step_lr`, `test_multi_step_lr`) computes expected learning rate targets over a series of epochs. For example, in `test_step_lr`, the expected targets for a single parameter group are: `[0.05]*3 + [0.005]*3 + [0.0005]*3 + [0.00005]*3` over 12 epochs. The targets for the second parameter group are scaled by a factor of 10 (i.e., `list(map(lambda x: x * 10, single_targets))`). The `_test` method then runs the scheduler and optimizer through the specified number of epochs, asserting that the actual learning rates match these predefined targets."
+          ]
+        },
+        {
+          "heading": "Documentation Integration",
+          "heading_level": 2,
+          "required_content": [
+            "Sphinx documentation in optim.rst",
+            "Section heading \"How to adjust Learning Rate\"",
+            "Use of autoclass directives"
+          ],
+          "paragraphs": [
+            "The schedulers are integrated into PyTorch's official documentation via the `docs/source/optim.rst` file. A new section titled \"How to adjust Learning Rate\" is added after the existing \"Algorithms\" section. This section provides a brief explanation that `torch.optim.lr_scheduler` offers methods for adjusting learning rates based on epochs, with `ReduceLROnPlateau` supporting dynamic adjustment based on validation measurements.",
+            "Each scheduler is documented using Sphinx's `autoclass` directive, which automatically generates API documentation from the class docstrings. The directives are:\n\n```rst\n.. autoclass:: torch.optim.lr_scheduler.LambdaLR\n    :members:\n.. autoclass:: torch.optim.lr_scheduler.StepLR\n    :members:\n.. autoclass:: torch.optim.lr_scheduler.MultiStepLR\n    :members:\n.. autoclass:: torch.optim.lr_scheduler.ExponentialLR\n    :members:\n.. autoclass:: torch.optim.lr_scheduler.ReduceLROnPlateau\n    :members:\n```\n\nThis integration ensures that users can discover and understand the scheduler APIs through the standard PyTorch documentation portal, maintaining consistency with other optimizer-related components."
+          ]
+        }
+      ],
+      "md_title": "Design Doc - Learning Rate Scheduler Framework",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #1370 diff and description from pytorch/pytorch repository",
+          "content_blueprint": {
+            "title": "PR #1370 diff and description from pytorch/pytorch repository",
+            "body": "# Seed Material: pytorch/pytorch#1370: Lr scheduler\nSource: github_issue_pr\nIdentifier: pr:pytorch/pytorch#1370\n\nRepository: pytorch/pytorch\nPR Number: #1370\nPR Title: Lr scheduler\nMerged At: 2017-05-25T20:21:44Z\nChanged Files: 3\nAdditions: +478, Deletions: -1\n\n## PR Description\nProviding a unified LR scheduler.\r\n\r\nCurrently supports:\r\n - ReduceLROnPlateau (ported from [Keras](https://keras.io/))\r\n - LambdaLR\r\n - StepLR\r\n - MultiStepLR\r\n - ExponentialLR\r\n - GroupLambdaLR (Need testing)\n\n## Diff (first 3000 chars)\ndiff --git a/docs/source/optim.rst b/docs/source/optim.rst\nindex 92e3f14d1fe54..95f5e3258495c 100644\n--- a/docs/source/optim.rst\n+++ b/docs/source/optim.rst\n@@ -114,3 +114,21 @@ Algorithms\n     :members:\n .. autoclass:: SGD\n     :members:\n+\n+How to adjust Learning Rate\n+---------------------------\n+\n+:mod:`torch.optim.lr_scheduler` provides several methods to adjust the learning\n+rate based on the number of epoches. :class:`torch.optim.lr_scheduler.ReduceLROnPlateau`\n+allows dynamic learning rate reducing based on some validation measurements.\n+\n+.. autoclass:: torch.optim.lr_scheduler.LambdaLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.StepLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.MultiStepLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.ExponentialLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.ReduceLROnPlateau\n+    :members:\ndiff --git a/test/test_optim.py b/test/test_optim.py\nindex bff3b5a8196b0..8e43c04018169 100644\n--- a/test/test_optim.py\n+++ b/test/test_optim.py\n@@ -4,9 +4,11 @@\n import torch\n import torch.optim as optim\n import torch.legacy.optim as old_optim\n+import torch.nn.functional as F\n+from torch.optim import SGD\n from torch.autograd import Variable\n from torch import sparse\n-\n+from torch.optim.lr_scheduler import LambdaLR, StepLR, MultiStepLR, ExponentialLR, ReduceLROnPlateau\n from common import TestCase, run_tests\n \n \n@@ -392,5 +394,157 @@ def test_invalid_param_type(self):\n             optim.SGD(Variable(torch.randn(5, 5)), lr=3)\n \n \n+class SchedulerTestNet(torch.nn.Module):\n+    def __init__(self):\n+        super(SchedulerTestNet, self).__init__()\n+        self.conv1 = torch.nn.Conv2d(1, 1, 1)\n+        self.conv2 = torch.nn.Conv2d(1, 1, 1)\n+\n+    def forward(self, x):\n+        return self.conv2(F.relu(self.conv1(x)))\n+\n+\n+class TestLRScheduler(TestCase):\n+    def setUp(self):\n+        self.net = SchedulerTestNet()\n+        self.opt = SGD(\n+            [{'params': self.net.conv1.parameters()}, {'params': self.net.conv2.parameters(), 'lr': 0.5}],\n+            lr=0.05)\n+\n+    def test_step_lr(self):\n+        # lr = 0.05     if epoch < 3\n+        # lr = 0.005    if 30 <= epoch < 6\n+        # lr = 0.0005   if epoch >= 9\n+        single_targets = [0.05] * 3 + [0.005] * 3 + [0.0005] * 3 + [0.00005] * 3\n+        targets = [single_targets, list(map(lambda x: x * 10, single_targets))]\n+        scheduler = StepLR(self.opt, gamma=0.1, step_size=3)\n+        epochs = 10\n+        self._test(scheduler, targets, epochs)\n+\n+    def test_multi_step_lr(self):\n+        # lr = 0.05     if epoch < 2\n+        # lr = 0.005    if 2 <= epoch < 5\n+        # lr = 0.0005   if epoch < 9\n+        # lr = 0.00005   if epoch >= 9\n+        single_targets = [0.05] * 2 + [0.005] * 3 + [0.0005] * 4 + [0.00005] * 3\n+        targets = [single_targets, list(map(lambda x: x * 10, single_targets))]\n+        scheduler = MultiStepLR(self.opt, gamma=0.1, milestones=[2, 5, 9])\n+        epochs = 10\n+        self._test(sched"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title matches the specified format",
+          "value": "Design Doc - Learning Rate Scheduler Framework",
+          "tolerance": null,
+          "location": "Document title, first heading"
+        },
+        {
+          "description": "PR number referenced correctly",
+          "value": "1370",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "All six scheduler names listed",
+          "value": "ReduceLROnPlateau, LambdaLR, StepLR, MultiStepLR, ExponentialLR, GroupLambdaLR",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Keras porting note for ReduceLROnPlateau",
+          "value": "Keras",
+          "tolerance": null,
+          "location": "Scheduler Catalog section"
+        },
+        {
+          "description": "Module path for schedulers mentioned",
+          "value": "torch.optim.lr_scheduler",
+          "tolerance": null,
+          "location": "Overview and Documentation Integration sections"
+        },
+        {
+          "description": "SchedulerTestNet described with two convolutional layers",
+          "value": "conv1, conv2",
+          "tolerance": null,
+          "location": "Architecture and Testing Strategy sections"
+        },
+        {
+          "description": "Base learning rate in optimizer setup",
+          "value": "0.05",
+          "tolerance": null,
+          "location": "Architecture section code snippet and Testing Strategy section"
+        },
+        {
+          "description": "Custom learning rate for conv2 parameter group",
+          "value": "0.5",
+          "tolerance": null,
+          "location": "Architecture section code snippet and Testing Strategy section"
+        },
+        {
+          "description": "SGD optimizer used in test setup",
+          "value": "SGD",
+          "tolerance": null,
+          "location": "Architecture section code snippet"
+        },
+        {
+          "description": "StepLR gamma value in test example",
+          "value": "0.1",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "StepLR step_size value in test example",
+          "value": "3",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Single target learning rates for test_step_lr example",
+          "value": "[0.05]*3 + [0.005]*3 + [0.0005]*3 + [0.00005]*3",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "MultiStepLR milestones in test example",
+          "value": "[2, 5, 9]",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Factor used to scale targets for second parameter group",
+          "value": "10",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Documentation file name mentioned",
+          "value": "optim.rst",
+          "tolerance": null,
+          "location": "Documentation Integration section"
+        },
+        {
+          "description": "Documentation section heading \"How to adjust Learning Rate\"",
+          "value": "How to adjust Learning Rate",
+          "tolerance": null,
+          "location": "Documentation Integration section"
+        },
+        {
+          "description": "Sphinx autoclass directive used for documentation",
+          "value": "autoclass",
+          "tolerance": null,
+          "location": "Documentation Integration section"
+        },
+        {
+          "description": "Test class name mentioned",
+          "value": "TestLRScheduler",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Helper network class name mentioned",
+          "value": "SchedulerTestNet",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Two parameter groups in optimizer setup",
+          "value": "two parameter groups",
+          "tolerance": null,
+          "location": "Architecture section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 590664654
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #1370 diff and description from pytorch/pytorch repository",
+      "content_blueprint": {
+        "title": "PR #1370 diff and description from pytorch/pytorch repository",
+        "body": "# Seed Material: pytorch/pytorch#1370: Lr scheduler\nSource: github_issue_pr\nIdentifier: pr:pytorch/pytorch#1370\n\nRepository: pytorch/pytorch\nPR Number: #1370\nPR Title: Lr scheduler\nMerged At: 2017-05-25T20:21:44Z\nChanged Files: 3\nAdditions: +478, Deletions: -1\n\n## PR Description\nProviding a unified LR scheduler.\r\n\r\nCurrently supports:\r\n - ReduceLROnPlateau (ported from [Keras](https://keras.io/))\r\n - LambdaLR\r\n - StepLR\r\n - MultiStepLR\r\n - ExponentialLR\r\n - GroupLambdaLR (Need testing)\n\n## Diff (first 3000 chars)\ndiff --git a/docs/source/optim.rst b/docs/source/optim.rst\nindex 92e3f14d1fe54..95f5e3258495c 100644\n--- a/docs/source/optim.rst\n+++ b/docs/source/optim.rst\n@@ -114,3 +114,21 @@ Algorithms\n     :members:\n .. autoclass:: SGD\n     :members:\n+\n+How to adjust Learning Rate\n+---------------------------\n+\n+:mod:`torch.optim.lr_scheduler` provides several methods to adjust the learning\n+rate based on the number of epoches. :class:`torch.optim.lr_scheduler.ReduceLROnPlateau`\n+allows dynamic learning rate reducing based on some validation measurements.\n+\n+.. autoclass:: torch.optim.lr_scheduler.LambdaLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.StepLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.MultiStepLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.ExponentialLR\n+    :members:\n+.. autoclass:: torch.optim.lr_scheduler.ReduceLROnPlateau\n+    :members:\ndiff --git a/test/test_optim.py b/test/test_optim.py\nindex bff3b5a8196b0..8e43c04018169 100644\n--- a/test/test_optim.py\n+++ b/test/test_optim.py\n@@ -4,9 +4,11 @@\n import torch\n import torch.optim as optim\n import torch.legacy.optim as old_optim\n+import torch.nn.functional as F\n+from torch.optim import SGD\n from torch.autograd import Variable\n from torch import sparse\n-\n+from torch.optim.lr_scheduler import LambdaLR, StepLR, MultiStepLR, ExponentialLR, ReduceLROnPlateau\n from common import TestCase, run_tests\n \n \n@@ -392,5 +394,157 @@ def test_invalid_param_type(self):\n             optim.SGD(Variable(torch.randn(5, 5)), lr=3)\n \n \n+class SchedulerTestNet(torch.nn.Module):\n+    def __init__(self):\n+        super(SchedulerTestNet, self).__init__()\n+        self.conv1 = torch.nn.Conv2d(1, 1, 1)\n+        self.conv2 = torch.nn.Conv2d(1, 1, 1)\n+\n+    def forward(self, x):\n+        return self.conv2(F.relu(self.conv1(x)))\n+\n+\n+class TestLRScheduler(TestCase):\n+    def setUp(self):\n+        self.net = SchedulerTestNet()\n+        self.opt = SGD(\n+            [{'params': self.net.conv1.parameters()}, {'params': self.net.conv2.parameters(), 'lr': 0.5}],\n+            lr=0.05)\n+\n+    def test_step_lr(self):\n+        # lr = 0.05     if epoch < 3\n+        # lr = 0.005    if 30 <= epoch < 6\n+        # lr = 0.0005   if epoch >= 9\n+        single_targets = [0.05] * 3 + [0.005] * 3 + [0.0005] * 3 + [0.00005] * 3\n+        targets = [single_targets, list(map(lambda x: x * 10, single_targets))]\n+        scheduler = StepLR(self.opt, gamma=0.1, step_size=3)\n+        epochs = 10\n+        self._test(scheduler, targets, epochs)\n+\n+    def test_multi_step_lr(self):\n+        # lr = 0.05     if epoch < 2\n+        # lr = 0.005    if 2 <= epoch < 5\n+        # lr = 0.0005   if epoch < 9\n+        # lr = 0.00005   if epoch >= 9\n+        single_targets = [0.05] * 2 + [0.005] * 3 + [0.0005] * 4 + [0.00005] * 3\n+        targets = [single_targets, list(map(lambda x: x * 10, single_targets))]\n+        scheduler = MultiStepLR(self.opt, gamma=0.1, milestones=[2, 5, 9])\n+        epochs = 10\n+        self._test(sched"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_18d2fb4f8b637b62/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_18d2fb4f8b637b62/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:12:49.921373+00:00"
+}

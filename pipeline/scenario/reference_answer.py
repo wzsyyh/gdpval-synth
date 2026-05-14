@@ -79,6 +79,10 @@ class SectionBlueprint(BaseModel):
         default_factory=list,
         description="Pre-written paragraph text. Generated during synthesis, not at render time.",
     )
+    section_type: str = Field(
+        default="generic",
+        description="Semantic type of this section (e.g., cover_memo, redlined_document, legal_argument). Used by narrative generator to select correct writing strategy.",
+    )
 
 
 class DocHeaderBlueprint(BaseModel):

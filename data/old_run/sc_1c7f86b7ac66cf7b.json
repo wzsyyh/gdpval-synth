@@ -1,0 +1,856 @@
+{
+  "candidate_id": "sc_1c7f86b7ac66cf7b",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "1c7f86b7ac66cf7b",
+  "prompt": "You are a senior software engineer on the Hugging Face Transformers library team. A recent PR (#24891) was merged that adds support for the Llama2 model architecture. The library's architecture team requires a design document to capture the rationale, implementation details, and integration points for this major model addition. This document will serve as the authoritative technical reference for the team and for future contributors who need to understand or modify the Llama2 integration.\n\n**Materials provided:**\n1. The diff for PR #24891 (huggingface/transformers#24891) showing the changes made to add Llama2 support.\n2. The PR description text, which includes the title and a brief summary.\n3. The README.md change from the diff, which lists the new Llama2 model entry.\n\n**Task requirements:**\nCreate a design document in Markdown format that covers the following:\n1. **Executive Summary**: A concise overview of the Llama2 model addition, its purpose, and its significance to the library.\n2. **Background**: Context on the Llama2 paper and its relation to the existing LLaMA model support.\n3. **Scope of Change**: An analysis of the PR's scope, including the number of files changed, lines added/deleted, and the key components introduced (referencing the README change and other files implied by the diff stats).\n4. **Technical Design**: A detailed breakdown of the implementation approach. For each major component (model configuration, model implementation, tokenization, documentation, tests), describe the files that were likely added or modified, the integration points with existing code, and any notable design decisions.\n5. **Impact Assessment**: Discuss potential performance implications, backward compatibility, and user-facing API changes.\n6. **Future Considerations**: Outline possible next steps for optimization, support for fine-tuned variants (like chat models), and integration with the library's pipelines.\n\n**Deliverable specification:**\n- Output a single Markdown file.\n- Use clear section headings (##) for each of the six sections above.\n- Within each section, use ### sub-headings where appropriate for readability.\n- The document must reference specific details from the provided PR and diff (e.g., PR number, file change counts, author list from README, paper title).\n- Ensure the document is substantial enough to serve as a formal design reference.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a top-level heading or title that includes 'Llama2'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Executive Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Executive Summary section references the PR number #24891.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Executive Summary section mentions the purpose of adding Llama2 support.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Background'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section references the paper title 'Llama2: Open Foundation and Fine-Tuned Chat Models'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Background section discusses the relation to the existing LLaMA model.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Scope of Change'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Change section states the number of changed files is 20.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Change section states the number of additions is 538.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Change section states the number of deletions is 55.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Change section identifies README.md as a changed file.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Technical Design'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section names the model configuration file as 'configuration_llama2.py'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section names the model implementation file as 'modeling_llama2.py'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section mentions a tokenizer class (e.g., Llama2TokenizerFast).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section references a documentation path containing 'llama2'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section references a test directory path containing 'llama2'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section describes integration with existing code (e.g., inheritance from LlamaConfig).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Impact Assessment'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact Assessment section lists 'Llama2Config' as a new public class.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment section lists 'Llama2Model' as a new public class.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment section lists 'Llama2ForCausalLM' as a new public class.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact Assessment section mentions compatibility with 'AutoModel.from_pretrained'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment section states the change is backward compatible (additive only).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section with the heading 'Future Considerations'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Future Considerations section mentions 'flash attention' as a future optimization.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Future Considerations section mentions at least one quantization method (e.g., GPTQ, bitsandbytes).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Future Considerations section mentions integration with 'Trainer'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Future Considerations section mentions ONNX export as a future integration.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the 'FAIR team of Meta AI' as the source organization.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains at least six distinct sections with ## headings.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section is organized into sub-sections for different components.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document's content is substantial, with each major section containing at least one full paragraph.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses professional technical writing tone throughout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "No incorrect facts or statistics from the PR are introduced in the document.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section discusses at least one notable design decision.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Future Considerations section includes at least two distinct future work items.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment section mentions the Trainer API or TrainingArguments.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Change section extrapolates that the remaining changed files contain implementation code.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to mention the PR number #24891 anywhere.",
+      "category": "reference",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document uses incorrect statistics for changed files, additions, or deletions.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_1c7f86b7ac66cf7b",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:huggingface/transformers#24891",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Llama2 Model Support in Hugging Face Transformers",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#24891",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "Llama2: Open Foundation and Fine-Tuned Chat Models",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "538",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "README.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "configuration_llama2.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "modeling_llama2.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "Llama2TokenizerFast",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "docs/source/model_doc/llama2.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "tests/models/llama2/",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "Llama2Config",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "Llama2Model",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "Llama2ForCausalLM",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "AutoModel.from_pretrained",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "flash attention",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "GPTQ, bitsandbytes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "Trainer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "ONNX",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "FAIR team of Meta AI",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Llama2 Model Support in Hugging Face Transformers",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#24891",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "Llama2: Open Foundation and Fine-Tuned Chat Models",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 20,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 538,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 55,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "README.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "configuration_llama2.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "modeling_llama2.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "Llama2TokenizerFast",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "docs/source/model_doc/llama2.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "tests/models/llama2/",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "Llama2Config",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "Llama2Model",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Llama2ForCausalLM",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "AutoModel.from_pretrained",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "flash attention",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "GPTQ, bitsandbytes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "Trainer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "ONNX",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "FAIR team of Meta AI",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Concise overview of Llama2 addition",
+            "Purpose and significance to library",
+            "Reference to PR #24891 and paper title"
+          ],
+          "paragraphs": [
+            "This design document details the implementation of support for the Llama2 model architecture within the Hugging Face Transformers library, as introduced in PR #24891. The addition enables users to leverage Llama2, a family of open foundation and fine-tuned chat models developed by Meta AI, directly within the library's established framework.",
+            "The integration of Llama2 represents a significant expansion of the library's model offerings, providing access to state-of-the-art language models that are openly available. The work encompasses model configuration, architecture implementation, tokenization, documentation, and testing, ensuring a seamless user experience consistent with other models in the library."
+          ]
+        },
+        {
+          "heading": "Background",
+          "heading_level": 2,
+          "required_content": [
+            "Context on Llama2 paper",
+            "Relation to existing LLaMA model",
+            "Reference to paper title and authors from README"
+          ],
+          "paragraphs": [
+            "Llama2 is introduced in the research paper titled 'Llama2: Open Foundation and Fine-Tuned Chat Models,' released by the FAIR team of Meta AI. The model family builds upon the foundation of the original LLaMA architecture but includes specific optimizations and training methodologies tailored for both general-purpose language modeling and conversational applications.",
+            "The existing support for the original LLaMA model within the Transformers library provided a strong technical foundation. The Llama2 implementation leverages many of the same core principles but introduces distinct configuration parameters and architectural nuances to accommodate the new model's capabilities, including its specialized chat variants."
+          ]
+        },
+        {
+          "heading": "Scope of Change",
+          "heading_level": 2,
+          "required_content": [
+            "Analysis of PR scope from diff stats",
+            "Key components introduced",
+            "Reference to 20 changed files, 538 additions, 55 deletions"
+          ],
+          "paragraphs": [
+            "The PR (#24891) that introduced Llama2 support involved a substantial but well-scoped set of changes across the repository. The diff statistics show 20 files were changed, with a total of 538 lines added and 55 lines deleted.",
+            "The primary component of this change is the new entry in the main README.md file, which formally registers Llama2 in the library's model list. This entry includes a direct link to the Llama2 documentation, the full paper title, and a comprehensive list of authors from the original research publication.",
+            "Beyond the README update, the remaining 19 changed files would contain the core implementation files. Based on standard patterns in the Transformers library, these would include the model configuration file (e.g., configuration_llama2.py), the model implementation (e.g., modeling_llama2.py), tokenization code, documentation files under docs/, and test scripts to validate the model's functionality."
+          ]
+        },
+        {
+          "heading": "Technical Design",
+          "heading_level": 2,
+          "required_content": [
+            "Breakdown of implementation components",
+            "Likely files added/modified",
+            "Integration points with existing code",
+            "Notable design decisions"
+          ],
+          "paragraphs": [
+            "The technical implementation of Llama2 follows the library's established patterns for integrating new model architectures. The design can be broken down into several key components, each involving specific files and integration strategies.",
+            "**Model Configuration (configuration_llama2.py)**: A new configuration class, likely named Llama2Config, would be created. This class would define all hyperparameters specific to Llama2, such as the number of layers, hidden size, number of attention heads, and vocabulary size. It would inherit from or parallel the structure of the existing LlamaConfig class to maintain consistency.",
+            "**Model Implementation (modeling_llama2.py)**: This file contains the core PyTorch model classes. The main class, Llama2Model, would implement the transformer encoder architecture. Notable design decisions would include the implementation of the self-attention mechanism, which may incorporate optimizations present in the Llama2 paper, and the handling of different model sizes (e.g., 7B, 13B, 70B parameters).",
+            "**Tokenization**: The tokenization implementation would ensure compatibility with the Llama2 tokenizer, which is based on the SentencePiece library. The design would likely involve adapting the existing LLaMA tokenizer or creating a new Llama2TokenizerFast class to handle the specific vocabulary and pre-processing steps required.",
+            "**Documentation and Tests**: New documentation pages would be created under docs/source/model_doc/llama2.rst to provide usage examples and API reference. Comprehensive test cases in tests/models/llama2/ would be added to validate forward passes, generation, and integration with other library features like pipelines and the Trainer API."
+          ]
+        },
+        {
+          "heading": "Impact Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Performance implications",
+            "Backward compatibility",
+            "User-facing API changes"
+          ],
+          "paragraphs": [
+            "The addition of Llama2 is expected to have a positive impact on the library's user base by providing access to a cutting-edge, openly available model family. From a performance standpoint, the model's implementation should leverage efficient attention mechanisms and tensor operations to ensure competitive inference and training speeds.",
+            "Backward compatibility is maintained as this change is purely additive. No existing functionality or models are altered. Users of the original LLaMA model will find that their code remains unaffected. The new Llama2 classes and functions are available as separate imports, preventing any namespace conflicts.",
+            "The user-facing API changes consist of new public classes and functions: Llama2Config, Llama2Model, Llama2ForCausalLM, and the associated tokenizer classes. These are exposed through the library's standard auto-classes (e.g., AutoModel.from_pretrained will work with Llama2 checkpoints). The model can be used with the same high-level APIs as other causal language models in the library."
+          ]
+        },
+        {
+          "heading": "Future Considerations",
+          "heading_level": 2,
+          "required_content": [
+            "Next steps for optimization",
+            "Support for fine-tuned variants",
+            "Integration with library pipelines"
+          ],
+          "paragraphs": [
+            "Looking ahead, several areas can be explored to enhance the Llama2 integration. Performance optimization could involve implementing flash attention, model parallelism for the larger 70B variant, and quantization support (e.g., GPTQ, bitsandbytes) to make the models more accessible on consumer hardware.",
+            "The Llama2 family includes specialized chat models fine-tuned for dialogue. Future work should ensure that the library's text generation pipeline and the transformers' conversational agents can leverage these chat models effectively, potentially by incorporating specific prompt templates or response filtering.",
+            "Integration with the library's broader ecosystem is also a key consideration. This includes ensuring full compatibility with the Trainer and TrainingArguments for fine-tuning, seamless export to other formats (e.g., ONNX), and integration with visualization tools and model cards hosted on the Hugging Face Hub."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Llama2 Model Support in Hugging Face Transformers",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The full diff for PR #24891 (huggingface/transformers#24891), showing changes to 20 files with 538 additions and 55 deletions.",
+          "content_blueprint": {
+            "title": "The full diff for PR #24891 (huggingface/transformers#24891), showing changes to 20 files with 538 additions and 55 deletions",
+            "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "The PR description stating: 'Add Support for Llama2 ! 🔥 🔥'.",
+          "content_blueprint": {
+            "title": "The PR description stating: 'Add Support for Llama2 ! 🔥 🔥'",
+            "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "The README.md diff snippet showing the addition of the Llama2 model entry, including its documentation link, paper title 'Llama2: Open Foundation and Fine-Tuned Chat Models', and the author list.",
+          "content_blueprint": {
+            "title": "The README",
+            "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title matches specified format",
+          "value": "Design Document: Llama2 Model Support in Hugging Face Transformers",
+          "tolerance": null,
+          "location": "Markdown title (first line or title metadata)"
+        },
+        {
+          "description": "Correct PR number referenced in Executive Summary",
+          "value": "#24891",
+          "tolerance": null,
+          "location": "Executive Summary section"
+        },
+        {
+          "description": "Correct paper title referenced in Background",
+          "value": "Llama2: Open Foundation and Fine-Tuned Chat Models",
+          "tolerance": null,
+          "location": "Background section"
+        },
+        {
+          "description": "Correct number of changed files from PR stats",
+          "value": 20,
+          "tolerance": null,
+          "location": "Scope of Change section"
+        },
+        {
+          "description": "Correct number of additions from PR stats",
+          "value": 538,
+          "tolerance": null,
+          "location": "Scope of Change section"
+        },
+        {
+          "description": "Correct number of deletions from PR stats",
+          "value": 55,
+          "tolerance": null,
+          "location": "Scope of Change section"
+        },
+        {
+          "description": "Mention of README.md as a changed file",
+          "value": "README.md",
+          "tolerance": null,
+          "location": "Scope of Change section"
+        },
+        {
+          "description": "Model configuration file named correctly",
+          "value": "configuration_llama2.py",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Model implementation file named correctly",
+          "value": "modeling_llama2.py",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Tokenizer class name mentioned",
+          "value": "Llama2TokenizerFast",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Documentation path mentioned",
+          "value": "docs/source/model_doc/llama2.rst",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Test directory path mentioned",
+          "value": "tests/models/llama2/",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "List of new public classes includes Llama2Config",
+          "value": "Llama2Config",
+          "tolerance": null,
+          "location": "Impact Assessment section"
+        },
+        {
+          "description": "List of new public classes includes Llama2Model",
+          "value": "Llama2Model",
+          "tolerance": null,
+          "location": "Impact Assessment section"
+        },
+        {
+          "description": "List of new public classes includes Llama2ForCausalLM",
+          "value": "Llama2ForCausalLM",
+          "tolerance": null,
+          "location": "Impact Assessment section"
+        },
+        {
+          "description": "Mention of auto-class compatibility",
+          "value": "AutoModel.from_pretrained",
+          "tolerance": null,
+          "location": "Impact Assessment section"
+        },
+        {
+          "description": "Mention of future optimization: flash attention",
+          "value": "flash attention",
+          "tolerance": null,
+          "location": "Future Considerations section"
+        },
+        {
+          "description": "Mention of future optimization: quantization support examples",
+          "value": "GPTQ, bitsandbytes",
+          "tolerance": null,
+          "location": "Future Considerations section"
+        },
+        {
+          "description": "Mention of future integration with Trainer",
+          "value": "Trainer",
+          "tolerance": null,
+          "location": "Future Considerations section"
+        },
+        {
+          "description": "Mention of future integration with ONNX export",
+          "value": "ONNX",
+          "tolerance": null,
+          "location": "Future Considerations section"
+        },
+        {
+          "description": "Mention of FAIR team of Meta AI as source organization",
+          "value": "FAIR team of Meta AI",
+          "tolerance": null,
+          "location": "Background section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2046818952
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The full diff for PR #24891 (huggingface/transformers#24891), showing changes to 20 files with 538 additions and 55 deletions.",
+      "content_blueprint": {
+        "title": "The full diff for PR #24891 (huggingface/transformers#24891), showing changes to 20 files with 538 additions and 55 deletions",
+        "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "The PR description stating: 'Add Support for Llama2 ! 🔥 🔥'.",
+      "content_blueprint": {
+        "title": "The PR description stating: 'Add Support for Llama2 ! 🔥 🔥'",
+        "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "The README.md diff snippet showing the addition of the Llama2 model entry, including its documentation link, paper title 'Llama2: Open Foundation and Fine-Tuned Chat Models', and the author list.",
+      "content_blueprint": {
+        "title": "The README",
+        "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_1c7f86b7ac66cf7b/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1c7f86b7ac66cf7b/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1c7f86b7ac66cf7b/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1c7f86b7ac66cf7b/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:02:51.996597+00:00"
+}

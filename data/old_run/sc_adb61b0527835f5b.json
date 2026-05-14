@@ -1,0 +1,1002 @@
+{
+  "candidate_id": "sc_adb61b0527835f5b",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "adb61b0527835f5b",
+  "prompt": "You are a senior machine learning engineer at a data science consultancy. The engineering lead has asked you to write a design document for the new QuantileRegressor estimator proposed in scikit-learn PR #9978. The PR is under review and the team needs a clear technical specification before merging and integrating it into the library. Your document will be used to align the implementation with the existing scikit-learn API, guide test planning, and inform downstream users about the new capability.\n\nMaterials provided:\n1. The GitHub PR diff for scikit-learn#9978 titled \"[MRG] Add quantile regression\", showing changes to documentation files (doc/modules/classes.rst and doc/modules/linear_model.rst).\n2. The PR description stating it fixes issue #3148 and implements quantile regression as an algorithm that directly minimizes mean absolute error of a linear regression model.\n\nTask requirements:\n- Write a design document in Markdown format titled 'Design Doc: QuantileRegressor for scikit-learn'.\n- Structure the document with the following sections: Overview, Mathematical Formulation, API Design, Integration Points, and Testing Strategy.\n- In the Overview section, state the PR number (#9978) and the issue it fixes (#3148). Describe what quantile regression estimates (conditional quantiles vs. conditional mean for OLS).\n- In the Mathematical Formulation section, define the minimization problem using the pinball loss PB_q(t) as described in the PR. Include the formula for PB_q(t) with its piecewise definition. State that the L1 penalty is controlled by the parameter 'alpha', similar to Lasso.\n- In the API Design section, specify the class name as QuantileRegressor. Include a parameter 'quantile' (default 0.5) for selecting the target quantile q. Include a parameter 'alpha' (default 1.0) for L1 regularization strength. State that the estimator should be added under the linear_model module.\n- In the Integration Points section, reference the two files modified in the PR: doc/modules/classes.rst and doc/modules/linear_model.rst. Note that QuantileRegressor should be listed alongside HuberRegressor and RANSACRegressor in classes.rst.\n- In the Testing Strategy section, outline at least three test scenarios: (1) verifying the estimator produces correct predictions for the median (q=0.5), (2) verifying the pinball loss is minimized on a synthetic dataset, and (3) verifying the regularization parameter alpha affects the coefficient magnitude.\n- Each section must contain substantive paragraphs (not just bullet points) explaining the reasoning.\n\nDeliverable specification:\n- Output a single Markdown file named 'design_doc_quantile_regressor.md'.\n- Use ATX-style headings (# for title, ## for sections).\n- Include all required sections with substantive content drawn exclusively from the provided PR material.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title is exactly 'Design Doc: QuantileRegressor for scikit-learn'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses ATX-style headings with # for the title and ## for major sections.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an Overview section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a Mathematical Formulation section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an API Design section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an Integration Points section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a Testing Strategy section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions PR number #9978.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the issue number #3148.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states that quantile regression estimates conditional quantiles of y conditional on X.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section contrasts quantile regression with OLS, stating OLS estimates the conditional mean.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section mentions that quantile regression is robust to outliers due to the pinball loss.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Mathematical Formulation section includes the minimization problem formula with pinball loss and L1 penalty.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Mathematical Formulation section defines the pinball loss PB_q(t) with its piecewise cases (q*t for t>0, 0 for t=0, (1-q)*t for t<0).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Mathematical Formulation section mentions that the pinball loss is also known as the linear loss.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Mathematical Formulation section states that the L1 penalty is controlled by parameter alpha, similar to Lasso.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Mathematical Formulation section defines n_samples as the number of training samples.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Design section specifies the class name as QuantileRegressor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Design section specifies a 'quantile' parameter with default value 0.5.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Design section specifies an 'alpha' parameter with default value 1.0.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section states the estimator belongs to the linear_model module.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section mentions fit(), predict(), and score() methods.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section mentions coef_ and intercept_ attributes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration Points section references the file doc/modules/classes.rst.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration Points section references the file doc/modules/linear_model.rst.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration Points section notes that QuantileRegressor is listed alongside HuberRegressor and RANSACRegressor in classes.rst.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes a test for correct predictions for the median (q=0.5).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes a test verifying the pinball loss is minimized on a synthetic dataset.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes a test verifying that the regularization parameter alpha affects coefficient magnitude.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes at least three distinct test scenarios.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Each major section contains substantive paragraphs, not just bullet points.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is coherent and the sections logically flow from overview to details to testing.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pinball loss formula in Mathematical Formulation uses the variable t for the residual.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section mentions that the 'quantile' parameter must be between 0 and 1 exclusive.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section mentions that the default quantile of 0.5 corresponds to median regression.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions checking edge cases such as quantile values near 0 or 1.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration Points section states that QuantileRegressor should be added after HuberRegressor in classes.rst.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Mathematical Formulation section uses the notation ||w||_1 for the L1 norm of the weights.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Design section mentions that an internal linear programming solver will be used.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the pinball loss as 'mean pinball loss' or references sklearn.metrics.mean_pinball_loss.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that quantile regression can be used for prediction intervals.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document file name is 'design_doc_quantile_regressor.md'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that quantile regression provides sensible prediction intervals even for errors with non-constant variance or non-normal distribution.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions compatibility with scikit-learn's pipeline and cross-validation utilities.",
+      "category": "completeness",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_adb61b0527835f5b",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:scikit-learn/scikit-learn#9978",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Doc: QuantileRegressor for scikit-learn",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#9978",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "#3148",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "conditional quantiles of y conditional on X",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "conditional mean",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "q*t if t > 0, 0 if t = 0, (1-q)*t if t < 0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "similar to Lasso",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "QuantileRegressor",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "0.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "1.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "linear_model",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "doc/modules/classes.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "doc/modules/linear_model.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "HuberRegressor",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "median (q=0.5)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "pinball loss is minimized",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "alpha affects coefficient magnitude",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "linear loss",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "robust to outliers",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "fit(), predict(), and score()",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "coef_",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "intercept_",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "n_samples",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "near 0 or 1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "after HuberRegressor",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "between 0 and 1 exclusive",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "median regression",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Doc: QuantileRegressor for scikit-learn",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#9978",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#3148",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "conditional quantiles of y conditional on X",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "conditional mean",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "q*t if t > 0, 0 if t = 0, (1-q)*t if t < 0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "similar to Lasso",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "QuantileRegressor",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 0.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 1.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "linear_model",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "doc/modules/classes.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "doc/modules/linear_model.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "HuberRegressor",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "median (q=0.5)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "pinball loss is minimized",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "alpha affects coefficient magnitude",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "linear loss",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "robust to outliers",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "fit(), predict(), and score()",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "coef_",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "intercept_",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "n_samples",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "##",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "near 0 or 1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "after HuberRegressor",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "between 0 and 1 exclusive",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "median regression",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Doc: QuantileRegressor for scikit-learn",
+          "heading_level": 1,
+          "required_content": [
+            "Title must be exactly 'Design Doc: QuantileRegressor for scikit-learn'"
+          ],
+          "paragraphs": [
+            "This document outlines the design for the new QuantileRegressor estimator proposed in scikit-learn PR #9978. It serves as a technical specification to align implementation with the existing scikit-learn API, guide testing, and inform users of the new capability for estimating conditional quantiles."
+          ]
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Mention PR #9978 and issue #3148",
+            "Explain that quantile regression estimates conditional quantiles (e.g., median) of y conditional on X",
+            "Contrast with OLS which estimates the conditional mean"
+          ],
+          "paragraphs": [
+            "This design document covers the implementation of the QuantileRegressor estimator as part of scikit-learn PR #9978, which fixes issue #3148. The feature adds support for quantile regression, an algorithm that directly minimizes mean absolute error of a linear regression model.",
+            "Quantile regression estimates the median or other quantiles of y conditional on X, while ordinary least squares (OLS) estimates the conditional mean. This provides a more robust alternative to OLS, especially in the presence of outliers, because the pinball loss (linear loss) used in quantile regression is less sensitive to extreme values than squared error."
+          ]
+        },
+        {
+          "heading": "Mathematical Formulation",
+          "heading_level": 2,
+          "required_content": [
+            "Define the minimization problem: min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1",
+            "Define the pinball loss PB_q(t) with piecewise cases: q*t for t>0, 0 for t=0, (1-q)*t for t<0",
+            "State that L1 penalty is controlled by parameter 'alpha', similar to Lasso"
+          ],
+          "paragraphs": [
+            "The QuantileRegressor finds weights w by solving the following minimization problem: min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1. Here, n_samples is the number of training samples, X_i is the feature vector for sample i, y_i is the target value, q is the desired quantile in (0, 1), and alpha is the regularization parameter.",
+            "The pinball loss PB_q(t) is defined as: PB_q(t) = q * max(t, 0) + (1 - q) * max(-t, 0). This can be expressed piecewise as: q*t if t > 0, 0 if t = 0, and (1-q)*t if t < 0. The pinball loss is also known as the linear loss.",
+            "The L1 penalty term alpha * ||w||_1 is similar to the penalty used in Lasso regression. It encourages sparsity in the coefficient vector w, which helps prevent overfitting and can improve model interpretability. The parameter alpha controls the strength of this regularization."
+          ]
+        },
+        {
+          "heading": "API Design",
+          "heading_level": 2,
+          "required_content": [
+            "Class name: QuantileRegressor",
+            "Parameter 'quantile' with default 0.5 for selecting target quantile q",
+            "Parameter 'alpha' with default 1.0 for L1 regularization strength",
+            "Estimator belongs to the linear_model module"
+          ],
+          "paragraphs": [
+            "The new estimator will be implemented as the class QuantileRegressor within the sklearn.linear_model module. This aligns with the existing structure of linear models in scikit-learn, placing it alongside related robust regressors like HuberRegressor and RANSACRegressor.",
+            "The class will expose two primary parameters: 'quantile' (float, default=0.5) which specifies the quantile q to be estimated (must be between 0 and 1 exclusive), and 'alpha' (float, default=1.0) which controls the strength of the L1 regularization penalty. The default quantile of 0.5 corresponds to median regression, which is a common use case.",
+            "The estimator will follow the standard scikit-learn API with fit(), predict(), and score() methods. After fitting, the learned coefficients w will be available as the coef_ attribute, and the intercept as intercept_. The implementation will use a linear programming solver internally to minimize the pinball loss plus L1 penalty."
+          ]
+        },
+        {
+          "heading": "Integration Points",
+          "heading_level": 2,
+          "required_content": [
+            "Reference file doc/modules/classes.rst",
+            "Reference file doc/modules/linear_model.rst",
+            "QuantileRegressor listed alongside HuberRegressor and RANSACRegressor in classes.rst"
+          ],
+          "paragraphs": [
+            "The integration of QuantileRegressor into scikit-learn requires updates to two documentation files: doc/modules/classes.rst and doc/modules/linear_model.rst. These files define the API reference documentation and the user guide for linear models.",
+            "In doc/modules/classes.rst, QuantileRegressor will be added to the list of linear model classes. Specifically, it should be listed alongside HuberRegressor and RANSACRegressor in the section for robust regression estimators. The PR diff shows the addition of 'linear_model.QuantileRegressor' immediately after 'linear_model.HuberRegressor'.",
+            "In doc/modules/linear_model.rst, a new section titled 'Quantile Regression' will be added. This section will contain the mathematical description, usage examples, and links to relevant figures and example plots. The content will explain the benefits of quantile regression for prediction intervals and robustness to outliers."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Test verifying correct predictions for median (q=0.5)",
+            "Test verifying pinball loss is minimized on synthetic dataset",
+            "Test verifying regularization parameter alpha affects coefficient magnitude"
+          ],
+          "paragraphs": [
+            "Testing the QuantileRegressor requires a multi-faceted approach to ensure correctness, robustness, and integration. The test suite should cover basic functionality, mathematical correctness, and parameter sensitivity.",
+            "First, a test should verify that the estimator produces correct predictions for the median (q=0.5) on a simple synthetic dataset where the true median relationship is known. This confirms the basic fit-predict workflow functions as expected.",
+            "Second, a test should verify that the pinball loss is minimized on a synthetic dataset. This can be done by fitting the model and computing the pinball loss on the training data, then comparing it to the loss from alternative coefficient vectors to ensure the fitted coefficients achieve a lower loss.",
+            "Third, a test should verify that the regularization parameter alpha affects the coefficient magnitude. By fitting models with increasing alpha values, we can confirm that the L1 norm of the coefficient vector decreases, demonstrating the expected regularization effect.",
+            "Additional tests should check edge cases such as quantile values near 0 or 1, handling of perfect multicollinearity, and compatibility with scikit-learn's pipeline and cross-validation utilities."
+          ]
+        }
+      ],
+      "md_title": "Design Doc: QuantileRegressor for scikit-learn",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "GitHub PR diff for scikit-learn/scikit-learn#9978: [MRG] Add quantile regression (partial diff showing changes to doc/modules/classes.rst and doc/modules/linear_model.rst)",
+          "content_blueprint": {
+            "title": "GitHub PR diff for scikit-learn/scikit-learn#9978: [MRG] Add quantile regression (partial diff showing changes to doc/modules/classes",
+            "body": "# Seed Material: scikit-learn/scikit-learn#9978: [MRG] Add quantile regression\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#9978\n\nRepository: scikit-learn/scikit-learn\nPR Number: #9978\nPR Title: [MRG] Add quantile regression\nMerged At: 2021-05-25T12:02:37Z\nChanged Files: 7\nAdditions: +729, Deletions: -0\n\n## PR Description\nThis PR fixes issue #3148\r\n\r\nThis new feature implements quantile regression - an algorithm that directly minimizes mean absolute error of a linear regression model. \r\n\r\n~~The work is still in progress, but I do want to receive some feedback.~~\n\n## Diff (first 3000 chars)\ndiff --git a/doc/modules/classes.rst b/doc/modules/classes.rst\nindex 5462e06f81214..cdeb6f0523422 100644\n--- a/doc/modules/classes.rst\n+++ b/doc/modules/classes.rst\n@@ -839,6 +839,7 @@ Any estimator using the Huber loss would also be robust to outliers, e.g.\n    :template: class.rst\n \n    linear_model.HuberRegressor\n+   linear_model.QuantileRegressor\n    linear_model.RANSACRegressor\n    linear_model.TheilSenRegressor\n \ndiff --git a/doc/modules/linear_model.rst b/doc/modules/linear_model.rst\nindex f1f376dc641c9..7fc14693c198d 100644\n--- a/doc/modules/linear_model.rst\n+++ b/doc/modules/linear_model.rst\n@@ -1423,6 +1423,83 @@ Note that this estimator is different from the R implementation of Robust Regres\n squares implementation with weights given to each sample on the basis of how much the residual is\n greater than a certain threshold.\n \n+.. _quantile_regression:\n+\n+Quantile Regression\n+===================\n+\n+Quantile regression estimates the median or other quantiles of :math:`y`\n+conditional on :math:`X`, while ordinary least squares (OLS) estimates the\n+conditional mean.\n+\n+As a linear model, the :class:`QuantileRegressor` gives linear predictions\n+:math:`\\hat{y}(w, X) = Xw` for the :math:`q`-th quantile, :math:`q \\in (0, 1)`.\n+The weights or coefficients :math:`w` are then found by the following\n+minimization problem:\n+\n+.. math::\n+    \\min_{w} {\\frac{1}{n_{\\text{samples}}}\n+    \\sum_i PB_q(y_i - X_i w) + \\alpha ||w||_1}.\n+\n+This consists of the pinball loss (also known as linear loss),\n+see also :class:`~sklearn.metrics.mean_pinball_loss`,\n+\n+.. math::\n+    PB_q(t) = q \\max(t, 0) + (1 - q) \\max(-t, 0) =\n+    \\begin{cases}\n+        q t, & t > 0, \\\\\n+        0,    & t = 0, \\\\\n+        (1-q) t, & t < 0\n+    \\end{cases}\n+\n+and the L1 penalty controlled by parameter ``alpha``, similar to\n+:class:`Lasso`.\n+\n+As the pinball loss is only linear in the residuals, quantile regression is\n+much more robust to outliers than squared error based estimation of the mean.\n+Somewhat in between is the :class:`HuberRegressor`.\n+\n+Quantile regression may be useful if one is interested in predicting an\n+interval instead of point prediction. Sometimes, prediction intervals are\n+calculated based on the assumption that prediction error is distributed\n+normally with zero mean and constant variance. Quantile regression provides\n+sensible prediction intervals even for errors with non-constant (but\n+predictable) variance or non-normal distribution.\n+\n+.. figure:: /auto_examples/linear_model/images/sphx_glr_plot_quantile_regression_001.png\n+   :target: ../auto_examples/linear_model/plot_quantile_regression.html\n+   :align: center\n+   :scale: 50%\n+\n+Based on minimizing the pinball loss, conditional quantiles can also be\n+estimated by models other than linear models. For example,\n+:class:`~sklearn.ensemble.GradientBoostingRegressor` can predict conditional\n+quantiles if its parameter ``loss`` is set to ``\"quantile\"`` and parameter\n+``alpha`` is set to the quantile that should"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description text stating the PR fixes issue #3148 and implements quantile regression",
+          "content_blueprint": {
+            "title": "PR description text stating the PR fixes issue #3148 and implements quantile regression",
+            "body": "# Seed Material: scikit-learn/scikit-learn#9978: [MRG] Add quantile regression\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#9978\n\nRepository: scikit-learn/scikit-learn\nPR Number: #9978\nPR Title: [MRG] Add quantile regression\nMerged At: 2021-05-25T12:02:37Z\nChanged Files: 7\nAdditions: +729, Deletions: -0\n\n## PR Description\nThis PR fixes issue #3148\r\n\r\nThis new feature implements quantile regression - an algorithm that directly minimizes mean absolute error of a linear regression model. \r\n\r\n~~The work is still in progress, but I do want to receive some feedback.~~\n\n## Diff (first 3000 chars)\ndiff --git a/doc/modules/classes.rst b/doc/modules/classes.rst\nindex 5462e06f81214..cdeb6f0523422 100644\n--- a/doc/modules/classes.rst\n+++ b/doc/modules/classes.rst\n@@ -839,6 +839,7 @@ Any estimator using the Huber loss would also be robust to outliers, e.g.\n    :template: class.rst\n \n    linear_model.HuberRegressor\n+   linear_model.QuantileRegressor\n    linear_model.RANSACRegressor\n    linear_model.TheilSenRegressor\n \ndiff --git a/doc/modules/linear_model.rst b/doc/modules/linear_model.rst\nindex f1f376dc641c9..7fc14693c198d 100644\n--- a/doc/modules/linear_model.rst\n+++ b/doc/modules/linear_model.rst\n@@ -1423,6 +1423,83 @@ Note that this estimator is different from the R implementation of Robust Regres\n squares implementation with weights given to each sample on the basis of how much the residual is\n greater than a certain threshold.\n \n+.. _quantile_regression:\n+\n+Quantile Regression\n+===================\n+\n+Quantile regression estimates the median or other quantiles of :math:`y`\n+conditional on :math:`X`, while ordinary least squares (OLS) estimates the\n+conditional mean.\n+\n+As a linear model, the :class:`QuantileRegressor` gives linear predictions\n+:math:`\\hat{y}(w, X) = Xw` for the :math:`q`-th quantile, :math:`q \\in (0, 1)`.\n+The weights or coefficients :math:`w` are then found by the following\n+minimization problem:\n+\n+.. math::\n+    \\min_{w} {\\frac{1}{n_{\\text{samples}}}\n+    \\sum_i PB_q(y_i - X_i w) + \\alpha ||w||_1}.\n+\n+This consists of the pinball loss (also known as linear loss),\n+see also :class:`~sklearn.metrics.mean_pinball_loss`,\n+\n+.. math::\n+    PB_q(t) = q \\max(t, 0) + (1 - q) \\max(-t, 0) =\n+    \\begin{cases}\n+        q t, & t > 0, \\\\\n+        0,    & t = 0, \\\\\n+        (1-q) t, & t < 0\n+    \\end{cases}\n+\n+and the L1 penalty controlled by parameter ``alpha``, similar to\n+:class:`Lasso`.\n+\n+As the pinball loss is only linear in the residuals, quantile regression is\n+much more robust to outliers than squared error based estimation of the mean.\n+Somewhat in between is the :class:`HuberRegressor`.\n+\n+Quantile regression may be useful if one is interested in predicting an\n+interval instead of point prediction. Sometimes, prediction intervals are\n+calculated based on the assumption that prediction error is distributed\n+normally with zero mean and constant variance. Quantile regression provides\n+sensible prediction intervals even for errors with non-constant (but\n+predictable) variance or non-normal distribution.\n+\n+.. figure:: /auto_examples/linear_model/images/sphx_glr_plot_quantile_regression_001.png\n+   :target: ../auto_examples/linear_model/plot_quantile_regression.html\n+   :align: center\n+   :scale: 50%\n+\n+Based on minimizing the pinball loss, conditional quantiles can also be\n+estimated by models other than linear models. For example,\n+:class:`~sklearn.ensemble.GradientBoostingRegressor` can predict conditional\n+quantiles if its parameter ``loss`` is set to ``\"quantile\"`` and parameter\n+``alpha`` is set to the quantile that should"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title is exactly 'Design Doc: QuantileRegressor for scikit-learn'",
+          "value": "Design Doc: QuantileRegressor for scikit-learn",
+          "tolerance": null,
+          "location": "Markdown heading level 1"
+        },
+        {
+          "description": "Overview section mentions PR number #9978",
+          "value": "#9978",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview section mentions issue number #3148",
+          "value": "#3148",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview states quantile regression estimates conditional quantiles of y conditional on X",
+          "value": "conditional quantiles of y conditional on X",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Overview contrasts quantile regression with OLS estimating the conditional mean",
+          "value": "conditional mean",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Mathematical Formulation includes the minimization problem: min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1",
+          "value": "min_w (1/n_samples) * sum_i PB_q(y_i - X_i w) + alpha ||w||_1",
+          "tolerance": null,
+          "location": "Mathematical Formulation section"
+        },
+        {
+          "description": "Pinball loss PB_q(t) defined with piecewise cases: q*t for t>0, 0 for t=0, (1-q)*t for t<0",
+          "value": "q*t if t > 0, 0 if t = 0, (1-q)*t if t < 0",
+          "tolerance": null,
+          "location": "Mathematical Formulation section"
+        },
+        {
+          "description": "Mathematical Formulation states L1 penalty is controlled by parameter 'alpha', similar to Lasso",
+          "value": "similar to Lasso",
+          "tolerance": null,
+          "location": "Mathematical Formulation section"
+        },
+        {
+          "description": "API Design specifies class name as QuantileRegressor",
+          "value": "QuantileRegressor",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design specifies parameter 'quantile' with default 0.5",
+          "value": 0.5,
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design specifies parameter 'alpha' with default 1.0",
+          "value": 1.0,
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design states estimator belongs to the linear_model module",
+          "value": "linear_model",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "Integration Points references file doc/modules/classes.rst",
+          "value": "doc/modules/classes.rst",
+          "tolerance": null,
+          "location": "Integration Points section"
+        },
+        {
+          "description": "Integration Points references file doc/modules/linear_model.rst",
+          "value": "doc/modules/linear_model.rst",
+          "tolerance": null,
+          "location": "Integration Points section"
+        },
+        {
+          "description": "Integration Points notes QuantileRegressor listed alongside HuberRegressor and RANSACRegressor in classes.rst",
+          "value": "HuberRegressor",
+          "tolerance": null,
+          "location": "Integration Points section"
+        },
+        {
+          "description": "Testing Strategy includes test for correct predictions for median (q=0.5)",
+          "value": "median (q=0.5)",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Testing Strategy includes test verifying pinball loss is minimized on synthetic dataset",
+          "value": "pinball loss is minimized",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Testing Strategy includes test verifying regularization parameter alpha affects coefficient magnitude",
+          "value": "alpha affects coefficient magnitude",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Pinball loss described as also known as linear loss",
+          "value": "linear loss",
+          "tolerance": null,
+          "location": "Mathematical Formulation section"
+        },
+        {
+          "description": "Overview states quantile regression is more robust to outliers because pinball loss is less sensitive to extreme values than squared error",
+          "value": "robust to outliers",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "API Design mentions fit(), predict(), and score() methods",
+          "value": "fit(), predict(), and score()",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design mentions coef_ attribute for learned coefficients",
+          "value": "coef_",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design mentions intercept_ attribute",
+          "value": "intercept_",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "Mathematical Formulation defines n_samples as the number of training samples",
+          "value": "n_samples",
+          "tolerance": null,
+          "location": "Mathematical Formulation section"
+        },
+        {
+          "description": "Document uses ATX-style headings with # for title and ## for sections",
+          "value": "##",
+          "tolerance": null,
+          "location": "Markdown headings"
+        },
+        {
+          "description": "Testing Strategy mentions checking edge cases such as quantile values near 0 or 1",
+          "value": "near 0 or 1",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Integration Points states QuantileRegressor added immediately after HuberRegressor in classes.rst",
+          "value": "after HuberRegressor",
+          "tolerance": null,
+          "location": "Integration Points section"
+        },
+        {
+          "description": "API Design mentions that quantile parameter must be between 0 and 1 exclusive",
+          "value": "between 0 and 1 exclusive",
+          "tolerance": null,
+          "location": "API Design section"
+        },
+        {
+          "description": "API Design mentions default quantile of 0.5 corresponds to median regression",
+          "value": "median regression",
+          "tolerance": null,
+          "location": "API Design section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1925729798
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "GitHub PR diff for scikit-learn/scikit-learn#9978: [MRG] Add quantile regression (partial diff showing changes to doc/modules/classes.rst and doc/modules/linear_model.rst)",
+      "content_blueprint": {
+        "title": "GitHub PR diff for scikit-learn/scikit-learn#9978: [MRG] Add quantile regression (partial diff showing changes to doc/modules/classes",
+        "body": "# Seed Material: scikit-learn/scikit-learn#9978: [MRG] Add quantile regression\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#9978\n\nRepository: scikit-learn/scikit-learn\nPR Number: #9978\nPR Title: [MRG] Add quantile regression\nMerged At: 2021-05-25T12:02:37Z\nChanged Files: 7\nAdditions: +729, Deletions: -0\n\n## PR Description\nThis PR fixes issue #3148\r\n\r\nThis new feature implements quantile regression - an algorithm that directly minimizes mean absolute error of a linear regression model. \r\n\r\n~~The work is still in progress, but I do want to receive some feedback.~~\n\n## Diff (first 3000 chars)\ndiff --git a/doc/modules/classes.rst b/doc/modules/classes.rst\nindex 5462e06f81214..cdeb6f0523422 100644\n--- a/doc/modules/classes.rst\n+++ b/doc/modules/classes.rst\n@@ -839,6 +839,7 @@ Any estimator using the Huber loss would also be robust to outliers, e.g.\n    :template: class.rst\n \n    linear_model.HuberRegressor\n+   linear_model.QuantileRegressor\n    linear_model.RANSACRegressor\n    linear_model.TheilSenRegressor\n \ndiff --git a/doc/modules/linear_model.rst b/doc/modules/linear_model.rst\nindex f1f376dc641c9..7fc14693c198d 100644\n--- a/doc/modules/linear_model.rst\n+++ b/doc/modules/linear_model.rst\n@@ -1423,6 +1423,83 @@ Note that this estimator is different from the R implementation of Robust Regres\n squares implementation with weights given to each sample on the basis of how much the residual is\n greater than a certain threshold.\n \n+.. _quantile_regression:\n+\n+Quantile Regression\n+===================\n+\n+Quantile regression estimates the median or other quantiles of :math:`y`\n+conditional on :math:`X`, while ordinary least squares (OLS) estimates the\n+conditional mean.\n+\n+As a linear model, the :class:`QuantileRegressor` gives linear predictions\n+:math:`\\hat{y}(w, X) = Xw` for the :math:`q`-th quantile, :math:`q \\in (0, 1)`.\n+The weights or coefficients :math:`w` are then found by the following\n+minimization problem:\n+\n+.. math::\n+    \\min_{w} {\\frac{1}{n_{\\text{samples}}}\n+    \\sum_i PB_q(y_i - X_i w) + \\alpha ||w||_1}.\n+\n+This consists of the pinball loss (also known as linear loss),\n+see also :class:`~sklearn.metrics.mean_pinball_loss`,\n+\n+.. math::\n+    PB_q(t) = q \\max(t, 0) + (1 - q) \\max(-t, 0) =\n+    \\begin{cases}\n+        q t, & t > 0, \\\\\n+        0,    & t = 0, \\\\\n+        (1-q) t, & t < 0\n+    \\end{cases}\n+\n+and the L1 penalty controlled by parameter ``alpha``, similar to\n+:class:`Lasso`.\n+\n+As the pinball loss is only linear in the residuals, quantile regression is\n+much more robust to outliers than squared error based estimation of the mean.\n+Somewhat in between is the :class:`HuberRegressor`.\n+\n+Quantile regression may be useful if one is interested in predicting an\n+interval instead of point prediction. Sometimes, prediction intervals are\n+calculated based on the assumption that prediction error is distributed\n+normally with zero mean and constant variance. Quantile regression provides\n+sensible prediction intervals even for errors with non-constant (but\n+predictable) variance or non-normal distribution.\n+\n+.. figure:: /auto_examples/linear_model/images/sphx_glr_plot_quantile_regression_001.png\n+   :target: ../auto_examples/linear_model/plot_quantile_regression.html\n+   :align: center\n+   :scale: 50%\n+\n+Based on minimizing the pinball loss, conditional quantiles can also be\n+estimated by models other than linear models. For example,\n+:class:`~sklearn.ensemble.GradientBoostingRegressor` can predict conditional\n+quantiles if its parameter ``loss`` is set to ``\"quantile\"`` and parameter\n+``alpha`` is set to the quantile that should"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description text stating the PR fixes issue #3148 and implements quantile regression",
+      "content_blueprint": {
+        "title": "PR description text stating the PR fixes issue #3148 and implements quantile regression",
+        "body": "# Seed Material: scikit-learn/scikit-learn#9978: [MRG] Add quantile regression\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#9978\n\nRepository: scikit-learn/scikit-learn\nPR Number: #9978\nPR Title: [MRG] Add quantile regression\nMerged At: 2021-05-25T12:02:37Z\nChanged Files: 7\nAdditions: +729, Deletions: -0\n\n## PR Description\nThis PR fixes issue #3148\r\n\r\nThis new feature implements quantile regression - an algorithm that directly minimizes mean absolute error of a linear regression model. \r\n\r\n~~The work is still in progress, but I do want to receive some feedback.~~\n\n## Diff (first 3000 chars)\ndiff --git a/doc/modules/classes.rst b/doc/modules/classes.rst\nindex 5462e06f81214..cdeb6f0523422 100644\n--- a/doc/modules/classes.rst\n+++ b/doc/modules/classes.rst\n@@ -839,6 +839,7 @@ Any estimator using the Huber loss would also be robust to outliers, e.g.\n    :template: class.rst\n \n    linear_model.HuberRegressor\n+   linear_model.QuantileRegressor\n    linear_model.RANSACRegressor\n    linear_model.TheilSenRegressor\n \ndiff --git a/doc/modules/linear_model.rst b/doc/modules/linear_model.rst\nindex f1f376dc641c9..7fc14693c198d 100644\n--- a/doc/modules/linear_model.rst\n+++ b/doc/modules/linear_model.rst\n@@ -1423,6 +1423,83 @@ Note that this estimator is different from the R implementation of Robust Regres\n squares implementation with weights given to each sample on the basis of how much the residual is\n greater than a certain threshold.\n \n+.. _quantile_regression:\n+\n+Quantile Regression\n+===================\n+\n+Quantile regression estimates the median or other quantiles of :math:`y`\n+conditional on :math:`X`, while ordinary least squares (OLS) estimates the\n+conditional mean.\n+\n+As a linear model, the :class:`QuantileRegressor` gives linear predictions\n+:math:`\\hat{y}(w, X) = Xw` for the :math:`q`-th quantile, :math:`q \\in (0, 1)`.\n+The weights or coefficients :math:`w` are then found by the following\n+minimization problem:\n+\n+.. math::\n+    \\min_{w} {\\frac{1}{n_{\\text{samples}}}\n+    \\sum_i PB_q(y_i - X_i w) + \\alpha ||w||_1}.\n+\n+This consists of the pinball loss (also known as linear loss),\n+see also :class:`~sklearn.metrics.mean_pinball_loss`,\n+\n+.. math::\n+    PB_q(t) = q \\max(t, 0) + (1 - q) \\max(-t, 0) =\n+    \\begin{cases}\n+        q t, & t > 0, \\\\\n+        0,    & t = 0, \\\\\n+        (1-q) t, & t < 0\n+    \\end{cases}\n+\n+and the L1 penalty controlled by parameter ``alpha``, similar to\n+:class:`Lasso`.\n+\n+As the pinball loss is only linear in the residuals, quantile regression is\n+much more robust to outliers than squared error based estimation of the mean.\n+Somewhat in between is the :class:`HuberRegressor`.\n+\n+Quantile regression may be useful if one is interested in predicting an\n+interval instead of point prediction. Sometimes, prediction intervals are\n+calculated based on the assumption that prediction error is distributed\n+normally with zero mean and constant variance. Quantile regression provides\n+sensible prediction intervals even for errors with non-constant (but\n+predictable) variance or non-normal distribution.\n+\n+.. figure:: /auto_examples/linear_model/images/sphx_glr_plot_quantile_regression_001.png\n+   :target: ../auto_examples/linear_model/plot_quantile_regression.html\n+   :align: center\n+   :scale: 50%\n+\n+Based on minimizing the pinball loss, conditional quantiles can also be\n+estimated by models other than linear models. For example,\n+:class:`~sklearn.ensemble.GradientBoostingRegressor` can predict conditional\n+quantiles if its parameter ``loss`` is set to ``\"quantile\"`` and parameter\n+``alpha`` is set to the quantile that should"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_adb61b0527835f5b/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_adb61b0527835f5b/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_adb61b0527835f5b/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:18:23.508107+00:00"
+}

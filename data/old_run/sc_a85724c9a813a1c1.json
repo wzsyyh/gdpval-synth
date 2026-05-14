@@ -1,0 +1,855 @@
+{
+  "candidate_id": "sc_a85724c9a813a1c1",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "a85724c9a813a1c1",
+  "prompt": "You are a senior software engineer on the React core team. The team has merged PR #22114 to remove the setState warning for unmounted components. Your manager has asked you to write a design document that captures the rationale, technical changes, and implications of this decision for the broader engineering organization. This document will serve as the official record and will be referenced by engineers working on future React features.\n\nThe design document should synthesize the information from the attached PR description and diff. It must explain the original warning's purpose, the problems it caused, the specific code changes made, and the impact on user-facing behavior and testing. Your audience includes both senior engineers and product developers who may have relied on the warning in their code.\n\nRequirements:\n1. Begin with an 'Overview' section that states the purpose of the PR and summarizes the key decision to remove the warning.\n2. Create a 'Background' section explaining the original warning's intent, the common false-positive pattern, and the 'canonical' ref-based workaround mentioned in the PR description.\n3. Write a 'Rationale for Removal' section detailing the three main problems with keeping the warning: the false positive leading to runtime overhead, the conflict with future features for preserving DOM/state, and the tendency to push developers into moving mutations into effects.\n4. Add a 'Technical Changes' section that describes the exact files modified (from the diff) and the nature of the changes (removal of warning code and test modifications).\n5. Include a 'Testing Impact' section that explains how the specific test cases in `ReactCompositeComponent-test.js` were updated to reflect the new behavior (no warning expected).\n6. Conclude with a 'Recommendations for Developers' section advising on what developers should do now that the warning is removed, referencing the patterns from the PR description.\n7. The document must be formatted as a Word document with clear section headings. Do not invent any technical details, file paths, or code examples not present in the attached material.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "docx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Word file (.docx) with the correct title 'Design Document: Removal of setState Warning on Unmounted Components (PR #22114)'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a memorandum header with a 'To' field addressed to 'React Core Team & Engineering Organization'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a memorandum header with a 'From' field indicating a 'Senior Software Engineer, React Core Team'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a memorandum header with a 'Date' field showing '2021-08-18'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The memorandum header 'Re' line includes 'PR #22114' and the full PR title.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an 'Overview' section as the first major section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Background' section following the Overview.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Rationale for Removal' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Technical Changes' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Testing Impact' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a 'Recommendations for Developers' section as the final major section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states that the PR was merged on 2021-08-18.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the primary change: removal of the warning for setState/forceUpdate on unmounted components.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section explains the original warning's purpose as protecting against memory leaks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section provides the example of a component subscribing to an external data store as a potential memory leak scenario.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section describes the async/await pattern (handleSubmit) as a common false positive.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section explains the 'canonical' workaround using a `useRef` to track mounted state.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Removal section argues that false positives are too common and the workaround adds overhead.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Removal section mentions the conflict with the future feature of preserving DOM/state in hidden tabs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Removal section states that the warning pushes developers toward moving mutations into effects.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section identifies the file `packages/react-dom/src/__tests__/ReactCompositeComponent-test.js` as changed.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section identifies the file `packages/react-reconciler/src/ReactFiberWorkLoop.new.js` as changed.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Changes section notes that 4 files were changed with a net deletion of lines.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section describes that test titles were changed from 'should warn about...' to 'should not warn about...' for forceUpdate and setState.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section describes that expect(...).toErrorDev(...) assertions were removed from the tests.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section states that the import of FunctionComponentUpdateQueue was removed from ReactFiberWorkLoop.new.js.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Impact section explains that the forceUpdate test was updated to not expect a warning after unmounting.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Impact section explains that the setState test was updated to not expect a warning and still asserts the renders count remains 2.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section advises that the ref-based workaround is no longer necessary.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section states that the async/await pattern with setState is now safe and recommended.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section discourages moving mutations into effects solely to avoid the warning.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section mentions useMutableSource as a future direction for library authors.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses clear, professional language appropriate for an internal design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not invent technical details, file paths, or code examples not present in the attached material.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Removal section explicitly states three distinct arguments for removing the warning.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Background section correctly links the false positive warning to the async/await pattern and the memory leak warning to the subscription pattern.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Changes section correctly describes the removal of the import statement for FunctionComponentUpdateQueue.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Impact section mentions that the test for forceUpdate calls it twice without warning after unmount.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section correctly identifies that the async pattern involves setPending(true) before await and setPending(false) after.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document structure follows the required sequence: Overview, Background, Rationale for Removal, Technical Changes, Testing Impact, Recommendations for Developers.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains at least 6 distinct sections (including sub-sections if used).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly explains that the ref-based workaround added runtime overhead and code complexity.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document states that the warning about unmounted components is a 'no-op' but indicates a memory leak, as per the original warning message.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that the future feature would disconnect effects while preserving DOM/state, causing the ref-based workaround to fail.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly notes that moving mutations into effects couples them to component lifecycle rather than user events.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the PR had +12 additions and -291 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses the term 'no-op' to describe what setState does on an unmounted component.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document invents a file path, code example, or technical detail not present in the provided PR description or diff.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to mention the PR number #22114 anywhere in the body or header.",
+      "category": "reference",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_a85724c9a813a1c1",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:facebook/react#22114",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Removal of setState Warning on Unmounted Components (PR #22114)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "Design Document for PR #22114: Remove the warning for setState on unmounted components",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "2021-08-18",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "removal of the development-mode warning that fired when `setState` or `forceUpdate` was called on an unmounted React component",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "protect against memory leaks",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "component subscribing to an external data store",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "async/await pattern within an event handler, such as `handleSubmit`",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "use a `useRef` to track the component's mounted state",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "high rate of false positives made the warning more harmful than helpful",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "preserve a component's DOM and state even when it is not visible (e.g., in a hidden browser tab)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "pushed developers toward worse patterns",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "packages/react-dom/src/__tests__/ReactCompositeComponent-test.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "packages/react-reconciler/src/ReactFiberWorkLoop.new.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "net deletion of 279 lines",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "test titles for `forceUpdate`... were changed from 'should warn about...' to 'should not warn about...'",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "the test continues to assert that the `renders` count remains at 2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "ref-based workaround... is no longer necessary to avoid false-positive warnings",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "async/await pattern in event handlers... is now the recommended approach",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "avoid moving user-initiated mutations... into `useEffect` hooks solely to circumvent the old warning",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "`useMutableSource`",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Removal of setState Warning on Unmounted Components (PR #22114)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "Design Document for PR #22114: Remove the warning for setState on unmounted components",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "2021-08-18",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "removal of the development-mode warning that fired when `setState` or `forceUpdate` was called on an unmounted React component",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "protect against memory leaks",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "component subscribing to an external data store",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "async/await pattern within an event handler, such as `handleSubmit`",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "use a `useRef` to track the component's mounted state",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "high rate of false positives made the warning more harmful than helpful",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "preserve a component's DOM and state even when it is not visible (e.g., in a hidden browser tab)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "pushed developers toward worse patterns",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "packages/react-dom/src/__tests__/ReactCompositeComponent-test.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "packages/react-reconciler/src/ReactFiberWorkLoop.new.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "net deletion of 279 lines",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "test titles for `forceUpdate`... were changed from 'should warn about...' to 'should not warn about...'",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "the test continues to assert that the `renders` count remains at 2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "ref-based workaround... is no longer necessary to avoid false-positive warnings",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "async/await pattern in event handlers... is now the recommended approach",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "avoid moving user-initiated mutations... into `useEffect` hooks solely to circumvent the old warning",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "`useMutableSource`",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "docx",
+      "sheets": null,
+      "sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 1,
+          "required_content": [
+            "State the purpose of PR #22114.",
+            "Summarize the decision to remove the warning for setState on unmounted components.",
+            "Mention the merged date: 2021-08-18."
+          ],
+          "paragraphs": [
+            "This document details the design rationale and technical changes for Pull Request #22114, merged on 2021-08-18. The primary change is the removal of the development-mode warning that fired when `setState` or `forceUpdate` was called on an unmounted React component.",
+            "The decision to remove this warning was driven by the realization that the warning, intended to protect against memory leaks, produced too many false positives in common, benign code patterns. It also conflicted with future architectural goals and inadvertently encouraged developers to move to more problematic code patterns. This document records the reasoning and serves as a reference for the change in behavior."
+          ],
+          "section_type": "cover_memo"
+        },
+        {
+          "heading": "Background",
+          "heading_level": 1,
+          "required_content": [
+            "Explain the original purpose of the warning (protecting against memory leaks).",
+            "Provide the example of a subscription pattern that could cause a memory leak if not unsubscribed.",
+            "Describe the common async/await pattern that causes a false positive.",
+            "Explain the 'canonical' workaround using a `useRef` to track mounted state."
+          ],
+          "paragraphs": [
+            "The original warning, present in the React reconciler, was designed to alert developers to a potential memory leak. The canonical example involves a component subscribing to an external data store. If the component unmounts and the subscription is not cleaned up, any subsequent state update triggered by the store would occur on an unmounted component, indicating a memory leak.",
+            "However, in practice, a much more common scenario triggers this warning without indicating a leak. The typical async/await pattern within an event handler, such as `handleSubmit`, often sets state both before and after an await call. If the component unmounts while the async operation is in flight, the subsequent `setState` after the await will fire the warning, even though there is no ongoing subscription or memory leak.",
+            "To suppress this false-positive warning, developers often adopted a 'canonical' workaround. This involved using a `useRef` to track the component's mounted state, checking the ref's value before setting state. While functional, this pattern added runtime overhead, increased code complexity, and reduced readability, all to silence a non-issue."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Rationale for Removal",
+          "heading_level": 1,
+          "required_content": [
+            "Detail the problem of false positives and the overhead of the ref-based workaround.",
+            "Explain the conflict with the future feature for preserving DOM/state in hidden tabs.",
+            "Describe how the warning pushes developers towards moving mutations into effects."
+          ],
+          "paragraphs": [
+            "The core rationale for removal rests on three main arguments. First, the high rate of false positives made the warning more harmful than helpful. The most common trigger—the async/await pattern—is not a memory leak. The standard workaround using a `useRef` to track mounted status introduces unnecessary runtime overhead, more code, and reduces readability, all to silence a non-issue.",
+            "Second, the warning's philosophy conflicts with a planned future feature: the ability to preserve a component's DOM and state even when it is not visible (e.g., in a hidden browser tab), while disconnecting its effects. Under this model, a component in a hidden tab would be considered 'unmounted' from an effects perspective. The ref-based workaround would incorrectly prevent state updates for such components, causing them to 'miss' updates and display stale data when they become visible again.",
+            "Third, the warning inadvertently pushed developers toward worse patterns. Fearing the warning, developers would move event-handler logic (like API calls) into `useEffect` hooks, reasoning that effects provide a built-in cleanup function to cancel operations. This couples the action to the component's lifecycle rather than the user's event, introducing fragility such as unintended re-firing of effects when dependencies change. Thus, the warning against one problematic pattern encouraged another, more problematic one."
+          ],
+          "section_type": "legal_argument"
+        },
+        {
+          "heading": "Technical Changes",
+          "heading_level": 1,
+          "required_content": [
+            "List the files changed based on the diff: `ReactCompositeComponent-test.js` and `ReactFiberWorkLoop.new.js`.",
+            "Describe the nature of the changes: removal of warning code and import, and modification of tests."
+          ],
+          "paragraphs": [
+            "The PR modified 4 files with a net deletion of 279 lines, indicating a significant removal of code. The changes are concentrated in the test suite and the core reconciler work loop.",
+            "In `packages/react-dom/src/__tests__/ReactCompositeComponent-test.js`, the tests were updated. The test titles for `forceUpdate` and `setState` on unmounted components were changed from 'should warn about...' to 'should not warn about...'. The assertions using `expect(...).toErrorDev(...)` to check for the warning message were removed, and the corresponding `forceUpdate()` and `setState()` calls were left as simple statements that should execute without error or warning.",
+            "In `packages/react-reconciler/src/ReactFiberWorkLoop.new.js`, the import of `FunctionComponentUpdateQueue` from `ReactFiberHooks.new` was removed, and the conditional logic that triggered the warning was deleted. This change directly removes the warning from the production reconciler code path."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Testing Impact",
+          "heading_level": 1,
+          "required_content": [
+            "Explain that existing tests were modified to assert the absence of warnings.",
+            "Detail the specific test case for `forceUpdate` on an unmounted component.",
+            "Detail the specific test case for `setState` on an unmounted component."
+          ],
+          "paragraphs": [
+            "The test suite was updated to validate the new behavior. Tests that previously expected a warning to be logged now expect silent success.",
+            "For the `forceUpdate` test case, the component is unmounted via `ReactDOM.unmountComponentAtNode(container)`. Subsequently, calling `instance.forceUpdate()` twice no longer expects a warning message via `toErrorDev`. The test simply verifies that the calls do not throw an error.",
+            "For the `setState` test case, after the component is unmounted, `instance.setState({value: 2})` is called. Previously, this was wrapped in an `expect` block looking for the specific warning string. Now, the call is made directly. The test continues to assert that the `renders` count remains at 2, confirming that the setState call is a no-op without triggering a warning."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Recommendations for Developers",
+          "heading_level": 1,
+          "required_content": [
+            "Advise that developers no longer need the ref-based workaround to track mounted state for silencing the warning.",
+            "Explain that the async/await pattern with setState after an await is now safe and will not produce warnings.",
+            "Note that moving mutations into effects solely to avoid the warning is no longer necessary and is discouraged.",
+            "Mention that libraries with direct subscriptions should consider `useMutableSource` in the future."
+          ],
+          "paragraphs": [
+            "With the removal of the warning, developers should adjust their patterns. The ref-based workaround to track mounted state (using `useRef` and a `useEffect` cleanup to set a flag) is no longer necessary to avoid false-positive warnings. Developers can simplify their code by removing this boilerplate.",
+            "The common async/await pattern in event handlers, where state is set after an await, is now the recommended approach. It is safe and will not produce any development-mode warnings. There is no memory leak in this pattern, as the async operation will complete and the state update will simply be a no-op on the unmounted component.",
+            "Developers should avoid moving user-initiated mutations (like POST requests) into `useEffect` hooks solely to circumvent the old warning. This practice couples the action to the component lifecycle, which can cause fragile behavior, such as the effect re-firing when unrelated data changes.",
+            "For library authors managing direct subscriptions to external data sources, the future direction involves `useMutableSource`. This hook is designed to handle subscriptions more efficiently and correctly within React's concurrent features. Until then, direct subscriptions remain valid, but the warning about unmounted state updates will no longer appear."
+          ],
+          "section_type": "generic"
+        }
+      ],
+      "doc_header": {
+        "to": "React Core Team & Engineering Organization",
+        "from_": "Senior Software Engineer, React Core Team",
+        "date": "2021-08-18",
+        "re": "Design Document for PR #22114: Remove the warning for setState on unmounted components",
+        "cc": null
+      },
+      "title": "Design Document: Removal of setState Warning on Unmounted Components (PR #22114)",
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The PR description and diff for facebook/react#22114, which contains the rationale for removing the warning and the specific code changes across 4 files.",
+          "content_blueprint": {
+            "title": "The PR description and diff for facebook/react#22114, which contains the rationale for removing the warning and the specific code changes across 4 files",
+            "body": "# Seed Material: facebook/react#22114: Remove the warning for setState on unmounted components\nSource: github_issue_pr\nIdentifier: pr:facebook/react#22114\n\nRepository: facebook/react\nPR Number: #22114\nPR Title: Remove the warning for setState on unmounted components\nMerged At: 2021-08-18T20:50:02Z\nChanged Files: 4\nAdditions: +12, Deletions: -291\n\n## PR Description\nWe have a warning that fires when you `setState` on an unmounted components. This is a proposal to remove it.\r\n\r\n### Why was this warning added?\r\n\r\nThe warning states that it protects against memory leaks. The original use case (rewritten to Hooks) goes like this:\r\n\r\n```js\r\nuseEffect(() => {\r\n  function handleChange() {\r\n     setState(store.getState())\r\n  }\r\n  store.subscribe(handleChange)\r\n  return () => store.unsubscribe(handleChange)\r\n}, [])\r\n```\r\n\r\nIf you forget the `unsubscribe` call, after the component unmounts you'll get a memory leak. So we warn you if you set state after unmounting because we think you might've forgotten to do that.\r\n\r\n### Why does this warning create problems?\r\n\r\nThe problem is that in practice, there's usually a much more common case in the user code:\r\n\r\n```js\r\nasync function handleSubmit() {\r\n  setPending(true)\r\n  await post('/someapi') // component might unmount while we're waiting\r\n  setPending(false)\r\n}\r\n```\r\n\r\nThis will trigger the `setState` warning. However, there is no actual problem here. There's no \"memory leak\" here: the POST comes back, we try to set state, the component is unmounted (so nothing happens), and then we're done. Nothing keeps holding onto the component indefinitely.\r\n\r\n### Avoiding false positives is too difficult\r\n\r\nSo effectively the above case is a false positive but that's the most common one people try to solve. Even the \"canonical\" solution to this is pretty clumsy:\r\n\r\n```js\r\nlet isMountedRef = useRef(false)\r\nuseEffect(() => {\r\n  isMountedRef.current = true\r\n  return () => {\r\n    isMountedRef.current = false\r\n  }\r\n}, [])\r\n\r\nasync function handleSubmit() {\r\n  setPending(true)\r\n  await post('/someapi')\r\n  if (isMountedRef.current) {\r\n    setPending(false)\r\n  }\r\n}\r\n```\r\n\r\nIt's unfortunate because we're adding slightly more runtime overhead, slightly more code, and making the code slightly less readable — all to avoid an effectively false positive warning.\r\n\r\nBu there are other issues, too.\r\n\r\nIn the future, we'd like to offer a feature that lets you preserve DOM and state even when the component is not visible, but disconnect its effects. With this feature, the code above doesn't work well. You'll \"miss\" the `setPending(false)` call because `isMountedRef.current` is `false` while the component is in a hidden tab. So once you return to the hidden tab and make it visible again, it will look as if your mutation hasn't \"come through\". By trying to evade the warning, we've made the behavior worse.\r\n\r\nIn addition, we've seen that this warning pushes people towards moving mutations (like POST) into effects just because effects offer an easy way to \"ignore\" something using the cleanup function and a flag. However, this *also* usually makes the code worse. The user action is associated with a particular event — not with the component being displayed — and so moving this code into effect introduces extra fragility. Such as the risk of the effect re-firing when some related data changes. So the warning against a problematic pattern ends up pushing people towards _more_ problematic patterns though the original code was actually fine.\r\n\r\n### Could we not remove this?\r\n\r\nWe could make the warning less aggressive. For example, `console.warn` instead of `console.error`. However, as long as it shows up, the institutional knowledge will push people towards using a ref or moving it to an effect, and neither is desirable.\r\n\r\nWe could make add some threshold to the warning. Such as only firing it after N setStates or M seconds. However, it's hard to find one-size-fit-all heuristics, and it's probably going to be confusing either way.\r\n\r\nIn practice, direct subscriptions in components are not that common anymore. Especially now that we have custom Hooks. They tend to be concentrated in libraries, which eventually would likely move to `useMutableSource` where appropriate anyway.\r\n\r\nSo the proposal is to stop compromising the common product case, and not warn at all.\n\n## Diff (first 3000 chars)\ndiff --git a/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js b/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\nindex 1c02667d7bc9..d4eec830da3a 100644\n--- a/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\n+++ b/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\n@@ -307,7 +307,7 @@ describe('ReactCompositeComponent', () => {\n     ReactDOM.render(<MyComponent />, container2);\n   });\n \n-  it('should warn about `forceUpdate` on unmounted components', () => {\n+  it('should not warn about `forceUpdate` on unmounted components', () => {\n     const container = document.createElement('div');\n     document.body.appendChild(container);\n \n@@ -325,19 +325,11 @@ describe('ReactCompositeComponent', () => {\n \n     ReactDOM.unmountComponentAtNode(container);\n \n-    expect(() => instance.forceUpdate()).toErrorDev(\n-      \"Warning: Can't perform a React state update on an unmounted \" +\n-        'component. This is a no-op, but it indicates a memory leak in your ' +\n-        'application. To fix, cancel all subscriptions and asynchronous ' +\n-        'tasks in the componentWillUnmount method.\\n' +\n-        '    in Component (at **)',\n-    );\n-\n-    // No additional warning should be recorded\n+    instance.forceUpdate();\n     instance.forceUpdate();\n   });\n \n-  it('should warn about `setState` on unmounted components', () => {\n+  it('should not warn about `setState` on unmounted components', () => {\n     const container = document.createElement('div');\n     document.body.appendChild(container);\n \n@@ -365,22 +357,10 @@ describe('ReactCompositeComponent', () => {\n     expect(renders).toBe(1);\n \n     instance.setState({value: 1});\n-\n     expect(renders).toBe(2);\n \n     ReactDOM.render(<div />, container);\n-\n-    expect(() => {\n-      instance.setState({value: 2});\n-    }).toErrorDev(\n-      \"Warning: Can't perform a React state update on an unmounted \" +\n-        'component. This is a no-op, but it indicates a memory leak in your ' +\n-        'application. To fix, cancel all subscriptions and asynchronous ' +\n-        'tasks in the componentWillUnmount method.\\n' +\n-        '    in Component (at **)\\n' +\n-        '    in span',\n-    );\n-\n+    instance.setState({value: 2});\n     expect(renders).toBe(2);\n   });\n \ndiff --git a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js b/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\nindex 065d17fcc753..7797448a82e9 100644\n--- a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\n+++ b/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\n@@ -12,7 +12,6 @@ import type {Fiber, FiberRoot} from './ReactInternalTypes';\n import type {Lanes, Lane} from './ReactFiberLane.new';\n import type {SuspenseState} from './ReactFiberSuspenseComponent.new';\n import type {StackCursor} from './ReactFiberStack.new';\n-import type {FunctionComponentUpdateQueue} from './ReactFiberHooks.new';\n import type {Flags} from './ReactFiberFlags';\n \n import {\n@@ -53,10 +52,6 @@ imp"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The document title is present and correct.",
+          "value": "Design Document: Removal of setState Warning on Unmounted Components (PR #22114)",
+          "tolerance": null,
+          "location": "Document title or header"
+        },
+        {
+          "description": "The memo 'Re' line includes the correct PR number and title.",
+          "value": "Design Document for PR #22114: Remove the warning for setState on unmounted components",
+          "tolerance": null,
+          "location": "Header 'Re' line"
+        },
+        {
+          "description": "The merged date is referenced in the Overview.",
+          "value": "2021-08-18",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Overview states the primary change: removal of the warning.",
+          "value": "removal of the development-mode warning that fired when `setState` or `forceUpdate` was called on an unmounted React component",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The Background section mentions the original warning's purpose related to memory leaks.",
+          "value": "protect against memory leaks",
+          "tolerance": null,
+          "location": "Background section"
+        },
+        {
+          "description": "The Background section provides the subscription pattern example that could cause a leak.",
+          "value": "component subscribing to an external data store",
+          "tolerance": null,
+          "location": "Background section"
+        },
+        {
+          "description": "The Background section describes the async/await pattern that triggers the false positive.",
+          "value": "async/await pattern within an event handler, such as `handleSubmit`",
+          "tolerance": null,
+          "location": "Background section"
+        },
+        {
+          "description": "The Background section describes the ref-based workaround using `useRef`.",
+          "value": "use a `useRef` to track the component's mounted state",
+          "tolerance": null,
+          "location": "Background section"
+        },
+        {
+          "description": "The Rationale for Removal section cites the first reason: false positives and overhead.",
+          "value": "high rate of false positives made the warning more harmful than helpful",
+          "tolerance": null,
+          "location": "Rationale for Removal section"
+        },
+        {
+          "description": "The Rationale for Removal section mentions the future feature for hidden tabs.",
+          "value": "preserve a component's DOM and state even when it is not visible (e.g., in a hidden browser tab)",
+          "tolerance": null,
+          "location": "Rationale for Removal section"
+        },
+        {
+          "description": "The Rationale for Removal section describes the negative push towards effects.",
+          "value": "pushed developers toward worse patterns",
+          "tolerance": null,
+          "location": "Rationale for Removal section"
+        },
+        {
+          "description": "The Technical Changes section lists the changed file `ReactCompositeComponent-test.js`.",
+          "value": "packages/react-dom/src/__tests__/ReactCompositeComponent-test.js",
+          "tolerance": null,
+          "location": "Technical Changes section"
+        },
+        {
+          "description": "The Technical Changes section lists the changed file `ReactFiberWorkLoop.new.js`.",
+          "value": "packages/react-reconciler/src/ReactFiberWorkLoop.new.js",
+          "tolerance": null,
+          "location": "Technical Changes section"
+        },
+        {
+          "description": "The Technical Changes section notes the net deletion of lines.",
+          "value": "net deletion of 279 lines",
+          "tolerance": null,
+          "location": "Technical Changes section"
+        },
+        {
+          "description": "The Testing Impact section describes the change for the `forceUpdate` test.",
+          "value": "test titles for `forceUpdate`... were changed from 'should warn about...' to 'should not warn about...'",
+          "tolerance": null,
+          "location": "Testing Impact section"
+        },
+        {
+          "description": "The Testing Impact section describes the change for the `setState` test.",
+          "value": "the test continues to assert that the `renders` count remains at 2",
+          "tolerance": null,
+          "location": "Testing Impact section"
+        },
+        {
+          "description": "The Recommendations section advises removing the ref-based workaround.",
+          "value": "ref-based workaround... is no longer necessary to avoid false-positive warnings",
+          "tolerance": null,
+          "location": "Recommendations for Developers section"
+        },
+        {
+          "description": "The Recommendations section notes the async/await pattern is now safe.",
+          "value": "async/await pattern in event handlers... is now the recommended approach",
+          "tolerance": null,
+          "location": "Recommendations for Developers section"
+        },
+        {
+          "description": "The Recommendations section discourages moving mutations into effects.",
+          "value": "avoid moving user-initiated mutations... into `useEffect` hooks solely to circumvent the old warning",
+          "tolerance": null,
+          "location": "Recommendations for Developers section"
+        },
+        {
+          "description": "The Recommendations section mentions `useMutableSource` for library authors.",
+          "value": "`useMutableSource`",
+          "tolerance": null,
+          "location": "Recommendations for Developers section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1173203154
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The PR description and diff for facebook/react#22114, which contains the rationale for removing the warning and the specific code changes across 4 files.",
+      "content_blueprint": {
+        "title": "The PR description and diff for facebook/react#22114, which contains the rationale for removing the warning and the specific code changes across 4 files",
+        "body": "# Seed Material: facebook/react#22114: Remove the warning for setState on unmounted components\nSource: github_issue_pr\nIdentifier: pr:facebook/react#22114\n\nRepository: facebook/react\nPR Number: #22114\nPR Title: Remove the warning for setState on unmounted components\nMerged At: 2021-08-18T20:50:02Z\nChanged Files: 4\nAdditions: +12, Deletions: -291\n\n## PR Description\nWe have a warning that fires when you `setState` on an unmounted components. This is a proposal to remove it.\r\n\r\n### Why was this warning added?\r\n\r\nThe warning states that it protects against memory leaks. The original use case (rewritten to Hooks) goes like this:\r\n\r\n```js\r\nuseEffect(() => {\r\n  function handleChange() {\r\n     setState(store.getState())\r\n  }\r\n  store.subscribe(handleChange)\r\n  return () => store.unsubscribe(handleChange)\r\n}, [])\r\n```\r\n\r\nIf you forget the `unsubscribe` call, after the component unmounts you'll get a memory leak. So we warn you if you set state after unmounting because we think you might've forgotten to do that.\r\n\r\n### Why does this warning create problems?\r\n\r\nThe problem is that in practice, there's usually a much more common case in the user code:\r\n\r\n```js\r\nasync function handleSubmit() {\r\n  setPending(true)\r\n  await post('/someapi') // component might unmount while we're waiting\r\n  setPending(false)\r\n}\r\n```\r\n\r\nThis will trigger the `setState` warning. However, there is no actual problem here. There's no \"memory leak\" here: the POST comes back, we try to set state, the component is unmounted (so nothing happens), and then we're done. Nothing keeps holding onto the component indefinitely.\r\n\r\n### Avoiding false positives is too difficult\r\n\r\nSo effectively the above case is a false positive but that's the most common one people try to solve. Even the \"canonical\" solution to this is pretty clumsy:\r\n\r\n```js\r\nlet isMountedRef = useRef(false)\r\nuseEffect(() => {\r\n  isMountedRef.current = true\r\n  return () => {\r\n    isMountedRef.current = false\r\n  }\r\n}, [])\r\n\r\nasync function handleSubmit() {\r\n  setPending(true)\r\n  await post('/someapi')\r\n  if (isMountedRef.current) {\r\n    setPending(false)\r\n  }\r\n}\r\n```\r\n\r\nIt's unfortunate because we're adding slightly more runtime overhead, slightly more code, and making the code slightly less readable — all to avoid an effectively false positive warning.\r\n\r\nBu there are other issues, too.\r\n\r\nIn the future, we'd like to offer a feature that lets you preserve DOM and state even when the component is not visible, but disconnect its effects. With this feature, the code above doesn't work well. You'll \"miss\" the `setPending(false)` call because `isMountedRef.current` is `false` while the component is in a hidden tab. So once you return to the hidden tab and make it visible again, it will look as if your mutation hasn't \"come through\". By trying to evade the warning, we've made the behavior worse.\r\n\r\nIn addition, we've seen that this warning pushes people towards moving mutations (like POST) into effects just because effects offer an easy way to \"ignore\" something using the cleanup function and a flag. However, this *also* usually makes the code worse. The user action is associated with a particular event — not with the component being displayed — and so moving this code into effect introduces extra fragility. Such as the risk of the effect re-firing when some related data changes. So the warning against a problematic pattern ends up pushing people towards _more_ problematic patterns though the original code was actually fine.\r\n\r\n### Could we not remove this?\r\n\r\nWe could make the warning less aggressive. For example, `console.warn` instead of `console.error`. However, as long as it shows up, the institutional knowledge will push people towards using a ref or moving it to an effect, and neither is desirable.\r\n\r\nWe could make add some threshold to the warning. Such as only firing it after N setStates or M seconds. However, it's hard to find one-size-fit-all heuristics, and it's probably going to be confusing either way.\r\n\r\nIn practice, direct subscriptions in components are not that common anymore. Especially now that we have custom Hooks. They tend to be concentrated in libraries, which eventually would likely move to `useMutableSource` where appropriate anyway.\r\n\r\nSo the proposal is to stop compromising the common product case, and not warn at all.\n\n## Diff (first 3000 chars)\ndiff --git a/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js b/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\nindex 1c02667d7bc9..d4eec830da3a 100644\n--- a/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\n+++ b/packages/react-dom/src/__tests__/ReactCompositeComponent-test.js\n@@ -307,7 +307,7 @@ describe('ReactCompositeComponent', () => {\n     ReactDOM.render(<MyComponent />, container2);\n   });\n \n-  it('should warn about `forceUpdate` on unmounted components', () => {\n+  it('should not warn about `forceUpdate` on unmounted components', () => {\n     const container = document.createElement('div');\n     document.body.appendChild(container);\n \n@@ -325,19 +325,11 @@ describe('ReactCompositeComponent', () => {\n \n     ReactDOM.unmountComponentAtNode(container);\n \n-    expect(() => instance.forceUpdate()).toErrorDev(\n-      \"Warning: Can't perform a React state update on an unmounted \" +\n-        'component. This is a no-op, but it indicates a memory leak in your ' +\n-        'application. To fix, cancel all subscriptions and asynchronous ' +\n-        'tasks in the componentWillUnmount method.\\n' +\n-        '    in Component (at **)',\n-    );\n-\n-    // No additional warning should be recorded\n+    instance.forceUpdate();\n     instance.forceUpdate();\n   });\n \n-  it('should warn about `setState` on unmounted components', () => {\n+  it('should not warn about `setState` on unmounted components', () => {\n     const container = document.createElement('div');\n     document.body.appendChild(container);\n \n@@ -365,22 +357,10 @@ describe('ReactCompositeComponent', () => {\n     expect(renders).toBe(1);\n \n     instance.setState({value: 1});\n-\n     expect(renders).toBe(2);\n \n     ReactDOM.render(<div />, container);\n-\n-    expect(() => {\n-      instance.setState({value: 2});\n-    }).toErrorDev(\n-      \"Warning: Can't perform a React state update on an unmounted \" +\n-        'component. This is a no-op, but it indicates a memory leak in your ' +\n-        'application. To fix, cancel all subscriptions and asynchronous ' +\n-        'tasks in the componentWillUnmount method.\\n' +\n-        '    in Component (at **)\\n' +\n-        '    in span',\n-    );\n-\n+    instance.setState({value: 2});\n     expect(renders).toBe(2);\n   });\n \ndiff --git a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js b/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\nindex 065d17fcc753..7797448a82e9 100644\n--- a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\n+++ b/packages/react-reconciler/src/ReactFiberWorkLoop.new.js\n@@ -12,7 +12,6 @@ import type {Fiber, FiberRoot} from './ReactInternalTypes';\n import type {Lanes, Lane} from './ReactFiberLane.new';\n import type {SuspenseState} from './ReactFiberSuspenseComponent.new';\n import type {StackCursor} from './ReactFiberStack.new';\n-import type {FunctionComponentUpdateQueue} from './ReactFiberHooks.new';\n import type {Flags} from './ReactFiberFlags';\n \n import {\n@@ -53,10 +52,6 @@ imp"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_a85724c9a813a1c1/design_doc.docx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_a85724c9a813a1c1/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T19:01:55.243570+00:00"
+}

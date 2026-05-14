@@ -1,0 +1,1108 @@
+{
+  "candidate_id": "sc_52f9de0186fb280f",
+  "occupation": "financial_analyst",
+  "archetype": "qoq_margin",
+  "difficulty": "medium",
+  "seed_id": "a77a264052741799",
+  "prompt": "You are an associate analyst on the Westlake Capital Markets industrials research team. Managing Director Lin Wei-chen has asked you to build a QoQ margin variance analysis for Deere & Company (DE) following the latest 10-Q filing on May 11, 2026. This will support upcoming client conversations and needs to be client-presentation quality.\n\nPull the current-quarter figures from EDGAR for the quarter ending 2026-02-01. Revenues were $9,611M and net income was $656M (diluted EPS of $2.42). Note that some of the XBRL tags in the filing include historical comparatives — cross-check the gross profit and operating income figures against the actual 10-Q tables rather than relying on what might be prior-period data embedded in the extract. The attached DE_historical_financials.xlsx has five-year summary data to support prior-quarter pulls.\n\nBuild the analysis in Excel with the following structure:\n\n**Summary sheet** — Executive overview with QoQ gross margin, operating margin, net margin, and EBITDA margin. Call out the single biggest margin variance driver at the top. All dollar figures in millions with one decimal; present both percentage-point and basis-point changes.\n\n**Actual vs Budget sheet** — Waterfall-style variance bridge from prior-quarter margins to current-quarter margins. Quantify dollar and bps drivers across each P&L line item (revenue, COGS, gross profit, SG&A at $972M, R&D at $554M, operating income, net income). Reference Deere's three reportable segments (Production & Precision Agriculture, Small Agriculture & Turf, Construction & Forestry) where segment data is available in the filing.\n\n- Flag and isolate any one-time or non-recurring items distorting the comparison\n- Include EBITDA margin as a supplemental metric given industrials coverage conventions\n- Reconcile all figures back to EDGAR XBRL tags with source attribution\n- Build input cells so the model refreshes cleanly when the next quarterly filing drops\n- Document assumptions and data sources within the workbook\n\nFormat consistent with Westlake house conventions for research support materials.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "Deliverable is a single .xlsx file",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a sheet named 'Summary'",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a sheet named 'Actual vs Budget'",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Revenue figure in the Actual vs Budget sheet matches 9611.0 (cell B4)",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross Profit figure in the Actual vs Budget sheet matches 2189.0 (cell B6)",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Net Income is reported as 656.0 (in millions) consistent with the pinned fact",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Diluted EPS is reported as 2.42 consistent with the pinned fact",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "SG&A expense is reported as 972.0 (in millions) consistent with the pinned fact",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "R&D expense is reported as 554.0 (in millions) consistent with the pinned fact",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Total Assets are reported as 103436.0 (in millions) if balance sheet data is included",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cash and Cash Equivalents reported as 6798.0 (in millions) if balance sheet data is included",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Dollar figures are presented in millions with one decimal place (e.g., 9611.0)",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Basis-point changes are presented alongside percentage-point changes for margin variances",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Executive summary appears at the top of the Summary sheet",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Executive summary identifies and calls out the single biggest margin variance driver",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin is calculated as Gross Profit / Revenues using standard IB definition",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Operating margin is calculated as Operating Income / Revenues using standard IB definition",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Net margin is calculated as Net Income / Revenues using standard IB definition",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "EBITDA margin is included as a supplemental metric",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Waterfall-style variance bridge from prior-quarter margins to current-quarter margins is presented in the Actual vs Budget sheet",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance bridge quantifies dollar and basis-point drivers for each P&L line item (revenue, COGS, gross profit, SG&A, R&D, operating income, net income)",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance analysis references Deere's three reportable segments (Production & Precision Agriculture, Small Agriculture & Turf, Construction & Forestry) where segment data is available",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Production & Precision Agriculture segment is correctly named and referenced",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Small Agriculture & Turf segment is correctly named and referenced",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Construction & Forestry segment is correctly named and referenced",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "One-time or non-recurring items are flagged and isolated or excluded from the margin comparison",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Financial figures are reconciled to EDGAR XBRL tags with proper source attribution",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Revenue is attributed to XBRL tag 'Revenues' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Net Income is attributed to XBRL tag 'NetIncomeLoss' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "SG&A expense is attributed to XBRL tag 'SellingGeneralAndAdministrativeExpense' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "R&D expense is attributed to XBRL tag 'ResearchAndDevelopmentExpense' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Total Assets are attributed to XBRL tag 'Assets' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Total Liabilities are attributed to XBRL tag 'Liabilities' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Stockholders' Equity is attributed to XBRL tag 'StockholdersEquity' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cash and Cash Equivalents is attributed to XBRL tag 'CashAndCashEquivalentsAtCarryingValue' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Diluted EPS is attributed to XBRL tag 'EarningsPerShareDiluted' from filing date 2026-02-01",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Model includes input cells designed so that figures can be updated when the next quarterly filing drops",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Assumptions and data sources are documented within the workbook for auditability",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Prior-quarter comparison uses the immediately preceding quarter (QoQ), not the year-ago quarter",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Gross Profit figure is verified against the actual 10-Q tables rather than blindly using the potentially stale pinned fact (date 2020-11-01)",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Operating Income figure is verified against the actual 10-Q tables rather than blindly using the potentially stale pinned fact (date 2024-10-27)",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Target company is identified as Deere & Company (ticker: DE)",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Filing date referenced is 2026-05-11 for the 10-Q",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Analyst identified as Gabriel Ostrowski, Associate Analyst at Westlake Capital Markets",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Managing Director identified as Lin Wei-chen",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Analyst employer identified as Westlake Capital Markets",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Report date or deadline referenced as 2026-05-18",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Format follows professional Westlake house conventions suitable for client presentation",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "No formatting errors or typos present in the deliverable",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance bridge includes COGS line item with dollar and bps quantification",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance bridge includes SG&A line item at 972.0M with dollar and bps quantification",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance bridge includes R&D line item at 554.0M with dollar and bps quantification",
+      "category": "data",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_52f9de0186fb280f",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "qoq_margin",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:DE",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "DEERE & CO",
+        "attrs": {
+          "ticker": "DE",
+          "sector": "industrials",
+          "cik": "0000315189"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Westlake Capital Markets",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Gabriel Ostrowski",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Westlake Capital Markets"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Lin Wei-chen",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Westlake Capital Markets"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-11",
+        "description": "DE filed 3",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-11",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-18",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 9611000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:Revenues:2026-02-01"
+      },
+      {
+        "id": "fact_GrossProfit",
+        "kind": "money",
+        "value": 2189000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:GrossProfit:2020-11-01"
+      },
+      {
+        "id": "fact_OperatingIncomeLoss",
+        "kind": "money",
+        "value": 9039000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:OperatingIncomeLoss:2024-10-27"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 656000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:NetIncomeLoss:2026-02-01"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 103436000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:Assets:2026-02-01"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 77079000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:Liabilities:2026-02-01"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 26300000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:StockholdersEquity:2026-02-01"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 6798000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:CashAndCashEquivalentsAtCarryingValue:2026-02-01"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 2.42,
+        "unit": "USD/share",
+        "source": "EDGAR:DE:EarningsPerShareDiluted:2026-02-01"
+      },
+      {
+        "id": "fact_ResearchAndDevelopmentExpense",
+        "kind": "money",
+        "value": 554000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:ResearchAndDevelopmentExpense:2026-02-01"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 972000000,
+        "unit": "USD",
+        "source": "EDGAR:DE:SellingGeneralAndAdministrativeExpense:2026-02-01"
+      }
+    ],
+    "explicit_requirements": [
+      "Calculate QoQ gross margin, operating margin, and net margin for the most recent reported quarter ending 2026-02-01",
+      "Identify and quantify the dollar and basis-point drivers of QoQ margin changes across each line item",
+      "Reconcile the pinned financial fact values to the source EDGAR XBRL tags with proper attribution",
+      "Present a waterfall-style variance bridge from prior-quarter margins to current-quarter margins",
+      "Flag any one-time or non-recurring items distorting the margin comparison and exclude or isolate them",
+      "Cross-reference segment-level data from the 10-Q if segment margins are available in the filing",
+      "Include a brief executive summary at the top with the single biggest margin variance driver called out",
+      "Build the model so that inputs can be updated when the next quarterly filing drops",
+      "Document all assumptions and data sources within the workbook for auditability"
+    ],
+    "implicit_requirements": [
+      "Use standard IB margin definitions: Gross Margin = Gross Profit / Revenues, Operating Margin = Operating Income / Revenues, Net Margin = Net Income / Revenues",
+      "All dollar figures in the deliverable should be in millions with one decimal place, consistent with sell-side convention",
+      "Prior-quarter (QoQ) comparison requires pulling the immediately preceding quarter data from EDGAR, not the year-ago quarter",
+      "EBITDA margin should be included as a supplemental metric even if not explicitly requested, as it is standard in industrials coverage",
+      "Variance explanations should reference Deere three reportable segments where applicable",
+      "Format should follow Westlake house template conventions for research support materials",
+      "Basis-point changes should be presented alongside percentage-point changes for precision"
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 9611.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 9039.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 7422.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 7261.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 2189.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 2292.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 9039.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 7727.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 656.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 618.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D8)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_DE",
+          "filename": "DE_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for DEERE & CO (DE)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                8840.5,
+                9787.1,
+                9345.8,
+                10076.1,
+                10903.0
+              ],
+              [
+                "COGS ($M)",
+                4484.7,
+                6434.3,
+                5104.2,
+                5193.8,
+                6646.9
+              ],
+              [
+                "Gross Profit ($M)",
+                2910.9,
+                4395.8,
+                3514.2,
+                3714.0,
+                3840.3
+              ],
+              [
+                "Operating Income ($M)",
+                2184.0,
+                2971.7,
+                1707.1,
+                3387.4,
+                2593.0
+              ],
+              [
+                "Net Income ($M)",
+                1251.6,
+                1004.6,
+                936.9,
+                1592.5,
+                2452.2
+              ],
+              [
+                "D&A ($M)",
+                616.7,
+                461.9,
+                598.6,
+                377.9,
+                487.4
+              ],
+              [
+                "CapEx ($M)",
+                1267.3,
+                1145.8,
+                1356.6,
+                1417.5,
+                1492.2
+              ],
+              [
+                "Shares Outstanding (M)",
+                31.2,
+                41.6,
+                22.6,
+                23.5,
+                24.4
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "9611.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "2189.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for DEERE & CO (DE) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2314104997
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_DE",
+      "filename": "DE_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for DEERE & CO (DE)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            8840.5,
+            9787.1,
+            9345.8,
+            10076.1,
+            10903.0
+          ],
+          [
+            "COGS ($M)",
+            4484.7,
+            6434.3,
+            5104.2,
+            5193.8,
+            6646.9
+          ],
+          [
+            "Gross Profit ($M)",
+            2910.9,
+            4395.8,
+            3514.2,
+            3714.0,
+            3840.3
+          ],
+          [
+            "Operating Income ($M)",
+            2184.0,
+            2971.7,
+            1707.1,
+            3387.4,
+            2593.0
+          ],
+          [
+            "Net Income ($M)",
+            1251.6,
+            1004.6,
+            936.9,
+            1592.5,
+            2452.2
+          ],
+          [
+            "D&A ($M)",
+            616.7,
+            461.9,
+            598.6,
+            377.9,
+            487.4
+          ],
+          [
+            "CapEx ($M)",
+            1267.3,
+            1145.8,
+            1356.6,
+            1417.5,
+            1492.2
+          ],
+          [
+            "Shares Outstanding (M)",
+            31.2,
+            41.6,
+            22.6,
+            23.5,
+            24.4
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T10:59:24.448014+00:00"
+}

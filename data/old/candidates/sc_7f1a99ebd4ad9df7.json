@@ -1,0 +1,558 @@
+{
+  "candidate_id": "sc_7f1a99ebd4ad9df7",
+  "occupation": "software_engineer",
+  "archetype": "off_by_one",
+  "difficulty": "medium",
+  "seed_id": "644a5832054562d0",
+  "prompt": "You are a software engineer at Northpath Labs working on the internal fork of huggingface/transformers. Esteban Ruiz has asked you to backport a specific bugfix from upstream PR #36630, which addressed a missing default argument in the `_update_causal_mask` method across many model files.\n\nThe upstream PR (merged 2025-03-19) made several changes, but the only piece we need is the signature fix: `output_attentions: bool` needs to become `output_attentions: bool = False` in every `_update_causal_mask` method that currently lacks a default. The upstream diff touched files like `src/transformers/models/aria/modeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, `src/transformers/models/chameleon/modeling_chameleon.py`, `src/transformers/models/codegen/modeling_codegen.py`, and `src/transformers/models/cohere/modeling_cohere.py`, among others — each with the identical one-line change. You can see the upstream PR body and diff excerpt in the attachments for reference.\n\nBecause our fork may have diverged — we might have added models that don't exist upstream or be missing some that do — a direct cherry-pick won't work. Scan every `modeling_*.py` file under `src/transformers/models/` in the fork for a `_update_causal_mask` method whose signature has `output_attentions: bool` without a default, and apply the fix there. Do not touch files where the signature already has `= False` or where the method doesn't exist. Keep the diff absolutely minimal: no reformatting, no other changes from the upstream PR (the visualization tool itself is out of scope).\n\nOnce the changes are in, run the existing test suite for each model you modified to confirm nothing breaks. Then submit a single pull request against the fork's main branch. The PR description should reference upstream #36630 and clearly explain that this is a default-argument fix only. Dani Olarte handled similar backport work previously if you need context on our fork's conventions — follow the repo's standard PR template and commit message format. I need this turned around quickly so don't let scope creep in.",
+  "deliverable": {
+    "deliverable_id": "bug_fix_pr",
+    "primary_format": "repo_tarball",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The PR description references upstream PR #36630.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description identifies the repository as huggingface/transformers.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description identifies the specific bug as a missing default argument in the `_update_causal_mask` method signature.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description states the default argument value is `False`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description explains the fix is for the `output_attentions` parameter.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diff modifies the file `src/transformers/models/aria/modeling_aria.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diff modifies the file `src/transformers/models/bloom/modeling_bloom.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diff modifies the file `src/transformers/models/chameleon/modeling_chameleon.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diff modifies the file `src/transformers/models/codegen/modeling_codegen.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diff modifies the file `src/transformers/models/cohere/modeling_cohere.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diff changes the line `output_attentions: bool,` to `output_attentions: bool = False,` in each modified file.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diff only contains changes to the `_update_causal_mask` method signature in each file.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "No other changes from the upstream PR (e.g., visualization tool code) are included in the diff.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request is a single commit against the internal fork's main branch.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR title clearly indicates the fix (e.g., backport default argument fix).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description follows the internal fork's standard template.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The commit message follows the repo's standard format.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The change is applied to all model files in the internal fork that contain a `_update_causal_mask` method with `output_attentions: bool` (no default) in their signature.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The change is not applied to files where the signature already has `= False` or where the method doesn't exist.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diff is minimal, with no reformatting or unrelated cleanup.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description mentions this is a backport of a specific upstream fix.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description includes a reference to the upstream PR number (36630).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The test suite for each modified model file is run and passes (implied by CI status or test report).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR is submitted before the internal deadline of 2026-05-15.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description explains the scope is limited to the default argument fix only.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix addresses the exact bug described: `output_attentions: bool` missing a default value.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description references the upstream PR's merge date (2025-03-19) for context.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The deliverable is a single pull request (repo_tarball format).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR includes a clear explanation of the root cause (missing default value).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diff shows the change from `output_attentions: bool` to `output_attentions: bool = False` in the `_update_causal_mask` function signature.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description states that this fix ensures backward compatibility or correct behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR is targeted to the correct base branch (main).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "All modified files are under the `src/transformers/models/` directory.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The change is consistent across all modified files (same line change).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description mentions Dani Olarte or the internal fork context for traceability.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR does not include changes to unrelated files (e.g., new visualization tool files).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR body is concise and to the point, avoiding unnecessary detail.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diff includes all model files listed in the upstream diff (aria, bloom, chameleon, codegen, cohere) if they exist in the fork.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description uses proper Markdown formatting.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The change is a one-line diff per file, with no additional lines modified.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR title is specific and not generic (e.g., not just 'Bug fix').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix is applied exactly as shown in the upstream diff excerpt.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description includes a brief summary of what the change does.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR passes any automated linting or style checks configured in the fork.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR references the assignment from Esteban Ruiz.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description includes a call to action for reviewers (e.g., 'Please review').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The PR includes changes to files outside the scope of the `output_attentions` default fix (e.g., visualization tool code).",
+      "category": "completeness",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_7f1a99ebd4ad9df7",
+    "occupation": "software_engineer",
+    "deliverable_id": "bug_fix_pr",
+    "archetype": "off_by_one",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:huggingface/transformers#36630",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "huggingface/transformers",
+        "attrs": {
+          "pr_number": 36630,
+          "pr_title": "Add attention visualization tool "
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Northpath Labs",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Dani Olarte",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Esteban Ruiz",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-03-19",
+        "description": "Reference PR huggingface/transformers#36630 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-11",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-15",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "huggingface/transformers",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 36630,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "Add attention visualization tool ",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "# What does this PR do?\r\n\r\nTODOS\r\n- [ ] Add some tests\r\n- [ ] make it work on all models\r\n\r\ncc @yonigozlan and @zucchini-nlp @molbap \r\n\r\nThis will be available as: \r\n```python\r\n\r\nfrom transformers.utils.attention_visualizer import AttentionMaskVisualizer\r\nvisualizer = AttentionMaskVisualizer(\"meta-llama/Llama-3.2-3B-Instruct\")\r\nvisualizer(\"A normal attention mask\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"mistralai/Mistral-Small-24B-Instruct-2501\")\r\nvisualizer(\"A normal attention mask with a long text to see how it is displayed, and if it is displayed correctly\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/paligemma2-3b-mix-224\")\r\nvisualizer(\"<img> You are an assistant.\", suffix = \"What is on the image?\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/gemma-2b\")\r\nvisualizer(\"You are an assistant. Make sure you print me\") # we should have slidiing on non sliding side by side\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/gemma-3-27b-it\")\r\nvisualizer(\"<img>You are an assistant. Make sure you print me\") # we should have slidiing on non sliding side by side\r\n```\r\n![image](https://github.com/user-attachments/assets/d10f63f2-ad5e-4550-a30f-7181be554a67)",
+        "unit": null,
+        "source": "github:huggingface/transformers#36630"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/src/transformers/models/aria/modeling_aria.py b/src/transformers/models/aria/modeling_aria.py\nindex 252ddb694f31..e44cd709dfcf 100644\n--- a/src/transformers/models/aria/modeling_aria.py\n+++ b/src/transformers/models/aria/modeling_aria.py\n@@ -1015,7 +1015,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/bloom/modeling_bloom.py b/src/transformers/models/bloom/modeling_bloom.py\nindex 504220c788b5..932787993344 100644\n--- a/src/transformers/models/bloom/modeling_bloom.py\n+++ b/src/transformers/models/bloom/modeling_bloom.py\n@@ -747,7 +747,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/chameleon/modeling_chameleon.py b/src/transformers/models/chameleon/modeling_chameleon.py\nindex 3c3bcb4d0117..1f714bb05a82 100644\n--- a/src/transformers/models/chameleon/modeling_chameleon.py\n+++ b/src/transformers/models/chameleon/modeling_chameleon.py\n@@ -1390,7 +1390,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/codegen/modeling_codegen.py b/src/transformers/models/codegen/modeling_codegen.py\nindex 89e46a5523d9..1d7d3b6d27cd 100644\n--- a/src/transformers/models/codegen/modeling_codegen.py\n+++ b/src/transformers/models/codegen/modeling_codegen.py\n@@ -592,7 +592,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/cohere/modeling_cohere.py b/src/transformers/models/cohere/modeling_cohere.py\nindex 018fc3b8622c..01b5ee3b9e7a 100644\n--- a/src/transformers/models/cohere/modeling_cohere.py\n+++ b/src/transformers/models/cohere/modeling_cohere.py\n@@ -665,7 +665,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.",
+        "unit": null,
+        "source": "github:huggingface/transformers#36630.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Identify all model files in the internal fork that contain a `_update_causal_mask` method with `output_attentions: bool` (no default value) in their signature",
+      "Change `output_attentions: bool` to `output_attentions: bool = False` in every matching `_update_causal_mask` method signature across the fork",
+      "Ensure the change matches the exact pattern from the upstream diff (e.g., aria, bloom, chameleon, codegen, cohere modeling files)",
+      "Submit the fix as a single pull request against the internal fork's main branch",
+      "Include a PR description that references the upstream PR #36630 and explains the default argument fix",
+      "Verify no other behavioral changes from the upstream PR are included in the backport — only the `output_attentions` default value fix"
+    ],
+    "implicit_requirements": [
+      "Run the existing test suite for any modified model files to confirm no regressions before submitting the PR",
+      "Follow the internal fork's PR template and commit message conventions (Esteban expects this by default)",
+      "Keep the diff minimal and scoped to only the signature change — no reformatting or unrelated cleanup",
+      "If the internal fork has diverged significantly from upstream, verify the `_update_causal_mask` method still exists in the same form before blindly applying the patch"
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Problem Statement",
+          "heading_level": 2,
+          "required_content": [
+            "Clear description of the bug"
+          ],
+          "paragraphs": [
+            "## Problem Statement",
+            "The newly introduced `AttentionMaskVisualizer` tool in PR #36630 fails to generate correct visualizations for several model architectures due to underlying inconsistencies and bugs in their `modeling_*.py` implementations. The core issue is that the visualizer relies on a consistent and correct internal computation of attention masks within each model's `prepare_inputs_for_generation` and forward methods. Discrepancies in how these models handle positional encodings, sliding window attention, and multimodal token masking lead to incorrect `attention_mask` tensors being generated, causing the visualizer to produce misleading or outright incorrect output.",
+            "Specifically, the `AriaModel` in `src/transformers/models/aria/modeling_aria.py` has a bug in its positional encoding application for generation. It incorrectly indexes the `position_ids` tensor, causing a shape mismatch when processing batches beyond the first sequence. This results in an exception during mask visualization for any batched input. The `BloomModel` in `src/transformers/models/bloom/modeling_bloom.py` has a separate oversight: its sliding window attention implementation in `_prepare_attn_mask` does not correctly adjust the causal mask when a `sliding_window` is specified, leading to an overly permissive mask that leaks future information. Finally, the `ChameleonModel` in `src/transformers/models/chameleon/modeling_chameleon.py` mishandles the masking of image tokens in its `_prepare_4d_causal_attention_mask_with_cache_position` function, failing to properly exclude them from the text attention pattern, which corrupts the visualized mask structure.",
+            "These bugs are not merely theoretical; they directly break the `AttentionMaskVisualizer` for these model families. A user attempting to visualize attention for `Aria`, `Bloom`, or `Chameleon` models would encounter exceptions or observe visualizations that do not reflect the model's true attention logic. To make the visualization tool universally reliable, the foundational mask computation in these models must be corrected."
+          ]
+        },
+        {
+          "heading": "Root Cause",
+          "heading_level": 2,
+          "required_content": [
+            "Technical explanation of why the bug occurred"
+          ],
+          "paragraphs": [
+            "The root cause of the visual discrepancy in attention mask generation stems from inconsistent implementation patterns across model architectures, specifically within the `src/transformers/models/arimodeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, and `src/transformers/models/chameleon/modeling_chameleon.py` files. Each model has independently implemented its own logic for translating the high-level `attention_mask` parameter into the lower-level, model-specific mask tensor required by the attention computation (e.g., `alibi_mask`, `sliding_window_mask`, or a standard causal mask). This ad-hoc approach lacks a unified interface or base class method, leading to divergent behavior when generating masks for visualization or during actual inference.",
+            "A detailed inspection reveals model-specific discrepancies in the handling of padding, causal direction, and mask value inversion. For example, one model's `_prepare_attention_mask` function might produce a mask with `0` for attended positions and `-inf` for masked positions, while another uses `1` and `0`. Furthermore, the order of operations—whether the causal mask is applied before or after accounting for padding tokens—varies between implementations. This inconsistency means that a single, global `attention_mask` tensor passed by the user is interpreted and transformed differently by each model's backend, resulting in visually distinct (and often misleading) attention patterns when the new visualization tool is applied across different architectures.",
+            "The fundamental issue is architectural: there is no enforced contract or standardized `prepare_attention_mask` method within the model base class that guarantees consistent tensor transformations. Each modeling file contains a custom, locally-scoped function for this critical preprocessing step. This fragmentation means any new tool, such as the `AttentionMaskVisualizer`, that relies on a predictable and uniform mask format will produce erroneous or confusing results when applied to models that do not adhere to an implicit, undocumented standard. The bug is not in the visualization tool itself, but in the underlying model code that fails to provide a consistent data interface for the masks it consumes."
+          ]
+        },
+        {
+          "heading": "Proposed Fix",
+          "heading_level": 2,
+          "required_content": [
+            "Code change description"
+          ],
+          "paragraphs": [
+            "The proposed fix introduces a unified attention visualization capability across three transformer model architectures: Aria, Bloom, and Chameleon. The core change addresses the absence of a consistent mechanism for generating and inspecting attention patterns during model inference, which is critical for debugging and interpretability tasks.",
+            "The implementation centers on modifying the primary attention computation methods within each model's file: `src/transformers/models/aria/modeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, and `src/transformers/models/chameleon/modeling_chameleon.py`. Specifically, the `_attn` and `forward` methods of the relevant attention classes (e.g., `AriaAttention`, `BloomAttention`) are updated. The changes inject logic to capture and return attention weights as a structured output when a visualization flag is active. This is achieved by conditionally applying softmax to the attention scores and detaching them from the computation graph before they are aggregated, ensuring no impact on the model's training or standard inference pathways.",
+            "To ensure scalability and maintainability, the fix follows a mixin pattern. A new `AttentionVisualizerMixin` class is proposed (to be added to `src/transformers/utils/attention_visualizer.py`) which standardizes the interface for visualization. Each target model's attention module is then modified to inherit from this mixin, allowing the visualization behavior to be activated or deactivated via a consistent `output_attentions` parameter in the model's `forward` call. This approach provides a clean, reusable foundation that can be extended to the broader model library, as outlined in the PR's future objectives."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Unit tests, integration tests, edge cases"
+          ],
+          "paragraphs": [
+            "The testing strategy for this attention visualization tool should be structured across three tiers to ensure correctness, integration, and robustness. **Unit tests** should focus on the core logic within the new `AttentionMaskVisualizer` class and the modified model files. Tests must validate the normalization and scaling of attention weights for correct visual mapping, the generation of attention mask tensors from diverse input sequences (including padding tokens), and the handling of different attention mask types (causal, padding, sliding window). The expected outputs for these functions should be defined with precise numerical or tensor assertions, isolating this logic from model inference.",
+            "**Integration tests** are critical to validate the end-to-end functionality. These tests should instantiate the `AttentionMaskVisualizer` with a small, representative model (e.g., a tiny config version of one of the modified architectures like `bloom` or `chameleon`), process a sample input string, and verify that the visualization is generated without errors. This confirms that the visualizer correctly interfaces with the model's `forward` method, captures attention output, and processes it for the specific architecture. The test should check for the creation of a valid plot object and, optionally, that the plot has the expected title and axis labels derived from the input text and model name.",
+            "**Edge case testing** must cover inputs and configurations that could break the visualization pipeline. This includes sequences with leading/trailing padding, empty or single-token inputs, and models with and without built-in causal masks. Furthermore, tests should verify behavior when the model's attention implementation returns `None` or is in a mode that does not output attention weights. Error handling should be tested by attempting to visualize with an unsupported model architecture and ensuring a clear, actionable `ValueError` is raised, guiding the user toward compatible models."
+          ]
+        }
+      ],
+      "md_title": "Bug Fix Pr: huggingface/transformers#36630",
+      "input_attachments": [
+        {
+          "attachment_id": "bug_report",
+          "filename": "issue_description.md",
+          "format": "md",
+          "description": "The bug report and reproduction steps",
+          "content_blueprint": {
+            "title": "Bug Report: Issue affecting huggingface/transformers",
+            "repro_steps": [
+              "1. Install latest version from main branch",
+              "2. Run the reproduction script with the provided test case",
+              "3. Observe the error in the output"
+            ],
+            "expected_behavior": "The operation should complete without errors.",
+            "actual_behavior": "A TypeError or unexpected exception is raised."
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "huggingface/transformers",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "36630",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "src/transformers/models/arimodeling_aria.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "src/transformers/models/bloom/modeling_bloom.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 3",
+          "value": "src/transformers/models/chameleon/modeling_chameleon.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Northpath Labs. Your manager Esteban Ruiz has asked you to write a professional bug fix pr for the open-source project huggingface/transformers.\n\nThe reference PR is #36630: Add attention visualization tool \n\nKey technical context:\n- Files changed: src/transformers/models/arimodeling_aria.py, src/transformers/models/bloom/modeling_bloom.py, src/transformers/models/chameleon/modeling_chameleon.py\n- PR description excerpt: # What does this PR do?\r\n\r\nTODOS\r\n- [ ] Add some tests\r\n- [ ] make it work on all models\r\n\r\ncc @yonigozlan and @zucchini-nlp @molbap \r\n\r\nThis will be available as: \r\n```python\r\n\r\nfrom transformers.utils.attention_visualizer import AttentionMaskVisualizer\r\nvisualizer = AttentionMaskVisualizer(\"meta-llama/Llama-3.2-3B-Instruct\")\r\nvisualizer(\"A normal attention mask\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"mistralai/Mistral-Small-24B-Instruct-2501\")\r\nvisualizer(\"A normal attention mask with a lon\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 718625188
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "bug_report",
+      "filename": "issue_description.md",
+      "format": "md",
+      "description": "The bug report and reproduction steps",
+      "content_blueprint": {
+        "title": "Bug Report: Issue affecting huggingface/transformers",
+        "repro_steps": [
+          "1. Install latest version from main branch",
+          "2. Run the reproduction script with the provided test case",
+          "3. Observe the error in the output"
+        ],
+        "expected_behavior": "The operation should complete without errors.",
+        "actual_behavior": "A TypeError or unexpected exception is raised."
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:17:37.813567+00:00"
+}

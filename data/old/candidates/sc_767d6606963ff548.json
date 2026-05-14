@@ -1,0 +1,535 @@
+{
+  "candidate_id": "sc_767d6606963ff548",
+  "occupation": "software_engineer",
+  "archetype": "off_by_one",
+  "difficulty": "light",
+  "seed_id": "b9a7d89df784ea3b",
+  "prompt": "You are a software engineer at Driftwood Systems working on the elastic/elasticsearch repository. Rin Sato, a former teammate, introduced a bug in the CHICKEN function merged via PR #140645, and Mira Fontaine has assigned you to fix the off-by-one error in the text wrapping logic that causes incorrect ASCII art output for certain message lengths.\n\n- Study the original PR #140645 code, particularly ChickenEvaluator.java and any related wrapping functions, to identify the exact off-by-one calculation in the line-breaking or width logic.\n- Implement a focused correction to the text wrapping math that ensures messages fit properly in the chicken's speech bubble without altering the ASCII art format or visual output.\n- Add or update unit tests to explicitly cover the edge case that triggers the bug, such as messages with lengths that are multiples of the default width.\n- Create a new pull request with a title prefixed by the chicken emoji (🐔) and a description that references PR #140645, outlines the root cause, and explains the fix in detail.\n- Confirm the fix maintains full backward compatibility—it must not change the CHICKEN function's public API, parameters, or return behavior for existing queries.\n- Run the complete ES|QL test suite to validate that no regressions are introduced and that the change integrates cleanly with other components.\n\nFollow the project's commit conventions: use imperative mood and include PR references. If the project process requires it, add a changelog entry in docs/changelog/ with the appropriate YAML format. Ensure all code edits respect the Elastic License 2.0 headers and that the fix remains minimal to address only the wrapping bug.",
+  "deliverable": {
+    "deliverable_id": "bug_fix_pr",
+    "primary_format": "repo_tarball",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The pull request title is prefixed with the chicken emoji (🐔).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request description explicitly references the original PR number 140645.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request title includes the phrase 'Fix off-by-one error' or similar wording indicating the bug type.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request description includes a 'Root Cause' or 'Problem' section that explains the off-by-one bug in text wrapping.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request description identifies the affected file as x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request description includes a 'Fix' or 'Solution' section that describes the specific code change (e.g., correcting a loop condition, width calculation, or index).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request description confirms that the fix does not change the CHICKEN function's public API or return behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request description includes a 'Testing' or 'Validation' section that mentions running the ES|QL test suite.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request description states that the fix maintains backward compatibility.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code diff shows a change to the text wrapping logic in ChickenEvaluator.java, such as modifying a comparison operator (e.g., < to <=) or adjusting a width variable.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The code diff includes an update or addition of a unit test that explicitly tests an edge case for text wrapping (e.g., a message length that is a multiple of the default width).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code diff shows that the ASCII art output format (the chicken drawing) remains unchanged for the same input message.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "A new or updated changelog YAML file is present in the docs/changelog/ directory with the PR number 140645 in the 'pr' field.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The changelog YAML file uses the 'area' field value 'ES|QL'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The changelog YAML file uses the 'type' field value 'bug' or 'fix'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The commit message(s) use imperative mood and include a reference to PR #140645 or the original issue.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All modified or added source files include the existing Elastic License 2.0 copyright header.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fix is minimal and focused only on the text wrapping bug, with no unrelated changes to other CHICKEN function features.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request is created against the elastic/elasticsearch repository.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The pull request description is structured with clear sections (e.g., Problem Statement, Root Cause, Proposed Fix, Testing Strategy).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code change correctly fixes the off-by-one error so that messages with lengths equal to the default width wrap correctly into the speech bubble.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The unit test added or updated specifically tests the edge case where the message length is a multiple of the wrapping width (e.g., 40 characters).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request description includes the original PR title: '🐔 Add CHICKEN function to ES|QL'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The test run output or CI summary confirms that all ES|QL tests pass with no failures.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code diff shows that the ChickenEvaluator class structure and constructor parameters remain unchanged, preserving the public API.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request is assigned to the correct team or component (e.g., ES|QL).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The description explains the root cause as an off-by-one error in the text wrapping loop condition or width calculation.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code fix does not alter the ASCII art template strings themselves.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request includes labels or metadata indicating it is a bug fix.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The proposed fix is described as a single, focused change rather than a refactor.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The testing strategy includes running at least the relevant ES|QL unit test suite.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The description mentions the teammate Rin Sato as the author of the original PR or the source of the bug.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request body uses the correct markdown formatting for code blocks and lists.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The changelog YAML file is correctly formatted with all required fields (pr, summary, area, type, issues).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request description includes a link to the original PR #140645.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code change ensures that the 'width' parameter or variable used for wrapping is correctly applied without off-by-one.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The unit test verifies that the ASCII art output for a fixed-width message matches the expected string exactly.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request includes a screenshot or output example showing the corrected ASCII art for a test case.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The commit message follows the project convention of starting with a verb (e.g., Fix, Correct, Update).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request is opened against the 'main' or default branch.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The description states that the fix does not introduce regressions in existing ES|QL functionality.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The code change only modifies the wrapping logic and not the chicken ASCII art generation.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request title is concise and clearly describes the fix.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The description includes a note on backward compatibility for existing users of the CHICKEN function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The unit test uses the exact default width value used in the production code (e.g., 40).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The pull request includes a review request to the appropriate code owners.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The description explains why the bug only manifests for certain message lengths (e.g., exact multiples of width).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fix ensures that the speech bubble boundaries remain intact after the correction.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly states affected file 1: docs/changelog/140645.yaml",
+      "category": "accuracy",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_767d6606963ff548",
+    "occupation": "software_engineer",
+    "deliverable_id": "bug_fix_pr",
+    "archetype": "off_by_one",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:elastic/elasticsearch#140645",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "elastic/elasticsearch",
+        "attrs": {
+          "pr_number": 140645,
+          "pr_title": "🐔 Add CHICKEN function to ES|QL"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Driftwood Systems",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Rin Sato",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Mira Fontaine",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2026-01-15",
+        "description": "Reference PR elastic/elasticsearch#140645 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-09",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-11",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "elastic/elasticsearch",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 140645,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "🐔 Add CHICKEN function to ES|QL",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "## Summary\r\nOver the past few months, various flavors of a \"chicken\" feature have been discussed in hallway conversations, Slack threads, design documents, and occasional late-night brainstorming sessions. Ideas ranged from chicken-based joins to poultry-powered predicates.\r\n\r\nThis PR changes that and introduce the CHICKEN function that finally unlocks the poultry power of ES|QL. 🐣\r\n\r\n## What does it do?\r\n\r\nThe CHICKEN function wraps any text message in ASCII art of a chicken saying the message.\r\n\r\nExample usage:\r\n\r\n```\r\nROW CHICKEN(\"Hello from ES|QL!\")\r\n```\r\n\r\n```\r\n ____________________\r\n< Hello from ES|QL! >\r\n --------------------\r\n         \\\r\n          \\__//\r\n          /.__.\\\r\n          \\ \\/ /\r\n       '__/    \\\r\n        \\-      )\r\n         \\_____/\r\n      _____|_|____\r\n           \" \"\r\n```\r\n\r\n\r\nIt is also possible to use the emoji function driven pattern syntax:\r\n\r\n```\r\nROW `🐔`(\"Hello from ES|QL!\")\r\n```\r\n\r\n## Features\r\n\r\n🎯 Single argument: Pass any keyword or text message\r\n📏 Smart text wrapping: Long messages automatically wrap to fit the speech bubble\r\n🎨 Authentic ASCII art: A lovingly crafted chicken ready to deliver your messages\r\n\r\n\"With great power comes great poultry.\" 🐔",
+        "unit": null,
+        "source": "github:elastic/elasticsearch#140645"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/docs/changelog/140645.yaml b/docs/changelog/140645.yaml\nnew file mode 100644\nindex 0000000000000..7c193bf4ef956\n--- /dev/null\n+++ b/docs/changelog/140645.yaml\n@@ -0,0 +1,5 @@\n+pr: 140645\n+summary: 🐔 Add CHICKEN function to ES|QL\n+area: ES|QL\n+type: feature\n+issues: []\ndiff --git a/x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java b/x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java\nnew file mode 100644\nindex 0000000000000..563d7c8528815\n--- /dev/null\n+++ b/x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java\n@@ -0,0 +1,160 @@\n+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one\n+// or more contributor license agreements. Licensed under the Elastic License\n+// 2.0; you may not use this file except in compliance with the Elastic License\n+// 2.0.\n+package org.elasticsearch.xpack.esql.expression.function.scalar.string;\n+\n+import java.lang.IllegalArgumentException;\n+import java.lang.Override;\n+import java.lang.String;\n+import java.util.function.Function;\n+import org.apache.lucene.util.BytesRef;\n+import org.apache.lucene.util.RamUsageEstimator;\n+import org.elasticsearch.compute.data.Block;\n+import org.elasticsearch.compute.data.BytesRefBlock;\n+import org.elasticsearch.compute.data.BytesRefVector;\n+import org.elasticsearch.compute.data.Page;\n+import org.elasticsearch.compute.operator.BreakingBytesRefBuilder;\n+import org.elasticsearch.compute.operator.DriverContext;\n+import org.elasticsearch.compute.operator.EvalOperator;\n+import org.elasticsearch.compute.operator.Warnings;\n+import org.elasticsearch.core.Releasables;\n+import org.elasticsearch.xpack.esql.core.tree.Source;\n+\n+/**\n+ * {@link EvalOperator.ExpressionEvaluator} implementation for {@link Chicken}.\n+ * This class is generated. Edit {@code EvaluatorImplementer} instead.\n+ */\n+public final class ChickenEvaluator implements EvalOperator.ExpressionEvaluator {\n+  private static final long BASE_RAM_BYTES_USED = RamUsageEstimator.shallowSizeOfInstance(ChickenEvaluator.class);\n+\n+  private final Source source;\n+\n+  private final BreakingBytesRefBuilder scratch;\n+\n+  private final EvalOperator.ExpressionEvaluator message;\n+\n+  private final ChickenArtBuilder chickenStyle;\n+\n+  private final int width;\n+\n+  private final DriverContext driverContext;\n+\n+  private Warnings warnings;\n+\n+  public ChickenEvaluator(Source source, BreakingBytesRefBuilder scratch,\n+      EvalOperator.ExpressionEvaluator message, ChickenArtBuilder chickenStyle, int width,\n+      DriverContext driverContext) {\n+    this.source = source;\n+    this.scratch = scratch;\n+    this.message = message;\n+    this.chickenStyle = chickenStyle;\n+    this.width = width;\n+    this.driverContext = driverContext;\n+  }\n+\n+  @Override\n+  public Block eval(Page page) {\n+    try (BytesRefBlock message",
+        "unit": null,
+        "source": "github:elastic/elasticsearch#140645.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Identify the exact off-by-one error in the ChickenEvaluator.java or related wrapping logic.",
+      "Write a targeted bug fix that corrects the text wrapping calculation without altering the ASCII art output format.",
+      "Update any existing unit tests to cover the edge case that triggered the bug.",
+      "Create a new pull request with a clear title and description referencing the original PR elastic/elasticsearch#140645.",
+      "Ensure the fix does not change the function's public API or break backward compatibility.",
+      "Run the existing ES|QL test suite to confirm no regressions are introduced."
+    ],
+    "implicit_requirements": [
+      "Follow the project's established commit message conventions (imperative mood, reference issue/PR numbers).",
+      "The changelog YAML file must be updated or a new one added if required by the project's process.",
+      "The fix should be minimal and focused, avoiding scope creep into other CHICKEN function features.",
+      "Code changes must adhere to the Elastic License 2.0 and existing copyright headers."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Problem Statement",
+          "heading_level": 2,
+          "required_content": [
+            "Clear description of the bug"
+          ],
+          "paragraphs": [
+            "**Problem Statement**",
+            "The initial implementation of the `CHICKEN` function in ES|QL introduced a critical defect in its core string processing logic. The function, intended to wrap input text in ASCII art, incorrectly assumed all input strings were in a compatible character encoding. When processing strings containing multi-byte Unicode characters (e.g., emojis or non-Latin scripts), the evaluator's byte-offset calculations become misaligned with the character boundaries. This causes a `StringIndexOutOfBoundsException` during the ASCII art rendering stage, leading to query failures rather than the intended graceful output.",
+            "Furthermore, the function's generated `ChickenEvaluator` does not properly validate or sanitize the input message for control characters (such as `\\n` or `\\t`). The direct embedding of these characters into the ASCII art template breaks the formatting layout, producing corrupted and unreadable output. This flaw renders the function unreliable for general-purpose use, as the failure mode is both silent (producing garbled results) and common across diverse datasets.",
+            "The core defect resides in the evaluator's string manipulation approach within `ChickenEvaluator.java`. It treats the input as a simple byte array for slicing and concatenation, which is incompatible with Java's internal UTF-16 string representation. This architectural oversight means the function cannot correctly handle the full range of text data Elasticsearch is designed to store and query, violating the system's fundamental contract for data integrity and query reliability. The bug must be resolved by refactoring the evaluator to use proper character-aware string operations and implementing input validation."
+          ]
+        },
+        {
+          "heading": "Root Cause",
+          "heading_level": 2,
+          "required_content": [
+            "Technical explanation of why the bug occurred"
+          ],
+          "paragraphs": [
+            "**Root Cause**",
+            "The bug originated in the `CHICKEN` function's evaluator implementation, specifically within the auto-generated code at `x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java`. The core issue was a mishandling of Unicode characters during ASCII art generation. The function used `String.length()` to calculate padding for the chicken speech bubble, but this method returns the count of UTF-16 code units rather than visual characters. Consequently, inputs containing multi-byte Unicode sequences—such as emojis or extended CJK characters—resulted in misaligned and truncated ASCII art output, breaking the function's intended behavior.",
+            "A secondary contributing factor was the absence of display width normalization. The ASCII art logic assumed a fixed-width font where each character occupies one unit of horizontal space. However, many Unicode characters have variable display widths (e.g., certain symbols or double-width CJK glyphs), leading to uneven borders and visual corruption in the output. This assumption was not validated in the evaluator's string manipulation routines, causing the frame to expand or contract unpredictably based on input content.",
+            "Additionally, the function lacked robust input sanitization for control characters (e.g., `\\n`, `\\t`). When such characters were present, the ASCII art concatenation process would generate malformed strings, occasionally triggering `IllegalArgumentException` in downstream logging or rendering components. This oversight was compounded by insufficient test coverage for edge cases in the unit tests, which focused predominantly on basic ASCII inputs, leaving Unicode and control character scenarios unexercised."
+          ]
+        },
+        {
+          "heading": "Proposed Fix",
+          "heading_level": 2,
+          "required_content": [
+            "Code change description"
+          ],
+          "paragraphs": [
+            "## Proposed Fix",
+            "The proposed fix removes the `CHICKEN` function entirely from the ES|QL parser, function registry, and code generation pipeline, as its inclusion was an erroneous addition to the production codebase. This change directly reverts the artifacts introduced in the reference pull request and ensures no residual code or documentation references remain.",
+            "First, the core implementation is deleted by removing the generated evaluator class at `x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java`. This file contains the runtime logic for the function and its removal is the primary technical fix. Consequently, the corresponding function registration must be excised from the ES|QL function registry. This involves deleting or commenting out the static registration block for `CHICKEN` within the `EsqlFunctionRegistry` or a similar component, which would prevent the parser from recognizing the function token and resolving it to a non-existent implementation.",
+            "Second, the associated documentation must be cleaned to avoid user confusion and maintain the integrity of the official ES|QL reference. The changelog entry at `docs/changelog/140645.yaml` is to be deleted, as it promotes a non-existent feature. Furthermore, any references to the `CHICKEN` function within the ES|QL documentation (e.g., in `docs/reference/esql/functions/`) must be removed. This includes deleting any dedicated page for the function and scrubbing it from function list tables and indexes. The fix ensures the documentation only describes valid, supported functions.",
+            "Finally, a comprehensive search of the repository for any other references to \"chicken\" in the context of this function, such as in test cases, integration tests, or client-side parsers, must be conducted and all found references deleted. This guarantees the removal is complete and prevents build failures or runtime errors. The change is a straightforward deletion of erroneously introduced code and does not alter the behavior of any existing, legitimate ES|QL functions."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Unit tests, integration tests, edge cases"
+          ],
+          "paragraphs": [
+            "**Testing Strategy**",
+            "Testing for the CHICKEN function follows a layered approach to ensure correctness, integration with the ES|QL engine, and robustness against edge cases. All tests are located in the corresponding test directory for the expression function.",
+            "**Unit Testing:** The primary unit tests focus on the `ChickenEvaluator` and its generated code. These tests instantiate the evaluator directly, invoking it with a range of input strings and validating that the output matches the expected ASCII art structure with the input message correctly embedded. Parameter validation is tested by confirming that passing non-text arguments (e.g., integers, booleans) results in a `VerificationException` during query planning, preventing invalid invocations from reaching the evaluator. Tests also verify the evaluator's behavior when operating on `null` values, which should propagate `null` according to ES|QL semantics.",
+            "**Integration Testing:** End-to-end integration tests are critical to validate the function within a live ES|QL query execution pipeline. These tests execute full ES|QL queries (e.g., `ROW message = \"Hello\" | EVAL chicken = CHICKEN(message)`) against a test cluster using the `EsqlQueryTestCase` framework. They assert that the query completes successfully and that the result column contains the correctly formatted ASCII art. Additional integration tests confirm the function's behavior when used alongside other ES|QL commands like `LIMIT`, `WHERE`, and `EVAL` with multiple steps, ensuring proper composability.",
+            "**Edge Cases:** Specific edge case tests are implemented to guarantee robustness. These include:\n1.  **Empty String Input:** Testing `CHICKEN(\"\")` to ensure the function handles an empty message gracefully, producing a valid but empty chicken.\n2.  **Long Message Handling:** Verifying behavior with a message that would exceed reasonable line lengths, assessing if the output format wraps correctly or fails with a clear error.\n3.  **Special Characters and Unicode:** Testing messages containing quotes, backslashes, newlines, and Unicode characters to ensure they are correctly escaped and preserved within the ASCII art delimiters, preventing corruption of the output structure."
+          ]
+        }
+      ],
+      "md_title": "Bug Fix Pr: elastic/elasticsearch#140645",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "elastic/elasticsearch",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "140645",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "docs/changelog/140645.yaml",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Driftwood Systems. Your manager Mira Fontaine has asked you to write a professional bug fix pr for the open-source project elastic/elasticsearch.\n\nThe reference PR is #140645: 🐔 Add CHICKEN function to ES|QL\n\nKey technical context:\n- Files changed: docs/changelog/140645.yaml, x-pack/plugin/esql/src/main/generated/org/elasticsearch/xpack/esql/expression/function/scalar/string/ChickenEvaluator.java\n- PR description excerpt: ## Summary\r\nOver the past few months, various flavors of a \"chicken\" feature have been discussed in hallway conversations, Slack threads, design documents, and occasional late-night brainstorming sessions. Ideas ranged from chicken-based joins to poultry-powered predicates.\r\n\r\nThis PR changes that and introduce the CHICKEN function that finally unlocks the poultry power of ES|QL. 🐣\r\n\r\n## What does it do?\r\n\r\nThe CHICKEN function wraps any text message in ASCII art of a chicken saying the message.\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 3268882909
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:32:20.279316+00:00"
+}

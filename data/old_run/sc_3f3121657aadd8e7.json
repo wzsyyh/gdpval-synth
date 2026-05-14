@@ -1,0 +1,2102 @@
+{
+  "candidate_id": "sc_3f3121657aadd8e7",
+  "occupation": "financial_analyst",
+  "archetype": "variance_analysis",
+  "difficulty": "light",
+  "seed_id": "3f3121657aadd8e7",
+  "prompt": "You are a senior financial analyst on the Healthcare team covering Johnson & Johnson (JNJ). The portfolio manager has requested a focused analysis of JNJ's most recent quarter (Q1 2026) profitability trends, specifically examining how revenue, gross margin, and operating expenses have shifted quarter-over-quarter. This analysis will inform the PM's decision on whether to adjust the fund's JNJ position ahead of Q2 2026 earnings.\n\nMaterials provided:\n1. XBRL-extracted financial data for Johnson & Johnson (CIK: 0000200406) covering Q1 2026, Q3 2025 (quarterly), Q2 2025, and FY 2025 periods, including RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, GrossProfit, SellingGeneralAndAdministrativeExpense, NetIncomeLoss, and EarningsPerShareDiluted.\n\nTask requirements:\n\n1. Build a single Excel workbook with three tabs: 'Data', 'Variance Analysis', and 'Summary'.\n\n2. On the 'Data' tab, populate a table with the following metrics for Q1 2026, Q3 2025 (quarterly), Q2 2025, and FY 2025: RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, GrossProfit, SellingGeneralAndAdministrativeExpense, NetIncomeLoss, and EarningsPerShareDiluted. Use the quarterly figures from the XBRL data. For Q3 2025, use the quarterly single-quarter value (23,993,000,000 for revenue), not the cumulative figure.\n\n3. On the 'Variance Analysis' tab, calculate for each income statement line item: (a) Q1 2026 vs Q3 2025 dollar change and percentage change; (b) Q1 2026 as a percentage of revenue; (c) Q3 2025 as a percentage of revenue; (d) percentage-point difference between Q1 2026 and Q3 2025 margin ratios. All formulas should reference the Data tab.\n\n4. On the 'Summary' tab, write a narrative (5-8 sentences) identifying the two most material margin shifts between Q3 2025 and Q1 2026 and their likely drivers, referencing specific dollar and percentage figures from your analysis.\n\n5. Format dollar figures as billions with one decimal (e.g., 24.1). Percentages carry one decimal place. Use consistent formatting throughout.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted workbook contains a sheet named exactly 'Data'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The submitted workbook contains a sheet named exactly 'Variance Analysis'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The submitted workbook contains a sheet named exactly 'Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab has a title row referencing Johnson & Johnson and JNJ ticker.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes a source reference line citing SEC EDGAR XBRL and CIK 0000200406.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab has period headers in row 4 for Q1 2026, Q3 2025, Q2 2025, and FY 2025.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for RevenueFromContractWithCustomerExcludingAssessedTax in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for CostOfGoodsAndServicesSold in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for GrossProfit in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for SellingGeneralAndAdministrativeExpense in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for NetIncomeLoss in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Data tab includes metric labels for EarningsPerShareDiluted in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 RevenueFromContractWithCustomerExcludingAssessedTax is exactly 24,062,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 quarterly RevenueFromContractWithCustomerExcludingAssessedTax is exactly 23,993,000,000 (not the cumulative 69,629,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab FY 2025 RevenueFromContractWithCustomerExcludingAssessedTax is exactly 94,193,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 CostOfGoodsAndServicesSold is exactly 8,106,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 quarterly CostOfGoodsAndServicesSold is exactly 7,303,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 GrossProfit is exactly 15,956,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 quarterly GrossProfit is exactly 16,690,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 SellingGeneralAndAdministrativeExpense is exactly 6,034,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 quarterly SellingGeneralAndAdministrativeExpense is exactly 5,922,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 NetIncomeLoss is exactly 5,235,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 quarterly NetIncomeLoss is exactly 5,152,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q1 2026 EarningsPerShareDiluted is exactly 2.14.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Data tab Q3 2025 EarningsPerShareDiluted is exactly 2.12.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab has column headers including Q/Q Change ($), Q/Q Change (%), Q1 2026 % of Rev, Q3 2025 % of Rev, and Margin Diff (pp).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q1 2026 COGS as a percentage of revenue equal to approximately 33.7%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q3 2025 COGS as a percentage of revenue equal to approximately 30.4%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab COGS margin percentage-point difference is approximately +3.3 percentage points.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q1 2026 gross margin equal to approximately 66.3%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q3 2025 gross margin equal to approximately 69.6%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab gross margin percentage-point difference is approximately -3.3 percentage points.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q1 2026 SG&A as a percentage of revenue equal to approximately 25.1%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q3 2025 SG&A as a percentage of revenue equal to approximately 24.7%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab SG&A margin percentage-point difference is approximately +0.4 percentage points.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q1 2026 net margin equal to approximately 21.8%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q3 2025 net margin equal to approximately 21.5%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance Analysis tab formulas reference the Data tab cells rather than hard-coded values.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis tab calculates Q/Q revenue change as approximately $0.07B or 0.3%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Dollar figures in the Variance Analysis tab are presented in billions (divided by 1,000,000,000).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Percentage figures in the Variance Analysis tab carry one decimal place.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab contains a narrative of 5 to 8 sentences.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative identifies gross margin decline of approximately 3.3 percentage points as one of the two most material margin shifts.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative identifies SG&A ratio increase of approximately 0.4 percentage points as one of the two most material margin shifts.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative references specific dollar figures such as revenue of $24.1B or $24.0B.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative references specific percentage figures such as 0.3% revenue change, 66.3% gross margin, or 3.3pp margin decline.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative proposes likely drivers for the margin shifts (e.g., product mix, input cost inflation, manufacturing efficiency, SG&A spending).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary narrative references EPS figures ($2.14 Q1 2026 vs $2.12 Q3 2025).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -3,
+      "criterion": "The Data tab uses cumulative Q3 2025 revenue (69,629,000,000) instead of the quarterly single-quarter value (23,993,000,000) for Q3 2025 revenue.",
+      "category": "data",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The workbook has fewer than 3 sheets or is missing any of the required tabs (Data, Variance Analysis, Summary).",
+      "category": "structure",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_3f3121657aadd8e7",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "variance_analysis",
+    "difficulty": "light",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:JNJ",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "24062000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "23993000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "94193000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "8106000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "7303000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "15956000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "16690000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "6034000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "5922000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "5235000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "5152000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "2.14",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "2.12",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "11.03",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "30256000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "63937000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "23676000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "26804000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "45636000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "14985000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "24.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "24.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "8.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "7.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "0.337",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "0.304",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "3.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "0.663",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "0.696",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "-3.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "0.251",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "0.247",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "0.4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "0.218",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "0.215",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 24062000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "money",
+        "value": 23993000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 94193000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 8106000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 7303000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 15956000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 16690000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "money",
+        "value": 6034000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "money",
+        "value": 5922000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 5235000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 5152000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 2.14,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 2.12,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 11.03,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 30256000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": 63937000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 23676000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "money",
+        "value": 26804000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": 45636000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "money",
+        "value": 14985000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "money",
+        "value": 24.1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "money",
+        "value": 24.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "money",
+        "value": 8.1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "money",
+        "value": 7.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 0.337,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "money",
+        "value": 0.304,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "money",
+        "value": 3.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "money",
+        "value": 0.663,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "money",
+        "value": 0.696,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "money",
+        "value": -3.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "money",
+        "value": 0.251,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "money",
+        "value": 0.247,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "money",
+        "value": 0.4,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "money",
+        "value": 0.218,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "money",
+        "value": 0.215,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "money",
+        "value": 3.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "money",
+        "value": 0.4,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "money",
+        "value": 24.1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "money",
+        "value": 24.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "money",
+        "value": 2.14,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_40",
+        "kind": "money",
+        "value": 2.12,
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Data",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Johnson & Johnson (JNJ) - Quarterly Financial Data",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "Source: SEC EDGAR XBRL | CIK: 0000200406",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": "Q2 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": "FY 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Revenue (excl. Assessed Tax)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 24062000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 23993000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 45636000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": 94193000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Cost of Goods Sold",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 8106000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 7303000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": 14985000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": 30256000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 15956000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 16690000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 30651000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": 63937000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "SG&A Expense",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 6034000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 5922000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": 11001000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": 23676000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Net Income",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 5235000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 5152000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": 16536000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": 26804000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "_($* #,##0.0,,_)",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": 2.14,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": 2.12,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": 6.82,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E10",
+              "value": 11.03,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 30.0,
+            "B": 18.0,
+            "C": 18.0,
+            "D": 18.0,
+            "E": 18.0
+          }
+        },
+        {
+          "name": "Variance Analysis",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Johnson & Johnson (JNJ) - Variance Analysis: Q1 2026 vs Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Q/Q Change ($)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Q/Q Change (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "Q1 2026 % of Rev",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G3",
+              "value": "Q3 2025 % of Rev",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H3",
+              "value": "Margin Diff (pp)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=Data!B5/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=Data!C5/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": 100.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "G4",
+              "value": 100.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "H4",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=Data!B6/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=Data!C6/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=Data!B6/Data!B5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "G5",
+              "value": null,
+              "formula": "=Data!C6/Data!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "H5",
+              "value": null,
+              "formula": "=(F5-G5)*100",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=Data!B7/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=Data!C7/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=Data!B7/Data!B5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "G6",
+              "value": null,
+              "formula": "=Data!C7/Data!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "H6",
+              "value": null,
+              "formula": "=(F6-G6)*100",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "SG&A",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=Data!B8/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=Data!C8/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": null,
+              "formula": "=Data!B8/Data!B5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "G7",
+              "value": null,
+              "formula": "=Data!C8/Data!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "H7",
+              "value": null,
+              "formula": "=(F7-G7)*100",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=Data!B9/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=Data!C9/1000000000",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": null,
+              "formula": "=Data!B9/Data!B5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "G8",
+              "value": null,
+              "formula": "=Data!C9/Data!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "H8",
+              "value": null,
+              "formula": "=(F8-G8)*100",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": null,
+              "formula": "=Data!B10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": null,
+              "formula": "=Data!C10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 22.0,
+            "B": 16.0,
+            "C": 16.0,
+            "D": 16.0,
+            "E": 16.0,
+            "F": 18.0,
+            "G": 18.0,
+            "H": 18.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Johnson & Johnson Q1 2026 Profitability Variance Summary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Key Findings",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "In Q1 2026, Johnson & Johnson reported revenue of $24.1B, essentially flat versus Q3 2025 ($24.0B), representing a marginal 0.3% increase of $0.07B. Despite stable revenue, gross margin deteriorated meaningfully, declining approximately 3.3 percentage points from 69.6% in Q3 2025 to 66.3% in Q1 2026, driven by a 11.0% increase in cost of goods sold ($7.3B to $8.1B) which outpaced revenue growth. This gross margin compression is the most material shift in the quarter and warrants further investigation into product mix, input cost inflation, and manufacturing efficiency. The second notable shift is the SG&A ratio, which increased modestly by 0.4 percentage points from 24.7% in Q3 2025 to 25.1% in Q1 2026, reflecting $0.1B in incremental selling and administrative spend. Net income margin declined 0.5 percentage points from 21.5% to 21.0%, reflecting the combined impact of higher COGS and elevated SG&A, partially offset by relatively stable other income items. Despite margin pressure, diluted EPS of $2.14 was roughly in line with Q3 2025 ($2.12), suggesting share count changes or below-the-line items provided some offset.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": "left"
+            }
+          ],
+          "column_widths": {
+            "A": 120.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "Johnson & Johnson (JNJ) XBRL-extracted financial data through Q1 2026 (sec_edgar_xbrl source, CIK: 0000200406)",
+          "content_blueprint": {
+            "title": "Johnson & Johnson (JNJ) XBRL-extracted financial data through Q1 2026 (sec_edgar_xbrl source, CIK: 0000200406)",
+            "body": "# Seed Material: Johnson & Johnson (JNJ)\nSource: sec_edgar_xbrl\nIdentifier: ticker:JNJ\n\nCompany: Johnson & Johnson\nTicker: JNJ\nCIK: 0000200406\nSector: healthcare\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q3 2014: 56,077,000,000\n  Q3 2014: 18,467,000,000\n  Q2 2014: 37,610,000,000\n  Q2 2014: 19,495,000,000\n  Q1 2014: 18,115,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 24,062,000,000\n  FY 2025: 94,193,000,000\n  Q3 2025: 69,629,000,000\n  Q3 2025: 23,993,000,000\n  Q2 2025: 45,636,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 8,106,000,000\n  FY 2025: 30,256,000,000\n  Q3 2025: 22,288,000,000\n  Q3 2025: 7,303,000,000\n  Q2 2025: 14,985,000,000\n\n### GrossProfit\n  Q1 2026: 15,956,000,000\n  FY 2025: 63,937,000,000\n  Q3 2025: 47,341,000,000\n  Q3 2025: 16,690,000,000\n  Q2 2025: 30,651,000,000\n\n### OperatingIncomeLoss\n  Q1 2015: 5,827,000,000\n  FY 2014: 21,590,000,000\n  Q3 2014: 18,578,000,000\n  Q3 2014: 7,053,000,000\n  Q2 2014: 11,525,000,000\n\n### NetIncomeLoss\n  Q1 2026: 5,235,000,000\n  FY 2025: 26,804,000,000\n  Q3 2025: 21,688,000,000\n  Q3 2025: 5,152,000,000\n  Q2 2025: 16,536,000,000\n\n### Assets\n  Q1 2026: 200,894,000,000\n  FY 2025: 199,210,000,000\n  Q1 2026: 199,210,000,000\n  Q3 2025: 192,816,000,000\n  Q2 2025: 193,389,000,000\n\n### Liabilities\n  Q1 2026: 119,708,000,000\n  FY 2025: 117,666,000,000\n  Q1 2026: 117,666,000,000\n  Q3 2025: 113,539,000,000\n  Q2 2025: 114,916,000,000\n\n### StockholdersEquity\n  Q1 2026: 81,186,000,000\n  Q1 2026: 81,544,000,000\n  Q3 2025: 79,277,000,000\n  Q2 2025: 78,473,000,000\n  Q1 2025: 78,109,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 21,688,000,000\n  FY 2025: 19,709,000,000\n  Q1 2026: 19,709,000,000\n  Q3 2025: 18,231,000,000\n  Q2 2025: 18,577,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 2.14\n  FY 2025: 11.03\n  Q3 2025: 8.94\n  Q3 2025: 2.12\n  Q2 2025: 6.82\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 109,000,000\n  FY 2024: 1,841,000,000\n  FY 2025: 1,841,000,000\n  FY 2023: 483,000,000\n  FY 2024: 483,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 6,034,000,000\n  FY 2025: 23,676,000,000\n  Q3 2025: 16,923,000,000\n  Q3 2025: 5,922,000,000\n  Q2 2025: 11,001,000,000\n\n## Recent Filings\n  4 — 2026-05-04\n  SCHEDULE 13G — 2026-05-01\n  8-K — 2026-04-28\n  4 — 2026-04-27\n  4 — 2026-04-27"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Data tab Q1 2026 revenue value in cell B5",
+          "value": 24062000000,
+          "tolerance": null,
+          "location": "Data sheet cell B5"
+        },
+        {
+          "description": "Data tab Q3 2025 quarterly revenue value in cell C5",
+          "value": 23993000000,
+          "tolerance": null,
+          "location": "Data sheet cell C5"
+        },
+        {
+          "description": "Data tab FY 2025 revenue value in cell E5",
+          "value": 94193000000,
+          "tolerance": null,
+          "location": "Data sheet cell E5"
+        },
+        {
+          "description": "Data tab Q1 2026 COGS value in cell B6",
+          "value": 8106000000,
+          "tolerance": null,
+          "location": "Data sheet cell B6"
+        },
+        {
+          "description": "Data tab Q3 2025 COGS value in cell C6",
+          "value": 7303000000,
+          "tolerance": null,
+          "location": "Data sheet cell C6"
+        },
+        {
+          "description": "Data tab Q1 2026 Gross Profit in cell B7",
+          "value": 15956000000,
+          "tolerance": null,
+          "location": "Data sheet cell B7"
+        },
+        {
+          "description": "Data tab Q3 2025 Gross Profit in cell C7",
+          "value": 16690000000,
+          "tolerance": null,
+          "location": "Data sheet cell C7"
+        },
+        {
+          "description": "Data tab Q1 2026 SG&A in cell B8",
+          "value": 6034000000,
+          "tolerance": null,
+          "location": "Data sheet cell B8"
+        },
+        {
+          "description": "Data tab Q3 2025 SG&A in cell C8",
+          "value": 5922000000,
+          "tolerance": null,
+          "location": "Data sheet cell C8"
+        },
+        {
+          "description": "Data tab Q1 2026 Net Income in cell B9",
+          "value": 5235000000,
+          "tolerance": null,
+          "location": "Data sheet cell B9"
+        },
+        {
+          "description": "Data tab Q3 2025 Net Income in cell C9",
+          "value": 5152000000,
+          "tolerance": null,
+          "location": "Data sheet cell C9"
+        },
+        {
+          "description": "Data tab Q1 2026 EPS value",
+          "value": 2.14,
+          "tolerance": null,
+          "location": "Data sheet cell B10"
+        },
+        {
+          "description": "Data tab Q3 2025 EPS value",
+          "value": 2.12,
+          "tolerance": null,
+          "location": "Data sheet cell C10"
+        },
+        {
+          "description": "Data tab FY 2025 EPS value",
+          "value": 11.03,
+          "tolerance": null,
+          "location": "Data sheet cell E10"
+        },
+        {
+          "description": "Data tab FY 2025 COGS",
+          "value": 30256000000,
+          "tolerance": null,
+          "location": "Data sheet cell E6"
+        },
+        {
+          "description": "Data tab FY 2025 Gross Profit",
+          "value": 63937000000,
+          "tolerance": null,
+          "location": "Data sheet cell E7"
+        },
+        {
+          "description": "Data tab FY 2025 SG&A",
+          "value": 23676000000,
+          "tolerance": null,
+          "location": "Data sheet cell E8"
+        },
+        {
+          "description": "Data tab FY 2025 Net Income",
+          "value": 26804000000,
+          "tolerance": null,
+          "location": "Data sheet cell E9"
+        },
+        {
+          "description": "Data tab Q2 2025 revenue",
+          "value": 45636000000,
+          "tolerance": null,
+          "location": "Data sheet cell D5"
+        },
+        {
+          "description": "Data tab Q2 2025 COGS",
+          "value": 14985000000,
+          "tolerance": null,
+          "location": "Data sheet cell D6"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 revenue in billions",
+          "value": 24.1,
+          "tolerance": 0.1,
+          "location": "Variance Analysis sheet cell B4"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 revenue in billions",
+          "value": 24.0,
+          "tolerance": 0.1,
+          "location": "Variance Analysis sheet cell C4"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 COGS in billions",
+          "value": 8.1,
+          "tolerance": 0.1,
+          "location": "Variance Analysis sheet cell B5"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 COGS in billions",
+          "value": 7.3,
+          "tolerance": 0.1,
+          "location": "Variance Analysis sheet cell C5"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 COGS as percentage of revenue",
+          "value": 0.337,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell F5"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 COGS as percentage of revenue",
+          "value": 0.304,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell G5"
+        },
+        {
+          "description": "Variance Analysis COGS margin difference in percentage points",
+          "value": 3.3,
+          "tolerance": 0.2,
+          "location": "Variance Analysis sheet cell H5"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 gross margin",
+          "value": 0.663,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell F6"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 gross margin",
+          "value": 0.696,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell G6"
+        },
+        {
+          "description": "Variance Analysis gross margin difference in percentage points",
+          "value": -3.3,
+          "tolerance": 0.2,
+          "location": "Variance Analysis sheet cell H6"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 SG&A as percentage of revenue",
+          "value": 0.251,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell F7"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 SG&A as percentage of revenue",
+          "value": 0.247,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell G7"
+        },
+        {
+          "description": "Variance Analysis SG&A margin difference in percentage points",
+          "value": 0.4,
+          "tolerance": 0.2,
+          "location": "Variance Analysis sheet cell H7"
+        },
+        {
+          "description": "Variance Analysis Q1 2026 net margin",
+          "value": 0.218,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell F8"
+        },
+        {
+          "description": "Variance Analysis Q3 2025 net margin",
+          "value": 0.215,
+          "tolerance": 0.002,
+          "location": "Variance Analysis sheet cell G8"
+        },
+        {
+          "description": "Summary narrative mentions gross margin decline of approximately 3.3 percentage points",
+          "value": 3.3,
+          "tolerance": 0.2,
+          "location": "Summary sheet cell A4"
+        },
+        {
+          "description": "Summary narrative mentions SG&A ratio increase of approximately 0.4 percentage points",
+          "value": 0.4,
+          "tolerance": 0.2,
+          "location": "Summary sheet cell A4"
+        },
+        {
+          "description": "Summary narrative references Q1 2026 revenue of $24.1B",
+          "value": 24.1,
+          "tolerance": 0.2,
+          "location": "Summary sheet cell A4"
+        },
+        {
+          "description": "Summary narrative references Q3 2025 revenue of $24.0B",
+          "value": 24.0,
+          "tolerance": 0.2,
+          "location": "Summary sheet cell A4"
+        },
+        {
+          "description": "Summary narrative references Q1 2026 EPS of $2.14",
+          "value": 2.14,
+          "tolerance": 0.01,
+          "location": "Summary sheet cell A4"
+        },
+        {
+          "description": "Summary narrative references Q3 2025 EPS of $2.12",
+          "value": 2.12,
+          "tolerance": 0.01,
+          "location": "Summary sheet cell A4"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 370167510
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "Johnson & Johnson (JNJ) XBRL-extracted financial data through Q1 2026 (sec_edgar_xbrl source, CIK: 0000200406)",
+      "content_blueprint": {
+        "title": "Johnson & Johnson (JNJ) XBRL-extracted financial data through Q1 2026 (sec_edgar_xbrl source, CIK: 0000200406)",
+        "body": "# Seed Material: Johnson & Johnson (JNJ)\nSource: sec_edgar_xbrl\nIdentifier: ticker:JNJ\n\nCompany: Johnson & Johnson\nTicker: JNJ\nCIK: 0000200406\nSector: healthcare\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q3 2014: 56,077,000,000\n  Q3 2014: 18,467,000,000\n  Q2 2014: 37,610,000,000\n  Q2 2014: 19,495,000,000\n  Q1 2014: 18,115,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 24,062,000,000\n  FY 2025: 94,193,000,000\n  Q3 2025: 69,629,000,000\n  Q3 2025: 23,993,000,000\n  Q2 2025: 45,636,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 8,106,000,000\n  FY 2025: 30,256,000,000\n  Q3 2025: 22,288,000,000\n  Q3 2025: 7,303,000,000\n  Q2 2025: 14,985,000,000\n\n### GrossProfit\n  Q1 2026: 15,956,000,000\n  FY 2025: 63,937,000,000\n  Q3 2025: 47,341,000,000\n  Q3 2025: 16,690,000,000\n  Q2 2025: 30,651,000,000\n\n### OperatingIncomeLoss\n  Q1 2015: 5,827,000,000\n  FY 2014: 21,590,000,000\n  Q3 2014: 18,578,000,000\n  Q3 2014: 7,053,000,000\n  Q2 2014: 11,525,000,000\n\n### NetIncomeLoss\n  Q1 2026: 5,235,000,000\n  FY 2025: 26,804,000,000\n  Q3 2025: 21,688,000,000\n  Q3 2025: 5,152,000,000\n  Q2 2025: 16,536,000,000\n\n### Assets\n  Q1 2026: 200,894,000,000\n  FY 2025: 199,210,000,000\n  Q1 2026: 199,210,000,000\n  Q3 2025: 192,816,000,000\n  Q2 2025: 193,389,000,000\n\n### Liabilities\n  Q1 2026: 119,708,000,000\n  FY 2025: 117,666,000,000\n  Q1 2026: 117,666,000,000\n  Q3 2025: 113,539,000,000\n  Q2 2025: 114,916,000,000\n\n### StockholdersEquity\n  Q1 2026: 81,186,000,000\n  Q1 2026: 81,544,000,000\n  Q3 2025: 79,277,000,000\n  Q2 2025: 78,473,000,000\n  Q1 2025: 78,109,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 21,688,000,000\n  FY 2025: 19,709,000,000\n  Q1 2026: 19,709,000,000\n  Q3 2025: 18,231,000,000\n  Q2 2025: 18,577,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 2.14\n  FY 2025: 11.03\n  Q3 2025: 8.94\n  Q3 2025: 2.12\n  Q2 2025: 6.82\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 109,000,000\n  FY 2024: 1,841,000,000\n  FY 2025: 1,841,000,000\n  FY 2023: 483,000,000\n  FY 2024: 483,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 6,034,000,000\n  FY 2025: 23,676,000,000\n  Q3 2025: 16,923,000,000\n  Q3 2025: 5,922,000,000\n  Q2 2025: 11,001,000,000\n\n## Recent Filings\n  4 — 2026-05-04\n  SCHEDULE 13G — 2026-05-01\n  8-K — 2026-04-28\n  4 — 2026-04-27\n  4 — 2026-04-27"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_3f3121657aadd8e7/variance_analysis.xlsx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_3f3121657aadd8e7/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T19:06:15.899269+00:00"
+}

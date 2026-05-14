@@ -126,6 +126,11 @@ def _render_input_md(attachment: InputAttachment, task_dir: Path) -> Path:
     if "actual_behavior" in bp:
         lines.append(f"**Actual:** {bp['actual_behavior']}\n")
 
+    if "body" in bp:
+        if lines:
+            lines.append("")
+        lines.append(bp["body"])
+
     out_path = task_dir / attachment.filename
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(lines), encoding="utf-8")
@@ -172,7 +177,7 @@ def _render_input_pdf(attachment: InputAttachment, task_dir: Path) -> Path:
 
     pdf_path = task_dir / attachment.filename
     try:
-        from pipeline.artifacts.docx_renderer import maybe_render_pdf
+        from pipeline.artifacts.renderer import maybe_render_pdf
         converted = maybe_render_pdf(docx_path)
         if converted:
             docx_path.unlink(missing_ok=True)

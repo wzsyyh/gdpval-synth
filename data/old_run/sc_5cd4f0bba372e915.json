@@ -1,0 +1,917 @@
+{
+  "candidate_id": "sc_5cd4f0bba372e915",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "medium",
+  "seed_id": "5cd4f0bba372e915",
+  "prompt": "You are a senior software engineer on the FastAPI core team. The team has just received PR #15280, which proposes adding a new `@app.vibe()` decorator to FastAPI. The PR was merged on April 1, 2026, and is tagged as a feature addition. Your manager has asked you to conduct a thorough, post-merge code review of this PR to document its design decisions, identify any concerns with the implementation, and provide actionable feedback for future maintainability. This review will be part of the project's technical debt documentation.\n\n**Materials provided:**\n- The PR diff for fastapi/fastapi#15280, showing 5 changed files with 133 additions and 1 deletion.\n- The PR description, which is simply: '✨ Add support for `@app.vibe()`'\n- The full content of the new documentation file `docs/en/docs/advanced/vibe.md` (44 lines added).\n- The navigation entry added to `docs/en/mkdocs.yml`.\n- The new example file `docs_src/vibe/tutorial001_py310.py` (12 lines added).\n- The partial diff of the main FastAPI application module (`fastapi/app.py`), showing the implementation of the `vibe()` method.\n\n**Task Requirements:**\nPrepare a formal code review document in Markdown format. Your review must be structured into the following sections:\n\n1.  **PR Summary**: Provide a concise, factual summary of the PR. State the PR number, title, and merge date. List the changed files and the total lines added/removed. Describe the feature's purpose in 1-2 sentences.\n\n2.  **Design Analysis**: Analyze the architectural design of the `@app.vibe()` feature.\n    - Explain the intended use case as described in the documentation.\n    - Describe the behavior of the decorator based on the example code and the partial diff. What does it do with the incoming request? What does it return?\n    - Comment on how this feature fits with FastAPI's existing principles (e.g., type hints, automatic documentation, data validation). Does it align or conflict? Justify your answer using specific points from the documentation's \"Benefits\" section.\n\n3.  **Implementation Review**: Evaluate the technical implementation.\n    - Review the example code in `tutorial001_py310.py`. Is the function signature correct? Does the type hint (`Any`) match the described behavior?\n    - Based on the partial diff of `app.py`, infer how the `vibe()` method might be implemented. What core FastAPI components (like routing, dependency injection, OpenAPI generation) would it likely interact with or bypass? Discuss at least two potential implementation challenges (e.g., schema generation, middleware compatibility).\n    - Note any inconsistencies or missing details in the provided code snippets.\n\n4.  **Documentation Assessment**: Critically assess the provided documentation.\n    - Does the `vibe.md` file clearly explain the feature? Does it include a concrete example?\n    - Evaluate the listed \"Benefits\". Are they presented as serious advantages or are they written with irony/satire? Cite specific phrases from the text to support your reading.\n    - Identify at least one missing piece of information a user would need to use this feature responsibly (e.g., security implications, performance, error handling).\n\n5.  **Recommendations**: Provide actionable recommendations.\n    - List at least two concrete improvements for the implementation or documentation.\n    - State whether this feature should be marked as experimental, deprecated, or something else, and explain your reasoning based on the PR's tone and content.\n\nThe final document should be professional, objective, and technically sound. Do not include any information not present in the provided materials.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted document is a Markdown file titled 'Post-Merge Code Review: PR #15280 - Add support for @app.vibe()'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'PR Summary' section heading exists at level 2.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Design Analysis' section heading exists at level 2.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Review' section heading exists at level 2.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Documentation Assessment' section heading exists at level 2.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Recommendations' section heading exists at level 2.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section correctly states the PR number as #15280.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section correctly states the merge date as 2026-04-01.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section correctly states the number of changed files as 5.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section correctly states the total additions as 133.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR Summary section correctly states the total deletions as 1.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR Summary section describes the feature's purpose as delegating to an LLM or bypassing validation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Analysis section identifies the intended use case as handling any HTTP method and payload.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Analysis section states the body should be annotated with 'Any'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Analysis section states the response is the raw output from the LLM.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Analysis section identifies a conflict with FastAPI's principles of validation, documentation, or serialization.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Analysis section cites the ironic phrase 'No data validation. No schemas. No constraints.' from the Benefits section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Analysis section cites the ironic phrase 'No serialization' from the Benefits section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Review section references the example file 'tutorial001_py310.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Review section notes the function parameter type hint is 'Any'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Review section infers the vibe() method is added to the FastAPI class in app.py.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Review section discusses at least one potential implementation challenge related to middleware, routing, or OpenAPI.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Review section discusses a second, distinct potential implementation challenge.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Review section identifies an inconsistency between the example and documentation (empty body vs. 'does everything').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Assessment section states the documentation includes an explanation and an example.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Assessment section identifies the Benefits as ironic/satirical.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Assessment section cites the specific ironic phrase about documentation from the Benefits.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Assessment section cites the specific ironic phrase about code reviews from the Benefits.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Assessment section cites the satirical phrase 'vibe-driven development'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Assessment section identifies at least one missing piece of information (security, performance, error handling, configuration).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section provides at least one concrete improvement for implementation or documentation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section provides a second, distinct concrete improvement.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section recommends marking the feature as experimental, deprecated, or a joke.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section justifies the recommendation using the merge date (April 1) and/or the satirical tone.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the navigation file 'mkdocs.yml'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the specific entry added to mkdocs.yml: 'advanced/vibe.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the new documentation file 'docs/en/docs/advanced/vibe.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly notes the PR has 133 additions and 1 deletion in its summary.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's tone is professional and objective, not sarcastic or humorous itself.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not introduce facts not present in the provided materials.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document misstates the merge date as a date other than April 1, 2026.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to identify the Benefits section as ironic/satirical.",
+      "category": "content",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_5cd4f0bba372e915",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:fastapi/fastapi#15280",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "#15280",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "2026-04-01",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "133",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "tutorial001_py310.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "Any",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "GET, POST, PUT, DELETE, PATCH",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "No data validation. No schemas. No constraints.",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "No serialization",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "No documentation: Why document your API when an LLM can figure it out?",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "No code reviews",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "ultimate vibe-driven development experience",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "docs/en/docs/advanced/vibe.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "docs_src/vibe/tutorial001_py310.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "FastAPI class",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "integrating with FastAPI's existing middleware stack",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "OpenAPI specification generation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "how to configure the LLM provider endpoint",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "experimental",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "April 1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "docs/en/mkdocs.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "advanced/vibe.md",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "#15280",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "2026-04-01",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 133,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "tutorial001_py310.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "Any",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "GET, POST, PUT, DELETE, PATCH",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "No data validation. No schemas. No constraints.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "No serialization",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "No documentation: Why document your API when an LLM can figure it out?",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "No code reviews",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "ultimate vibe-driven development experience",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "docs/en/docs/advanced/vibe.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "docs_src/vibe/tutorial001_py310.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "FastAPI class",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "integrating with FastAPI's existing middleware stack",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "OpenAPI specification generation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "how to configure the LLM provider endpoint",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "experimental",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "April 1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "docs/en/mkdocs.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "advanced/vibe.md",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "PR Summary",
+          "heading_level": 2,
+          "required_content": [
+            "PR number (#15280)",
+            "Merge date (2026-04-01)",
+            "List of changed files (5 files)",
+            "Total additions (133) and deletions (1)",
+            "One-sentence purpose of the feature"
+          ],
+          "paragraphs": [
+            "This review covers PR #15280, titled '✨ Add support for `@app.vibe()`', which was merged on April 1, 2026. The PR modified a total of 5 files, resulting in 133 lines added and 1 line deleted.",
+            "The feature introduces a new `@app.vibe()` decorator to the FastAPI framework, intended to allow endpoints to handle any HTTP method and payload by delegating processing to an external LLM provider, bypassing standard validation and serialization."
+          ]
+        },
+        {
+          "heading": "Design Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Intended use case: receiving any HTTP method/payload and sending to LLM",
+            "Decorator behavior: accepts 'Any' typed body, returns LLM response as-is",
+            "Conflict with FastAPI principles: listed benefits are ironic, contrasts with validation, docs, serialization",
+            "Citation of specific 'Benefits' like 'No data validation', 'No documentation', 'No serialization'"
+          ],
+          "paragraphs": [
+            "The `@app.vibe()` decorator is designed to create an endpoint that can respond to any HTTP method (GET, POST, PUT, DELETE, PATCH) and accept any payload. According to the documentation, the request body should be annotated with `Any`, and the intended workflow is to forward this payload directly to an LLM provider, returning the LLM's response unchanged.",
+            "The implementation, as inferred from the example and documentation, likely bypasses FastAPI's core machinery. It would skip the normal request validation against Pydantic models, omit automatic OpenAPI schema generation for request/response bodies, and forgo standard JSON serialization. The response would be the raw output from the LLM.",
+            "This design fundamentally conflicts with FastAPI's established principles, which are built on Python type hints for data validation, automatic interactive documentation, and serialization. The PR's own documentation explicitly states this conflict in its 'Benefits' section, listing 'Freedom: No data validation. No schemas. No constraints.' and 'No serialization: Just pass the raw, unstructured data around.' These statements are presented with clear irony and satire, highlighting the feature's deliberate deviation from the framework's philosophy."
+          ]
+        },
+        {
+          "heading": "Implementation Review",
+          "heading_level": 2,
+          "required_content": [
+            "Review of tutorial001_py310.py: function uses 'Any' type hint, has no body",
+            "Inference about app.py implementation: likely overrides routing, skips dependency injection for validation",
+            "Potential challenges: schema generation, middleware, error handling",
+            "Inconsistency: example function has no body, but decorator 'does everything'"
+          ],
+          "paragraphs": [
+            "The example code in `docs_src/vibe/tutorial001_py310.py` defines a function with a single parameter `data` annotated as `Any`. The function body is empty, with a comment indicating the decorator handles the logic. The type hint `Any` correctly matches the documented behavior of accepting any payload.",
+            "Based on the partial diff showing additions to `app.py`, the `vibe()` method is likely added to the main `FastAPI` class. A plausible implementation would involve registering a route that uses a custom endpoint function. This function would extract the raw request body, forward it to a configured LLM endpoint, and return the raw response. This approach would bypass Pydantic model validation, the standard dependency injection system for request parsing, and the automatic OpenAPI documentation generation for the endpoint.",
+            "Key implementation challenges would include integrating with FastAPI's existing middleware stack (e.g., CORS, authentication) while handling arbitrary payloads, and managing the OpenAPI specification generation for such a non-standard endpoint. The documentation's claim that the decorator 'does everything for you' contradicts the example, where the user must still write the function signature and a comment."
+          ]
+        },
+        {
+          "heading": "Documentation Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Documentation includes explanation and example",
+            "Benefits are written ironically/satirically (cite 'No code reviews' and 'vibe-driven development')",
+            "Missing info: security, performance, error handling, configuration"
+          ],
+          "paragraphs": [
+            "The `vibe.md` file clearly explains the feature's purpose and includes a code example via the `tutorial001_py310.py` file reference. It effectively communicates the feature's intent through a casual, humorous tone.",
+            "The 'Benefits' section is written with heavy irony and satire. Phrases like 'No documentation: Why document your API when an LLM can figure it out?' and 'No code reviews: There's no code to review. ... Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.' are not serious technical advantages but are humorous critiques of the 'vibe coding' trend. The concluding tip calling it the 'ultimate vibe-driven development experience' reinforces this satirical tone.",
+            "Critical information is missing from the documentation. There is no mention of how to configure the LLM provider endpoint, how to handle errors from the LLM, the security implications of forwarding raw payloads to an external service, or the performance impact. A user would be unable to use this feature responsibly without these details."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Recommendation 1: Add explicit disclaimer and experimental/beta status",
+            "Recommendation 2: Add configuration and error handling guidance",
+            "Justification based on PR tone (April Fools', satire)"
+          ],
+          "paragraphs": [
+            "Based on this review, two concrete recommendations are made. First, the feature should be explicitly marked as experimental, a proof-of-concept, or an April Fools' joke. The PR was merged on April 1, 2026, and the documentation's tone is clearly satirical. Adding a prominent warning would prevent user confusion and set appropriate expectations. Second, the documentation must be expanded to include essential operational details: how to set the LLM provider URL/API key, how to structure prompts, how to parse responses, and how to handle timeouts or errors from the LLM service.",
+            "Given the PR's merge date of April 1, 2026, and the overtly humorous, anti-best-practices nature of the documentation, this feature is almost certainly a seasonal joke or a proof-of-concept. It should not be considered a production-ready, core part of the FastAPI framework. It should be deprecated or moved to an 'experimental' or 'examples' section of the documentation to avoid misleading users about FastAPI's actual capabilities and philosophy."
+          ]
+        }
+      ],
+      "md_title": "Post-Merge Code Review: PR #15280 - Add support for @app.vibe()",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The PR diff for fastapi/fastapi#15280 (showing 5 changed files, +133, -1).",
+          "content_blueprint": {
+            "title": "The PR diff for fastapi/fastapi#15280 (showing 5 changed files, +133, -1)",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "The full content of the new documentation file 'docs/en/docs/advanced/vibe.md' (44 lines).",
+          "content_blueprint": {
+            "title": "The full content of the new documentation file 'docs/en/docs/advanced/vibe",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "The navigation entry added to 'docs/en/mkdocs.yml'.",
+          "content_blueprint": {
+            "title": "The navigation entry added to 'docs/en/mkdocs",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        },
+        {
+          "attachment_id": "att_3",
+          "filename": "input_3.md",
+          "format": "md",
+          "description": "The new example file 'docs_src/vibe/tutorial001_py310.py' (12 lines).",
+          "content_blueprint": {
+            "title": "The new example file 'docs_src/vibe/tutorial001_py310",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        },
+        {
+          "attachment_id": "att_4",
+          "filename": "input_4.md",
+          "format": "md",
+          "description": "The partial diff of 'fastapi/app.py' showing the implementation of the vibe() method.",
+          "content_blueprint": {
+            "title": "The partial diff of 'fastapi/app",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number stated in the Summary section",
+          "value": "#15280",
+          "tolerance": null,
+          "location": "PR Summary section, first paragraph"
+        },
+        {
+          "description": "Merge date stated in the Summary section",
+          "value": "2026-04-01",
+          "tolerance": null,
+          "location": "PR Summary section, first paragraph"
+        },
+        {
+          "description": "Number of changed files stated in the Summary section",
+          "value": 5,
+          "tolerance": null,
+          "location": "PR Summary section, first paragraph"
+        },
+        {
+          "description": "Total additions stated in the Summary section",
+          "value": 133,
+          "tolerance": null,
+          "location": "PR Summary section, first paragraph"
+        },
+        {
+          "description": "Total deletions stated in the Summary section",
+          "value": 1,
+          "tolerance": null,
+          "location": "PR Summary section, first paragraph"
+        },
+        {
+          "description": "Example file name referenced in Implementation Review",
+          "value": "tutorial001_py310.py",
+          "tolerance": null,
+          "location": "Implementation Review section, first paragraph"
+        },
+        {
+          "description": "Type hint used in the example function parameter",
+          "value": "Any",
+          "tolerance": null,
+          "location": "Implementation Review section, first paragraph"
+        },
+        {
+          "description": "Documented HTTP methods the vibe decorator can handle",
+          "value": "GET, POST, PUT, DELETE, PATCH",
+          "tolerance": null,
+          "location": "Design Analysis section, first paragraph"
+        },
+        {
+          "description": "A specific ironic 'Benefit' phrase cited in the Design Analysis",
+          "value": "No data validation. No schemas. No constraints.",
+          "tolerance": null,
+          "location": "Design Analysis section, third paragraph"
+        },
+        {
+          "description": "Another specific ironic 'Benefit' phrase cited in the Design Analysis or Documentation Assessment",
+          "value": "No serialization",
+          "tolerance": null,
+          "location": "Design Analysis section, third paragraph or Documentation Assessment section, second paragraph"
+        },
+        {
+          "description": "Specific ironic phrase about documentation cited in the Documentation Assessment",
+          "value": "No documentation: Why document your API when an LLM can figure it out?",
+          "tolerance": null,
+          "location": "Documentation Assessment section, second paragraph"
+        },
+        {
+          "description": "Specific ironic phrase about code reviews cited in the Documentation Assessment",
+          "value": "No code reviews",
+          "tolerance": null,
+          "location": "Documentation Assessment section, second paragraph"
+        },
+        {
+          "description": "Satirical phrase about vibe-driven development cited in the Documentation Assessment",
+          "value": "ultimate vibe-driven development experience",
+          "tolerance": null,
+          "location": "Documentation Assessment section, second paragraph"
+        },
+        {
+          "description": "The file name of the new documentation file added",
+          "value": "docs/en/docs/advanced/vibe.md",
+          "tolerance": null,
+          "location": "PR Summary section (implied) or Design Analysis"
+        },
+        {
+          "description": "The file name of the new example Python script added",
+          "value": "docs_src/vibe/tutorial001_py310.py",
+          "tolerance": null,
+          "location": "Implementation Review section or PR Summary"
+        },
+        {
+          "description": "Inference about which FastAPI core component the vibe method likely interacts with",
+          "value": "FastAPI class",
+          "tolerance": null,
+          "location": "Implementation Review section, second paragraph"
+        },
+        {
+          "description": "A potential implementation challenge mentioned (at least two required)",
+          "value": "integrating with FastAPI's existing middleware stack",
+          "tolerance": null,
+          "location": "Implementation Review section, third paragraph"
+        },
+        {
+          "description": "A second potential implementation challenge mentioned",
+          "value": "OpenAPI specification generation",
+          "tolerance": null,
+          "location": "Implementation Review section, third paragraph"
+        },
+        {
+          "description": "Missing piece of information identified in the Documentation Assessment",
+          "value": "how to configure the LLM provider endpoint",
+          "tolerance": null,
+          "location": "Documentation Assessment section, third paragraph"
+        },
+        {
+          "description": "Recommendation to mark the feature as experimental or a joke",
+          "value": "experimental",
+          "tolerance": null,
+          "location": "Recommendations section, first paragraph"
+        },
+        {
+          "description": "Justification for the recommendation based on merge date",
+          "value": "April 1",
+          "tolerance": null,
+          "location": "Recommendations section, second paragraph"
+        },
+        {
+          "description": "The navigation file that was modified",
+          "value": "docs/en/mkdocs.yml",
+          "tolerance": null,
+          "location": "PR Summary (implied) or referenced in attachments"
+        },
+        {
+          "description": "The specific line added to mkdocs.yml for the new page",
+          "value": "advanced/vibe.md",
+          "tolerance": null,
+          "location": "PR Summary (implied) or referenced in attachments"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1142828907
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The PR diff for fastapi/fastapi#15280 (showing 5 changed files, +133, -1).",
+      "content_blueprint": {
+        "title": "The PR diff for fastapi/fastapi#15280 (showing 5 changed files, +133, -1)",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "The full content of the new documentation file 'docs/en/docs/advanced/vibe.md' (44 lines).",
+      "content_blueprint": {
+        "title": "The full content of the new documentation file 'docs/en/docs/advanced/vibe",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "The navigation entry added to 'docs/en/mkdocs.yml'.",
+      "content_blueprint": {
+        "title": "The navigation entry added to 'docs/en/mkdocs",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    },
+    {
+      "attachment_id": "att_3",
+      "filename": "input_3.md",
+      "format": "md",
+      "description": "The new example file 'docs_src/vibe/tutorial001_py310.py' (12 lines).",
+      "content_blueprint": {
+        "title": "The new example file 'docs_src/vibe/tutorial001_py310",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    },
+    {
+      "attachment_id": "att_4",
+      "filename": "input_4.md",
+      "format": "md",
+      "description": "The partial diff of 'fastapi/app.py' showing the implementation of the vibe() method.",
+      "content_blueprint": {
+        "title": "The partial diff of 'fastapi/app",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_5cd4f0bba372e915/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_2.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_3.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_4.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:07:24.825278+00:00"
+}

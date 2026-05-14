@@ -1,34 +1,40 @@
-"""LLM-driven synthesis: canonical scenario → TaskCandidate.
+"""Unified generation: seed → complete TaskCandidate in ONE LLM call.
 
-Three structured stages (separate LLM calls, all reading the same frozen
-canonical state):
-
-  1. Enrichment        — produce explicit/implicit requirements + scenario backstory
-  2. Prompt Writer     — render workplace task instruction in occupational voice
-  3. Rubric Generator  — produce 30-60 atomic [+N points] machine-checkable criteria
-
-Why three stages, not one mega-prompt:
-  - Each stage has a focused responsibility, easier to debug failures.
-  - Different stages can use different models if we want cross-family review.
-  - Structured intermediates (Enrichment JSON) make the canonical → prompt
-    relationship inspectable; users can see WHY the prompt says what it does.
-
-All LLM stages receive `canonical.context_for_agent()` as a read-only block
-and are instructed never to invent facts beyond what is pinned there.
+Core principle: the LLM reads the FULL seed material and designs the task,
+answer, and rubric simultaneously. The prompt asks for what the answer provides;
+the rubric checks what the answer contains. No template-filling, no free
+invention.
 """
 
 from __future__ import annotations
 
 import logging
 import random
+from datetime import date
 from typing import Literal
 
-import yaml
 from pydantic import BaseModel, Field
 
-from pipeline.config import TAXONOMY_PATH, settings
 from pipeline.llm import LLMClient, default_client
-from pipeline.scenario.canonical import CanonicalScenario, DifficultyBand
+from pipeline.scenario.canonical import (
+    CanonicalScenario,
+    DifficultyBand,
+    Entity,
+    FactValue,
+    Occupation,
+    SeedReference,
+    TimelineEvent,
+)
+from pipeline.scenario.reference_answer import (
+    CellBlueprint,
+    DocHeaderBlueprint,
+    ExpectedValue,
+    InputAttachment,
+    MdSectionBlueprint,
+    ReferenceAnswer,
+    SectionBlueprint,
+    SheetBlueprint,
+)
 from pipeline.scenario.task_candidate import (
     DeliverableSpec,
     RubricItem,
@@ -39,499 +45,561 @@ from pipeline.seeds.base import Seed
 logger = logging.getLogger(__name__)
 
 
-# ─────────────────────────── Stage 1: Enrichment ───────────────────────────
+# ─────────────────────────── Unified Output Schema ───────────────────────────
 
 
-class Enrichment(BaseModel):
-    """Structured output of the enrichment stage."""
+class UnifiedTask(BaseModel):
+    """Structured output of the unified generation step."""
 
-    scenario_backstory: str = Field(
-        description="2-4 sentences setting the workplace situation. Draws on canonical entities and timeline. Does NOT invent new facts."
+    deliverable_type: str = Field(
+        description="Type of deliverable (e.g. motion_to_dismiss, credit_memo, bug_fix_pr). Determined from the seed content."
     )
-    explicit_requirements: list[str] = Field(
-        description="6-12 requirements the boss states clearly. Each is a single concrete deliverable expectation."
+    prompt: str = Field(
+        description="Complete task description. Natural workplace voice. 1800-3000 chars."
     )
-    implicit_requirements: list[str] = Field(
-        description="3-8 requirements the boss assumes the analyst/lawyer/engineer already knows (industry conventions, formats, compliance norms)."
+    attachments: list[str] = Field(
+        default_factory=list,
+        description="Descriptions of input attachments the candidate should receive.",
     )
-    hidden_constraints: list[str] = Field(
-        description="2-5 non-obvious constraints (deadline pressure, format peculiarity, audience-specific nuances)."
+    answer_format: Literal["docx", "pdf", "xlsx", "markdown"] = Field(
+        description="Primary deliverable format"
     )
-    primary_deliverable_format: Literal[
-        "docx", "pdf", "xlsx", "pptx", "repo_tarball", "markdown", "docx+pdf", "xlsx+pptx"
-    ]
+
+    # For docx/pdf deliverables
+    docx_sections: list[SectionBlueprint] | None = None
+    docx_header: DocHeaderBlueprint | None = None
+    docx_title: str | None = None
+    docx_signature: str | None = None
+
+    # For markdown deliverables
+    md_sections: list[MdSectionBlueprint] | None = None
+    md_title: str | None = None
+
+    # For xlsx deliverables
+    xlsx_sheets: list[SheetBlueprint] | None = None
+
+    # Universal: values that validators will check
+    expected_values: list[ExpectedValue] = Field(default_factory=list)
+
+    # Scoring criteria
+    rubric: list[RubricItem] = Field(
+        default_factory=list,
+        description="45-55 atomic criteria. Each must be verifiable against the answer above.",
+    )
 
 
-_ENRICH_SYS_TMPL = """You are an expert {occupation_title} with {years} years of experience designing realistic professional tasks. You will receive a canonical scenario state with PINNED facts (real public data from {seed_source}). Your job is to enrich the scenario with structured workplace context.
-
-Hard rules:
-- NEVER invent new facts (no new dates, names, dollar amounts, citations, ticker symbols).
-- ONLY reference entities/facts/timeline events by their canonical ids.
-- Requirements and constraints must be concrete enough to be testable in a rubric.
-- Voice: how a busy senior {occupation_title} would brief a junior teammate — tight, assumes domain literacy, leaves some details to be inferred (real workplace ambiguity).
-- Calibrate scope to the difficulty band: {difficulty} → expected expert hours: {expected_hours}.
-- The deliverable format must match the deliverable_id: {deliverable_id} ({archetype}).
-
-Common mistakes to avoid:
-- Don't write requirements like "ensure quality" or "be thorough" — these aren't testable.
-- Don't restate canonical facts as requirements; requirements describe what the deliverable must DO.
-- Don't include AI-typical phrasing ("Please ensure", "Make sure to", "It is important that").
-- Implicit requirements are about industry conventions, NOT obvious things like "use English".
-"""
+# ─────────────────────────── Prompt Construction ───────────────────────────
 
 
-_OCCUPATION_TITLES = {
+_OCCUPATION_NAMES = {
     "lawyer": "lawyer",
     "financial_analyst": "investment banking analyst",
     "software_engineer": "software engineer",
 }
 
-_OCCUPATION_YEARS = {
-    "lawyer": 14,
-    "financial_analyst": 12,
-    "software_engineer": 11,
-}
 
-_DIFFICULTY_HOURS = {
-    DifficultyBand.LIGHT: "1-3 hours",
-    DifficultyBand.MEDIUM: "3-6 hours",
-    DifficultyBand.HARD: "6-10 hours",
+_DIFFICULTY_BANDS = {
+    "light": "1-3 hours",
+    "medium": "3-6 hours",
+    "hard": "6-10 hours",
 }
 
 
-def _occupation_seed_source(canonical: CanonicalScenario) -> str:
-    return {
-        "courtlistener": "CourtListener (real federal/circuit court opinion)",
-        "sec_edgar_xbrl": "SEC EDGAR XBRL (real public-company filings)",
-        "github": "real merged GitHub PR + issue thread",
-    }.get(canonical.seed.source, canonical.seed.source)
+_LAWYER_SYS = """You are a senior lawyer with 15+ years of experience designing professional legal assessment tasks.
 
+You will receive a REAL court opinion, motion, or brief. Your job is to design ONE complete legal assessment task based on this material.
 
-def enrich(canonical: CanonicalScenario, client: LLMClient | None = None) -> Enrichment:
-    client = client or default_client()
-    sys_prompt = _ENRICH_SYS_TMPL.format(
-        occupation_title=_OCCUPATION_TITLES[canonical.occupation.value],
-        years=_OCCUPATION_YEARS[canonical.occupation.value],
-        difficulty=canonical.difficulty.value,
-        expected_hours=_DIFFICULTY_HOURS[canonical.difficulty],
-        deliverable_id=canonical.deliverable_id,
-        archetype=canonical.archetype,
-        seed_source=_occupation_seed_source(canonical),
-    )
-    user_prompt = (
-        canonical.context_for_agent()
-        + "\n\nGenerate the enrichment for the deliverable above. "
-        "Return a SINGLE valid JSON object. All string values must be on a single line (no newlines inside strings). "
-        "Escape any quotes inside strings with backslash. Do NOT include markdown code fences."
-    )
-    return client.chat_structured(
-        [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        Enrichment,
-        temperature=0.7,
-    )
+## Core Principle
 
+**The task, answer, and rubric must ALL grow from the seed material.**
+- Do NOT invent facts, names, numbers, or citations that are not in the material.
+- Do NOT apply a template regardless of what the material says.
+- Let the material determine what type of task makes sense.
 
-# ─────────────────────────── Stage 2: Prompt Writer ───────────────────────────
+## Step 1: Determine Deliverable Type
 
+Read the legal material and decide what kind of professional deliverable it naturally supports:
 
-_PROMPT_WRITER_SYS = """You write workplace task instructions in the natural voice of the field. The instruction will be given to a model that must produce a real professional deliverable (8+ pages, full spreadsheet model, working code, etc.) — so the instruction must be specific and grounded.
+- Case involving contract terms → contract_redline
+- Case about employment law, jurisdiction, or procedural matters → motion_to_dismiss or legal_memo
+- Case with expert testimony or depositions → deposition_outline
+- Complex appellate decision with multiple issues → legal_memo
 
-You will receive: a CANONICAL state (entities, dates, facts, citations — all real and pinned), an ENRICHMENT (backstory, explicit/implicit reqs, hidden constraints), and a DELIVERABLE BLUEPRINT describing the expected structure of the answer.
+## Step 2: Design the Prompt
 
-Hard rules:
-- Reference canonical facts by their actual values (e.g., "based on $REVENUE_VALUE in Q3 revenue").
-- The instruction must read like one a senior {occupation_title} actually wrote — direct, mildly assumes context.
-- DO NOT use AI hedging ("Please ensure", "It is important to note", "Make sure that you").
-- DO NOT restate the rubric. The rubric is for grading; the instruction is the brief.
-- DO NOT reveal the answer blueprint to the candidate. The blueprint is for YOU to understand what structure to ask for, not to give away.
-- Length target: {min_chars}-{max_chars} characters (real GDPval median is ~2,000 chars).
-- NEVER mention deadlines, due dates, time pressure, or urgency in the prompt. Real GDPval tasks almost never include deadlines (only ~3% do). Do NOT write phrases like "by Friday", "due by", "end of day", "ASAP", "urgent", "time-sensitive", or "deadline".
-- Avoid numbered lists for requirements (only ~17% of real GDPval tasks use them). Use flowing paragraphs or brief bullet points (~36% use bullets).
-- When input attachments exist, reference them naturally in the prompt body: "see the attached spreadsheet", "using the provided contract draft", "review the excerpt below".
-- FIRST SENTENCE MUST be a 'You are a...' role framing. This is mandatory — 78% of real GDPval tasks start this way. Example: "You are a junior associate at Hartwell & Mosby LLP." The very first words of the prompt must be "You are a". Keep the role frame to 1-2 sentences max.
-- Then set the situational context (what the task is about, who the client/stakeholder is, what triggered the work).
-- Close with the deliverable specification and any format requirements.
-- Embed all explicit_requirements; weave implicit ones in implicitly (don't enumerate them).
-- It is OK to leave one or two minor things ambiguous if a real boss would (real workplace ambiguity).
-- For SWE tasks: file paths must be the actual paths shown in the canonical diff (e.g. "pandas/core/reshape/merge.py"), NOT prefixed with the repo slug.
-- Don't fabricate repository conventions: only mention deliverable locations (e.g. `docs/design/`) if you have actual evidence they exist; otherwise say "the document" without a path.
-- NEVER invent specific line numbers, line ranges, section IDs, or specific exhibit numbers that aren't pinned in canonical facts. Use general references ("the affected method", "the relevant section") instead.
-- For financial tasks: financial figures must be referenced from a SINGLE consistent period. Do NOT mix Q3 2024 revenue with Q1 2025 operating income as if they were comparable. Income statement structure: Revenue → COGS → Gross Profit → Opex (SG&A, R&D) → Operating Income → Net Income (NOT vice versa).
-- Watch the timeline: if the canonical reference event (PR merged, opinion filed) is more than 2 years before the assignment date, frame it as historical context, not "recent" or "newly merged".
-- For lawyer tasks: the precedent in canonical facts is the ONLY case you may rely on, and it covers ONLY the legal proposition it actually stands for. If the canonical case is a Federal Circuit patent decision and the archetype is "breach_of_contract", DO NOT pretend the patent decision controls contract law — instead, recast the scenario so the deliverable is about the case's actual subject matter (IP / patent issues), or downgrade the archetype to align. NEVER cite a case for a proposition it does not actually hold.
+Write a detailed workplace task instruction (1800-3000 characters). Follow this structure closely:
 
-Calibration examples — what real GDPval Lawyer prompts look like:
-  "You work at a new estate planning law firm in Texas. It is April 2023, and your supervising attorney has asked you to draft the first formal and comprehensive Last Will and Testament for a client residing in Austin, Texas..."
+1. **Role and context** (opening sentence): Start with "You are a..." — name the role (e.g., associate at a litigation firm, in-house counsel), the organization, and the immediate situation. Include 2-3 sentences of background: why this work matters, who requested it, and what is at stake.
 
-Real Financial Analyst:
-  "It is April 11, 2025 and you are an Investment Banking Analyst in the Equity Capital Markets group..."
+2. **Materials provided**: List the attached documents by name and describe what they contain. Be specific (e.g., "the attached Apple v. NLRB opinion (143 F.4th 291)", "the motion to dismiss in Smith v. Jones").
 
-Match this voice and concreteness.
+3. **Task requirements**: Break the deliverable into concrete steps. Use numbered lists or bullet points. Include:
+   - Specific legal analyses, arguments, or judgments required
+   - Constraints (e.g., "do not exceed X pages", "cite at least three cases")
+   - Formatting instructions (section headings, citation format, file names)
+   - Any procedural rules or standards the candidate must follow
+
+4. **Deliverable specification**: Clearly state the output format (Word document, PDF, or Markdown file) and any structural requirements (sections, headings, signature blocks).
+
+Tone rules:
+- Do NOT include deadlines, "ASAP", "urgent", or time pressure
+- Do NOT use AI hedging ("Please ensure", "It is important that")
+- Write as a real partner delegating work to a competent associate
+
+## Step 3: Design the Answer
+
+Generate the COMPLETE deliverable content with enough detail to support 45-55 rubric items.
+
+**CRITICAL: Populate expected_values with every verifiable fact, name, and citation from your answer.**
+- Each expected_value must contain: a description of what it checks, the exact value, and where it appears in the answer.
+- Include case citations, party names, dates, statutory sections, judge names, and key holdings.
+- Include specific quotes or paraphrases from the seed material.
+- expected_values is NOT optional. Generate 10-25 items minimum.
+
+**For docx/pdf:**
+- Provide full paragraph text for each section (3-8 paragraphs per major section)
+- Include specific facts, names, citations, and quotations from the seed
+- Use professional legal tone; headings should mirror the rubric checks
+- The document should be substantive enough that 20+ rubric items can check its content
+
+**For markdown:**
+- Provide full section text with specific references
+- Include any quoted language if relevant (must match the actual opinion)
+- Each section should contain enough specific claims to support multiple rubric items
+
+## Step 4: Design the Rubric
+
+Produce 45-55 atomic, verifiable scoring criteria.
+
+**Score distribution** (match this closely):
+- ~51% should be +1 point
+- ~42% should be +2 points
+- ~7% should be +3 or higher
+- 0-2 penalty items (negative scores) for deal-breakers only
+
+**Rubric style** (mimic professional assessment rubrics):
+- Start with the deliverable noun: "The submitted [deliverable]..."
+- Be precise and unambiguous: specify exact names, citations, section locations
+- Include boundary conditions where relevant
+- Each criterion must be independently verifiable by an evaluator reading only the answer
+- Spread criteria across categories: format (20%), structure (25%), legal content (40%), citations/references (15%)
+
+**Examples of good criteria:**
+- [+2] The submitted document is a Word file titled exactly 'Legal Memo - Apple v. NLRB'.
+- [+1] The memorandum header 'Re' line includes the correct citation: 143 F.4th 291.
+- [+2] The motion argues that the court lacks personal jurisdiction under Rule 12(b)(2).
+- [+1] The contract redline preserves the indemnification clause in Section 4.2.
+
+Do NOT create criteria that check things not in your answer.
+Do NOT merge multiple independent checks into one criterion.
+
+## Output Format
+
+Return a single valid JSON object matching the schema. All string values on single lines. Escape quotes with backslash. No markdown code fences.
 """
 
 
-_LENGTH_BANDS = {
-    DifficultyBand.LIGHT: (1000, 1600),
-    DifficultyBand.MEDIUM: (1400, 2200),
-    DifficultyBand.HARD: (1800, 2800),
-}
+_FINANCIAL_SYS = """You are a senior investment banking analyst with 15+ years of experience designing professional financial assessment tasks.
 
+You will receive a REAL company's 10-K or 10-Q filing data. Your job is to design ONE complete financial assessment task based on this material.
 
-def _attachment_hint(canonical: CanonicalScenario) -> str:
-    """Generate a hint about input attachments for the prompt writer."""
-    bp = canonical.reference_answer
-    if not bp or not bp.input_attachments:
-        return ""
-    lines = ["\n## Input Attachments (reference naturally in the prompt)\n"]
-    for att in bp.input_attachments:
-        lines.append(f"- {att.filename} ({att.format}): {att.description}")
-    lines.append("\nReference these attachments naturally in the prompt body — do NOT list them as a separate section.")
-    return "\n".join(lines)
+## Core Principle
 
+**The task, answer, and rubric must ALL grow from the seed material.**
+- Do NOT invent facts, names, numbers, or data points that are not in the material.
+- Do NOT apply a template regardless of what the material says.
+- Let the material determine what type of task makes sense.
 
-def _blueprint_hint(canonical: CanonicalScenario) -> str:
-    """Generate a hint about deliverable structure for the prompt writer."""
-    bp = canonical.reference_answer
-    if not bp:
-        return ""
-    lines = ["\n## Deliverable Blueprint (for YOUR reference only — DO NOT reveal to candidate)\n"]
-    if bp.format == "xlsx" and bp.sheets:
-        lines.append(f"Format: Excel workbook with {len(bp.sheets)} sheets:")
-        for s in bp.sheets:
-            lines.append(f"  - {s.name}")
-        lines.append("The candidate must build this structure with live formulas.")
-    elif bp.format == "docx" and bp.sections:
-        lines.append(f"Format: Word document with {len(bp.sections)} sections:")
-        for s in bp.sections:
-            lines.append(f"  - {s.heading}: must cover {len(s.required_content)} key points")
-        lines.append("The candidate must produce a professionally formatted document.")
-    elif bp.format == "markdown" and bp.md_sections:
-        lines.append(f"Format: Markdown document with {len(bp.md_sections)} sections:")
-        for s in bp.md_sections:
-            lines.append(f"  - {s.heading}")
-    return "\n".join(lines)
+## Step 1: Determine Deliverable Type
 
+Read the financial material and decide what kind of professional deliverable it naturally supports:
 
-def write_prompt(
-    canonical: CanonicalScenario,
-    enrichment: Enrichment,
-    client: LLMClient | None = None,
-) -> str:
-    client = client or default_client()
-    min_c, max_c = _LENGTH_BANDS[canonical.difficulty]
-    sys_prompt = _PROMPT_WRITER_SYS.format(
-        occupation_title=_OCCUPATION_TITLES[canonical.occupation.value],
-        min_chars=min_c,
-        max_chars=max_c,
-    )
-    user_prompt = (
-        canonical.context_for_agent()
-        + "\n\n## Enrichment\n"
-        + enrichment.model_dump_json(indent=2)
-        + _attachment_hint(canonical)
-        + _blueprint_hint(canonical)
-        + f"\n\nWrite the workplace task instruction now. Target {min_c}-{max_c} chars. "
-        "Output the instruction text only — no preamble, no JSON, no quotes around it."
-    )
-    content, _ = client.chat(
-        [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.8,
-        max_tokens=3000,
-    )
-    return content.strip()
+- Company with debt/credit concerns, leverage issues, or covenant risks → credit_memo
+- Company with growth potential, M&A activity, or expansion story → investment_memo
+- Company facing industry disruption, competitive pressure, or regulatory changes → industry_analysis
+- Company with complex capital structure or refinancing needs → credit_memo
 
+## Step 2: Design the Prompt
 
-# ─────────────────────────── Stage 3: Rubric Generator ───────────────────────────
+Write a detailed workplace task instruction (1800-3000 characters). Follow this structure closely:
 
+1. **Role and context** (opening sentence): Start with "You are a..." — name the role (e.g., credit analyst at a commercial bank, associate at a PE firm), the organization or team, and the immediate situation. Include 2-3 sentences of background: why this analysis matters, who requested it, and what decision it will inform.
 
-class GeneratedRubric(BaseModel):
-    items: list[RubricItem] = Field(
-        description="45-55 atomic, machine-checkable criteria. Calibrated to real GDPval: median 47 items, mostly +1/+2 points, total 60-90."
-    )
+2. **Materials provided**: List the attached documents / input files by name and describe what they contain. Be specific (e.g., "the Q1 FY2026 10-Q filing for Deere & Co", "the attached financial data package").
 
+3. **Task requirements**: Break the deliverable into concrete steps. Use numbered lists or bullet points. Include:
+   - Specific analyses, judgments, or recommendations required
+   - Constraints (e.g., "focus on the last three fiscal years", "address both upside and downside scenarios")
+   - Formatting instructions (section headings, page limits, file names)
+   - Any analytical frameworks or benchmarks the candidate should apply
 
-_RUBRIC_SYS = """You generate machine-checkable evaluation rubrics for professional deliverables in the exact GDPval style.
+4. **Deliverable specification**: Clearly state the output format (Word document or PDF) and any structural requirements (sections, headings, executive summary).
 
-Real GDPval statistics (calibrated against 220 public tasks):
-  - Median items per rubric: 47
-  - Point distribution: 52% are +1, 42% are +2, ~6% are +3 or higher, 0.9% are penalties
-  - Median total points: ~70
-  - Most common category keywords: format (511 occurrences), reference (399), data (310), style (179), content (139)
-  - 73% of tasks have at least one item requiring exact match of a named entity/number
+Tone rules:
+- Do NOT include deadlines, "ASAP", "urgent", or time pressure
+- Do NOT use AI hedging ("Please ensure", "It is important that")
+- Write as a real managing director delegating work to a competent analyst
 
-Rubric format reference (real GDPval items):
-  [+1] The Will identifies the testator by the full legal name Grace J. Parsons.
-  [+2] The Will is at least 7 but no more than 12 pages in length.
-  [+1] Provides deliverable as a single PDF file.
-  [+2] Includes all unique individual companies that is part of the S&P 500 as of April 11, 2025
-  [-1] The document uses Comic Sans or other unprofessional font. (penalty example)
+## Step 3: Design the Answer
 
-CRITICAL — these are mistakes a real expert reviewer would never make:
+Generate the COMPLETE deliverable content with enough detail to support 45-55 rubric items.
 
-1. POINT BUDGET — match real GDPval STRICTLY:
-   - Total items: 45-55 (real median is 47)
-   - Total points: 60-90 (NOT higher; real median is ~70)
-   - HARD MAX per item: 3 points. NEVER assign +4, +5, +6, +7, or +8 to any item.
-   - Point distribution target: ~50% of items should be +1, ~40% should be +2, ~10% should be +3
-   - Include 1-2 penalty items (score -1 or -2) for critical errors like wrong file format or missing confidentiality notice
-   - If you find yourself writing +4 or higher, BREAK IT INTO multiple smaller +1/+2 items instead
+**CRITICAL: Populate expected_values with every verifiable fact, metric, name, and data point from your answer.**
+- Each expected_value must contain: a description of what it checks, the exact value, and where it appears in the answer.
+- Include company names, ticker symbols, key financial metrics, business segment names, and cited data points.
+- Include specific facts about the company's operations, competitive position, or risk factors.
+- expected_values is NOT optional. Generate 10-25 items minimum.
 
-2. CATEGORY DISTRIBUTION — match real GDPval emphasis (check your counts):
-   format        — file type, page/slide count, naming (~20% of items, i.e., 9-11 items)
-   reference     — citations, case names, statutory refs, data sources (~20%, i.e., 9-11 items)
-   data          — specific numbers, calculations, financial figures (~15%, i.e., 7-8 items)
-   style         — tone, formatting conventions, professional standards (~10%, i.e., 4-5 items)
-   accuracy      — factual correctness of named entities/numbers (~15%, i.e., 7-8 items)
-   content       — substantive coverage (~15%, i.e., 7-8 items)
-   judgment      — qualitative reasoning (~5%, i.e., 2-3 items MAX)
-   structure     — required sections, organization (bundled into format/content)
-   completeness  — coverage of required topics (bundled into content)
-   After generating the rubric, VERIFY the category counts are close to these targets.
+**For docx/pdf:**
+- Provide full paragraph text for each section (3-8 paragraphs per major section)
+- Include specific facts, metrics, and data points from the seed
+- Use professional investment banking tone; headings should mirror the rubric checks
+- The document should be substantive enough that 20+ rubric items can check its content
 
-3. EXACT-MATCH ITEMS (MANDATORY): In ~73% of real GDPval tasks, at least one rubric item requires an exact match of a named entity, number, or citation. You MUST include at least 4 exact-match items per rubric. These are NOT optional:
-   - "[+1] The document identifies the testator as Grace J. Parsons"
-   - "[+2] The DCF model uses a terminal growth rate of 2.3%"
-   - "[+1] Correctly cites the precedent case as 139 F.4th 1340 (Fed. Cir. 2025)"
-   - "[+1] The memo identifies the client as Atlas Holdings, Inc."
-   These must reference SPECIFIC pinned facts from the canonical state. If you do not include at least 4 exact-match items, the rubric is INVALID.
+## Step 4: Design the Rubric
 
-4. DON'T over-weight trivial mechanical compliance. NO points for things like:
-   - Mentioning a teammate's name (e.g. "+1 if mentions that Rin Sato left")
-   - Specific font sizes / margins (irrelevant unless task explicitly demands)
-   - Word/phrase compliance ("uses the word 'covenant' three times")
-   These are gaming-the-rubric items, not quality evaluation.
+Produce 45-55 atomic, verifiable scoring criteria.
 
-5. Bundle related format checks. Real GDPval has format as a dominant category but items are bundled (e.g., one item covers page count + file type + professional formatting).
+**Score distribution** (match this closely):
+- ~51% should be +1 point
+- ~42% should be +2 points
+- ~7% should be +3 or higher
+- 0-2 penalty items (negative scores) for deal-breakers only
 
-6. GROUNDING:
-   - Reference SPECIFIC facts from the canonical state for accuracy/reference/data items.
-   - For judgment items (minimal), use relative phrasing ("plausibly justifies", "identifies a credible trade-off").
+**Rubric style** (mimic professional assessment rubrics):
+- Start with the deliverable noun: "The submitted [deliverable]..."
+- Be precise and unambiguous: specify exact names, metrics, section locations
+- Include boundary conditions where relevant
+- Each criterion must be independently verifiable by an evaluator reading only the answer
+- Spread criteria across categories: format (20%), structure (25%), analytical content (40%), data/references (15%)
+
+**Examples of good criteria:**
+- [+2] The submitted document is a PDF file titled exactly 'Credit Memo - Exxon Mobil Corporation'.
+- [+1] The executive summary identifies the borrower's primary revenue concentration risk.
+- [+2] The industry analysis discusses the impact of regulatory changes on competitive dynamics in Section 3.
+- [+1] The investment memo cites the company's Q1 FY2026 revenue of $83.1 billion.
+
+Do NOT create criteria that check things not in your answer.
+Do NOT merge multiple independent checks into one criterion.
+
+## Output Format
+
+Return a single valid JSON object matching the schema. All string values on single lines. Escape quotes with backslash. No markdown code fences.
 """
 
 
-def _rubric_blueprint_hint(canonical: CanonicalScenario) -> str:
-    """Generate blueprint information to ground rubric accuracy items."""
-    bp = canonical.reference_answer
-    if not bp:
-        return ""
-    lines = ["\n## Answer Blueprint (for rubric grounding)\n"]
-    if bp.expected_values:
-        lines.append("Expected values that accuracy items should check:")
-        for ev in bp.expected_values:
-            lines.append(f"  - {ev.description}: {ev.value} (location: {ev.location})")
-    if bp.format == "xlsx" and bp.sheets:
-        lines.append(f"\nWorkbook structure: {len(bp.sheets)} sheets")
-        for s in bp.sheets:
-            lines.append(f"  - Sheet '{s.name}': {len(s.cells)} cells")
-    elif bp.format == "docx" and bp.sections:
-        lines.append(f"\nDocument structure: {len(bp.sections)} sections")
-        for s in bp.sections:
-            lines.append(f"  - {s.heading}: must cover {', '.join(s.required_content[:3])}")
-    elif bp.format == "markdown" and bp.md_sections:
-        lines.append(f"\nMarkdown structure: {len(bp.md_sections)} sections")
-        for s in bp.md_sections:
-            lines.append(f"  - {s.heading}")
+_SWE_SYS = """You are a senior software engineer with 15+ years of experience designing professional engineering assessment tasks.
+
+You will receive a REAL pull request diff and description. Your job is to design ONE complete engineering assessment task based on this material.
+
+## Core Principle
+
+**The task, answer, and rubric must ALL grow from the seed material.**
+- Do NOT invent facts, file names, function names, or issue numbers that are not in the material.
+- Do NOT apply a template regardless of what the material says.
+- Let the material determine what type of task makes sense.
+
+## Step 1: Determine Deliverable Type
+
+Read the PR material and decide what kind of professional deliverable it naturally supports:
+
+- Bug fix PR with root cause and patch → bug_fix_pr
+- New feature, API change, or architectural addition → design_doc
+- Large refactor with significant code movement → code_review
+- Post-incident remediation or follow-up → incident_postmortem
+
+## Step 2: Design the Prompt
+
+Write a detailed workplace task instruction (1800-3000 characters). Follow this structure closely:
+
+1. **Role and context** (opening sentence): Start with "You are a..." — name the role (e.g., senior engineer at a tech company, staff engineer on the platform team), the organization or team, and the immediate situation. Include 2-3 sentences of background: why this work matters, who requested it, and what is at stake.
+
+2. **Materials provided**: List the attached documents / input files by name and describe what they contain. Be specific (e.g., "PR #132833 diff and stabilization report", "the attached RFC for the new caching layer").
+
+3. **Task requirements**: Break the deliverable into concrete steps. Use numbered lists or bullet points. Include:
+   - Specific technical analyses, designs, or judgments required
+   - Constraints (e.g., "must be backward compatible", "within X lines of code")
+   - Formatting instructions (section headings, code block conventions, file names)
+   - Any standards, patterns, or frameworks the candidate must follow
+
+4. **Deliverable specification**: Clearly state the output format (Markdown file, Word document, or text file) and any structural requirements (sections, code blocks, naming conventions).
+
+Tone rules:
+- Do NOT include deadlines, "ASAP", "urgent", or time pressure
+- Do NOT use AI hedging ("Please ensure", "It is important that")
+- Write as a real tech lead delegating work to a competent engineer
+
+## Step 3: Design the Answer
+
+Generate the COMPLETE deliverable content with enough detail to support 45-55 rubric items.
+
+**CRITICAL: Populate expected_values with every verifiable fact, number, name, and reference from your answer.**
+- Each expected_value must contain: a description of what it checks, the exact value, and where it appears in the answer.
+- Include PR numbers, issue numbers, file names, function names, class names, and any specific values referenced.
+- Include specific code references or architectural decisions mentioned in the seed.
+- expected_values is NOT optional. Generate 10-25 items minimum.
+
+**For markdown:**
+- Provide full section text with specific references
+- Include code snippets if relevant (must match the actual diff)
+- Use technical but accessible tone; headings should mirror the rubric checks
+- Each section should contain enough specific claims to support multiple rubric items
+
+**For docx/pdf:**
+- Provide full paragraph text for each section (3-8 paragraphs per major section)
+- Include specific facts, names, and references from the seed
+- Use professional tone; headings should mirror the rubric checks
+
+## Step 4: Design the Rubric
+
+Produce 45-55 atomic, verifiable scoring criteria.
+
+**Score distribution** (match this closely):
+- ~51% should be +1 point
+- ~42% should be +2 points
+- ~7% should be +3 or higher
+- 0-2 penalty items (negative scores) for deal-breakers only
+
+**Rubric style** (mimic professional assessment rubrics):
+- Start with the deliverable noun: "The submitted [deliverable]..."
+- Be precise and unambiguous: specify exact names, file paths, section locations
+- Include boundary conditions where relevant
+- Each criterion must be independently verifiable by an evaluator reading only the answer
+- Spread criteria across categories: format (20%), structure (25%), technical content (40%), references (15%)
+
+**Examples of good criteria:**
+- [+2] The submitted document is a Markdown file titled exactly 'Design Doc - Distributed Cache v2'.
+- [+1] The design document references RFC 2497 in the Overview section.
+- [+2] The code review identifies the race condition in `src/scheduler.py` line 142.
+- [+1] The incident postmortem links to issue #4427 in the Root Cause section.
+
+Do NOT create criteria that check things not in your answer.
+Do NOT merge multiple independent checks into one criterion.
+
+## Output Format
+
+Return a single valid JSON object matching the schema. All string values on single lines. Escape quotes with backslash. No markdown code fences.
+"""
+
+
+_OCCUPATION_SYS = {
+    "lawyer": _LAWYER_SYS,
+    "financial_analyst": _FINANCIAL_SYS,
+    "software_engineer": _SWE_SYS,
+}
+
+
+def _build_seed_text(seed: Seed) -> str:
+    """Render the full seed material as text for the LLM."""
+    p = seed.payload
+    lines = [f"# Seed Material: {seed.title}", f"Source: {seed.source}", f"Identifier: {seed.identifier}", ""]
+
+    if seed.source == "courtlistener":
+        lines.extend([
+            f"Case Name: {p.get('case_name', 'N/A')}",
+            f"Citation: {p.get('citation', 'N/A')}",
+            f"Court: {p.get('court', 'N/A')}",
+            f"Date Filed: {p.get('date_filed', 'N/A')}",
+            f"Judges: {p.get('judges', 'N/A')}",
+            "",
+            "## Opinion Text",
+            seed.text_excerpt or "(no excerpt)",
+        ])
+
+    elif seed.source == "sec_edgar_xbrl":
+        lines.extend([
+            f"Company: {p.get('entity_name', 'N/A')}",
+            f"Ticker: {p.get('ticker', 'N/A')}",
+            f"CIK: {p.get('cik', 'N/A')}",
+            f"Sector: {p.get('sector', 'N/A')}",
+            "",
+            "## Financial Data (XBRL)",
+        ])
+        key_facts = p.get("key_facts", {})
+        for concept, observations in key_facts.items():
+            lines.append(f"\n### {concept}")
+            for obs in observations[:5]:  # Last 5 periods
+                val = obs.get("val")
+                if val is not None:
+                    # Preserve precision for small values (EPS, ratios) while formatting large ones
+                    if abs(val) < 1000 or val != int(val):
+                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val}")
+                    else:
+                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val:,.0f}")
+        lines.extend([
+            "",
+            "## Recent Filings",
+        ])
+        for f in p.get("recent_filings", [])[:5]:
+            lines.append(f"  {f.get('form')} — {f.get('date')}")
+
+    elif seed.source == "github_issue_pr":
+        lines.extend([
+            f"Repository: {p.get('repo', 'N/A')}",
+            f"PR Number: #{p.get('pr_number', 'N/A')}",
+            f"PR Title: {p.get('pr_title', 'N/A')}",
+            f"Merged At: {p.get('merged_at', 'N/A')}",
+            f"Changed Files: {p.get('changed_files', 'N/A')}",
+            f"Additions: +{p.get('additions', 0)}, Deletions: -{p.get('deletions', 0)}",
+            "",
+            "## PR Description",
+            p.get("pr_body", "(no description)")[:4000],
+        ])
+        if p.get("linked_issue"):
+            lines.extend([
+                "",
+                f"## Linked Issue #{p.get('linked_issue')}",
+                p.get("issue_body", "(no issue body)")[:2000],
+            ])
+        diff = p.get("diff", "")
+        if diff:
+            lines.extend([
+                "",
+                "## Diff (first 6000 chars)",
+                diff[:6000],
+            ])
+
     return "\n".join(lines)
 
 
-def generate_rubric(
-    canonical: CanonicalScenario,
-    enrichment: Enrichment,
-    prompt: str,
-    client: LLMClient | None = None,
-    model: str | None = None,
-) -> list[RubricItem]:
-    client = client or default_client()
-    user_prompt = (
-        canonical.context_for_agent()
-        + "\n\n## Enrichment\n"
-        + enrichment.model_dump_json(indent=2)
-        + "\n\n## Final Task Prompt\n"
-        + prompt
-        + f"\n\n## Deliverable format\n{enrichment.primary_deliverable_format}"
-        + _rubric_blueprint_hint(canonical)
-        + "\n\nGenerate the rubric now. Return a SINGLE valid JSON object. "
-        "All string values must be on a single line (no newlines inside strings). "
-        "Escape any quotes inside strings with backslash. Do NOT include markdown code fences."
+def _build_user_prompt(seed: Seed, occupation: str, difficulty: str) -> str:
+    """Build the user prompt containing the seed material."""
+    seed_text = _build_seed_text(seed)
+    return (
+        f"## Material\n\n{seed_text}\n\n"
+        f"## Instructions\n\n"
+        f"Based on the {occupation} material above, design a complete assessment task.\n"
+        f"Difficulty: {difficulty} (expected expert time: {_DIFFICULTY_BANDS.get(difficulty, '3-6 hours')})\n\n"
+        f"Remember:\n"
+        f"- ALL facts in the answer must come from the material above\n"
+        f"- The rubric must check things that are actually in your answer\n"
+        f"- Do not invent names, numbers, or citations not in the material\n"
     )
-    rubric = client.chat_structured(
-        [
-            {"role": "system", "content": _RUBRIC_SYS},
-            {"role": "user", "content": user_prompt},
-        ],
-        GeneratedRubric,
-        temperature=0.5,
-        max_tokens=4096,
-        model=model,
-    )
-    return rubric.items
 
 
-# ─────────────────────────── End-to-end ───────────────────────────
+# ─────────────────────────── Canonical Builder ───────────────────────────
 
 
-def _generate_narrative(
-    canonical: CanonicalScenario,
-    enrichment: Enrichment,
-    client: LLMClient | None = None,
-) -> CanonicalScenario:
-    """Generate paragraph text for docx/md blueprints and update canonical."""
-    bp = canonical.reference_answer
-    if not bp or not bp.narrative_prompt:
-        return canonical
-
-    client = client or default_client()
-
-    if bp.format in ("docx", "pdf") and bp.sections:
-        # Generate paragraphs for each section (pdf uses same section blueprint as docx)
-        updated_sections = []
-        for section in bp.sections:
-            sys_prompt = bp.narrative_prompt
-            user_prompt = (
-                f"Write the content for the '{section.heading}' section.\n\n"
-                f"Required content to cover:\n"
-                + "\n".join(f"- {r}" for r in section.required_content)
-                + f"\n\nWrite 2-4 professional paragraphs. Total length: 200-600 words."
-            )
-            try:
-                content, _ = client.chat(
-                    [
-                        {"role": "system", "content": sys_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    temperature=0.6,
-                    max_tokens=2000,
-                )
-                paragraphs = [p.strip() for p in content.strip().split("\n\n") if p.strip()]
-            except Exception as e:
-                logger.warning("narrative generation failed for section %s: %s", section.heading, e)
-                paragraphs = [f"[{section.heading} content placeholder]"]
-
-            from pipeline.scenario.reference_answer import SectionBlueprint
-            updated_sections.append(
-                SectionBlueprint(
-                    heading=section.heading,
-                    heading_level=section.heading_level,
-                    required_content=section.required_content,
-                    paragraphs=paragraphs,
-                )
-            )
-
-        from pipeline.scenario.reference_answer import ReferenceAnswer
-        new_bp = ReferenceAnswer(
-            format=bp.format,
-            sections=updated_sections,
-            doc_header=bp.doc_header,
-            title=bp.title,
-            signature_block=bp.signature_block,
-            page_settings=bp.page_settings,
-            expected_values=bp.expected_values,
-            narrative_prompt=bp.narrative_prompt,
-            input_attachments=bp.input_attachments,
-        )
-        canonical = canonical.model_copy(update={"reference_answer": new_bp})
-
-    elif bp.format == "markdown" and bp.md_sections:
-        # Generate paragraphs for each md section
-        updated_sections = []
-        for section in bp.md_sections:
-            sys_prompt = bp.narrative_prompt
-            user_prompt = (
-                f"Write the content for the '{section.heading}' section.\n\n"
-                f"Required content to cover:\n"
-                + "\n".join(f"- {r}" for r in section.required_content)
-                + f"\n\nWrite 1-3 clear paragraphs. Total length: 150-400 words."
-            )
-            try:
-                content, _ = client.chat(
-                    [
-                        {"role": "system", "content": sys_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    temperature=0.6,
-                    max_tokens=1500,
-                )
-                paragraphs = [p.strip() for p in content.strip().split("\n\n") if p.strip()]
-            except Exception as e:
-                logger.warning("narrative generation failed for section %s: %s", section.heading, e)
-                paragraphs = [f"[{section.heading} content placeholder]"]
-
-            from pipeline.scenario.reference_answer import MdSectionBlueprint
-            updated_sections.append(
-                MdSectionBlueprint(
-                    heading=section.heading,
-                    heading_level=section.heading_level,
-                    required_content=section.required_content,
-                    paragraphs=paragraphs,
-                )
-            )
-
-        from pipeline.scenario.reference_answer import ReferenceAnswer
-        new_bp = ReferenceAnswer(
-            format=bp.format,
-            md_sections=updated_sections,
-            md_title=bp.md_title,
-            expected_values=bp.expected_values,
-            narrative_prompt=bp.narrative_prompt,
-            input_attachments=bp.input_attachments,
-        )
-        canonical = canonical.model_copy(update={"reference_answer": new_bp})
-
-    return canonical
-
-
-def synthesize_task(
+def _build_canonical(
     seed: Seed,
-    deliverable_id: str,
-    archetype: str,
-    difficulty: DifficultyBand,
-    rng: random.Random | None = None,
+    unified: UnifiedTask,
+    occupation: str,
+    difficulty: str,
+    rng: random.Random,
+) -> CanonicalScenario:
+    """Build a minimal CanonicalScenario from the unified output."""
+    scenario_id = f"sc_{seed.seed_id[:16]}"
+
+    # Extract entities from expected_values
+    entities: list[Entity] = []
+    seen_names = set()
+    for ev in unified.expected_values:
+        name = str(ev.value)
+        if name and name not in seen_names and len(name) > 2:
+            seen_names.add(name)
+            entities.append(Entity(
+                id=f"ev_{len(entities)}",
+                kind="company" if "company" in ev.description.lower() else "person",
+                name=name,
+            ))
+
+    # Extract facts from expected_values
+    facts: list[FactValue] = []
+    for ev in unified.expected_values:
+        facts.append(FactValue(
+            id=f"fact_{len(facts)}",
+            kind="string" if isinstance(ev.value, str) else "money" if isinstance(ev.value, (int, float)) else "string",
+            value=ev.value,
+        ))
+
+    # Build reference_answer from unified output
+    ref = ReferenceAnswer(
+        format=unified.answer_format,
+        sections=unified.docx_sections,
+        doc_header=unified.docx_header,
+        title=unified.docx_title,
+        signature_block=unified.docx_signature,
+        md_sections=unified.md_sections,
+        md_title=unified.md_title,
+        sheets=unified.xlsx_sheets,
+        expected_values=unified.expected_values,
+        input_attachments=[InputAttachment(
+            attachment_id=f"att_{i}",
+            filename=f"input_{i}.md",
+            format="md",  # type: ignore[arg-type]
+            description=desc,
+            content_blueprint={"title": desc.split(".")[0], "body": _build_seed_text(seed)},
+        ) for i, desc in enumerate(unified.attachments)],
+    )
+
+    return CanonicalScenario(
+        scenario_id=scenario_id,
+        occupation=Occupation(occupation),
+        deliverable_id=unified.deliverable_type,
+        archetype=unified.deliverable_type,
+        difficulty=DifficultyBand(difficulty),
+        seed=SeedReference(
+            source={"github_issue_pr": "github"}.get(seed.source, seed.source),  # type: ignore[arg-type]
+            identifier=seed.identifier,
+        ),
+        entities=entities,
+        timeline=[],
+        facts=facts,
+        explicit_requirements=[],
+        implicit_requirements=[],
+        reference_answer=ref,
+        seed_rng=rng.randint(0, 2**31 - 1),
+    )
+
+
+# ─────────────────────────── Public API ───────────────────────────
+
+
+def unified_generate(
+    seed: Seed,
+    occupation: str,
+    difficulty: str = "medium",
     client: LLMClient | None = None,
 ) -> TaskCandidate:
-    from pipeline.scenario.builders import build_canonical
+    """Generate a complete task from a seed in ONE LLM call.
 
+    The LLM reads the full seed material and outputs:
+      - deliverable type (determined by content)
+      - prompt (task description)
+      - answer (complete deliverable content)
+      - rubric (scoring criteria grounded in the answer)
+    """
     client = client or default_client()
-    rng = rng or random.Random()
+    rng = random.Random(seed.seed_id)
 
-    canonical = build_canonical(seed, deliverable_id, archetype, difficulty, rng)
-    logger.info("synthesized canonical %s for %s", canonical.scenario_id, seed.seed_id)
-
-    enrichment = enrich(canonical, client=client)
-    logger.info("  enrichment: %d explicit, %d implicit, %d hidden",
-                len(enrichment.explicit_requirements),
-                len(enrichment.implicit_requirements),
-                len(enrichment.hidden_constraints))
-
-    # Update canonical with the enriched requirements (canonical is the source of truth).
-    canonical = canonical.model_copy(update={
-        "explicit_requirements": enrichment.explicit_requirements,
-        "implicit_requirements": enrichment.implicit_requirements,
-    })
-
-    # Generate narrative paragraphs for docx/md blueprints (B方案: synthesis阶段生成)
-    canonical = _generate_narrative(canonical, enrichment, client=client)
-    if canonical.reference_answer and canonical.reference_answer.format in ("docx", "markdown"):
-        logger.info("  generated narrative paragraphs for %s sections",
-                    len(canonical.reference_answer.sections or canonical.reference_answer.md_sections or []))
-
-    prompt_text = write_prompt(canonical, enrichment, client=client)
-    logger.info("  prompt: %d chars", len(prompt_text))
-
-    rubric_items = generate_rubric(canonical, enrichment, prompt_text, client=client)
-    logger.info("  rubric: %d items, %d total points",
-                len(rubric_items),
-                sum(r.score for r in rubric_items))
-
-    deliverable = DeliverableSpec(
-        deliverable_id=deliverable_id,
-        primary_format=enrichment.primary_deliverable_format,
+    sys_prompt = _OCCUPATION_SYS.get(
+        occupation, _SWE_SYS
+    ).format(
+        occupation_name=_OCCUPATION_NAMES.get(occupation, occupation),
     )
+    user_prompt = _build_user_prompt(seed, occupation, difficulty)
+
+    logger.info("unified generation for seed %s (%s)", seed.seed_id, seed.source)
+
+    unified = client.chat_structured(
+        [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        UnifiedTask,
+        temperature=0.5,
+        max_tokens=16000,
+    )
+
+    logger.info(
+        "  unified output: %s, format=%s, sections=%s, rubric=%d items",
+        unified.deliverable_type,
+        unified.answer_format,
+        len(unified.docx_sections or unified.md_sections or unified.xlsx_sheets or []),
+        len(unified.rubric),
+    )
+
+    canonical = _build_canonical(seed, unified, occupation, difficulty, rng)
 
     input_specs = []
     if canonical.reference_answer and canonical.reference_answer.input_attachments:
@@ -539,19 +607,22 @@ def synthesize_task(
 
     return TaskCandidate(
         candidate_id=canonical.scenario_id,
-        occupation=canonical.occupation.value,
-        archetype=archetype,
-        difficulty=difficulty.value,
+        occupation=occupation,
+        archetype=unified.deliverable_type,
+        difficulty=difficulty,
         seed_id=seed.seed_id,
-        prompt=prompt_text,
-        deliverable=deliverable,
-        rubric=rubric_items,
+        prompt=unified.prompt,
+        deliverable=DeliverableSpec(
+            deliverable_id=unified.deliverable_type,
+            primary_format=unified.answer_format,
+        ),
+        rubric=unified.rubric,
         canonical=canonical,
         input_attachment_specs=input_specs,
-        generator_model=settings().generator_model,
-        rubric_model=settings().generator_model,
+        generator_model=client.default_model,
+        rubric_model=client.default_model,
     )
 
 
-def load_taxonomy() -> dict:
-    return yaml.safe_load(TAXONOMY_PATH.read_text())
+# Backward-compatible wrapper
+synthesize_task = unified_generate

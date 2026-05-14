@@ -43,7 +43,6 @@ def _lawyer_court_tier(seed: Seed) -> int:
 
 def select(
     occupation: str,
-    archetype: str,
     difficulty: DifficultyBand,
     *,
     used: set[str] | None = None,

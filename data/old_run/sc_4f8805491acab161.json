@@ -1,0 +1,723 @@
+{
+  "candidate_id": "sc_4f8805491acab161",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "4f8805491acab161",
+  "prompt": "You are a senior software engineer on the Next.js Core team. The team has just merged PR #75624, which adds Node.js runtime support for middleware. A product manager has asked you to write a design document that will serve as the internal reference for this feature, explaining the change, its rationale, and its implications for developers. Your document will be shared with the engineering organization and used to update internal onboarding materials.\n\n## Materials Provided\n- The merged pull request diff and description for PR #75624: 'Add nodejs runtime support for middleware' (merged 2025-02-04)\n- The PR description explaining that this allows setting `runtime: 'nodejs'` in middleware, which removes the constraint of only using edge runtime APIs\n- Cross-references to discussions #71727 and #46722\n- The diff showing changes in 18 files with 608 additions and 70 deletions\n- Specific code changes in `get-page-static-info.ts` and `entries.ts`\n\n## Task Requirements\nProduce a design document in Markdown format with the following structure:\n\n1. **Overview**: State the purpose of the feature and the problem it solves. Reference the PR number and the discussions it addresses.\n\n2. **Technical Implementation Details**: Explain the key code changes:\n   - How the runtime resolution logic changed in `get-page-static-info.ts` (the `resolvedRuntime` variable assignment)\n   - How middleware file handling changed in `entries.ts` (the `runDependingOnPageType` function now checks for `pageRuntime === 'nodejs'`)\n   - The new guard in `createEntrypoints` that warns when `experimental.nodeMiddleware` is not enabled\n\n3. **Developer Impact and Migration**: Describe:\n   - The new `runtime: 'nodejs'` configuration option for middleware\n   - The requirement to enable `experimental.nodeMiddleware` in next.config\n   - The unchanged middleware function signature `(req: NextRequest, event: NextFetchEvent) => Response`\n\n4. **Rationale and Tradeoffs**: Explain why this change was made, referencing the discussions #71727 and #46722, and what constraints are removed by supporting Node.js runtime.\n\n5. **Testing and Rollout Considerations**: Discuss any considerations for testing this feature and the experimental flag gating.\n\nThe document should be technically precise, referencing specific file paths and function names from the diff. Do not invent any information not present in the provided materials.\n\n## Deliverable Specification\n- Format: Markdown file\n- Title: 'Design Document: Node.js Runtime Support for Middleware'\n- Sections: 5 sections as described above\n- Each section should contain 2-4 paragraphs of substantive technical content\n- Include specific references to files, functions, and PR numbers from the material",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document title is 'Design Document: Node.js Runtime Support for Middleware'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section explicitly references PR #75624.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references discussion #71727.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references discussion #46722.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section mentions the file path 'packages/next/src/build/analysis/get-page-static-info.ts'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section mentions the variable 'resolvedRuntime'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section mentions the file path 'packages/next/src/build/entries.ts'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section mentions the function 'runDependingOnPageType'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section explains that middleware files previously called 'params.onEdgeServer()' unconditionally.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section explains the new check for 'params.pageRuntime === 'nodejs'' in the runDependingOnPageType function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section mentions the function 'createEntrypoints'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section explains the guard that checks for 'config.experimental.nodeMiddleware'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section includes the warning message text about experimental.nodeMiddleware.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section explains that the runtime is forcibly reset to 'edge' when the experimental flag is missing.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Developer Impact and Migration section mentions the new configuration option 'runtime: 'nodejs''.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Developer Impact and Migration section mentions the requirement to enable 'experimental.nodeMiddleware' in next.config.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Developer Impact and Migration section states that the middleware function signature remains unchanged.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Developer Impact and Migration section includes the exact signature '(req: NextRequest, event: NextFetchEvent) => Response'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale and Tradeoffs section references discussion #71727.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rationale and Tradeoffs section references discussion #46722.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale and Tradeoffs section explains that Node.js runtime removes constraints related to API availability.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Rollout Considerations section mentions the experimental flag 'nodeMiddleware'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing and Rollout Considerations section discusses verifying the runtime selection logic.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses the correct Markdown heading hierarchy with H1 for title and H2 for sections.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains exactly 5 major sections: Overview, Technical Implementation Details, Developer Impact and Migration, Rationale and Tradeoffs, Testing and Rollout Considerations.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Each major section contains at least 2 paragraphs of content.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Details section contains at least 3 paragraphs.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any invented file paths not present in the provided diff.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any invented function names not present in the provided diff.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any invented PR numbers other than #75624.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any invented discussion numbers other than #71727 and #46722.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the PR merge date of 2025-02-04.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Details section explains the change to the resolvedRuntime logic in get-page-static-info.ts, noting it was previously conditional on isEdgeRuntime, getServerSideProps, or getStaticProps.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document states that the feature is experimental and gated behind a flag.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rationale and Tradeoffs section mentions the performance characteristics of Edge Runtime as a tradeoff.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Rollout Considerations section mentions validating that middleware without an explicit runtime setting continues to use the Edge Runtime.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Developer Impact and Migration section explains that existing edge-based middleware will continue to function without modification.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses technical terminology accurately (e.g., 'Edge Runtime', 'Node.js runtime', 'experimental flag').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document maintains a professional and technical tone suitable for an internal engineering reference.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not use informal language or emojis.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rationale and Tradeoffs section explicitly states that the feature was motivated by community feedback.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Rollout Considerations section mentions gathering real-world usage data and feedback.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains information about specific npm packages or database drivers not mentioned in the provided materials.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document claims the middleware function signature has changed, contradicting the PR description.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document states that the experimental.nodeMiddleware flag is not required for the feature to work.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_4f8805491acab161",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:vercel/next.js#75624",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Node.js Runtime Support for Middleware",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "PR #75624",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "#71727",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "#46722",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "packages/next/src/build/analysis/get-page-static-info.ts",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "resolvedRuntime",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "packages/next/src/build/entries.ts",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "runDependingOnPageType",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "createEntrypoints",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "experimental.nodeMiddleware",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "runtime: 'nodejs'",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "(req: NextRequest, event: NextFetchEvent) => Response",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "nodeMiddleware",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Node.js Runtime Support for Middleware",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "PR #75624",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#71727",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "#46722",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "packages/next/src/build/analysis/get-page-static-info.ts",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "resolvedRuntime",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "packages/next/src/build/entries.ts",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "runDependingOnPageType",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "createEntrypoints",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "experimental.nodeMiddleware",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "runtime: 'nodejs'",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "(req: NextRequest, event: NextFetchEvent) => Response",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "#71727",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "#46722",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "nodeMiddleware",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Node.js Runtime Support for Middleware",
+          "heading_level": 1,
+          "required_content": [
+            "Title of the document"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Purpose of the feature",
+            "Problem it solves",
+            "Reference to PR #75624",
+            "Reference to discussions #71727 and #46722"
+          ],
+          "paragraphs": [
+            "This design document details the implementation of Node.js runtime support for Next.js middleware, as introduced in PR #75624. The feature addresses long-standing developer requests to use full Node.js APIs within middleware functions, removing the previous constraint that limited middleware to only Edge Runtime APIs. The change enables setting `runtime: 'nodejs'` in middleware configuration.",
+            "The pull request was merged on 2025-02-04 and directly responds to the feature requests and discussions outlined in issues #71727 and #46722. By supporting the Node.js runtime, middleware gains access to the broader Node.js ecosystem, allowing for more complex operations that were previously impossible under the Edge Runtime limitations."
+          ]
+        },
+        {
+          "heading": "Technical Implementation Details",
+          "heading_level": 2,
+          "required_content": [
+            "Changes in get-page-static-info.ts",
+            "Explanation of resolvedRuntime variable",
+            "Changes in entries.ts",
+            "Explanation of runDependingOnPageType function",
+            "New guard in createEntrypoints with experimental.nodeMiddleware",
+            "Log.warn message for missing experimental flag"
+          ],
+          "paragraphs": [
+            "The core implementation involves modifications to the middleware runtime resolution and entry point creation logic. In `packages/next/src/build/analysis/get-page-static-info.ts`, the logic for determining the `resolvedRuntime` was simplified. Previously, the runtime was only resolved if the page used Edge Runtime, `getServerSideProps`, or `getStaticProps`. The new logic unconditionally sets `resolvedRuntime` to `config.runtime ?? config.config?.runtime`, making the runtime configuration directly available for all pages, including middleware.",
+            "In `packages/next/src/build/entries.ts`, the `runDependingOnPageType` function was updated to handle the new middleware runtime option. Previously, middleware files were unconditionally handled by calling `params.onEdgeServer()`. The updated function now checks if `params.pageRuntime === 'nodejs'`. If true, it calls `params.onServer()` to route the middleware through the Node.js server compilation path instead of the edge server path.",
+            "A critical safeguard was added in the `createEntrypoints` function. If the middleware file is detected and `config.experimental.nodeMiddleware` is not enabled while `pageRuntime` is set to `'nodejs'`, the build system logs a warning: 'nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config'. In this case, the runtime is forcibly reset to `'edge'` to maintain backward compatibility and prevent silent failures."
+          ]
+        },
+        {
+          "heading": "Developer Impact and Migration",
+          "heading_level": 2,
+          "required_content": [
+            "New runtime: 'nodejs' configuration option",
+            "Requirement for experimental.nodeMiddleware flag",
+            "Unchanged middleware function signature"
+          ],
+          "paragraphs": [
+            "For developers, this change introduces a new configuration option. Middleware can now explicitly specify `runtime: 'nodejs'` in its configuration. However, to activate this feature, developers must also enable the experimental flag `nodeMiddleware` in their `next.config.js` file. Without this flag, the build will revert to using the Edge Runtime and issue a warning.",
+            "Importantly, the public API and signature of the middleware function remain unchanged. Middleware functions still receive `(req: NextRequest, event: NextFetchEvent) => Response`. This ensures backward compatibility and allows existing edge-based middleware to continue functioning without modification, while new middleware can opt into the Node.js runtime as needed."
+          ]
+        },
+        {
+          "heading": "Rationale and Tradeoffs",
+          "heading_level": 2,
+          "required_content": [
+            "Reason for the change",
+            "Reference to discussions #71727 and #46722",
+            "Constraints removed by Node.js runtime"
+          ],
+          "paragraphs": [
+            "The primary rationale for this change is to provide developers with more flexibility and power in their middleware functions. The previous constraint to Edge Runtime APIs, while offering performance benefits for certain use cases, limited the functionality of middleware. This change was motivated by direct community feedback, as evidenced by the discussions in #71727 and #46722, which highlighted the need for Node.js compatibility.",
+            "By supporting the Node.js runtime, middleware can now leverage the full Node.js standard library and npm packages. This removes constraints related to API availability, allowing for more complex authentication flows, database interactions, or other operations that require Node.js-specific modules. The tradeoff is potentially different performance characteristics compared to the Edge Runtime, which is why the feature is initially gated behind an experimental flag."
+          ]
+        },
+        {
+          "heading": "Testing and Rollout Considerations",
+          "heading_level": 2,
+          "required_content": [
+            "Considerations for testing",
+            "Experimental flag gating"
+          ],
+          "paragraphs": [
+            "Testing this feature requires verifying both the runtime selection logic and the guard conditions. Key test scenarios include: ensuring middleware with `runtime: 'nodejs'` is correctly bundled for the Node.js server when the experimental flag is enabled; confirming that a warning is logged and the runtime falls back to 'edge' when the flag is disabled; and validating that middleware without an explicit runtime setting continues to use the Edge Runtime.",
+            "The feature is rolled out as experimental via the `nodeMiddleware` flag in `next.config.js`. This allows the team to gather real-world usage data and feedback before making it generally available. The flag gating also serves as a clear signal to developers that the feature may have breaking changes in future releases, setting appropriate expectations during the experimental phase."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Node.js Runtime Support for Middleware",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #75624 diff and description for 'Add nodejs runtime support for middleware' in vercel/next.js",
+          "content_blueprint": {
+            "title": "PR #75624 diff and description for 'Add nodejs runtime support for middleware' in vercel/next",
+            "body": "# Seed Material: vercel/next.js#75624: Add nodejs runtime support for middleware\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#75624\n\nRepository: vercel/next.js\nPR Number: #75624\nPR Title: Add nodejs runtime support for middleware\nMerged At: 2025-02-04T18:51:57Z\nChanged Files: 18\nAdditions: +608, Deletions: -70\n\n## PR Description\nThis allows setting `runtime: 'nodejs'` in middleware, which removes the constraint of only using edge runtime APIs for middleware. This doesn't change the signature of middleware and it still receives `(req: NextRequest, event: NextFetchEvent) => Response`. \r\n\r\nx-ref: https://github.com/vercel/next.js/discussions/71727\r\nx-ref: https://github.com/vercel/next.js/discussions/46722\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next/src/build/analysis/get-page-static-info.ts b/packages/next/src/build/analysis/get-page-static-info.ts\nindex 084da67283a1..8b269ceecf24 100644\n--- a/packages/next/src/build/analysis/get-page-static-info.ts\n+++ b/packages/next/src/build/analysis/get-page-static-info.ts\n@@ -614,12 +614,7 @@ export async function getPagesPageStaticInfo({\n   const config = parsePagesSegmentConfig(exportedConfig, route)\n   const isAnAPIRoute = isAPIRoute(route)\n \n-  const resolvedRuntime =\n-    isEdgeRuntime(config.runtime ?? config.config?.runtime) ||\n-    getServerSideProps ||\n-    getStaticProps\n-      ? config.runtime ?? config.config?.runtime\n-      : undefined\n+  const resolvedRuntime = config.runtime ?? config.config?.runtime\n \n   if (resolvedRuntime === SERVER_RUNTIME.experimentalEdge) {\n     warnAboutExperimentalEdge(isAnAPIRoute ? page! : null)\ndiff --git a/packages/next/src/build/entries.ts b/packages/next/src/build/entries.ts\nindex 00dd62b4134c..7cd1348305cf 100644\n--- a/packages/next/src/build/entries.ts\n+++ b/packages/next/src/build/entries.ts\n@@ -9,6 +9,7 @@ import type {\n   MiddlewareMatcher,\n   PageStaticInfo,\n } from './analysis/get-page-static-info'\n+import * as Log from './output/log'\n import type { LoadedEnvFiles } from '@next/env'\n import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'\n \n@@ -517,9 +518,15 @@ export function runDependingOnPageType<T>(params: {\n   }\n \n   if (isMiddlewareFile(params.page)) {\n-    params.onEdgeServer()\n-    return\n+    if (params.pageRuntime === 'nodejs') {\n+      params.onServer()\n+      return\n+    } else {\n+      params.onEdgeServer()\n+      return\n+    }\n   }\n+\n   if (isAPIRoute(params.page)) {\n     if (isEdgeRuntime(params.pageRuntime)) {\n       params.onEdgeServer()\n@@ -650,6 +657,20 @@ export async function createEntrypoints(\n \n       const isInstrumentation =\n         isInstrumentationHookFile(page) && pagesType === PAGE_TYPES.ROOT\n+\n+      let pageRuntime = staticInfo?.runtime\n+\n+      if (\n+        isMiddlewareFile(page) &&\n+        !config.experimental.nodeMiddleware &&\n+        pageRuntime === 'nodejs'\n+      ) {\n+        Log.warn(\n+          'nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config'\n+        )\n+        pageRuntime = 'edge'\n+      }\n+\n       runDependingOnPageType({\n         page,\n         pageRuntime: staticInfo.runtime,\n@@ -692,6 +713,20 @@ export async function createEntrypoints(\n                 isEdgeServer: false,\n                 isDev: false,\n               })\n+          } else if (isMiddlewareFile(page)) {\n+            server[serverBundlePath] = getEdgeServerEntry({\n+              ...params,\n+              rootDir,\n+              absolutePagePath: absolutePagePath,\n+              bundlePath: clientBundlePath,\n+              isDev: false,\n+              isServerComponent,\n+              page,\n+              middleware: staticInfo?.middleware,\n+              pagesType,\n+              prefe"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title matches the specified title",
+          "value": "Design Document: Node.js Runtime Support for Middleware",
+          "tolerance": null,
+          "location": "Markdown heading level 1"
+        },
+        {
+          "description": "PR number referenced in Overview section",
+          "value": "PR #75624",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Discussion numbers referenced in Overview section",
+          "value": "#71727",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Second discussion number referenced in Overview section",
+          "value": "#46722",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "File path for get-page-static-info.ts in Technical Implementation Details",
+          "value": "packages/next/src/build/analysis/get-page-static-info.ts",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "Variable name resolvedRuntime mentioned in Technical Implementation Details",
+          "value": "resolvedRuntime",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "File path for entries.ts in Technical Implementation Details",
+          "value": "packages/next/src/build/entries.ts",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "Function name runDependingOnPageType mentioned in Technical Implementation Details",
+          "value": "runDependingOnPageType",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "Function name createEntrypoints mentioned in Technical Implementation Details",
+          "value": "createEntrypoints",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "Experimental flag name mentioned in Technical Implementation Details",
+          "value": "experimental.nodeMiddleware",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "Warning message text for missing experimental flag",
+          "value": "nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config",
+          "tolerance": null,
+          "location": "Technical Implementation Details section"
+        },
+        {
+          "description": "New runtime configuration option in Developer Impact section",
+          "value": "runtime: 'nodejs'",
+          "tolerance": null,
+          "location": "Developer Impact and Migration section"
+        },
+        {
+          "description": "Unchanged middleware function signature mentioned in Developer Impact section",
+          "value": "(req: NextRequest, event: NextFetchEvent) => Response",
+          "tolerance": null,
+          "location": "Developer Impact and Migration section"
+        },
+        {
+          "description": "First discussion number referenced in Rationale and Tradeoffs section",
+          "value": "#71727",
+          "tolerance": null,
+          "location": "Rationale and Tradeoffs section"
+        },
+        {
+          "description": "Second discussion number referenced in Rationale and Tradeoffs section",
+          "value": "#46722",
+          "tolerance": null,
+          "location": "Rationale and Tradeoffs section"
+        },
+        {
+          "description": "Experimental flag name mentioned in Testing and Rollout Considerations",
+          "value": "nodeMiddleware",
+          "tolerance": null,
+          "location": "Testing and Rollout Considerations section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 957404395
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #75624 diff and description for 'Add nodejs runtime support for middleware' in vercel/next.js",
+      "content_blueprint": {
+        "title": "PR #75624 diff and description for 'Add nodejs runtime support for middleware' in vercel/next",
+        "body": "# Seed Material: vercel/next.js#75624: Add nodejs runtime support for middleware\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#75624\n\nRepository: vercel/next.js\nPR Number: #75624\nPR Title: Add nodejs runtime support for middleware\nMerged At: 2025-02-04T18:51:57Z\nChanged Files: 18\nAdditions: +608, Deletions: -70\n\n## PR Description\nThis allows setting `runtime: 'nodejs'` in middleware, which removes the constraint of only using edge runtime APIs for middleware. This doesn't change the signature of middleware and it still receives `(req: NextRequest, event: NextFetchEvent) => Response`. \r\n\r\nx-ref: https://github.com/vercel/next.js/discussions/71727\r\nx-ref: https://github.com/vercel/next.js/discussions/46722\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next/src/build/analysis/get-page-static-info.ts b/packages/next/src/build/analysis/get-page-static-info.ts\nindex 084da67283a1..8b269ceecf24 100644\n--- a/packages/next/src/build/analysis/get-page-static-info.ts\n+++ b/packages/next/src/build/analysis/get-page-static-info.ts\n@@ -614,12 +614,7 @@ export async function getPagesPageStaticInfo({\n   const config = parsePagesSegmentConfig(exportedConfig, route)\n   const isAnAPIRoute = isAPIRoute(route)\n \n-  const resolvedRuntime =\n-    isEdgeRuntime(config.runtime ?? config.config?.runtime) ||\n-    getServerSideProps ||\n-    getStaticProps\n-      ? config.runtime ?? config.config?.runtime\n-      : undefined\n+  const resolvedRuntime = config.runtime ?? config.config?.runtime\n \n   if (resolvedRuntime === SERVER_RUNTIME.experimentalEdge) {\n     warnAboutExperimentalEdge(isAnAPIRoute ? page! : null)\ndiff --git a/packages/next/src/build/entries.ts b/packages/next/src/build/entries.ts\nindex 00dd62b4134c..7cd1348305cf 100644\n--- a/packages/next/src/build/entries.ts\n+++ b/packages/next/src/build/entries.ts\n@@ -9,6 +9,7 @@ import type {\n   MiddlewareMatcher,\n   PageStaticInfo,\n } from './analysis/get-page-static-info'\n+import * as Log from './output/log'\n import type { LoadedEnvFiles } from '@next/env'\n import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'\n \n@@ -517,9 +518,15 @@ export function runDependingOnPageType<T>(params: {\n   }\n \n   if (isMiddlewareFile(params.page)) {\n-    params.onEdgeServer()\n-    return\n+    if (params.pageRuntime === 'nodejs') {\n+      params.onServer()\n+      return\n+    } else {\n+      params.onEdgeServer()\n+      return\n+    }\n   }\n+\n   if (isAPIRoute(params.page)) {\n     if (isEdgeRuntime(params.pageRuntime)) {\n       params.onEdgeServer()\n@@ -650,6 +657,20 @@ export async function createEntrypoints(\n \n       const isInstrumentation =\n         isInstrumentationHookFile(page) && pagesType === PAGE_TYPES.ROOT\n+\n+      let pageRuntime = staticInfo?.runtime\n+\n+      if (\n+        isMiddlewareFile(page) &&\n+        !config.experimental.nodeMiddleware &&\n+        pageRuntime === 'nodejs'\n+      ) {\n+        Log.warn(\n+          'nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config'\n+        )\n+        pageRuntime = 'edge'\n+      }\n+\n       runDependingOnPageType({\n         page,\n         pageRuntime: staticInfo.runtime,\n@@ -692,6 +713,20 @@ export async function createEntrypoints(\n                 isEdgeServer: false,\n                 isDev: false,\n               })\n+          } else if (isMiddlewareFile(page)) {\n+            server[serverBundlePath] = getEdgeServerEntry({\n+              ...params,\n+              rootDir,\n+              absolutePagePath: absolutePagePath,\n+              bundlePath: clientBundlePath,\n+              isDev: false,\n+              isServerComponent,\n+              page,\n+              middleware: staticInfo?.middleware,\n+              pagesType,\n+              prefe"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_4f8805491acab161/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_4f8805491acab161/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T17:49:31.438652+00:00"
+}

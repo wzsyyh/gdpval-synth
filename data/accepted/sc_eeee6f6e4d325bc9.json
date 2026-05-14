@@ -1,0 +1,934 @@
+{
+  "candidate_id": "sc_eeee6f6e4d325bc9",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "eeee6f6e4d325bc9",
+  "prompt": "You are a senior software engineer on the Pydantic core team. The team has just merged PR #2336, which adds discriminated union support to Pydantic and aligns with OpenAPI specifications. This feature resolves issues #619 and #3113. Your tech lead has asked you to write a design document for this new feature to be included in the internal engineering knowledge base. The document must capture the technical design rationale, implementation details, and usage patterns for discriminated unions, based on the merged PR.\n\nMaterials provided:\n- The full PR diff for pydantic/pydantic#2336 (attached as 'pr_diff.md')\n- The related issue #619 (attached as 'issue_619.md')\n- The changelog entry file (attached as 'changes/619-PrettyWood.md')\n\nTask requirements:\n1. **Overview**: Write an overview section that explains what discriminated unions are, why they were requested (referencing the limitations of standard `typing.Union` for JSON Schema and OpenAPI), and the high-level solution implemented.\n2. **Design Rationale**: Explain the design decisions, specifically the use of `typing_extensions.Annotated` combined with `pydantic.Field(discriminator=...)` as the API surface. Justify why this approach was chosen over alternatives like a custom `TaggedUnion` type or extending `Schema`.\n3. **Implementation Details**: Describe the key implementation components. Reference the new example files (`types_union_discriminated.py`, `types_union_discriminated_nested.py`, `schema_ad_hoc.py`) and the changes directory entry. Explain how the discriminator field is used during validation, including support for nested discriminated unions.\n4. **OpenAPI/JSON Schema Alignment**: Detail how the implementation produces a schema with a `oneOf` construct and an OpenAPI discriminator object, fulfilling the requirement from issue #619.\n5. **Usage Examples**: Provide and explain at least two concrete usage examples from the provided materials: one for a simple discriminated union (like the `Pet` example) and one for a nested discriminated union.\n6. **Testing and Validation**: Reference that unit tests exist and that CI tests pass with 100% coverage, as stated in the PR checklist.\n\nDeliverable specification:\n- Produce a Markdown file.\n- The file must have a title heading: `# Design Document: Discriminated Unions in Pydantic`.\n- Organize content into the sections listed above, using level-2 headings (##).\n- Include code snippets from the provided examples where they illustrate the design.\n- Keep the document under 3000 words.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file with the title heading '# Design Document: Discriminated Unions in Pydantic'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## Overview'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## Design Rationale'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## Implementation Details'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## OpenAPI/JSON Schema Alignment'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## Usage Examples'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a level-2 heading '## Testing and Validation'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section explicitly mentions that this feature closes issues #619 and #3113.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section explains the limitation of standard `typing.Union` for JSON Schema and OpenAPI compliance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Rationale section explains the choice of `typing_extensions.Annotated` combined with `pydantic.Field(discriminator=...)` as the API.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Rationale section justifies why this approach was chosen over a custom `TaggedUnion` type, as proposed in issue #619.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Rationale section mentions rejecting the extension of `Schema` with OpenAPI-specific discriminator logic.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section references the example file `types_union_discriminated.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section references the example file `types_union_discriminated_nested.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section references the example file `schema_ad_hoc.py`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section references the changelog entry `changes/619-PrettyWood.md`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section explains that validation uses the discriminator field's value and matches it against `Literal` annotations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section describes support for nested discriminated unions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The OpenAPI/JSON Schema Alignment section states that the implementation produces a `oneOf` construct in the generated schema.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The OpenAPI/JSON Schema Alignment section states that a discriminator object with `propertyName` and `mapping` is generated, aligning with OpenAPI 3.0.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The OpenAPI/JSON Schema Alignment section references the requirement from issue #619 for OpenAPI compatibility.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Usage Examples section provides a simple discriminated union example from `types_union_discriminated.py`, mentioning the `Pet` union and `pet_type` discriminator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Usage Examples section includes a reference to the `Cat` model with `pet_type: Literal['cat']`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Usage Examples section includes a reference to the `Dog` model with `pet_type: Literal['dog']`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Usage Examples section mentions `Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1)` as a successful validation example.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Usage Examples section provides a nested discriminated union example referencing `BlackCat`, `WhiteCat`, and `color` discriminator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Usage Examples section references the `Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]` pattern for nested discrimination.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Validation section mentions that unit tests exist for the changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Validation section states that CI tests pass with 100% coverage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Validation section references the PR checklist.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the number of changed files in the PR is 19.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the number of additions in the PR is +1166.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the number of deletions in the PR is -29.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the PR was merged on 2021-12-18.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references that the PR title is 'Support discriminated union'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the `Lizard` model from the examples with `pet_type: Literal['reptile', 'lizard']`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `D` model from the nested example with `pet_type: Literal['dog']`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references `pet_type: Literal['cat']` in the nested example for the `Cat` union.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that validation bypasses trial-and-error by using the discriminator field.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the discriminator field must exist in all variants of the union.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references that documentation was updated to reflect the changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `schema_json` function used in `schema_ad_hoc.py`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the `Field` function from `pydantic`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the `ValidationError` class from `pydantic`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the feature was implemented to align with OpenAPI specifications.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a total of 6 level-2 headings.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any level-1 headings other than the title.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses code formatting (backticks) for technical terms like `typing.Union`.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is under 3000 words.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The document does not mention any file names or examples that are not present in the provided PR diff.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -1,
+      "criterion": "The document does not claim facts about the implementation that contradict the PR description or issue text.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_eeee6f6e4d325bc9",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:pydantic/pydantic#2336",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Discriminated Unions in Pydantic",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#619",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "#3113",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "typing_extensions.Annotated",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "Field(discriminator='field_name')",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "Schema",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "types_union_discriminated.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "types_union_discriminated_nested.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "schema_ad_hoc.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "changes/619-PrettyWood.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "propertyName",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "mapping",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "pet_type: Literal['cat']",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "pet_type: Literal['dog']",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "BlackCat",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "color",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "100%",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "#2336",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "OpenAPI 3.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "Literal",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Discriminated Unions in Pydantic",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#619",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#3113",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "typing_extensions.Annotated",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "Field(discriminator='field_name')",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "Schema",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "types_union_discriminated.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "types_union_discriminated_nested.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "schema_ad_hoc.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "changes/619-PrettyWood.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "propertyName",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "mapping",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "pet_type: Literal['cat']",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "pet_type: Literal['dog']",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "BlackCat",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "color",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "100%",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "#2336",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "OpenAPI 3.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "types_union_discriminated.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "types_union_discriminated_nested.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "Literal",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Explain discriminated unions as a solution for tagged unions",
+            "Reference limitations of standard typing.Union for JSON Schema and OpenAPI",
+            "Mention resolution of issues #619 and #3113"
+          ],
+          "paragraphs": [
+            "Discriminated unions provide a mechanism for validating union types based on the value of a designated discriminator field. This feature was introduced in PR #2336 to address longstanding limitations in how Pydantic handles union types, particularly for compliance with JSON Schema and OpenAPI specifications. Standard `typing.Union` validation in Pydantic attempts each member type sequentially, which can be ambiguous and inefficient, and does not produce the semantic `oneOf` constructs with explicit discriminators required by OpenAPI.",
+            "The feature request originated in issue #619, which highlighted the gap between Pydantic's union support and the OpenAPI specification's concept of tagged unions. In OpenAPI, a discriminator object can be included in a schema to specify which field determines the variant, enabling more precise validation and clearer API documentation. PR #2336 closes both issue #619 and issue #3113 by implementing this capability directly within Pydantic's type system."
+          ]
+        },
+        {
+          "heading": "Design Rationale",
+          "heading_level": 2,
+          "required_content": [
+            "Explain choice of Annotated with Field discriminator",
+            "Justify over alternative approaches like custom TaggedUnion type",
+            "Mention not extending Schema due to OpenAPI-specific concerns"
+          ],
+          "paragraphs": [
+            "The design leverages Python's `typing_extensions.Annotated` type, combined with a specialized `Field` parameter, to specify discriminated unions. The chosen API is: `Union[TypeA, TypeB] = Field(..., discriminator='field_name')` or using `Annotated[Union[TypeA, TypeB], Field(discriminator='field_name')]`. This approach was selected over alternatives considered in issue #619 for several reasons.",
+            "A custom `TaggedUnion` constructor, as initially proposed in the issue, would have introduced a new top-level type that does not integrate naturally with Python's existing type system. By using `Annotated`, the solution remains composable with other type hints and is familiar to developers already using Pydantic's `Field` for metadata. Furthermore, extending the `Schema` class with OpenAPI-specific discriminator logic was rejected to avoid polluting the core validation schema with API-convention concerns; the `Annotated` approach cleanly separates the validation directive from the schema generation logic."
+          ]
+        },
+        {
+          "heading": "Implementation Details",
+          "heading_level": 2,
+          "required_content": [
+            "Reference key new files: types_union_discriminated.py, types_union_discriminated_nested.py, schema_ad_hoc.py",
+            "Explain validation flow using discriminator field",
+            "Describe nested discriminated union support"
+          ],
+          "paragraphs": [
+            "The implementation involves several key components, evidenced by the new files added in the PR. The file `docs/examples/types_union_discriminated.py` demonstrates the core pattern: models define a discriminator field (e.g., `pet_type: Literal['cat']`), and the union type is annotated with `Field(discriminator='pet_type')`. During validation, Pydantic inspects the discriminator field's value in the input data, matches it against the `Literal` annotations of the union members, and delegates validation to the corresponding model class. This bypasses the expensive trial-and-error validation of a standard union.",
+            "Nested discriminated unions are supported, as shown in `docs/examples/types_union_discriminated_nested.py`. Here, a union of `BlackCat` and `WhiteCat` is itself discriminated by a `color` field, and then that union is nested inside a `Pet` union discriminated by `pet_type`. The implementation must recursively resolve discriminator hierarchies. The schema generation example in `docs/examples/schema_ad_hoc.py` uses `Annotated` with `schema_json` to produce a compliant schema. A changelog entry, `changes/619-PrettyWood.md`, confirms the feature addition and links to documentation."
+          ]
+        },
+        {
+          "heading": "OpenAPI/JSON Schema Alignment",
+          "heading_level": 2,
+          "required_content": [
+            "Explain generation of oneOf with discriminator object",
+            "Reference requirement from issue #619 for OpenAPI compatibility"
+          ],
+          "paragraphs": [
+            "A core requirement from issue #619 was that Pydantic's generated schema should include an OpenAPI discriminator object within a `oneOf` construct. The implementation fulfills this. When generating a JSON Schema for a discriminated union, Pydantic produces a `oneOf` array containing the schemas of the union members. It also includes a top-level `discriminator` object with two properties: `propertyName` (the field name used for discrimination) and `mapping` (an object mapping discriminator values to the corresponding schema references).",
+            "This structure directly aligns with the OpenAPI 3.0 specification for discriminators, enabling seamless integration with OpenAPI-based tooling for documentation, code generation, and validation. The approach is compatible with JSON Schema's `oneOf` keyword, though the `discriminator` object is an OpenAPI-specific extension. Pydantic's schema generation thus bridges the gap between its internal validation logic and the output required for OpenAPI-compliant APIs."
+          ]
+        },
+        {
+          "heading": "Usage Examples",
+          "heading_level": 2,
+          "required_content": [
+            "Provide simple discriminated union example from types_union_discriminated.py",
+            "Provide nested discriminated union example from types_union_discriminated_nested.py",
+            "Explain the code snippets"
+          ],
+          "paragraphs": [
+            "The primary usage pattern is illustrated in `types_union_discriminated.py`. Models `Cat`, `Dog`, and `Lizard` each define a `pet_type` field with a `Literal` type annotation specifying the discriminator value. The container `Model` has a field `pet` of type `Union[Cat, Dog, Lizard]` annotated with `Field(discriminator='pet_type')`. Validation then becomes efficient and deterministic: `Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1)` succeeds, while missing required fields for the selected variant (e.g., `Model(pet={'pet_type': 'dog'}, n=1)`) raise a `ValidationError` pinpointing the exact issue within the `Dog` model.",
+            "A more advanced example is in `types_union_discriminated_nested.py`. Here, `BlackCat` and `WhiteCat` are discriminated by a `color` field, forming a `Cat` type via `Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]`. This `Cat` union is then nested in a `Pet` union discriminated by `pet_type`. This demonstrates the composability of discriminated unions. The input `{'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}` is correctly routed to `BlackCat`, while an invalid color like `'red'` causes a validation error at the nested discrimination level."
+          ]
+        },
+        {
+          "heading": "Testing and Validation",
+          "heading_level": 2,
+          "required_content": [
+            "Reference that unit tests exist",
+            "State that CI tests pass with 100% coverage",
+            "Reference the PR checklist"
+          ],
+          "paragraphs": [
+            "The PR checklist indicates that unit tests for the changes exist and that tests pass on CI with coverage remaining at 100%. This ensures that the discriminated union feature is thoroughly validated against a variety of cases, including valid discriminations, invalid discriminator values, missing discriminator fields, nested unions, and schema generation correctness. The rigorous test coverage guarantees reliability and backward compatibility for this new capability.",
+            "Documentation was updated to reflect the changes, as confirmed by the checklist item regarding documentation. The new examples in the `docs/examples/` directory serve as both usage guides and implicit tests, ensuring that the documented patterns work as described. This comprehensive testing and documentation approach supports the feature's adoption and maintainability."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Discriminated Unions in Pydantic",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "pr_diff.md: The full diff from PR #2336 showing changed files, additions, and deletions.",
+          "content_blueprint": {
+            "title": "pr_diff",
+            "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "issue_619.md: The text of GitHub issue #619 describing the feature request for tagged unions and OpenAPI discriminator support.",
+          "content_blueprint": {
+            "title": "issue_619",
+            "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "changes/619-PrettyWood.md: The changelog entry file added in the PR.",
+          "content_blueprint": {
+            "title": "changes/619-PrettyWood",
+            "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The document title is exactly 'Design Document: Discriminated Unions in Pydantic'",
+          "value": "Design Document: Discriminated Unions in Pydantic",
+          "tolerance": null,
+          "location": "Markdown file title heading"
+        },
+        {
+          "description": "The Overview section references the resolution of issue #619",
+          "value": "#619",
+          "tolerance": null,
+          "location": "Overview section, second paragraph"
+        },
+        {
+          "description": "The Overview section references the resolution of issue #3113",
+          "value": "#3113",
+          "tolerance": null,
+          "location": "Overview section, second paragraph"
+        },
+        {
+          "description": "The Design Rationale section mentions the use of typing_extensions.Annotated",
+          "value": "typing_extensions.Annotated",
+          "tolerance": null,
+          "location": "Design Rationale section, first paragraph"
+        },
+        {
+          "description": "The Design Rationale section mentions the use of Field(discriminator='field_name')",
+          "value": "Field(discriminator='field_name')",
+          "tolerance": null,
+          "location": "Design Rationale section, first paragraph"
+        },
+        {
+          "description": "The Design Rationale section rejects extending the Schema class for discriminator",
+          "value": "Schema",
+          "tolerance": null,
+          "location": "Design Rationale section, second paragraph"
+        },
+        {
+          "description": "The Implementation Details section references the file types_union_discriminated.py",
+          "value": "types_union_discriminated.py",
+          "tolerance": null,
+          "location": "Implementation Details section, first paragraph"
+        },
+        {
+          "description": "The Implementation Details section references the file types_union_discriminated_nested.py",
+          "value": "types_union_discriminated_nested.py",
+          "tolerance": null,
+          "location": "Implementation Details section, second paragraph"
+        },
+        {
+          "description": "The Implementation Details section references the file schema_ad_hoc.py",
+          "value": "schema_ad_hoc.py",
+          "tolerance": null,
+          "location": "Implementation Details section, second paragraph"
+        },
+        {
+          "description": "The Implementation Details section references the changelog entry changes/619-PrettyWood.md",
+          "value": "changes/619-PrettyWood.md",
+          "tolerance": null,
+          "location": "Implementation Details section, second paragraph"
+        },
+        {
+          "description": "The OpenAPI/JSON Schema Alignment section mentions the discriminator object with propertyName property",
+          "value": "propertyName",
+          "tolerance": null,
+          "location": "OpenAPI/JSON Schema Alignment section, first paragraph"
+        },
+        {
+          "description": "The OpenAPI/JSON Schema Alignment section mentions the discriminator object with mapping property",
+          "value": "mapping",
+          "tolerance": null,
+          "location": "OpenAPI/JSON Schema Alignment section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section includes a reference to Cat model with pet_type: Literal['cat']",
+          "value": "pet_type: Literal['cat']",
+          "tolerance": null,
+          "location": "Usage Examples section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section includes a reference to Dog model with pet_type: Literal['dog']",
+          "value": "pet_type: Literal['dog']",
+          "tolerance": null,
+          "location": "Usage Examples section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section includes a reference to Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1) example",
+          "value": "Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1)",
+          "tolerance": null,
+          "location": "Usage Examples section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section references nested discrimination with BlackCat and WhiteCat",
+          "value": "BlackCat",
+          "tolerance": null,
+          "location": "Usage Examples section, second paragraph"
+        },
+        {
+          "description": "The Usage Examples section references nested discrimination with color discriminator",
+          "value": "color",
+          "tolerance": null,
+          "location": "Usage Examples section, second paragraph"
+        },
+        {
+          "description": "The Testing and Validation section states that CI tests pass with 100% coverage",
+          "value": "100%",
+          "tolerance": null,
+          "location": "Testing and Validation section, first paragraph"
+        },
+        {
+          "description": "The document mentions PR #2336",
+          "value": "#2336",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "The OpenAPI/JSON Schema Alignment section references OpenAPI 3.0 specification",
+          "value": "OpenAPI 3.0",
+          "tolerance": null,
+          "location": "OpenAPI/JSON Schema Alignment section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section references the file types_union_discriminated.py by name",
+          "value": "types_union_discriminated.py",
+          "tolerance": null,
+          "location": "Usage Examples section, first paragraph"
+        },
+        {
+          "description": "The Usage Examples section references the file types_union_discriminated_nested.py by name",
+          "value": "types_union_discriminated_nested.py",
+          "tolerance": null,
+          "location": "Usage Examples section, second paragraph"
+        },
+        {
+          "description": "The Implementation Details section describes validation using Literal annotations of the union members",
+          "value": "Literal",
+          "tolerance": null,
+          "location": "Implementation Details section, first paragraph"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1181861460
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "pr_diff.md: The full diff from PR #2336 showing changed files, additions, and deletions.",
+      "content_blueprint": {
+        "title": "pr_diff",
+        "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "issue_619.md: The text of GitHub issue #619 describing the feature request for tagged unions and OpenAPI discriminator support.",
+      "content_blueprint": {
+        "title": "issue_619",
+        "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "changes/619-PrettyWood.md: The changelog entry file added in the PR.",
+      "content_blueprint": {
+        "title": "changes/619-PrettyWood",
+        "body": "# Seed Material: pydantic/pydantic#2336: Support discriminated union\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2336\n\nRepository: pydantic/pydantic\nPR Number: #2336\nPR Title: Support discriminated union\nMerged At: 2021-12-18T16:31:36Z\nChanged Files: 19\nAdditions: +1166, Deletions: -29\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\nAdd discriminated union support and support open api spec about it\r\n\r\n## Related issue number\r\ncloses #619\r\ncloses #3113\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [x] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Linked Issue #619\n# Feature Request\r\n\r\nPydantic currently has a decent support for union types through the `typing.Union` type from PEP484, but it does not currently cover all the cases covered by the JSONSchema and OpenAPI specifications, most likely because the two specifications diverge on those points.\r\n\r\nOpenAPI supports something similar to tagged unions where a certain field is designated to serve as a \"discriminator\", which is then matched against literal values to determine which of multiple schemas to use for payload validation. In order to allow Pydantic to support those, I suppose there would have to be a specific type similar to `typing.Union` in order to specify what discriminator field to use and how to match it. Such a type would then be rendered into a schema object (`oneOf`) with an [OpenAPI discriminator object][2] built into it, as well as correctly validate incoming JSON into the correct type based on the value or the discriminator field. This change would only impact OpenAPI, as JSON schema (draft 7 onwards) uses [conditional types][3] instead, which would probably need to be the topic of a different feature request, as both methods appear mutually incompatible.\r\n\r\n## Implementation ideas\r\nI'd imagine the final result to be something like this.\r\n\r\n```py\r\nMyUnion = Union[Foo, Bar]\r\nMyTaggedUnion = TaggedUnion(Union[Foo, Bar], discriminator='type', mapping={'foo': Foo, 'bar': Bar}))\r\n```\r\n\r\nPython doesn't have a feature like TypeScript to let you statically ensure that `discriminator` [exists as a field for all variants of that union][4], though that shouldn't be a problem since this is going to be raised during validation regardless.\r\n\r\n`discriminator` and `mapping` could also simply be added to `Schema`, though I'm not sure about whether it's a good idea to add OpenAPI-specific extensions there.\r\n\r\n[PEP 593][1] would also have been a nice alternative, since it would hypothetically allow tagged unions to be implemented as a regular union with annotations specific\n\n## Diff (first 3000 chars)\ndiff --git a/changes/619-PrettyWood.md b/changes/619-PrettyWood.md\nnew file mode 100644\nindex 00000000000..929bfbf6d55\n--- /dev/null\n+++ b/changes/619-PrettyWood.md\n@@ -0,0 +1 @@\n+Add a discriminated union. See [the doc](https://pydantic-docs.helpmanual.io/usage/types/#discriminated-unions) for more information.\n\\ No newline at end of file\ndiff --git a/docs/examples/schema_ad_hoc.py b/docs/examples/schema_ad_hoc.py\nnew file mode 100644\nindex 00000000000..6e93f913def\n--- /dev/null\n+++ b/docs/examples/schema_ad_hoc.py\n@@ -0,0 +1,20 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, schema_json\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    cat_name: str\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    dog_name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+print(schema_json(Pet, title='The Pet Schema', indent=2))\ndiff --git a/docs/examples/types_union_discriminated.py b/docs/examples/types_union_discriminated.py\nnew file mode 100644\nindex 00000000000..bae8476562c\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated.py\n@@ -0,0 +1,30 @@\n+from typing import Literal, Union\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class Cat(BaseModel):\n+    pet_type: Literal['cat']\n+    meows: int\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    barks: float\n+\n+\n+class Lizard(BaseModel):\n+    pet_type: Literal['reptile', 'lizard']\n+    scales: bool\n+\n+\n+class Model(BaseModel):\n+    pet: Union[Cat, Dog, Lizard] = Field(..., discriminator='pet_type')\n+    n: int\n+\n+\n+print(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n+try:\n+    Model(pet={'pet_type': 'dog'}, n=1)\n+except ValidationError as e:\n+    print(e)\ndiff --git a/docs/examples/types_union_discriminated_nested.py b/docs/examples/types_union_discriminated_nested.py\nnew file mode 100644\nindex 00000000000..df258b28b26\n--- /dev/null\n+++ b/docs/examples/types_union_discriminated_nested.py\n@@ -0,0 +1,50 @@\n+from typing import Literal, Union\n+\n+from typing_extensions import Annotated\n+\n+from pydantic import BaseModel, Field, ValidationError\n+\n+\n+class BlackCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['black']\n+    black_name: str\n+\n+\n+class WhiteCat(BaseModel):\n+    pet_type: Literal['cat']\n+    color: Literal['white']\n+    white_name: str\n+\n+\n+# Can also be written with a custom root type\n+#\n+# class Cat(BaseModel):\n+#   __root__: Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n+\n+\n+class Dog(BaseModel):\n+    pet_type: Literal['dog']\n+    name: str\n+\n+\n+Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n+\n+\n+class Model(BaseModel):\n+    pet: Pet\n+    n: int\n+\n+\n+m = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\n+print(m)\n+try:\n+    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\n+"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_eeee6f6e4d325bc9/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_eeee6f6e4d325bc9/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_eeee6f6e4d325bc9/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_eeee6f6e4d325bc9/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:17:52.298406+00:00"
+}

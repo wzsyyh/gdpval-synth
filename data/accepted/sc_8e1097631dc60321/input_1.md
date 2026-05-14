@@ -1,0 +1,69 @@
+# Recent 424B2 prospectus filings list dated May 12, 2026, indicating five separate filings on the same date
+
+
+# Seed Material: BANK OF AMERICA CORP /DE/ (BAC)
+Source: sec_edgar_xbrl
+Identifier: ticker:BAC
+
+Company: BANK OF AMERICA CORP /DE/
+Ticker: BAC
+CIK: 0000070858
+Sector: banking
+
+## Financial Data (XBRL)
+
+### Revenues
+  Q1 2026: 30,272,000,000
+  FY 2025: 113,097,000,000
+  Q3 2025: 81,917,000,000
+  Q3 2025: 28,088,000,000
+  Q2 2025: 53,829,000,000
+
+### NetIncomeLoss
+  Q1 2026: 8,584,000,000
+  FY 2025: 30,509,000,000
+  Q3 2025: 22,981,000,000
+  Q3 2025: 8,469,000,000
+  Q2 2025: 14,512,000,000
+
+### Assets
+  Q1 2026: 3,496,186,000,000
+  FY 2025: 3,411,738,000,000
+  Q1 2026: 3,411,738,000,000
+  Q3 2025: 3,403,716,000,000
+  Q2 2025: 3,441,142,000,000
+
+### Liabilities
+  Q1 2026: 3,195,518,000,000
+  FY 2025: 3,108,495,000,000
+  Q1 2026: 3,108,495,000,000
+  Q3 2025: 3,099,564,000,000
+  Q2 2025: 3,141,543,000,000
+
+### StockholdersEquity
+  Q1 2026: 300,668,000,000
+  FY 2025: 303,243,000,000
+  Q1 2026: 303,243,000,000
+  Q3 2025: 304,152,000,000
+  Q2 2025: 299,599,000,000
+
+### CashAndCashEquivalentsAtCarryingValue
+  Q3 2020: 301,006,000,000
+  Q2 2020: 289,346,000,000
+  Q1 2020: 250,390,000,000
+  Q3 2020: 161,560,000,000
+  Q2 2020: 161,560,000,000
+
+### EarningsPerShareDiluted
+  Q1 2026: 1.11
+  FY 2025: 3.81
+  Q3 2025: 2.85
+  Q3 2025: 1.06
+  Q2 2025: 1.79
+
+## Recent Filings
+  424B2 — 2026-05-12
+  424B2 — 2026-05-12
+  424B2 — 2026-05-12
+  424B2 — 2026-05-12
+  424B2 — 2026-05-12

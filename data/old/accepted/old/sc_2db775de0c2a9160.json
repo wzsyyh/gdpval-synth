@@ -1,0 +1,617 @@
+{
+  "candidate_id": "sc_2db775de0c2a9160",
+  "occupation": "software_engineer",
+  "archetype": "new_feature",
+  "difficulty": "medium",
+  "seed_id": "a149f3d810c39943",
+  "prompt": "You are a backend engineer at Kalpa AI. Mira Fontaine asked you to produce an internal design doc covering the integration of the LOLWUT 8 feature from upstream Redis into Kalpa's internal Redis 8 build.\n\nContext: Saskia van Hout championed the upstream contribution before she left — PR redis/redis#14048, titled \"LOLWUT for Redis 8.\", merged on mainline May 26, 2025. The PR implements Nanni Balestrini's TAPE MARK I algorithm from 1962, one of the earliest experiments in computer-generated poetry, originally run on an IBM 7090. The feature is part of Redis's long-running LOLWUT tradition of whimsical easter-egg commands. The PR body itself notes the commit should be back-ported to the Redis 8 branch.\n\nThe diff adds `lolwut8.o` to the `REDIS_SERVER_OBJ` list in `src/Makefile` and declares/registers `lolwut8Command` in `src/lolwut.c`, following the same self-contained file pattern as lolwut5 and lolwut6. The algorithm takes three literary source texts (Diary of Hiroshima, The Mystery of the Elevator, Tao Te Ching), selects verses based on metrical compatibility rules, and ensures alternation between sources — each execution produces a unique poem. The upstream default output is English, not Italian, with minimal metrical-preserving edits to the source material.\n\nYour doc should follow the standard template and cover the following:\n\n- **Overview** — what LOLWUT 8 is and why we're porting it\n- **Motivation** — cultural significance, Balestrini provenance, brand alignment with Redis's identity, and the connection to Saskia's upstream work\n- **Detailed Design** — the TAPE MARK I algorithm inputs, verse selection logic, and metrical compatibility rules; the code-level integration points (Makefile object list addition, `lolwut8Command` registration in lolwut.c); any build-system changes needed in Kalpa's deployment pipeline beyond the upstream diff\n- **Alternatives Considered** — e.g., maintaining a downstream-only patchset vs. tracking upstream directly\n- **Risks & Mitigations** — merge conflict risk when cherry-picking from mainline to the Redis 8 branch; translation/language considerations; any assumptions about Saskia's original rationale that could benefit from confirmation\n- **Rollout Plan** — back-port strategy referencing the merged commit SHA rather than just the PR number\n\nDeliver in markdown. Mira and the senior engineers reading this care about *why* this feature exists, not just what the code changes are — the historical and artistic context is substantively important to them, not decorative filler.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The document identifies the repository as redis/redis.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the PR number as 14048.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR title as \"LOLWUT for Redis 8.\"",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the affected file src/Makefile as one of the files modified in the upstream PR.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the affected file src/lolwut.c as one of the files modified in the upstream PR.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the new object file as lolwut8.o added to the REDIS_SERVER_OBJ list.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the new function declaration as lolwut8Command in src/lolwut.c.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the merged date of the upstream PR as May 26, 2025.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR's instruction that the commit should be back-ported to the Redis 8 branch.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Nanni Balestrini as the creator of the TAPE MARK I algorithm.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the year of the TAPE MARK I algorithm as 1962.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the three literary source texts: Diary of Hiroshima by Michihito Hachiya, The Mystery of the Elevator by Paul Goldwin, and Tao Te Ching by Lao Tse.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the IBM 7090 as the original hardware used for TAPE MARK I.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the upstream default output language as English (not Italian).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Saskia van Hout as the former teammate who championed the upstream contribution.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Mira Fontaine as the engineering manager who assigned the task.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document is provided as a single markdown (.md) file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an \"Overview\" or \"Executive Summary\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a \"Motivation\" or \"Background\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a \"Detailed Design\" or \"Proposed Design\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an \"Alternatives Considered\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a \"Risks\" or \"Risks & Mitigations\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a \"Rollout Plan\" section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Detailed Design section describes the TAPE MARK I algorithm's inputs (three literary sources) and verse selection logic.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Detailed Design section describes the metrical compatibility rules or alternation logic between literary sources.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Detailed Design section identifies the code-level integration points: the Makefile object list change and the lolwut8Command registration.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Detailed Design section outlines any build-system or compilation changes required for Kalpa's deployment pipeline beyond the upstream diff.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation/Background section explains the cultural and historical significance of TAPE MARK I and Balestrini's 1962 work.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation/Background section connects the feature to Redis's LOLWUT tradition and brand identity.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Alternatives Considered section discusses at least one alternative approach (e.g., maintaining a downstream-only patchset vs. tracking upstream).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risks section addresses potential merge conflicts when cherry-picking from mainline to the Redis 8 branch.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risks section addresses translation/language considerations (English default with minimal metrical-preserving edits).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the exact commit SHA from the merged PR rather than relying solely on the PR number for back-porting.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the PR number 14048 at least once in the main text body.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the Wikipedia article on digital poetry or the Almanacco Letterario Bompiani publication as a source.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rollout Plan section specifies a back-port strategy from upstream mainline to the Redis 8 branch.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses a professional tone appropriate for an internal engineering design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is well-organized with clear headings and logical section flow.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document avoids excessive jargon and is accessible to senior engineers not deeply familiar with the Redis codebase.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains WHY the feature matters (cultural significance, brand alignment), not just WHAT the code changes are.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document plausibly justifies the decision to port this feature into Kalpa's internal build rather than treating it as optional.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document notes that each execution of LOLWUT 8 generates a unique poem, as intended by Balestrini's algorithm.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the publication where TAPE MARK I was originally published as Almanacco Letterario Bompiani.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes the PR's trivia that the original IBM 7090 code took six minutes to generate each verse.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the current internal deadline as May 15, 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the assignment date as May 13, 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the lolwut5 and lolwut6 patterns as precedent for the self-contained file approach.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Kalpa AI as the employer or the organization for which the design doc is being produced.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the PR body excerpt's note about minimal metrical-preserving edits to preserve the metric of the original verses.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the TAPE MARK I algorithm ensures alternation between different literary sources.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the diff change in src/Makefile where lolwut8.o is inserted into the REDIS_SERVER_OBJ list.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a total length of at least 800 words but no more than 5000 words.",
+      "category": "format",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_2db775de0c2a9160",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "new_feature",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:redis/redis#14048",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "redis/redis",
+        "attrs": {
+          "pr_number": 14048,
+          "pr_title": "LOLWUT for Redis 8."
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Kalpa AI",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Saskia van Hout",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Mira Fontaine",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-05-26",
+        "description": "Reference PR redis/redis#14048 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-13",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-15",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "redis/redis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 14048,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "LOLWUT for Redis 8.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n",
+        "unit": null,
+        "source": "github:redis/redis#14048"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut",
+        "unit": null,
+        "source": "github:redis/redis#14048.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Produce a design doc that describes how LOLWUT 8 (TAPE MARK I poetry algorithm) will be integrated into Kalpa AI's internal Redis 8 build.",
+      "Document the upstream implementation approach taken in redis/redis#14048, including the new lolwut8.o object file and modifications to src/Makefile and src/lolwut.c.",
+      "Specify the back-port strategy from upstream mainline to the Redis 8 branch, noting the PR's own instruction that the commit should be back-ported.",
+      "Detail the TAPE MARK I algorithm's inputs (three literary source texts), verse selection logic, and metrical compatibility rules as implemented in the code.",
+      "Identify the code-level integration points: the Makefile object list change and the lolwut8Command function declaration/registration in lolwut.c.",
+      "Outline any build-system or compilation changes required for Kalpa's deployment pipeline beyond the upstream diff.",
+      "Note the cultural and historical context (Balestrini 1962, IBM 7090 provenance) as background rationale for why this feature matters to Redis's brand identity.",
+      "Include a risk assessment covering potential merge conflicts when cherry-picking from mainline to the Redis 8 branch.",
+      "State the language/translation considerations: the upstream default is English rather than Balestrini's Italian, with minimal metrical-preserving edits noted in the PR body.",
+      "Deliver the document in markdown format within two days of assignment."
+    ],
+    "implicit_requirements": [
+      "Design docs in this org follow a standard template: Overview, Motivation, Detailed Design, Alternatives Considered, Risks, and Rollout Plan sections.",
+      "Upstream Redis contribution conventions require standalone, self-contained feature files (lolwut8.o) rather than modifying existing lolwut version files.",
+      "When back-porting, the doc should reference the exact commit SHA from the merged PR rather than relying on PR number alone.",
+      "The audience (Mira and senior engineers) expects the doc to explain WHY a feature exists, not just WHAT the code does — cultural-significance context is relevant, not decorative."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "One-paragraph summary of the proposal"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "This design document outlines the implementation of LOLWUT 8 for Redis, introducing a novel computer poetry generation feature inspired by Nanni Balestrini's 1962 algorithm TAPE MARK I. The proposal integrates a historically significant experiment in computational creativity directly into the Redis server, allowing users to generate unique, algorithmically-composed poetic stanzas via the `LOLWUT` command. This continues Redis's tradition of embedding whimsical, technically interesting demonstrations within its core, advancing it into the domain of procedural art generation.",
+            "The implementation, primarily contained within the new file `src/lolwut8.c` and integrated via modifications to `src/lolwut.c` and `src/Makefile`, faithfully interprets Balestrini's original combinatorial method. The algorithm selects and arranges textual fragments from predefined pools based on a deterministic seed, producing a distinct poem for each invocation while maintaining a recognizable poetic structure. This approach pays homage to early mainframe-era programming while leveraging modern C efficiency within Redis's constrained, single-threaded architecture. The feature demonstrates how simple rules can yield complex and evocative outputs, aligning with the educational and exploratory spirit of the LOLWUT command series.",
+            "Integrating LOLWUT 8 enhances Redis's identity as more than a mere data store. It serves as a lightweight, always-available showcase of algorithmic art, providing users with a moment of discovery and connecting them to a foundational moment in digital humanities. The technical footprint is minimal, requiring no new dependencies or persistent state, thus adhering to Redis's core principles of efficiency and simplicity while expanding its expressive capabilities."
+          ]
+        },
+        {
+          "heading": "Background",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to redis/redis PR #14048",
+            "Context for why this change is needed"
+          ],
+          "paragraphs": [
+            "## Background",
+            "This document outlines the design and implementation for the changes proposed in Pull Request #14048 (`redis/redis`), titled \"Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation.\" The core objective of this PR is to introduce a new version of the Redis `LOLWUT` command, extending the series with a historically significant and intellectually engaging demonstration.",
+            "The `LOLWUT` command in Redis serves a unique dual purpose: it is a fun, discoverable Easter egg for users while also acting as a subtle showcase of Redis's capabilities and a tribute to computer science history. Previous iterations (e.g., `LOLWUT 5` generating a Commodore 64 image, `LOLWUT 6` simulating a cellular automaton) have demonstrated this by encoding complex visual or generative outputs into the Redis terminal. Adding a version 8 continues this tradition, ensuring the command remains a living, evolving part of Redis's character.",
+            "The specific need for this change, as indicated by the PR, is to integrate a representation of *TAPE MARK I*, a 1962 algorithm by Nanni Balestrini that is considered a seminal work in digital poetry and computational creativity. By implementing this algorithm within Redis, we accomplish two goals: first, we honor a foundational moment in the intersection of computing and the arts, making this history accessible and tangible to developers interacting with Redis. Second, we expand the palette of the `LOLWUT` command to include generative text, demonstrating Redis's versatility beyond its primary use as a data structure server and enriching the developer experience with a novel, thought-provoking output."
+          ]
+        },
+        {
+          "heading": "Goals",
+          "heading_level": 2,
+          "required_content": [
+            "2-4 concrete, measurable goals"
+          ],
+          "paragraphs": [
+            "The primary goals for implementing LOLWUT 8 are to expand Redis's creative and educational toolset by integrating a historically significant algorithm, while maintaining the existing LOLWUT framework's integrity and performance. This implementation should serve as both a tribute to early computational art and a functional demonstration of Redis's versatility beyond traditional data operations.",
+            "The first concrete goal is to successfully integrate a new LOLWUT version into the Redis build system and command structure. This involves modifying `src/Makefile` to compile the new source file `src/lolwut8.c` and updating `src/lolwut.c` to recognize and dispatch the `LOLWUT 8` subcommand. The measurable outcome is a cleanly compiled Redis binary that executes `LOLWUT 8` without regressions to existing LOLWUT versions (e.g., `LOLWUT 6` or `LOLWUT 7`), as verified by standard testing and the command's execution via `redis-cli`.",
+            "The second goal is to create a faithful, performant implementation of Balestrini's combinatorial poetry algorithm within `src/lolwut8.c`. The code must generate poetry by correctly permuting defined stanzas and words to create coherent, non-repeating verses. Success is measurable by the output's adherence to the algorithm's logical constraints—such as syllable counts per line and proper stanza interleaving—as documented in the PR's background section and testable via repeated command invocations. Performance should remain within acceptable bounds for a client-side, non-critical command, ensuring it does not introduce latency or excessive memory allocation.",
+            "Finally, the goal is to produce clean, well-documented, and maintainable code that aligns with Redis's established patterns for LOLWUT implementations. This includes using consistent coding styles, providing clear comments explaining the algorithm's steps, and structuring the output rendering for terminal clarity. The result should be a self-contained module that is easy for the community to understand and potentially adapt, fulfilling the educational aspect of the LOLWUT feature set."
+          ]
+        },
+        {
+          "heading": "Non-Goals",
+          "heading_level": 2,
+          "required_content": [
+            "Explicitly out-of-scope items"
+          ],
+          "paragraphs": [
+            "The following items are explicitly out of scope for this design document and the implementation of LOLWUT 8. The project's primary goal is the faithful implementation and integration of Nanni Balestrini's 1962 TAPE MARK I algorithm, not the creation of a general-purpose interactive or extensible poetry platform.",
+            "First, any form of user interactivity beyond the initial command invocation is excluded. The LOLWUT command is designed as a single-output art function. Therefore, features such as interactive prompts, poem regeneration with different seeds based on user input, or the ability to feed new textual fragments into the algorithm during a session will not be implemented. The output for a given Redis version and optional arguments will be deterministic and consistent across executions.",
+            "Second, the project does not aim to improve upon, modernize, or \"fix\" Balestrini's original algorithm. The implementation in `src/lolwut8.c` will adhere to the original combinatorial and syntactic rules as historically documented. This means we will not incorporate contemporary computational linguistics, semantic analysis, or modern AI techniques to alter the poetry's grammar, coherence, or thematic elements. The artistic value lies in the accurate recreation of the historical artifact, not in creating a \"better\" poet.",
+            "Finally, this work will not alter Redis core functionality, performance characteristics, or the behavior of any existing command. The LOLWUT 8 module is a self-contained artistic implementation within the Redis source tree, following the established pattern of prior LOLWUT versions (e.g., `src/lolwut.c`, `src/lolwut8.c`). It is not a testbed for new Redis features or engine modifications. All changes are confined to the LOLWUT subsystem and do not affect the database's primary data structures, persistence, or networking layers."
+          ]
+        },
+        {
+          "heading": "Proposed Design",
+          "heading_level": 2,
+          "required_content": [
+            "Must reference affected files: src/Makefile, src/lolwut.c, src/lolwut8.c",
+            "Technical approach with justification"
+          ],
+          "paragraphs": [
+            "## Proposed Design",
+            "The implementation introduces LOLWUT 8 as a modular extension, following the established pattern for version-specific LOLWUT commands. This maintains a clean separation of concerns and allows each version's visual/artistic logic to be independently developed and compiled. The primary changes involve three files: `src/Makefile` to include the new object in the build, `src/lolwut.c` to dispatch the new version, and a new `src/lolwut8.c` file to encapsulate the TAPE MARK I poetry generation algorithm.",
+            "The technical core resides in `src/lolwut8.c`. This file will implement Balestrini's algorithm by maintaining a set of six syntactic fragment pools (verbs, nouns, adjectives, etc.) as defined in the original 1962 paper. The function `lolwut8Command` will be the entry point, called from the main dispatcher. It will generate poetry by programmatically selecting and combining fragments according to Balestrini's specified rules, ensuring each invocation produces a unique yet structurally coherent poem. The output will be formatted into a series of strings and returned via the standard Redis reply mechanism. This approach faithfully replicates the generative process while leveraging Redis's efficient string handling.",
+            "This modular design is justified for several reasons. First, it isolates the complex generative logic of TAPE MARK I from the general LOLWUT routing in `src/lolwut.c`, which will simply add a case to call `lolwut8Command`. Second, it aligns with the existing architecture, as seen in prior versions (e.g., `lolwut5.c` for the Commodore 64 demo), making the codebase consistent and easier to navigate. Finally, updating the `Makefile` via a straightforward `lolwut8.o` addition ensures the build process remains simple and transparent, a key consideration for open-source contribution and review."
+          ]
+        },
+        {
+          "heading": "Alternatives Considered",
+          "heading_level": 2,
+          "required_content": [
+            "At least 2 alternatives with tradeoff analysis"
+          ],
+          "paragraphs": [
+            "**Alternatives Considered**",
+            "Two primary alternative approaches were evaluated before settling on the direct implementation of Balestrini's 1962 algorithm.",
+            "The first alternative was to use a modern **Markov chain text generator**. This approach would analyze a corpus of pre-existing text (e.g., Italian poetry or Beat literature from the era) to build a probabilistic model for word sequence generation. A Markov chain implementation would be more straightforward to code, as it relies on simple probability lookups rather than hard-coded grammatical structures and lexicons. However, this approach was rejected because it would not faithfully recreate the *specific* combinatorial system of TAPE MARK I. The historical and artistic significance of this command lies in its execution of a precise, documented algorithm from 1962, not merely in generating vaguely poetic output. A Markov model would also require bundling a text corpus within Redis, increasing the binary size for a feature intended to be lightweight and self-contained.",
+            "The second alternative was to integrate a **lightweight neural network model** for text generation. With recent advances, small, quantized language models could potentially be embedded to generate more fluid and contemporary-sounding poetry. The tradeoff here is stark: a neural model would offer superior stylistic flexibility but at an unacceptable cost for Redis. It would introduce a significant new dependency, dramatically increase binary size, and impose non-deterministic memory and CPU overhead—contrary to Redis's ethos of predictable performance. Furthermore, it would diverge entirely from the project's goal of recreating a historical artifact. The value of LOLWUT 8 is not in the sophistication of its poetry by 2024 standards, but in the faithful re-enactment of a pioneering 1962 program.",
+            "Ultimately, the chosen path—encoding Balestrini's original ruleset and lexicons directly in `src/lolwut8.c`—provides the necessary historical accuracy and aligns with Redis's design principles. It is self-contained, deterministic, and carries a negligible performance footprint. The implementation in `src/lolwut8.c` deliberately mirrors the limited vocabulary and syntactic slots of the original IBM 7090 program, ensuring the output is a genuine execution of the TAPE MARK I algorithm rather than an approximation. This maintains the educational and cultural integrity of the feature."
+          ]
+        },
+        {
+          "heading": "Risks & Mitigations",
+          "heading_level": 2,
+          "required_content": [
+            "Specific risks and how to address them"
+          ],
+          "paragraphs": [
+            "**Risks & Mitigations**",
+            "The primary risk of integrating the TAPE MARK I algorithm is the introduction of non-deterministic, computationally intensive operations into a core Redis command. The algorithm's use of randomness (`rand()`) means `LOLWUT 8` will produce different output on each invocation, which is its intended artistic function. However, this diverges from the predictable, key-value operations that users typically expect from Redis commands. A second concern is the algorithm's computational complexity. While the current implementation for a 6x8 grid is negligible, the recursive, combinatorial approach could become a resource burden if grid parameters were scaled up significantly in future iterations. Finally, the artistic and historical nature of this feature is somewhat atypical for Redis, posing a long-term maintainability consideration.",
+            "To mitigate these risks, the implementation must be carefully constrained and documented. The randomness can be made optional and deterministic for testing or reproducible output by accepting an optional seed argument, following patterns seen in other Redis commands. This would allow users and developers to lock the output when needed. For performance, the design doc and code comments must explicitly state the time complexity (O(n) for the given grid) and establish that the fixed, small grid size is a deliberate choice to guarantee sub-millisecond execution. Any future modifications to increase complexity would require a new proposal with performance analysis.",
+            "Maintainability is addressed through clear separation of concerns, as evidenced by the file structure. The generic animation logic resides in `src/lolwut.c`, while the TAPE MARK I poetry generation logic is isolated in `src/lolwut8.c`. This modular approach confines the artistic algorithm, making it easier to update or replace without affecting other LOLWUT versions or core Redis. Comprehensive comments must be added to explain the algorithm's origin and purpose, ensuring future engineers understand its context. The feature should also be gated behind the existing `LOLWUT` versioning system, preventing any unintended behavior on older Redis deployments or for users who upgrade without reviewing release notes."
+          ]
+        },
+        {
+          "heading": "Rollout Plan",
+          "heading_level": 2,
+          "required_content": [
+            "Phased deployment strategy"
+          ],
+          "paragraphs": [
+            "### Rollout Plan",
+            "The rollout of LOLWUT 8 will follow a phased deployment strategy to mitigate risk and ensure a smooth integration. The primary objective is to validate the new algorithm's behavior and its interaction with Redis's core command framework before broad exposure. This approach is structured in three distinct phases: internal validation, controlled community rollout, and general availability.",
+            "**Phase 1: Internal & CI Validation (Week 1-2).** Upon merge of the feature branch, the code—primarily in `src/lolwut8.c` and the updated dispatcher in `src/lolwut.c`—will undergo extended testing within our internal CI pipeline and staging environments. The focus will be on verifying memory stability, performance impact of the new poem generation logic under load, and ensuring the command gracefully handles all edge cases (e.g., invalid subcommands). Success for this phase is defined as zero regressions in the existing test suite and successful completion of a new load test scenario specifically targeting the `LOLWUT 8` command with concurrent clients.",
+            "**Phase 2: Controlled Community Rollout (Week 3).** We will release a new minor version of Redis (e.g., 8.0.1) containing the feature but with documentation noting it is in a \"beta\" or \"preview\" state. We will proactively notify a select group of power users and contributors who have expressed interest in experimental features. This allows for real-world validation on diverse workloads and hardware while limiting the blast radius. Feedback will be collected via the GitHub issue tracker. The criterion to proceed to Phase 3 is the absence of any critical bugs (data corruption, server crashes) reported from this group over a one-week period.",
+            "**Phase 3: General Availability (Week 4+).** Following successful community validation, LOLWUT 8 will be promoted to general availability in the next scheduled minor release. The documentation will be updated to reflect its stable status. At this point, the feature becomes part of the standard, fully-supported command set. A rollback plan is inherent in this phased approach; should critical issues be discovered in Phases 1 or 2, the commit introducing `lolwut8.c` can be cleanly reverted from the release branch, with minimal impact on the core `LOLWUT` command's existing functionality."
+          ]
+        }
+      ],
+      "md_title": "Design Doc: redis/redis#14048",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "redis/redis",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "14048",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "src/Makefile",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "src/lolwut.c",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 3",
+          "value": "src/lolwut8.c",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Kalpa AI. Your manager Mira Fontaine has asked you to write a professional design doc for the open-source project redis/redis.\n\nThe reference PR is #14048: LOLWUT for Redis 8.\n\nKey technical context:\n- Files changed: src/Makefile, src/lolwut.c, src/lolwut8.c\n- PR description excerpt: # Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Bales\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1438144203
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_2db775de0c2a9160/design_doc.md",
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:36:38.622044+00:00"
+}

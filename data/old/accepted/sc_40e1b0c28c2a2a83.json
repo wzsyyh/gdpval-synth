@@ -1,0 +1,672 @@
+{
+  "candidate_id": "sc_40e1b0c28c2a2a83",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "40e1b0c28c2a2a83",
+  "prompt": "You are a senior software engineer on the Rust language team. The team is preparing to stabilize the `let_chains` feature in the 2024 edition. The attached pull request (#132833) contains the stabilization report and the initial parser changes. Your task is to produce a design document that will be shared with the broader compiler team and community to explain the technical decisions and guide implementation. The document should cover the feature being stabilized, the edition-specific constraints, the parser changes shown in the diff, and the rollout strategy for older editions. Write the design document in Markdown format.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document has a main heading titled 'Design Document: Stabilizing `let_chains` in the 2024 Edition'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an 'Overview' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Feature Description' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Rationale for Edition Restriction' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Parser Changes' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Rollout Strategy' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Conclusion' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references tracking issue #53667.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references RFC 2497.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview states that stabilization is targeted for the Rust 2024 edition.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Feature Description section defines `let_chains` as the ability to `&&`-chain `let` statements inside `if` and `while`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Feature Description section includes a code example showing the `FnCall` struct and its `parse` method using a chained `if let` with `&&`.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Feature Description section notes that patterns inside `let` sub-expressions can be irrefutable or refutable.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Feature Description section states the feature is only available in the 2024 edition and future editions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Edition Restriction section explains the drop order issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Edition Restriction section references the MIR generation problem issue #104843.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Rationale for Edition Restriction section references the drop order changes issue #124085.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rationale for Edition Restriction section mentions the need for consistency with `if let` behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Parser Changes section introduces the `LetChainsPolicy` enum.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Parser Changes section explains the change to `parse_expr_if` to use `LetChainsPolicy::EditionDependent` with the edition from the `if` span.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Parser Changes section explains the change to `parse_expr_while` to use the edition from the `while` span.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Parser Changes section states that `parse_expr_cond` now accepts a `LetChainsPolicy` parameter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Parser Changes section notes that the `CondChecker` is initialized with the policy.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rollout Strategy section states the `let_chains` feature gate will be kept for a limited time on older editions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rollout Strategy section proposes a transition period of 3 months.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Rollout Strategy section mentions that this allows nightly users to adopt the 2024 edition.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Conclusion summarizes the key points of the design.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The code example in Feature Description accurately reflects the `FnCall` struct and parsing logic from the PR description.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly states that users of older editions will get an error with a hint to update the edition.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses correct Markdown formatting (headings, code blocks, lists).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document maintains a professional, technical tone suitable for a design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is free of major grammatical errors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that the edition restriction solves the MIR generation problem by leveraging the 2024 drop order changes.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly connects the parser changes to edition-dependent policy checking.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not invent facts, names, numbers, or citations not present in the provided material.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the `if` span's edition is used for the policy in `parse_expr_if`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the `while` span's edition is used for the policy in `parse_expr_while`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that the `CondChecker` uses the policy to determine if `let` chains are allowed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a mention of the PR number #132833 or a reference to the stabilization PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies that the feature will be stabilized for the 2024 edition and future editions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any penalty items (e.g., major factual errors).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's conclusion reiterates the benefits of stabilization, such as more expressive and readable code.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's length is appropriate for a design document (not overly brief or verbose).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that Rust generally ships new features to all editions, but this is an exception.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the example of `async`/`await` in the 2018 edition as a precedent for edition-restricted features.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the stabilization PR does not mark the feature gate as stable/removed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document suggests a time-limited feature gate retention for older editions.",
+      "category": "content",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_40e1b0c28c2a2a83",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:rust-lang/rust#132833",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Stabilizing `let_chains` in the 2024 Edition",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#53667",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "RFC 2497",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "FnCall",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "#124085",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "#104843",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "LetChainsPolicy",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "LetChainsPolicy::EditionDependent",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "3 months",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "parse_expr_if",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "parse_expr_while",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "parse_expr_cond",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Stabilizing `let_chains` in the 2024 Edition",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#53667",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "RFC 2497",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "FnCall",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "#124085",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "#104843",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "LetChainsPolicy",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "LetChainsPolicy::EditionDependent",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "3 months",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "parse_expr_if",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "parse_expr_while",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "parse_expr_cond",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 1,
+          "required_content": [
+            "State the goal of the design document.",
+            "Reference the tracking issue #53667 and RFC 2497.",
+            "Explain that stabilization is limited to the 2024 edition."
+          ],
+          "paragraphs": [
+            "This document outlines the design and rationale for stabilizing the `let_chains` feature, as proposed in PR #132833. The feature enables the `&&`-chaining of `let` statements within `if` and `while` expressions, allowing their intermixture with boolean expressions. This stabilization is targeted for the Rust 2024 edition and future editions, as described in the associated tracking issue #53667 and RFC 2497."
+          ]
+        },
+        {
+          "heading": "Feature Description",
+          "heading_level": 1,
+          "required_content": [
+            "Define what `let_chains` are.",
+            "Show the code example from the PR description with FnCall parsing.",
+            "Note that patterns can be irrefutable or refutable."
+          ],
+          "paragraphs": [
+            "The `let_chains` feature allows developers to write complex conditional logic more concisely by chaining `let` bindings and boolean checks in a single `if` or `while` expression. For example, the following code parses a function call string:",
+            "```rust\nstruct FnCall<'a> {\n    fn_name: &'a str,\n    args: Vec<i32>,\n}\n\nfn is_legal_ident(s: &str) -> bool {\n    s.chars()\n        .all(|c| ('a'..='z').contains(&c) || ('A'..='Z').contains(&c))\n}\n\nimpl<'a> FnCall<'a> {\n    fn parse(s: &'a str) -> Option<Self> {\n        if let Some((fn_name, after_name)) = s.split_once(\"(\")\n            && !fn_name.is_empty()\n            && is_legal_ident(fn_name)\n            && let Some((args_str, \"\")) = after_name.rsplit_once(\")\")\n        {\n            let args = args_str\n                .split(',')\n                .map(|arg| arg.parse())\n                .collect::<Result<Vec<_>, _>>();\n            args.ok().map(|args| FnCall { fn_name, args })\n        } else {\n            None\n        }\n    }\n    fn exec(&self) -> Option<i32> {\n        let iter = self.args.iter().copied();\n        match self.fn_name {\n            \"sum\" => Some(iter.sum()),\n            \"max\" => iter.max(),\n            \"min\" => iter.min(),\n            _ => None,\n        }\n    }\n}\n```",
+            "The patterns within the `let` sub-expressions may be either irrefutable or refutable. The feature will be available only in the 2024 edition and future editions; users of older editions will receive an error directing them to update."
+          ]
+        },
+        {
+          "heading": "Rationale for Edition Restriction",
+          "heading_level": 1,
+          "required_content": [
+            "Explain the drop order issue.",
+            "Reference the MIR generation problem (#104843).",
+            "Describe how the 2024 edition drop order changes fix this.",
+            "Mention consistency with existing `if let` behavior."
+          ],
+          "paragraphs": [
+            "Rust typically ships new features to all editions. However, `let_chains` require a breaking change related to the drop order of temporaries in `if let` chains. Specifically, the compiler must generate correct MIR (Mid-level Intermediate Representation) for `if let` chains, and the current drop order in older editions creates inconsistencies between `if let` and `if true && let` patterns. This is tracked in issue #104843.",
+            "The 2024 edition introduces drop order changes (issue #124085) that shorten the lifetime of temporaries in `if let` expressions. These changes also affect `if let` chains and provide a consistent solution to the MIR generation problem. To maintain behavioral consistency and leverage the new drop order, `let_chains` are restricted to the 2024 edition and beyond."
+          ]
+        },
+        {
+          "heading": "Parser Changes",
+          "heading_level": 1,
+          "required_content": [
+            "Describe the introduction of `LetChainsPolicy` enum.",
+            "Explain the change to `parse_expr_if` to use `EditionDependent` policy.",
+            "Explain the change to `parse_expr_while` similarly.",
+            "Note the change to `parse_expr_cond` to accept `LetChainsPolicy`.",
+            "Explain that the `CondChecker` now uses the policy to determine if `let` chains are allowed."
+          ],
+          "paragraphs": [
+            "The parser changes in this PR introduce a `LetChainsPolicy` enum to manage edition-dependent behavior. In `parse_expr_if`, the policy is set to `LetChainsPolicy::EditionDependent { current_edition: lo.edition() }`, where the edition is taken from the span of the `if` keyword. This ensures the scoping code checks the correct edition.",
+            "The `parse_expr_while` method is updated similarly, using the edition from the `while` span. The `parse_expr_cond` method now accepts a `let_chains_policy` parameter of type `LetChainsPolicy`. Inside, the `CondChecker` is initialized with this policy, replacing the previous unconditional feature gating. The `CondChecker` now uses the policy to decide whether `let` chains are permitted in the given edition, providing consistent error messages for unsupported editions."
+          ]
+        },
+        {
+          "heading": "Rollout Strategy",
+          "heading_level": 1,
+          "required_content": [
+            "Explain that the `let_chains` feature gate will be kept temporarily for older editions.",
+            "Propose a limited transition period (e.g., 3 months).",
+            "Note that this allows nightly users to migrate to the 2024 edition."
+          ],
+          "paragraphs": [
+            "As edition 2024 is new, this stabilization PR enables `let_chains` on 2024 without immediately removing the feature gate. The `let_chains` feature gate will continue to be available for a limited time (proposed: 3 months after stabilization) on older editions to allow nightly users to adopt the 2024 edition gradually. This transition period balances immediate usability for 2024 edition users with a reasonable migration path for the ecosystem."
+          ]
+        },
+        {
+          "heading": "Conclusion",
+          "heading_level": 1,
+          "required_content": [
+            "Summarize the key points.",
+            "Reiterate the benefits of the stabilization."
+          ],
+          "paragraphs": [
+            "Stabilizing `let_chains` in the 2024 edition resolves long-standing ergonomic issues in conditional pattern matching while ensuring correct drop order semantics. The parser changes are minimal and edition-aware, and a brief feature gate retention period supports a smooth transition. This design enables more expressive and readable Rust code for all users of the 2024 edition."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Stabilizing `let_chains` in the 2024 Edition",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The PR description and partial diff for rust-lang/rust#132833, which stabilizes `let_chains` in the 2024 edition.",
+          "content_blueprint": {
+            "title": "The PR description and partial diff for rust-lang/rust#132833, which stabilizes `let_chains` in the 2024 edition",
+            "body": "# Seed Material: rust-lang/rust#132833: Stabilize let chains in the 2024 edition\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#132833\n\nRepository: rust-lang/rust\nPR Number: #132833\nPR Title: Stabilize let chains in the 2024 edition\nMerged At: 2025-04-22T11:04:49Z\nChanged Files: 46\nAdditions: +411, Deletions: -184\n\n## PR Description\n# Stabilization report\r\n\r\nThis proposes the stabilization of `let_chains` ([tracking issue], [RFC 2497]) in the [2024 edition] of Rust.\r\n\r\n[tracking issue]: https://github.com/rust-lang/rust/issues/53667\r\n[RFC 2497]: https://github.com/rust-lang/rfcs/pull/2497\r\n[2024 edition]: https://doc.rust-lang.org/nightly/edition-guide/rust-2024/index.html\r\n\r\n## What is being stabilized\r\n\r\nThe ability to `&&`-chain `let` statements inside `if` and `while` is being stabilized, allowing intermixture with boolean expressions. The patterns inside the `let` sub-expressions can be irrefutable or refutable.\r\n\r\n```Rust\r\nstruct FnCall<'a> {\r\n    fn_name: &'a str,\r\n    args: Vec<i32>,\r\n}\r\n\r\nfn is_legal_ident(s: &str) -> bool {\r\n    s.chars()\r\n        .all(|c| ('a'..='z').contains(&c) || ('A'..='Z').contains(&c))\r\n}\r\n\r\nimpl<'a> FnCall<'a> {\r\n    fn parse(s: &'a str) -> Option<Self> {\r\n        if let Some((fn_name, after_name)) = s.split_once(\"(\")\r\n            && !fn_name.is_empty()\r\n            && is_legal_ident(fn_name)\r\n            && let Some((args_str, \"\")) = after_name.rsplit_once(\")\")\r\n        {\r\n            let args = args_str\r\n                .split(',')\r\n                .map(|arg| arg.parse())\r\n                .collect::<Result<Vec<_>, _>>();\r\n            args.ok().map(|args| FnCall { fn_name, args })\r\n        } else {\r\n            None\r\n        }\r\n    }\r\n    fn exec(&self) -> Option<i32> {\r\n        let iter = self.args.iter().copied();\r\n        match self.fn_name {\r\n            \"sum\" => Some(iter.sum()),\r\n            \"max\" => iter.max(),\r\n            \"min\" => iter.min(),\r\n            _ => None,\r\n        }\r\n    }\r\n}\r\n\r\nfn main() {\r\n    println!(\"{:?}\", FnCall::parse(\"sum(1,2,3)\").unwrap().exec());\r\n    println!(\"{:?}\", FnCall::parse(\"max(4,5)\").unwrap().exec());\r\n}\r\n```\r\n\r\nThe feature will only be stabilized for the 2024 edition and future editions. Users of past editions will get an error with a hint to update the edition.\r\n\r\ncloses rust-lang/rust#53667\r\n\r\n## Why 2024 edition?\r\n\r\nRust generally tries to ship new features to all editions. So even the oldest editions receive the newest features. However, sometimes a feature requires a breaking change so much that offering the feature without the breaking change makes no sense. This occurs rarely, but has happened in the 2018 edition already with `async` and `await` syntax. It required an edition boundary in order for `async`/`await` to become keywords, and the entire feature foots on those keywords.\r\n\r\nIn the instance of let chains, the issue is the drop order of `if let` chains. If we want `if let` chains to be compatible with `if let`, drop order makes it hard for us to [generate correct MIR]. It would be strange to have different behaviour for `if let ... {}` and `if true && let ... {}`. So it's better to [stay consistent with `if let`].\r\n\r\nIn edition 2024, [drop order changes] have been introduced to make `if let` temporaries be lived more shortly. These changes also affected `if let` chains. These changes make sense even if you don't take the `if let` chains MIR generation problem into account. But if we want to use them as the solution to the MIR generation problem, we need to restrict let chains to edition 2024 and beyond: for let chains, it's not just a change towards more sensible behaviour, but one required for correct function.\r\n\r\n[generate correct MIR]: https://github.com/rust-lang/rust/issues/104843\r\n[stay consistent with `if let`]: https://github.com/rust-lang/rust/pull/103293#issuecomment-1293408574\r\n[drop order changes]: https://github.com/rust-lang/rust/issues/124085\r\n\r\n## Introduction considerations\r\n\r\nAs edition 2024 is very new, this stabilization PR only makes it possible to use let chains on 2024 without that feature gate, it doesn't mark that feature gate as stable/removed. I would propose to continue offering the `let_chains` feature (behind a feature gate) for a limited time (maybe 3 months after stabilization?) on older editions to allow nightly users to adopt editi\n\n## Diff (first 3000 chars)\ndiff --git a/compiler/rustc_parse/src/parser/expr.rs b/compiler/rustc_parse/src/parser/expr.rs\nindex df44b3cc23c86..20a5252624d55 100644\n--- a/compiler/rustc_parse/src/parser/expr.rs\n+++ b/compiler/rustc_parse/src/parser/expr.rs\n@@ -26,6 +26,7 @@ use rustc_macros::Subdiagnostic;\n use rustc_session::errors::{ExprParenthesesNeeded, report_lit_error};\n use rustc_session::lint::BuiltinLintDiag;\n use rustc_session::lint::builtin::BREAK_WITH_LABEL_AND_LOOP;\n+use rustc_span::edition::Edition;\n use rustc_span::source_map::{self, Spanned};\n use rustc_span::{BytePos, ErrorGuaranteed, Ident, Pos, Span, Symbol, kw, sym};\n use thin_vec::{ThinVec, thin_vec};\n@@ -2605,7 +2606,10 @@ impl<'a> Parser<'a> {\n     /// Parses an `if` expression (`if` token already eaten).\n     fn parse_expr_if(&mut self) -> PResult<'a, P<Expr>> {\n         let lo = self.prev_token.span;\n-        let cond = self.parse_expr_cond()?;\n+        // Scoping code checks the top level edition of the `if`; let's match it here.\n+        // The `CondChecker` also checks the edition of the `let` itself, just to make sure.\n+        let let_chains_policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition() };\n+        let cond = self.parse_expr_cond(let_chains_policy)?;\n         self.parse_if_after_cond(lo, cond)\n     }\n \n@@ -2714,18 +2718,17 @@ impl<'a> Parser<'a> {\n     }\n \n     /// Parses the condition of a `if` or `while` expression.\n+    ///\n+    /// The specified `edition` in `let_chains_policy` should be that of the whole `if` construct,\n+    /// i.e. the same span we use to later decide whether the drop behaviour should be that of\n+    /// edition `..=2021` or that of `2024..`.\n     // Public because it is used in rustfmt forks such as https://github.com/tucant/rustfmt/blob/30c83df9e1db10007bdd16dafce8a86b404329b2/src/parse/macros/html.rs#L57 for custom if expressions.\n-    pub fn parse_expr_cond(&mut self) -> PResult<'a, P<Expr>> {\n+    pub fn parse_expr_cond(&mut self, let_chains_policy: LetChainsPolicy) -> PResult<'a, P<Expr>> {\n         let attrs = self.parse_outer_attributes()?;\n         let (mut cond, _) =\n             self.parse_expr_res(Restrictions::NO_STRUCT_LITERAL | Restrictions::ALLOW_LET, attrs)?;\n \n-        CondChecker::new(self).visit_expr(&mut cond);\n-\n-        if let ExprKind::Let(_, _, _, Recovered::No) = cond.kind {\n-            // Remove the last feature gating of a `let` expression since it's stable.\n-            self.psess.gated_spans.ungate_last(sym::let_chains, cond.span);\n-        }\n+        CondChecker::new(self, let_chains_policy).visit_expr(&mut cond);\n \n         Ok(cond)\n     }\n@@ -3020,7 +3023,8 @@ impl<'a> Parser<'a> {\n \n     /// Parses a `while` or `while let` expression (`while` token already eaten).\n     fn parse_expr_while(&mut self, opt_label: Option<Label>, lo: Span) -> PResult<'a, P<Expr>> {\n-        let cond = self.parse_expr_cond().map_err(|mut err| {\n+        let policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition()"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The design document's main title",
+          "value": "Design Document: Stabilizing `let_chains` in the 2024 Edition",
+          "tolerance": null,
+          "location": "Document title"
+        },
+        {
+          "description": "Tracking issue number referenced",
+          "value": "#53667",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "RFC number referenced",
+          "value": "RFC 2497",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "The struct name in the code example",
+          "value": "FnCall",
+          "tolerance": null,
+          "location": "Feature Description section, code block"
+        },
+        {
+          "description": "The issue number for the drop order changes",
+          "value": "#124085",
+          "tolerance": null,
+          "location": "Rationale for Edition Restriction section"
+        },
+        {
+          "description": "The issue number for the MIR generation problem",
+          "value": "#104843",
+          "tolerance": null,
+          "location": "Rationale for Edition Restriction section"
+        },
+        {
+          "description": "The name of the new policy enum introduced in the parser",
+          "value": "LetChainsPolicy",
+          "tolerance": null,
+          "location": "Parser Changes section"
+        },
+        {
+          "description": "The specific variant used for edition-dependent policy",
+          "value": "LetChainsPolicy::EditionDependent",
+          "tolerance": null,
+          "location": "Parser Changes section"
+        },
+        {
+          "description": "The proposed transition period for the feature gate on older editions",
+          "value": "3 months",
+          "tolerance": null,
+          "location": "Rollout Strategy section"
+        },
+        {
+          "description": "The method name that parses an 'if' expression",
+          "value": "parse_expr_if",
+          "tolerance": null,
+          "location": "Parser Changes section"
+        },
+        {
+          "description": "The method name that parses a 'while' expression",
+          "value": "parse_expr_while",
+          "tolerance": null,
+          "location": "Parser Changes section"
+        },
+        {
+          "description": "The method name that parses a condition",
+          "value": "parse_expr_cond",
+          "tolerance": null,
+          "location": "Parser Changes section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1168256751
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The PR description and partial diff for rust-lang/rust#132833, which stabilizes `let_chains` in the 2024 edition.",
+      "content_blueprint": {
+        "title": "The PR description and partial diff for rust-lang/rust#132833, which stabilizes `let_chains` in the 2024 edition",
+        "body": "# Seed Material: rust-lang/rust#132833: Stabilize let chains in the 2024 edition\nSource: github_issue_pr\nIdentifier: pr:rust-lang/rust#132833\n\nRepository: rust-lang/rust\nPR Number: #132833\nPR Title: Stabilize let chains in the 2024 edition\nMerged At: 2025-04-22T11:04:49Z\nChanged Files: 46\nAdditions: +411, Deletions: -184\n\n## PR Description\n# Stabilization report\r\n\r\nThis proposes the stabilization of `let_chains` ([tracking issue], [RFC 2497]) in the [2024 edition] of Rust.\r\n\r\n[tracking issue]: https://github.com/rust-lang/rust/issues/53667\r\n[RFC 2497]: https://github.com/rust-lang/rfcs/pull/2497\r\n[2024 edition]: https://doc.rust-lang.org/nightly/edition-guide/rust-2024/index.html\r\n\r\n## What is being stabilized\r\n\r\nThe ability to `&&`-chain `let` statements inside `if` and `while` is being stabilized, allowing intermixture with boolean expressions. The patterns inside the `let` sub-expressions can be irrefutable or refutable.\r\n\r\n```Rust\r\nstruct FnCall<'a> {\r\n    fn_name: &'a str,\r\n    args: Vec<i32>,\r\n}\r\n\r\nfn is_legal_ident(s: &str) -> bool {\r\n    s.chars()\r\n        .all(|c| ('a'..='z').contains(&c) || ('A'..='Z').contains(&c))\r\n}\r\n\r\nimpl<'a> FnCall<'a> {\r\n    fn parse(s: &'a str) -> Option<Self> {\r\n        if let Some((fn_name, after_name)) = s.split_once(\"(\")\r\n            && !fn_name.is_empty()\r\n            && is_legal_ident(fn_name)\r\n            && let Some((args_str, \"\")) = after_name.rsplit_once(\")\")\r\n        {\r\n            let args = args_str\r\n                .split(',')\r\n                .map(|arg| arg.parse())\r\n                .collect::<Result<Vec<_>, _>>();\r\n            args.ok().map(|args| FnCall { fn_name, args })\r\n        } else {\r\n            None\r\n        }\r\n    }\r\n    fn exec(&self) -> Option<i32> {\r\n        let iter = self.args.iter().copied();\r\n        match self.fn_name {\r\n            \"sum\" => Some(iter.sum()),\r\n            \"max\" => iter.max(),\r\n            \"min\" => iter.min(),\r\n            _ => None,\r\n        }\r\n    }\r\n}\r\n\r\nfn main() {\r\n    println!(\"{:?}\", FnCall::parse(\"sum(1,2,3)\").unwrap().exec());\r\n    println!(\"{:?}\", FnCall::parse(\"max(4,5)\").unwrap().exec());\r\n}\r\n```\r\n\r\nThe feature will only be stabilized for the 2024 edition and future editions. Users of past editions will get an error with a hint to update the edition.\r\n\r\ncloses rust-lang/rust#53667\r\n\r\n## Why 2024 edition?\r\n\r\nRust generally tries to ship new features to all editions. So even the oldest editions receive the newest features. However, sometimes a feature requires a breaking change so much that offering the feature without the breaking change makes no sense. This occurs rarely, but has happened in the 2018 edition already with `async` and `await` syntax. It required an edition boundary in order for `async`/`await` to become keywords, and the entire feature foots on those keywords.\r\n\r\nIn the instance of let chains, the issue is the drop order of `if let` chains. If we want `if let` chains to be compatible with `if let`, drop order makes it hard for us to [generate correct MIR]. It would be strange to have different behaviour for `if let ... {}` and `if true && let ... {}`. So it's better to [stay consistent with `if let`].\r\n\r\nIn edition 2024, [drop order changes] have been introduced to make `if let` temporaries be lived more shortly. These changes also affected `if let` chains. These changes make sense even if you don't take the `if let` chains MIR generation problem into account. But if we want to use them as the solution to the MIR generation problem, we need to restrict let chains to edition 2024 and beyond: for let chains, it's not just a change towards more sensible behaviour, but one required for correct function.\r\n\r\n[generate correct MIR]: https://github.com/rust-lang/rust/issues/104843\r\n[stay consistent with `if let`]: https://github.com/rust-lang/rust/pull/103293#issuecomment-1293408574\r\n[drop order changes]: https://github.com/rust-lang/rust/issues/124085\r\n\r\n## Introduction considerations\r\n\r\nAs edition 2024 is very new, this stabilization PR only makes it possible to use let chains on 2024 without that feature gate, it doesn't mark that feature gate as stable/removed. I would propose to continue offering the `let_chains` feature (behind a feature gate) for a limited time (maybe 3 months after stabilization?) on older editions to allow nightly users to adopt editi\n\n## Diff (first 3000 chars)\ndiff --git a/compiler/rustc_parse/src/parser/expr.rs b/compiler/rustc_parse/src/parser/expr.rs\nindex df44b3cc23c86..20a5252624d55 100644\n--- a/compiler/rustc_parse/src/parser/expr.rs\n+++ b/compiler/rustc_parse/src/parser/expr.rs\n@@ -26,6 +26,7 @@ use rustc_macros::Subdiagnostic;\n use rustc_session::errors::{ExprParenthesesNeeded, report_lit_error};\n use rustc_session::lint::BuiltinLintDiag;\n use rustc_session::lint::builtin::BREAK_WITH_LABEL_AND_LOOP;\n+use rustc_span::edition::Edition;\n use rustc_span::source_map::{self, Spanned};\n use rustc_span::{BytePos, ErrorGuaranteed, Ident, Pos, Span, Symbol, kw, sym};\n use thin_vec::{ThinVec, thin_vec};\n@@ -2605,7 +2606,10 @@ impl<'a> Parser<'a> {\n     /// Parses an `if` expression (`if` token already eaten).\n     fn parse_expr_if(&mut self) -> PResult<'a, P<Expr>> {\n         let lo = self.prev_token.span;\n-        let cond = self.parse_expr_cond()?;\n+        // Scoping code checks the top level edition of the `if`; let's match it here.\n+        // The `CondChecker` also checks the edition of the `let` itself, just to make sure.\n+        let let_chains_policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition() };\n+        let cond = self.parse_expr_cond(let_chains_policy)?;\n         self.parse_if_after_cond(lo, cond)\n     }\n \n@@ -2714,18 +2718,17 @@ impl<'a> Parser<'a> {\n     }\n \n     /// Parses the condition of a `if` or `while` expression.\n+    ///\n+    /// The specified `edition` in `let_chains_policy` should be that of the whole `if` construct,\n+    /// i.e. the same span we use to later decide whether the drop behaviour should be that of\n+    /// edition `..=2021` or that of `2024..`.\n     // Public because it is used in rustfmt forks such as https://github.com/tucant/rustfmt/blob/30c83df9e1db10007bdd16dafce8a86b404329b2/src/parse/macros/html.rs#L57 for custom if expressions.\n-    pub fn parse_expr_cond(&mut self) -> PResult<'a, P<Expr>> {\n+    pub fn parse_expr_cond(&mut self, let_chains_policy: LetChainsPolicy) -> PResult<'a, P<Expr>> {\n         let attrs = self.parse_outer_attributes()?;\n         let (mut cond, _) =\n             self.parse_expr_res(Restrictions::NO_STRUCT_LITERAL | Restrictions::ALLOW_LET, attrs)?;\n \n-        CondChecker::new(self).visit_expr(&mut cond);\n-\n-        if let ExprKind::Let(_, _, _, Recovered::No) = cond.kind {\n-            // Remove the last feature gating of a `let` expression since it's stable.\n-            self.psess.gated_spans.ungate_last(sym::let_chains, cond.span);\n-        }\n+        CondChecker::new(self, let_chains_policy).visit_expr(&mut cond);\n \n         Ok(cond)\n     }\n@@ -3020,7 +3023,8 @@ impl<'a> Parser<'a> {\n \n     /// Parses a `while` or `while let` expression (`while` token already eaten).\n     fn parse_expr_while(&mut self, opt_label: Option<Label>, lo: Span) -> PResult<'a, P<Expr>> {\n-        let cond = self.parse_expr_cond().map_err(|mut err| {\n+        let policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition()"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_40e1b0c28c2a2a83/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_40e1b0c28c2a2a83/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T16:11:42.217327+00:00"
+}

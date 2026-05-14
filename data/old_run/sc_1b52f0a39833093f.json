@@ -1,0 +1,898 @@
+{
+  "candidate_id": "sc_1b52f0a39833093f",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "1b52f0a39833093f",
+  "prompt": "You are a senior software engineer on the pandas core team. The feature PR #62103, which introduces the `pd.col` API, has been merged. Before the v3.0.0 release, the team needs a design document to serve as the official technical specification and rationale for this feature. This document will be the canonical reference for internal contributors, external maintainers (e.g., pandas-stubs), and the broader community.\n\nYour task is to write a comprehensive design document for the `pandas.col` feature based on the provided PR material. The document must be suitable for the pandas documentation repository.\n\nMaterials provided:\n- The PR #62103 description, including code demos and rationale.\n- The diff from the PR, showing the changes to the documentation files (`general_functions.rst`, `dsintro.rst`, `v3.0.0.rst`), the `__init__.py` module, and the typing module.\n\nTask requirements:\n1.  **Title and Metadata**: Create a document titled \"Design Document: Introduction of `pandas.col` API\". Include a header with the following fields: Author: (your name/team), Status: Merged, PR: #62103, Version Target: v3.0.0.\n2.  **Executive Summary**: A one-paragraph summary of the feature: what `pd.col` is, its primary use cases (`assign`, `loc`), and its core benefit (avoiding scoping issues with lambdas).\n3.  **Motivation and Problem Statement**: Detail the specific scoping problem with lambdas in `assign` that `pd.col` solves. Include the exact code example from the PR showing the problematic lambda dict comprehension and the corrected `pd.col` version. Explain why the `col` name was chosen (convention with PySpark, Polars, etc.).\n4.  **API Specification**: Describe the `pd.col` function and the `Expression` class it returns. List the supported operations as shown in the PR: basic arithmetic (addition, subtraction), unary methods (`.abs()`), namespace accessors (`.dt.year`, `.dt.strftime`, `.str.upper()`), and compatibility with NumPy ufuncs (e.g., `np.log`).\n5.  **Implementation Overview**: Based on the diff, describe the key integration points: (a) the new module `pandas.core.col` containing the `col` function and `Expression` class, (b) the export of `col` in `pandas/__init__.py`, (c) the addition of `Expression` to `pandas.api.typing`, and (d) the documentation updates in the reference guide, user guide, and what's new.\n6.  **Examples and Use Cases**: Provide the complete, exact example code from the PR that demonstrates usage in `assign` and `loc`. Include the expected output DataFrame as shown.\n7.  **Future Work and Considerations**: List the potential follow-up mentioned in the PR: serialization/deserialization of expressions. Note the dependency on `pandas-stubs` for type hint accuracy.\n8.  **Conclusion**: A brief concluding paragraph reaffirming the feature's value.\n\nDeliverable specification: Output a single Markdown (.md) file. Use level 1 heading for the title. Use level 2 headings for each major section (Executive Summary, Motivation, etc.). Use level 3 headings where appropriate (e.g., under API Specification). Include code blocks for all code examples. Ensure all code blocks and output examples are copied verbatim from the provided PR material.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document has the exact title 'Design Document: Introduction of `pandas.col` API' as a level 1 heading.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a header field for 'Status' with the value 'Merged'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a header field for 'PR' with the value '#62103'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a header field for 'Version Target' with the value 'v3.0.0'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Executive Summary' section contains a paragraph that mentions the core benefit of 'avoiding scoping issues with lambdas'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Motivation and Problem Statement' section includes the exact problematic lambda dictionary comprehension code: `df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Motivation and Problem Statement' section shows the incorrect output of the lambda example with both columns having value 14 in the first row.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Motivation and Problem Statement' section includes the exact corrected dictionary comprehension code using `pd.col`: `df.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Motivation and Problem Statement' section mentions the naming convention with PySpark, Polars, Daft, and Datafusion.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'API Specification' section describes the `pd.col` function as returning an `Expression` object.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section lists basic arithmetic operations as supported (e.g., addition, subtraction).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section lists unary methods like `.abs()` as supported.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section lists namespace accessors `.dt` and `.str` as supported.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section mentions compatibility with NumPy ufuncs (e.g., `np.log`).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'API Specification' section includes a code block showing the pretty-print repr of expressions, with output like `col('value')`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Implementation Overview' section mentions the creation of a new module `pandas.core.col`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section notes that `col` is exported from `pandas/__init__.py`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section notes that `Expression` is added to `pandas.api.typing`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section lists `doc/source/reference/general_functions.rst` as an updated documentation file.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section lists `doc/source/user_guide/dsintro.rst` as an updated documentation file.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section lists `doc/source/whatsnew/v3.0.0.rst` as an updated documentation file.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Examples and Use Cases' section includes the complete, verbatim code block from the PR demo using `pd.col` in `assign` and `loc`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Examples and Use Cases' section includes the expected output DataFrame with 'a_centered' value of -2.666667 for the second row.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Future Work and Considerations' section lists serialization/deserialization of expressions as a potential follow-up.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Future Work and Considerations' section notes the dependency on `pandas-stubs` for accurate type hints.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Conclusion' section reaffirms the value of the feature by mentioning safer syntax (avoiding scoping pitfalls) and introspection.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown formatting with level 1 heading for the title and level 2 headings for major sections.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All code examples are enclosed in Markdown code blocks.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Motivation' section explains the scoping problem is caused by Python's late-binding closures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section mentions that expressions are introspectable.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Examples' section code block includes the use of `.dt.strftime('%B')` as shown in the PR.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Examples' section output includes the row index '1' with value '-2' in column 'a'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Examples' section output includes the string 'April' in the 'c_month_name' column.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Conclusion' section mentions alignment with modern data frameworks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Motivation' section includes the correct output for the pd.col fix: first row has 'a' = 11 and 'b' = 14.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'API Specification' section mentions support for `.str.upper()` accessor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Implementation Overview' section mentions that `col` is added to the 'Top-level evaluation' section in the reference documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Motivation' section names at least one of the external contributors mentioned in the PR (@jbrockmendel, @phofl, @WillAyd, @jorisvandenbossche).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Future Work' section mentions that tooling could automate `Expression` docs and types based on `Series` ones.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Executive Summary' mentions that `pd.col` can be used in `DataFrame.assign` and `DataFrame.loc`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Examples' section output includes 'NARWHAL' in the 'd_upper' column.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The entire document is coherent, professionally written, and covers all specified sections without inventing information beyond the provided PR material.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Examples' section code block includes the line `d_upper=pd.col(\"d\").str.upper(),` as in the PR.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's 'Author' field in the header is filled in (e.g., with a name or team, not left blank).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains fabricated code examples, API descriptions, or rationale not found in the provided PR material.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_1b52f0a39833093f",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:pandas-dev/pandas#62103",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Introduction of `pandas.col` API",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "Merged",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "#62103",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "v3.0.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "avoiding scoping issues with lambdas",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "lambda df: df[col] + 10",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "pd.col(col) + 10",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "PySpark, Polars, Daft, and Datafusion",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "Expression",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "pd.col('c').dt.year",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "np.log(pd.col('a'))",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "col('value')",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "pandas.core.col",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "pandas/__init__.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "pandas.api.typing",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "doc/source/reference/general_functions.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "pd.col(\"a\").abs()",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "-2.666667",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "serialization/deserialization",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "pandas-stubs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "avoids scoping pitfalls",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Introduction of `pandas.col` API",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "Merged",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#62103",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "v3.0.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "avoiding scoping issues with lambdas",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "lambda df: df[col] + 10",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "pd.col(col) + 10",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "PySpark, Polars, Daft, and Datafusion",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "Expression",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "pd.col('c').dt.year",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "np.log(pd.col('a'))",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "col('value')",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "pandas.core.col",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "pandas/__init__.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "pandas.api.typing",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "doc/source/reference/general_functions.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "pd.col(\"a\").abs()",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "-2.666667",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "serialization/deserialization",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "pandas-stubs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "avoids scoping pitfalls",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Introduction of `pandas.col` API",
+          "heading_level": 1,
+          "required_content": [
+            "Title matches exactly.",
+            "Header metadata includes Author, Status (Merged), PR (#62103), Version Target (v3.0.0)."
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "One-paragraph summary.",
+            "Mentions `pd.col` as a function for creating column references.",
+            "States primary use cases: `assign` and `loc`.",
+            "Highlights the core benefit of avoiding scoping issues with lambdas."
+          ],
+          "paragraphs": [
+            "The `pandas.col` (or `pd.col`) function is a new top-level API introduced in pandas v3.0.0 that enables a more expressive and safe way to build column expressions. It returns an `Expression` object that can be used directly in `DataFrame.assign` and `DataFrame.loc`, replacing the need for lambda functions. The primary motivation is to eliminate common scoping bugs that arise when using lambda functions in dictionary comprehensions with `assign`, providing a syntax that is both introspectable and aligned with modern data frameworks like PySpark and Polars."
+          ]
+        },
+        {
+          "heading": "Motivation and Problem Statement",
+          "heading_level": 2,
+          "required_content": [
+            "Describes the scoping problem with lambda in `assign`.",
+            "Includes the exact problematic lambda dict comprehension code example.",
+            "Includes the exact corrected `pd.col` dict comprehension code example.",
+            "Explains why the name `col` was chosen (PySpark, Polars, Daft, Datafusion convention)."
+          ],
+          "paragraphs": [
+            "A key motivation for introducing `pd.col` is to avoid a common and subtle scoping issue when using lambda functions with `DataFrame.assign`. The problem arises when attempting to create multiple new columns using a dictionary comprehension with lambdas.",
+            "The following code, intended to increment both columns 'a' and 'b' by 10, does not work as expected due to Python's late-binding closures. The lambda captures the variable `col` by reference, so by the time the lambdas execute, the loop has finished and `col` retains its last value ('b'), causing both new columns to be computed using column 'b'.",
+            "```python\ndf = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6]})\ndf.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})\n```",
+            "The output incorrectly shows both columns derived from 'b':",
+            "```python\n    a   b\n0  14  14\n1  15  15\n2  16  16\n```",
+            "Using `pd.col` resolves this issue by creating a distinct expression object for each column name at the time of definition, eliminating the late-binding closure problem.",
+            "```python\ndf.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})\n```",
+            "This produces the correct result:",
+            "```python\n    a   b\n0  11  14\n1  12  15\n2  13  16\n```",
+            "The name `col` was chosen to follow the established convention used by other major data frameworks: PySpark, Polars, Daft, and Datafusion. This alignment helps users familiar with those ecosystems adopt the new pandas API more easily."
+          ]
+        },
+        {
+          "heading": "API Specification",
+          "heading_level": 2,
+          "required_content": [
+            "Describes `pd.col` as a function returning an `Expression` object.",
+            "Lists supported operations: basic arithmetic, unary methods, namespace accessors, NumPy ufuncs.",
+            "Includes example of pretty-printing repr."
+          ],
+          "paragraphs": [
+            "The `pd.col` function is a top-level function added to the pandas namespace. Its signature is `col(*args)`, where `args` are passed to the underlying `Expression` constructor. It returns an `Expression` object.",
+            "The `Expression` class supports a wide range of operations, allowing for the construction of complex column transformations:",
+            "- **Arithmetic Operations**: Standard arithmetic operators (`+`, `-`, `*`, `/`) are supported between two expressions or between an expression and a scalar. For example, `pd.col('a') + pd.col('b')` or `pd.col('a') - pd.col('a').mean()`.",
+            "- **Unary Methods**: Common Series methods like `.abs()` can be called directly on the expression, as in `pd.col('a').abs()`.",
+            "- **Namespace Accessors**: The `.dt` and `.str` accessors are available. Examples include `pd.col('c').dt.year`, `pd.col('c').dt.strftime('%B')`, and `pd.col('d').str.upper()`.",
+            "- **NumPy Ufunc Compatibility**: NumPy universal functions (ufuncs) can be applied to expressions. For instance, `np.log(pd.col('a'))`.",
+            "Expressions are introspectable and have a human-readable repr that mimics their construction. This improves debuggability compared to anonymous lambda functions.",
+            "```python\nIn [4]: pd.col('value')\nOut[4]: col('value')\n\nIn [5]: pd.col('value') * pd.col('weight')\nOut[5]: (col('value') * col('weight'))\n\nIn [6]: (pd.col('value') - pd.col('value').mean()) / pd.col('value').std()\nOut[6]: ((col('value') - col('value').mean()) / col('value').std())\n\nIn [7]: pd.col('timestamp').dt.strftime('%B')\nOut[7]: col('timestamp').dt.strftime('%B')\n```"
+          ]
+        },
+        {
+          "heading": "Implementation Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Mentions the new module `pandas.core.col`.",
+            "Notes export of `col` in `pandas/__init__.py`.",
+            "Notes addition of `Expression` to `pandas.api.typing`.",
+            "Lists documentation files updated: general_functions.rst, dsintro.rst, v3.0.0.rst."
+          ],
+          "paragraphs": [
+            "The implementation of the `pd.col` feature involves several key integration points within the pandas codebase:",
+            "- **Core Module**: A new module `pandas.core.col` is created, containing the `col` function and the `Expression` class definition.",
+            "- **Public API Export**: The `col` function is imported and exported from the top-level `pandas` namespace (`pandas/__init__.py`), making it accessible as `pd.col`.",
+            "- **Typing Support**: The `Expression` class is added to the `pandas.api.typing` module (`pandas/api/typing/__init__.py`) to support type-checking and static analysis for downstream libraries and user code.",
+            "- **Documentation Updates**: The PR includes updates to several documentation files to introduce and explain the new feature:",
+            "  - `doc/source/reference/general_functions.rst`: `col` is added to the \"Top-level evaluation\" section of the API reference.",
+            "  - `doc/source/user_guide/dsintro.rst`: An example using `pd.col` is added to the `assign` section of the user guide, alongside the existing lambda example.",
+            "  - `doc/source/whatsnew/v3.0.0.rst`: A new section titled \"`pd.col` syntax can now be used in `DataFrame.assign` and `DataFrame.loc`\" is added under enhancements, with a brief example and explanation."
+          ]
+        },
+        {
+          "heading": "Examples and Use Cases",
+          "heading_level": 2,
+          "required_content": [
+            "Provides the complete example code from the PR demo.",
+            "Includes the exact output DataFrame.",
+            "Shows use in both `assign` and `loc`."
+          ],
+          "paragraphs": [
+            "The following example, taken directly from the PR, demonstrates the core usage of `pd.col` in `assign` to create multiple derived columns, and in `loc` to filter rows based on an expression.",
+            "```python\nimport pandas as pd\nfrom datetime import datetime\n\ndf = pd.DataFrame(\n    {\n        \"a\": [1, -2, 3],\n        \"b\": [4, 5, 6],\n        \"c\": [datetime(2020, 1, 1), datetime(2025, 4, 2), datetime(2026, 12, 3)],\n        \"d\": [\"fox\", \"beluga\", \"narwhal\"],\n    }\n)\n\nresult = df.assign(\n    # The usual Series methods are supported\n    a_abs=pd.col(\"a\").abs(),\n    # And can be combined\n    a_centered=pd.col(\"a\") - pd.col(\"a\").mean(),\n    a_plus_b=pd.col(\"a\") + pd.col(\"b\"),\n    # Namespace are supported too\n    c_year=pd.col(\"c\").dt.year,\n    c_month_name=pd.col(\"c\").dt.strftime(\"%B\"),\n    d_upper=pd.col(\"d\").str.upper(),\n).loc[pd.col(\"a_abs\") > 1]  # This works in `loc` too\n\nprint(result)\n```",
+            "The output of this code is:",
+            "```python\n   a  b          c        d  a_abs  a_centered  a_plus_b  c_year c_month_name  d_upper\n1 -2  5 2025-04-02   beluga      2   -2.666667         3    2025        April   BELUGA\n2  3  6 2026-12-03  narwhal      3    2.333333         9    2026     December  NARWHAL\n```",
+            "This example showcases the use of `.abs()`, arithmetic between columns, `.dt.year`, `.dt.strftime`, and `.str.upper()`, as well as filtering with `.loc`."
+          ]
+        },
+        {
+          "heading": "Future Work and Considerations",
+          "heading_level": 2,
+          "required_content": [
+            "Lists serialization/deserialization of expressions as a follow-up.",
+            "Notes dependency on pandas-stubs for type hint accuracy."
+          ],
+          "paragraphs": [
+            "The PR description notes two key areas for future work:",
+            "1.  **Serialization / Deserialization**: A potential follow-up is to develop functionality to serialize and deserialize `Expression` objects. This would allow expressions to be saved, transferred, and reconstructed, enabling more advanced use cases and integrations.",
+            "2.  **Type Stub Accuracy**: The initial implementation provides the core functionality, but for type hints to display correctly in IDEs and for static type-checking tools, additional work is required in the external `pandas-stubs` library. The PR suggests that tooling could potentially be developed to automate the generation of `Expression` types and documentation based on the existing `Series` types.",
+            "Furthermore, as the feature is new, community feedback and usage patterns will inform potential refinements to the API or additional methods to be supported on the `Expression` class."
+          ]
+        },
+        {
+          "heading": "Conclusion",
+          "heading_level": 2,
+          "required_content": [
+            "Brief concluding paragraph.",
+            "Reaffirms the feature's value: safer syntax, introspection, ecosystem alignment."
+          ],
+          "paragraphs": [
+            "The introduction of `pandas.col` represents a significant enhancement to the pandas API, addressing a long-standing usability issue with column expression construction. By providing a syntax that avoids scoping pitfalls, is introspectable for better debugging, and aligns with modern data frameworks, this feature lowers the barrier for complex DataFrame transformations. Its integration into `assign` and `loc`, coupled with support for core pandas Series operations and NumPy ufuncs, makes it a versatile and powerful tool for data manipulation in pandas v3.0.0 and beyond."
+          ]
+        }
+      ],
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The full PR #62103 description text, including code demos and rationale.",
+          "content_blueprint": {
+            "title": "The full PR #62103 description text, including code demos and rationale",
+            "body": "# Seed Material: pandas-dev/pandas#62103: ENH: Introduce `pandas.col`\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#62103\n\nRepository: pandas-dev/pandas\nPR Number: #62103\nPR Title: ENH: Introduce `pandas.col`\nMerged At: 2025-08-22T16:50:55Z\nChanged Files: 9\nAdditions: +423, Deletions: -3\n\n## PR Description\nxref @jbrockmendel 's comment https://github.com/pandas-dev/pandas/issues/56499#issuecomment-3180770808 \r\n\r\nI'd also discussed this with @phofl , @WillAyd , and @jorisvandenbossche (who originally showed us something like this in Basel at euroscipy 2023)\r\n\r\nDemo:\r\n```python\r\nimport pandas as pd\r\nfrom datetime import datetime\r\n\r\ndf = pd.DataFrame(\r\n    {\r\n        \"a\": [1, -2, 3],\r\n        \"b\": [4, 5, 6],\r\n        \"c\": [datetime(2020, 1, 1), datetime(2025, 4, 2), datetime(2026, 12, 3)],\r\n        \"d\": [\"fox\", \"beluga\", \"narwhal\"],\r\n    }\r\n)\r\n\r\nresult = df.assign(\r\n    # The usual Series methods are supported\r\n    a_abs=pd.col(\"a\").abs(),\r\n    # And can be combined\r\n    a_centered=pd.col(\"a\") - pd.col(\"a\").mean(),\r\n    a_plus_b=pd.col(\"a\") + pd.col(\"b\"),\r\n    # Namespace are supported too\r\n    c_year=pd.col(\"c\").dt.year,\r\n    c_month_name=pd.col(\"c\").dt.strftime(\"%B\"),\r\n    d_upper=pd.col(\"d\").str.upper(),\r\n).loc[pd.col(\"a_abs\") > 1]  # This works in `loc` too\r\n\r\nprint(result)\r\n```\r\nOutput:\r\n```python\r\n   a  b          c        d  a_abs  a_centered  a_plus_b  c_year c_month_name  d_upper\r\n1 -2  5 2025-04-02   beluga      2   -2.666667         3    2025        April   BELUGA\r\n2  3  6 2026-12-03  narwhal      3    2.333333         9    2026     December  NARWHAL\r\n```\r\n\r\nNumPy ufuncs are also supported:\r\n```python\r\nIn [6]: df.assign(a_log = np.log(pd.col('a')))\r\nOut[6]: \r\n   a     a_log\r\n0  1  0.000000\r\n1  2  0.693147\r\n2  3  1.098612\r\n```\r\n\r\nExpressions also get pretty-printed, demo:\r\n```python\r\nIn [4]: pd.col('value')\r\nOut[4]: col('value')\r\n\r\nIn [5]: pd.col('value') * pd.col('weight')\r\nOut[5]: (col('value') * col('weight'))\r\n\r\nIn [6]: (pd.col('value') - pd.col('value').mean()) / pd.col('value').std()\r\nOut[6]: ((col('value') - col('value').mean()) / col('value').std())\r\n\r\nIn [7]: pd.col('timestamp').dt.strftime('%B')\r\nOut[7]: col('timestamp').dt.strftime('%B')\r\n```\r\n\r\nWhat's here should be enough for it to be usable. For the type hints to show up correctly, extra work should be done in `pandas-stubs`. But, I think it should be possible to develop tooling to automate the `Expr` docs and types based on the `Series` ones (going to cc @Dr-Irv here too then)\r\n\r\nAs for the \"`col`\" name, that's what PySpark, Polars,  Daft, and Datafusion use, so I think it'd make sense to follow the convention\r\n\r\n---\r\n\r\n~~I'm opening as a request for comments. Would people want this API to be part of pandas?~~ This is ready for review\r\n\r\nOne of my main motivations for introducing it is that it avoids common issues with scoping. For example, if you use `assign` to increment two columns' values by 10 and try to write `df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})` then you'll be in for a big surprise\r\n```python\r\nIn [19]: df = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6]})\r\n\r\nIn [20]: df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})\r\nOut[20]:\r\n    a   b\r\n0  14  14\r\n1  15  15\r\n2  16  16\r\n```\r\nwhereas with `pd.col`, you get what you were probably expecting:\r\n```python\r\nIn [4]: df.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})\r\nOut[4]: \r\n    a   b\r\n0  11  14\r\n1  12  15\r\n2  13  16\r\n```\r\n\r\nFurther advantages:\r\n- expressions are introspectable so the repr can be made to look nice, whereas an anonymous lambda is always going to look something like ` <function __main__.<lambda>(df)`\r\n- the syntax looks more modern and more aligned with modern tools\r\n\r\nExpected objections:\r\n- this expands the pandas API even further. Sure, I don't disagree, but I think this is a common enough and longstanding enough request that it's worth expanding it for this\r\n\r\n---\r\n\r\nTODO:\r\n- [x] tests, API docs, user guide. But first, I just wanted to get a feel for people's thoughts, and to see if anyone's opposed to it\r\n\r\nPotential follow-ups (if there's interest):\r\n- serialise / deserialise expressions\n\n## Diff (first 3000 chars)\ndiff --git a/doc/source/reference/general_functions.rst b/doc/source/reference/general_functions.rst\nindex e93514de5f762..a76e51ace86d2 100644\n--- a/doc/source/reference/general_functions.rst\n+++ b/doc/source/reference/general_functions.rst\n@@ -71,6 +71,7 @@ Top-level evaluation\n .. autosummary::\n    :toctree: api/\n \n+   col\n    eval\n \n Datetime formats\ndiff --git a/doc/source/user_guide/dsintro.rst b/doc/source/user_guide/dsintro.rst\nindex 89981786d60b5..919dafb291b86 100644\n--- a/doc/source/user_guide/dsintro.rst\n+++ b/doc/source/user_guide/dsintro.rst\n@@ -553,6 +553,12 @@ a function of one argument to be evaluated on the DataFrame being assigned to.\n \n    iris.assign(sepal_ratio=lambda x: (x[\"SepalWidth\"] / x[\"SepalLength\"])).head()\n \n+or, using :meth:`pandas.col`:\n+\n+.. ipython:: python\n+\n+   iris.assign(sepal_ratio=pd.col(\"SepalWidth\") / pd.col(\"SepalLength\")).head()\n+\n :meth:`~pandas.DataFrame.assign` **always** returns a copy of the data, leaving the original\n DataFrame untouched.\n \ndiff --git a/doc/source/whatsnew/v3.0.0.rst b/doc/source/whatsnew/v3.0.0.rst\nindex b94d82f3c9783..372e93b216e26 100644\n--- a/doc/source/whatsnew/v3.0.0.rst\n+++ b/doc/source/whatsnew/v3.0.0.rst\n@@ -117,10 +117,28 @@ process in more detail.\n \n     `PDEP-7: Consistent copy/view semantics in pandas with Copy-on-Write <https://pandas.pydata.org/pdeps/0007-copy-on-write.html>`__\n \n-.. _whatsnew_300.enhancements.enhancement2:\n+.. _whatsnew_300.enhancements.col:\n \n-Enhancement2\n-^^^^^^^^^^^^\n+``pd.col`` syntax can now be used in :meth:`DataFrame.assign` and :meth:`DataFrame.loc`\n+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+You can now use ``pd.col`` to create callables for use in dataframe methods which accept them. For example, if you have a dataframe\n+\n+.. ipython:: python\n+\n+    df = pd.DataFrame({'a': [1, 1, 2], 'b': [4, 5, 6]})\n+\n+and you want to create a new column ``'c'`` by summing ``'a'`` and ``'b'``, then instead of\n+\n+.. ipython:: python\n+\n+    df.assign(c = lambda df: df['a'] + df['b'])\n+\n+you can now write:\n+\n+.. ipython:: python\n+\n+    df.assign(c = pd.col('a') + pd.col('b'))\n \n New Deprecation Policy\n ^^^^^^^^^^^^^^^^^^^^^^\ndiff --git a/pandas/__init__.py b/pandas/__init__.py\nindex 8b92ad6cdfebb..cc786d1141c48 100644\n--- a/pandas/__init__.py\n+++ b/pandas/__init__.py\n@@ -105,6 +105,7 @@\n     Series,\n     DataFrame,\n )\n+from pandas.core.col import col\n \n from pandas.core.dtypes.dtypes import SparseDtype\n \n@@ -281,6 +282,7 @@\n     \"array\",\n     \"arrays\",\n     \"bdate_range\",\n+    \"col\",\n     \"concat\",\n     \"crosstab\",\n     \"cut\",\ndiff --git a/pandas/api/typing/__init__.py b/pandas/api/typing/__init__.py\nindex c1178c72f3edc..de6657b58ee80 100644\n--- a/pandas/api/typing/__init__.py\n+++ b/pandas/api/typing/__init__.py\n@@ -6,6 +6,7 @@\n from pandas._libs.lib import NoDefault\n from pandas._libs.missing import NAType\n \n+from pandas.core.col import Expression\n from pandas.core.groupby import (\n     DataFrameGroupBy,\n   "
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "The diff from PR #62103, showing changes to documentation and Python source files.",
+          "content_blueprint": {
+            "title": "The diff from PR #62103, showing changes to documentation and Python source files",
+            "body": "# Seed Material: pandas-dev/pandas#62103: ENH: Introduce `pandas.col`\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#62103\n\nRepository: pandas-dev/pandas\nPR Number: #62103\nPR Title: ENH: Introduce `pandas.col`\nMerged At: 2025-08-22T16:50:55Z\nChanged Files: 9\nAdditions: +423, Deletions: -3\n\n## PR Description\nxref @jbrockmendel 's comment https://github.com/pandas-dev/pandas/issues/56499#issuecomment-3180770808 \r\n\r\nI'd also discussed this with @phofl , @WillAyd , and @jorisvandenbossche (who originally showed us something like this in Basel at euroscipy 2023)\r\n\r\nDemo:\r\n```python\r\nimport pandas as pd\r\nfrom datetime import datetime\r\n\r\ndf = pd.DataFrame(\r\n    {\r\n        \"a\": [1, -2, 3],\r\n        \"b\": [4, 5, 6],\r\n        \"c\": [datetime(2020, 1, 1), datetime(2025, 4, 2), datetime(2026, 12, 3)],\r\n        \"d\": [\"fox\", \"beluga\", \"narwhal\"],\r\n    }\r\n)\r\n\r\nresult = df.assign(\r\n    # The usual Series methods are supported\r\n    a_abs=pd.col(\"a\").abs(),\r\n    # And can be combined\r\n    a_centered=pd.col(\"a\") - pd.col(\"a\").mean(),\r\n    a_plus_b=pd.col(\"a\") + pd.col(\"b\"),\r\n    # Namespace are supported too\r\n    c_year=pd.col(\"c\").dt.year,\r\n    c_month_name=pd.col(\"c\").dt.strftime(\"%B\"),\r\n    d_upper=pd.col(\"d\").str.upper(),\r\n).loc[pd.col(\"a_abs\") > 1]  # This works in `loc` too\r\n\r\nprint(result)\r\n```\r\nOutput:\r\n```python\r\n   a  b          c        d  a_abs  a_centered  a_plus_b  c_year c_month_name  d_upper\r\n1 -2  5 2025-04-02   beluga      2   -2.666667         3    2025        April   BELUGA\r\n2  3  6 2026-12-03  narwhal      3    2.333333         9    2026     December  NARWHAL\r\n```\r\n\r\nNumPy ufuncs are also supported:\r\n```python\r\nIn [6]: df.assign(a_log = np.log(pd.col('a')))\r\nOut[6]: \r\n   a     a_log\r\n0  1  0.000000\r\n1  2  0.693147\r\n2  3  1.098612\r\n```\r\n\r\nExpressions also get pretty-printed, demo:\r\n```python\r\nIn [4]: pd.col('value')\r\nOut[4]: col('value')\r\n\r\nIn [5]: pd.col('value') * pd.col('weight')\r\nOut[5]: (col('value') * col('weight'))\r\n\r\nIn [6]: (pd.col('value') - pd.col('value').mean()) / pd.col('value').std()\r\nOut[6]: ((col('value') - col('value').mean()) / col('value').std())\r\n\r\nIn [7]: pd.col('timestamp').dt.strftime('%B')\r\nOut[7]: col('timestamp').dt.strftime('%B')\r\n```\r\n\r\nWhat's here should be enough for it to be usable. For the type hints to show up correctly, extra work should be done in `pandas-stubs`. But, I think it should be possible to develop tooling to automate the `Expr` docs and types based on the `Series` ones (going to cc @Dr-Irv here too then)\r\n\r\nAs for the \"`col`\" name, that's what PySpark, Polars,  Daft, and Datafusion use, so I think it'd make sense to follow the convention\r\n\r\n---\r\n\r\n~~I'm opening as a request for comments. Would people want this API to be part of pandas?~~ This is ready for review\r\n\r\nOne of my main motivations for introducing it is that it avoids common issues with scoping. For example, if you use `assign` to increment two columns' values by 10 and try to write `df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})` then you'll be in for a big surprise\r\n```python\r\nIn [19]: df = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6]})\r\n\r\nIn [20]: df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})\r\nOut[20]:\r\n    a   b\r\n0  14  14\r\n1  15  15\r\n2  16  16\r\n```\r\nwhereas with `pd.col`, you get what you were probably expecting:\r\n```python\r\nIn [4]: df.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})\r\nOut[4]: \r\n    a   b\r\n0  11  14\r\n1  12  15\r\n2  13  16\r\n```\r\n\r\nFurther advantages:\r\n- expressions are introspectable so the repr can be made to look nice, whereas an anonymous lambda is always going to look something like ` <function __main__.<lambda>(df)`\r\n- the syntax looks more modern and more aligned with modern tools\r\n\r\nExpected objections:\r\n- this expands the pandas API even further. Sure, I don't disagree, but I think this is a common enough and longstanding enough request that it's worth expanding it for this\r\n\r\n---\r\n\r\nTODO:\r\n- [x] tests, API docs, user guide. But first, I just wanted to get a feel for people's thoughts, and to see if anyone's opposed to it\r\n\r\nPotential follow-ups (if there's interest):\r\n- serialise / deserialise expressions\n\n## Diff (first 3000 chars)\ndiff --git a/doc/source/reference/general_functions.rst b/doc/source/reference/general_functions.rst\nindex e93514de5f762..a76e51ace86d2 100644\n--- a/doc/source/reference/general_functions.rst\n+++ b/doc/source/reference/general_functions.rst\n@@ -71,6 +71,7 @@ Top-level evaluation\n .. autosummary::\n    :toctree: api/\n \n+   col\n    eval\n \n Datetime formats\ndiff --git a/doc/source/user_guide/dsintro.rst b/doc/source/user_guide/dsintro.rst\nindex 89981786d60b5..919dafb291b86 100644\n--- a/doc/source/user_guide/dsintro.rst\n+++ b/doc/source/user_guide/dsintro.rst\n@@ -553,6 +553,12 @@ a function of one argument to be evaluated on the DataFrame being assigned to.\n \n    iris.assign(sepal_ratio=lambda x: (x[\"SepalWidth\"] / x[\"SepalLength\"])).head()\n \n+or, using :meth:`pandas.col`:\n+\n+.. ipython:: python\n+\n+   iris.assign(sepal_ratio=pd.col(\"SepalWidth\") / pd.col(\"SepalLength\")).head()\n+\n :meth:`~pandas.DataFrame.assign` **always** returns a copy of the data, leaving the original\n DataFrame untouched.\n \ndiff --git a/doc/source/whatsnew/v3.0.0.rst b/doc/source/whatsnew/v3.0.0.rst\nindex b94d82f3c9783..372e93b216e26 100644\n--- a/doc/source/whatsnew/v3.0.0.rst\n+++ b/doc/source/whatsnew/v3.0.0.rst\n@@ -117,10 +117,28 @@ process in more detail.\n \n     `PDEP-7: Consistent copy/view semantics in pandas with Copy-on-Write <https://pandas.pydata.org/pdeps/0007-copy-on-write.html>`__\n \n-.. _whatsnew_300.enhancements.enhancement2:\n+.. _whatsnew_300.enhancements.col:\n \n-Enhancement2\n-^^^^^^^^^^^^\n+``pd.col`` syntax can now be used in :meth:`DataFrame.assign` and :meth:`DataFrame.loc`\n+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+You can now use ``pd.col`` to create callables for use in dataframe methods which accept them. For example, if you have a dataframe\n+\n+.. ipython:: python\n+\n+    df = pd.DataFrame({'a': [1, 1, 2], 'b': [4, 5, 6]})\n+\n+and you want to create a new column ``'c'`` by summing ``'a'`` and ``'b'``, then instead of\n+\n+.. ipython:: python\n+\n+    df.assign(c = lambda df: df['a'] + df['b'])\n+\n+you can now write:\n+\n+.. ipython:: python\n+\n+    df.assign(c = pd.col('a') + pd.col('b'))\n \n New Deprecation Policy\n ^^^^^^^^^^^^^^^^^^^^^^\ndiff --git a/pandas/__init__.py b/pandas/__init__.py\nindex 8b92ad6cdfebb..cc786d1141c48 100644\n--- a/pandas/__init__.py\n+++ b/pandas/__init__.py\n@@ -105,6 +105,7 @@\n     Series,\n     DataFrame,\n )\n+from pandas.core.col import col\n \n from pandas.core.dtypes.dtypes import SparseDtype\n \n@@ -281,6 +282,7 @@\n     \"array\",\n     \"arrays\",\n     \"bdate_range\",\n+    \"col\",\n     \"concat\",\n     \"crosstab\",\n     \"cut\",\ndiff --git a/pandas/api/typing/__init__.py b/pandas/api/typing/__init__.py\nindex c1178c72f3edc..de6657b58ee80 100644\n--- a/pandas/api/typing/__init__.py\n+++ b/pandas/api/typing/__init__.py\n@@ -6,6 +6,7 @@\n from pandas._libs.lib import NoDefault\n from pandas._libs.missing import NAType\n \n+from pandas.core.col import Expression\n from pandas.core.groupby import (\n     DataFrameGroupBy,\n   "
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title is exactly 'Design Document: Introduction of `pandas.col` API'",
+          "value": "Design Document: Introduction of `pandas.col` API",
+          "tolerance": null,
+          "location": "Heading level 1"
+        },
+        {
+          "description": "Header metadata includes Status: Merged",
+          "value": "Merged",
+          "tolerance": null,
+          "location": "Header field 'Status'"
+        },
+        {
+          "description": "Header metadata includes PR: #62103",
+          "value": "#62103",
+          "tolerance": null,
+          "location": "Header field 'PR'"
+        },
+        {
+          "description": "Header metadata includes Version Target: v3.0.0",
+          "value": "v3.0.0",
+          "tolerance": null,
+          "location": "Header field 'Version Target'"
+        },
+        {
+          "description": "Executive Summary mentions avoiding scoping issues with lambdas",
+          "value": "avoiding scoping issues with lambdas",
+          "tolerance": null,
+          "location": "Executive Summary paragraph"
+        },
+        {
+          "description": "Motivation section includes the problematic lambda dict comprehension code block",
+          "value": "lambda df: df[col] + 10",
+          "tolerance": null,
+          "location": "Motivation section, first code block"
+        },
+        {
+          "description": "Motivation section includes the corrected pd.col dict comprehension code block",
+          "value": "pd.col(col) + 10",
+          "tolerance": null,
+          "location": "Motivation section, second code block"
+        },
+        {
+          "description": "Motivation section mentions the convention with PySpark, Polars, Daft, and Datafusion",
+          "value": "PySpark, Polars, Daft, and Datafusion",
+          "tolerance": null,
+          "location": "Motivation section paragraph on naming convention"
+        },
+        {
+          "description": "API Specification section describes pd.col as returning an Expression object",
+          "value": "Expression",
+          "tolerance": null,
+          "location": "API Specification paragraph"
+        },
+        {
+          "description": "API Specification section includes example with .dt.year accessor",
+          "value": "pd.col('c').dt.year",
+          "tolerance": null,
+          "location": "API Specification paragraph"
+        },
+        {
+          "description": "API Specification section includes example with np.log ufunc",
+          "value": "np.log(pd.col('a'))",
+          "tolerance": null,
+          "location": "API Specification paragraph"
+        },
+        {
+          "description": "API Specification section includes pretty-print repr example output 'col('value')'",
+          "value": "col('value')",
+          "tolerance": null,
+          "location": "API Specification code block"
+        },
+        {
+          "description": "Implementation Overview mentions new module pandas.core.col",
+          "value": "pandas.core.col",
+          "tolerance": null,
+          "location": "Implementation Overview bullet point"
+        },
+        {
+          "description": "Implementation Overview notes export of col in pandas/__init__.py",
+          "value": "pandas/__init__.py",
+          "tolerance": null,
+          "location": "Implementation Overview bullet point"
+        },
+        {
+          "description": "Implementation Overview notes addition of Expression to pandas.api.typing",
+          "value": "pandas.api.typing",
+          "tolerance": null,
+          "location": "Implementation Overview bullet point"
+        },
+        {
+          "description": "Implementation Overview lists doc/source/reference/general_functions.rst as updated",
+          "value": "doc/source/reference/general_functions.rst",
+          "tolerance": null,
+          "location": "Implementation Overview documentation list"
+        },
+        {
+          "description": "Examples section includes the complete PR demo code block",
+          "value": "pd.col(\"a\").abs()",
+          "tolerance": null,
+          "location": "Examples section code block"
+        },
+        {
+          "description": "Examples section output includes value -2.666667",
+          "value": "-2.666667",
+          "tolerance": null,
+          "location": "Examples section output code block"
+        },
+        {
+          "description": "Future Work section mentions serialization/deserialization of expressions",
+          "value": "serialization/deserialization",
+          "tolerance": null,
+          "location": "Future Work paragraph"
+        },
+        {
+          "description": "Future Work section mentions dependency on pandas-stubs for type hints",
+          "value": "pandas-stubs",
+          "tolerance": null,
+          "location": "Future Work paragraph"
+        },
+        {
+          "description": "Conclusion mentions avoiding scoping pitfalls",
+          "value": "avoids scoping pitfalls",
+          "tolerance": null,
+          "location": "Conclusion paragraph"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2082646334
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The full PR #62103 description text, including code demos and rationale.",
+      "content_blueprint": {
+        "title": "The full PR #62103 description text, including code demos and rationale",
+        "body": "# Seed Material: pandas-dev/pandas#62103: ENH: Introduce `pandas.col`\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#62103\n\nRepository: pandas-dev/pandas\nPR Number: #62103\nPR Title: ENH: Introduce `pandas.col`\nMerged At: 2025-08-22T16:50:55Z\nChanged Files: 9\nAdditions: +423, Deletions: -3\n\n## PR Description\nxref @jbrockmendel 's comment https://github.com/pandas-dev/pandas/issues/56499#issuecomment-3180770808 \r\n\r\nI'd also discussed this with @phofl , @WillAyd , and @jorisvandenbossche (who originally showed us something like this in Basel at euroscipy 2023)\r\n\r\nDemo:\r\n```python\r\nimport pandas as pd\r\nfrom datetime import datetime\r\n\r\ndf = pd.DataFrame(\r\n    {\r\n        \"a\": [1, -2, 3],\r\n        \"b\": [4, 5, 6],\r\n        \"c\": [datetime(2020, 1, 1), datetime(2025, 4, 2), datetime(2026, 12, 3)],\r\n        \"d\": [\"fox\", \"beluga\", \"narwhal\"],\r\n    }\r\n)\r\n\r\nresult = df.assign(\r\n    # The usual Series methods are supported\r\n    a_abs=pd.col(\"a\").abs(),\r\n    # And can be combined\r\n    a_centered=pd.col(\"a\") - pd.col(\"a\").mean(),\r\n    a_plus_b=pd.col(\"a\") + pd.col(\"b\"),\r\n    # Namespace are supported too\r\n    c_year=pd.col(\"c\").dt.year,\r\n    c_month_name=pd.col(\"c\").dt.strftime(\"%B\"),\r\n    d_upper=pd.col(\"d\").str.upper(),\r\n).loc[pd.col(\"a_abs\") > 1]  # This works in `loc` too\r\n\r\nprint(result)\r\n```\r\nOutput:\r\n```python\r\n   a  b          c        d  a_abs  a_centered  a_plus_b  c_year c_month_name  d_upper\r\n1 -2  5 2025-04-02   beluga      2   -2.666667         3    2025        April   BELUGA\r\n2  3  6 2026-12-03  narwhal      3    2.333333         9    2026     December  NARWHAL\r\n```\r\n\r\nNumPy ufuncs are also supported:\r\n```python\r\nIn [6]: df.assign(a_log = np.log(pd.col('a')))\r\nOut[6]: \r\n   a     a_log\r\n0  1  0.000000\r\n1  2  0.693147\r\n2  3  1.098612\r\n```\r\n\r\nExpressions also get pretty-printed, demo:\r\n```python\r\nIn [4]: pd.col('value')\r\nOut[4]: col('value')\r\n\r\nIn [5]: pd.col('value') * pd.col('weight')\r\nOut[5]: (col('value') * col('weight'))\r\n\r\nIn [6]: (pd.col('value') - pd.col('value').mean()) / pd.col('value').std()\r\nOut[6]: ((col('value') - col('value').mean()) / col('value').std())\r\n\r\nIn [7]: pd.col('timestamp').dt.strftime('%B')\r\nOut[7]: col('timestamp').dt.strftime('%B')\r\n```\r\n\r\nWhat's here should be enough for it to be usable. For the type hints to show up correctly, extra work should be done in `pandas-stubs`. But, I think it should be possible to develop tooling to automate the `Expr` docs and types based on the `Series` ones (going to cc @Dr-Irv here too then)\r\n\r\nAs for the \"`col`\" name, that's what PySpark, Polars,  Daft, and Datafusion use, so I think it'd make sense to follow the convention\r\n\r\n---\r\n\r\n~~I'm opening as a request for comments. Would people want this API to be part of pandas?~~ This is ready for review\r\n\r\nOne of my main motivations for introducing it is that it avoids common issues with scoping. For example, if you use `assign` to increment two columns' values by 10 and try to write `df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})` then you'll be in for a big surprise\r\n```python\r\nIn [19]: df = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6]})\r\n\r\nIn [20]: df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})\r\nOut[20]:\r\n    a   b\r\n0  14  14\r\n1  15  15\r\n2  16  16\r\n```\r\nwhereas with `pd.col`, you get what you were probably expecting:\r\n```python\r\nIn [4]: df.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})\r\nOut[4]: \r\n    a   b\r\n0  11  14\r\n1  12  15\r\n2  13  16\r\n```\r\n\r\nFurther advantages:\r\n- expressions are introspectable so the repr can be made to look nice, whereas an anonymous lambda is always going to look something like ` <function __main__.<lambda>(df)`\r\n- the syntax looks more modern and more aligned with modern tools\r\n\r\nExpected objections:\r\n- this expands the pandas API even further. Sure, I don't disagree, but I think this is a common enough and longstanding enough request that it's worth expanding it for this\r\n\r\n---\r\n\r\nTODO:\r\n- [x] tests, API docs, user guide. But first, I just wanted to get a feel for people's thoughts, and to see if anyone's opposed to it\r\n\r\nPotential follow-ups (if there's interest):\r\n- serialise / deserialise expressions\n\n## Diff (first 3000 chars)\ndiff --git a/doc/source/reference/general_functions.rst b/doc/source/reference/general_functions.rst\nindex e93514de5f762..a76e51ace86d2 100644\n--- a/doc/source/reference/general_functions.rst\n+++ b/doc/source/reference/general_functions.rst\n@@ -71,6 +71,7 @@ Top-level evaluation\n .. autosummary::\n    :toctree: api/\n \n+   col\n    eval\n \n Datetime formats\ndiff --git a/doc/source/user_guide/dsintro.rst b/doc/source/user_guide/dsintro.rst\nindex 89981786d60b5..919dafb291b86 100644\n--- a/doc/source/user_guide/dsintro.rst\n+++ b/doc/source/user_guide/dsintro.rst\n@@ -553,6 +553,12 @@ a function of one argument to be evaluated on the DataFrame being assigned to.\n \n    iris.assign(sepal_ratio=lambda x: (x[\"SepalWidth\"] / x[\"SepalLength\"])).head()\n \n+or, using :meth:`pandas.col`:\n+\n+.. ipython:: python\n+\n+   iris.assign(sepal_ratio=pd.col(\"SepalWidth\") / pd.col(\"SepalLength\")).head()\n+\n :meth:`~pandas.DataFrame.assign` **always** returns a copy of the data, leaving the original\n DataFrame untouched.\n \ndiff --git a/doc/source/whatsnew/v3.0.0.rst b/doc/source/whatsnew/v3.0.0.rst\nindex b94d82f3c9783..372e93b216e26 100644\n--- a/doc/source/whatsnew/v3.0.0.rst\n+++ b/doc/source/whatsnew/v3.0.0.rst\n@@ -117,10 +117,28 @@ process in more detail.\n \n     `PDEP-7: Consistent copy/view semantics in pandas with Copy-on-Write <https://pandas.pydata.org/pdeps/0007-copy-on-write.html>`__\n \n-.. _whatsnew_300.enhancements.enhancement2:\n+.. _whatsnew_300.enhancements.col:\n \n-Enhancement2\n-^^^^^^^^^^^^\n+``pd.col`` syntax can now be used in :meth:`DataFrame.assign` and :meth:`DataFrame.loc`\n+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+You can now use ``pd.col`` to create callables for use in dataframe methods which accept them. For example, if you have a dataframe\n+\n+.. ipython:: python\n+\n+    df = pd.DataFrame({'a': [1, 1, 2], 'b': [4, 5, 6]})\n+\n+and you want to create a new column ``'c'`` by summing ``'a'`` and ``'b'``, then instead of\n+\n+.. ipython:: python\n+\n+    df.assign(c = lambda df: df['a'] + df['b'])\n+\n+you can now write:\n+\n+.. ipython:: python\n+\n+    df.assign(c = pd.col('a') + pd.col('b'))\n \n New Deprecation Policy\n ^^^^^^^^^^^^^^^^^^^^^^\ndiff --git a/pandas/__init__.py b/pandas/__init__.py\nindex 8b92ad6cdfebb..cc786d1141c48 100644\n--- a/pandas/__init__.py\n+++ b/pandas/__init__.py\n@@ -105,6 +105,7 @@\n     Series,\n     DataFrame,\n )\n+from pandas.core.col import col\n \n from pandas.core.dtypes.dtypes import SparseDtype\n \n@@ -281,6 +282,7 @@\n     \"array\",\n     \"arrays\",\n     \"bdate_range\",\n+    \"col\",\n     \"concat\",\n     \"crosstab\",\n     \"cut\",\ndiff --git a/pandas/api/typing/__init__.py b/pandas/api/typing/__init__.py\nindex c1178c72f3edc..de6657b58ee80 100644\n--- a/pandas/api/typing/__init__.py\n+++ b/pandas/api/typing/__init__.py\n@@ -6,6 +6,7 @@\n from pandas._libs.lib import NoDefault\n from pandas._libs.missing import NAType\n \n+from pandas.core.col import Expression\n from pandas.core.groupby import (\n     DataFrameGroupBy,\n   "
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "The diff from PR #62103, showing changes to documentation and Python source files.",
+      "content_blueprint": {
+        "title": "The diff from PR #62103, showing changes to documentation and Python source files",
+        "body": "# Seed Material: pandas-dev/pandas#62103: ENH: Introduce `pandas.col`\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#62103\n\nRepository: pandas-dev/pandas\nPR Number: #62103\nPR Title: ENH: Introduce `pandas.col`\nMerged At: 2025-08-22T16:50:55Z\nChanged Files: 9\nAdditions: +423, Deletions: -3\n\n## PR Description\nxref @jbrockmendel 's comment https://github.com/pandas-dev/pandas/issues/56499#issuecomment-3180770808 \r\n\r\nI'd also discussed this with @phofl , @WillAyd , and @jorisvandenbossche (who originally showed us something like this in Basel at euroscipy 2023)\r\n\r\nDemo:\r\n```python\r\nimport pandas as pd\r\nfrom datetime import datetime\r\n\r\ndf = pd.DataFrame(\r\n    {\r\n        \"a\": [1, -2, 3],\r\n        \"b\": [4, 5, 6],\r\n        \"c\": [datetime(2020, 1, 1), datetime(2025, 4, 2), datetime(2026, 12, 3)],\r\n        \"d\": [\"fox\", \"beluga\", \"narwhal\"],\r\n    }\r\n)\r\n\r\nresult = df.assign(\r\n    # The usual Series methods are supported\r\n    a_abs=pd.col(\"a\").abs(),\r\n    # And can be combined\r\n    a_centered=pd.col(\"a\") - pd.col(\"a\").mean(),\r\n    a_plus_b=pd.col(\"a\") + pd.col(\"b\"),\r\n    # Namespace are supported too\r\n    c_year=pd.col(\"c\").dt.year,\r\n    c_month_name=pd.col(\"c\").dt.strftime(\"%B\"),\r\n    d_upper=pd.col(\"d\").str.upper(),\r\n).loc[pd.col(\"a_abs\") > 1]  # This works in `loc` too\r\n\r\nprint(result)\r\n```\r\nOutput:\r\n```python\r\n   a  b          c        d  a_abs  a_centered  a_plus_b  c_year c_month_name  d_upper\r\n1 -2  5 2025-04-02   beluga      2   -2.666667         3    2025        April   BELUGA\r\n2  3  6 2026-12-03  narwhal      3    2.333333         9    2026     December  NARWHAL\r\n```\r\n\r\nNumPy ufuncs are also supported:\r\n```python\r\nIn [6]: df.assign(a_log = np.log(pd.col('a')))\r\nOut[6]: \r\n   a     a_log\r\n0  1  0.000000\r\n1  2  0.693147\r\n2  3  1.098612\r\n```\r\n\r\nExpressions also get pretty-printed, demo:\r\n```python\r\nIn [4]: pd.col('value')\r\nOut[4]: col('value')\r\n\r\nIn [5]: pd.col('value') * pd.col('weight')\r\nOut[5]: (col('value') * col('weight'))\r\n\r\nIn [6]: (pd.col('value') - pd.col('value').mean()) / pd.col('value').std()\r\nOut[6]: ((col('value') - col('value').mean()) / col('value').std())\r\n\r\nIn [7]: pd.col('timestamp').dt.strftime('%B')\r\nOut[7]: col('timestamp').dt.strftime('%B')\r\n```\r\n\r\nWhat's here should be enough for it to be usable. For the type hints to show up correctly, extra work should be done in `pandas-stubs`. But, I think it should be possible to develop tooling to automate the `Expr` docs and types based on the `Series` ones (going to cc @Dr-Irv here too then)\r\n\r\nAs for the \"`col`\" name, that's what PySpark, Polars,  Daft, and Datafusion use, so I think it'd make sense to follow the convention\r\n\r\n---\r\n\r\n~~I'm opening as a request for comments. Would people want this API to be part of pandas?~~ This is ready for review\r\n\r\nOne of my main motivations for introducing it is that it avoids common issues with scoping. For example, if you use `assign` to increment two columns' values by 10 and try to write `df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})` then you'll be in for a big surprise\r\n```python\r\nIn [19]: df = pd.DataFrame({'a': [1,2,3], 'b': [4,5,6]})\r\n\r\nIn [20]: df.assign(**{col: lambda df: df[col] + 10 for col in ('a', 'b')})\r\nOut[20]:\r\n    a   b\r\n0  14  14\r\n1  15  15\r\n2  16  16\r\n```\r\nwhereas with `pd.col`, you get what you were probably expecting:\r\n```python\r\nIn [4]: df.assign(**{col: pd.col(col) + 10 for col in ('a', 'b')})\r\nOut[4]: \r\n    a   b\r\n0  11  14\r\n1  12  15\r\n2  13  16\r\n```\r\n\r\nFurther advantages:\r\n- expressions are introspectable so the repr can be made to look nice, whereas an anonymous lambda is always going to look something like ` <function __main__.<lambda>(df)`\r\n- the syntax looks more modern and more aligned with modern tools\r\n\r\nExpected objections:\r\n- this expands the pandas API even further. Sure, I don't disagree, but I think this is a common enough and longstanding enough request that it's worth expanding it for this\r\n\r\n---\r\n\r\nTODO:\r\n- [x] tests, API docs, user guide. But first, I just wanted to get a feel for people's thoughts, and to see if anyone's opposed to it\r\n\r\nPotential follow-ups (if there's interest):\r\n- serialise / deserialise expressions\n\n## Diff (first 3000 chars)\ndiff --git a/doc/source/reference/general_functions.rst b/doc/source/reference/general_functions.rst\nindex e93514de5f762..a76e51ace86d2 100644\n--- a/doc/source/reference/general_functions.rst\n+++ b/doc/source/reference/general_functions.rst\n@@ -71,6 +71,7 @@ Top-level evaluation\n .. autosummary::\n    :toctree: api/\n \n+   col\n    eval\n \n Datetime formats\ndiff --git a/doc/source/user_guide/dsintro.rst b/doc/source/user_guide/dsintro.rst\nindex 89981786d60b5..919dafb291b86 100644\n--- a/doc/source/user_guide/dsintro.rst\n+++ b/doc/source/user_guide/dsintro.rst\n@@ -553,6 +553,12 @@ a function of one argument to be evaluated on the DataFrame being assigned to.\n \n    iris.assign(sepal_ratio=lambda x: (x[\"SepalWidth\"] / x[\"SepalLength\"])).head()\n \n+or, using :meth:`pandas.col`:\n+\n+.. ipython:: python\n+\n+   iris.assign(sepal_ratio=pd.col(\"SepalWidth\") / pd.col(\"SepalLength\")).head()\n+\n :meth:`~pandas.DataFrame.assign` **always** returns a copy of the data, leaving the original\n DataFrame untouched.\n \ndiff --git a/doc/source/whatsnew/v3.0.0.rst b/doc/source/whatsnew/v3.0.0.rst\nindex b94d82f3c9783..372e93b216e26 100644\n--- a/doc/source/whatsnew/v3.0.0.rst\n+++ b/doc/source/whatsnew/v3.0.0.rst\n@@ -117,10 +117,28 @@ process in more detail.\n \n     `PDEP-7: Consistent copy/view semantics in pandas with Copy-on-Write <https://pandas.pydata.org/pdeps/0007-copy-on-write.html>`__\n \n-.. _whatsnew_300.enhancements.enhancement2:\n+.. _whatsnew_300.enhancements.col:\n \n-Enhancement2\n-^^^^^^^^^^^^\n+``pd.col`` syntax can now be used in :meth:`DataFrame.assign` and :meth:`DataFrame.loc`\n+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+You can now use ``pd.col`` to create callables for use in dataframe methods which accept them. For example, if you have a dataframe\n+\n+.. ipython:: python\n+\n+    df = pd.DataFrame({'a': [1, 1, 2], 'b': [4, 5, 6]})\n+\n+and you want to create a new column ``'c'`` by summing ``'a'`` and ``'b'``, then instead of\n+\n+.. ipython:: python\n+\n+    df.assign(c = lambda df: df['a'] + df['b'])\n+\n+you can now write:\n+\n+.. ipython:: python\n+\n+    df.assign(c = pd.col('a') + pd.col('b'))\n \n New Deprecation Policy\n ^^^^^^^^^^^^^^^^^^^^^^\ndiff --git a/pandas/__init__.py b/pandas/__init__.py\nindex 8b92ad6cdfebb..cc786d1141c48 100644\n--- a/pandas/__init__.py\n+++ b/pandas/__init__.py\n@@ -105,6 +105,7 @@\n     Series,\n     DataFrame,\n )\n+from pandas.core.col import col\n \n from pandas.core.dtypes.dtypes import SparseDtype\n \n@@ -281,6 +282,7 @@\n     \"array\",\n     \"arrays\",\n     \"bdate_range\",\n+    \"col\",\n     \"concat\",\n     \"crosstab\",\n     \"cut\",\ndiff --git a/pandas/api/typing/__init__.py b/pandas/api/typing/__init__.py\nindex c1178c72f3edc..de6657b58ee80 100644\n--- a/pandas/api/typing/__init__.py\n+++ b/pandas/api/typing/__init__.py\n@@ -6,6 +6,7 @@\n from pandas._libs.lib import NoDefault\n from pandas._libs.missing import NAType\n \n+from pandas.core.col import Expression\n from pandas.core.groupby import (\n     DataFrameGroupBy,\n   "
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_1b52f0a39833093f/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1b52f0a39833093f/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1b52f0a39833093f/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T17:38:56.981994+00:00"
+}

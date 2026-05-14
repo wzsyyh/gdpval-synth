@@ -50,16 +50,19 @@ def _should_attach(rng: random.Random, occupation: str, deliverable_id: str) -> 
     - SWE: ~40% (PR diffs, code snippets, specs)
     """
     rates = {
-        ("financial_analyst", "dcf_model"): 0.75,
-        ("financial_analyst", "variance_analysis"): 0.80,
-        ("financial_analyst", "credit_memo"): 0.65,
+        # Financial (~70% overall target)
+        ("financial_analyst", "dcf_model"): 0.80,
+        ("financial_analyst", "variance_analysis"): 0.85,
+        ("financial_analyst", "credit_memo"): 0.70,
         ("financial_analyst", "investment_committee_deck"): 0.50,
+        # Lawyer (~50% overall target — contract redlines + depositions drive most)
         ("lawyer", "contract_redline"): 0.85,
-        ("lawyer", "deposition_outline"): 0.40,
-        ("lawyer", "motion_to_dismiss"): 0.25,
-        ("lawyer", "legal_memo"): 0.10,
+        ("lawyer", "deposition_outline"): 0.55,
+        ("lawyer", "motion_to_dismiss"): 0.50,
+        ("lawyer", "legal_memo"): 0.15,
+        # SWE (~40% overall target)
         ("software_engineer", "code_review"): 0.60,
-        ("software_engineer", "design_doc"): 0.35,
+        ("software_engineer", "design_doc"): 0.50,
         ("software_engineer", "bug_fix_pr"): 0.50,
         ("software_engineer", "incident_postmortem"): 0.30,
     }
@@ -256,6 +259,7 @@ def _design_legal_blueprint(
     archetype: str,
     difficulty: DifficultyBand,
     text_excerpt: str,
+    opposing_party: str = "Defendant",
 ) -> ReferenceAnswer:
     """Design a legal document blueprint based on canonical facts."""
 
@@ -271,6 +275,7 @@ def _design_legal_blueprint(
                     "State the precise legal issue",
                     "Reference the precedent case",
                 ],
+                section_type="legal_memo_question",
             ),
             SectionBlueprint(
                 heading="Brief Answer",
@@ -279,6 +284,7 @@ def _design_legal_blueprint(
                     "Summary conclusion based on precedent",
                     f"Must cite {citation or case_name}",
                 ],
+                section_type="legal_memo_answer",
             ),
             SectionBlueprint(
                 heading="Facts",
@@ -287,6 +293,7 @@ def _design_legal_blueprint(
                     f"Client: {client_name}",
                     f"Precedent: {case_name} ({court_code}, filed {date_filed.isoformat()})",
                 ],
+                section_type="legal_memo_facts",
             ),
             SectionBlueprint(
                 heading="Analysis",
@@ -296,45 +303,163 @@ def _design_legal_blueprint(
                     "Discuss legal standard from the case",
                     "Address counterarguments",
                 ],
+                section_type="legal_memo_analysis",
             ),
             SectionBlueprint(
                 heading="Conclusion",
                 heading_level=1,
                 required_content=["Clear recommendation"],
+                section_type="legal_memo_conclusion",
             ),
         ]
-    elif deliverable_id in ("motion_to_dismiss", "contract_redline", "deposition_outline"):
-        # Generic legal doc structure
+    elif deliverable_id == "motion_to_dismiss":
         sections = [
             SectionBlueprint(
                 heading="Introduction",
                 heading_level=1,
-                required_content=["Context and purpose of the document"],
+                required_content=[
+                    "Procedural posture and parties",
+                    "Relief sought (dismissal)",
+                ],
+                section_type="motion_introduction",
             ),
             SectionBlueprint(
-                heading="Background",
+                heading="Statement of Facts",
                 heading_level=1,
                 required_content=[
-                    f"Reference to {case_name}",
                     f"Client: {client_name}",
+                    f"Relevant facts from {case_name}",
                 ],
+                section_type="motion_facts",
             ),
             SectionBlueprint(
-                heading="Analysis / Argument",
+                heading="Legal Argument",
                 heading_level=1,
                 required_content=[
-                    "Legal reasoning based on precedent",
+                    "Grounds for dismissal with legal standard",
                     f"Cite {citation or case_name}",
+                    "Apply precedent to facts",
                 ],
+                section_type="motion_argument",
             ),
             SectionBlueprint(
-                heading="Conclusion",
+                heading="Prayer for Relief",
                 heading_level=1,
-                required_content=["Recommendation or request for relief"],
+                required_content=["Specific request for court to dismiss"],
+                section_type="motion_prayer",
+            ),
+        ]
+    elif deliverable_id == "contract_redline":
+        sections = [
+            SectionBlueprint(
+                heading="Cover Memo",
+                heading_level=1,
+                required_content=[
+                    "To/From/Date/Re header",
+                    f"Client: {client_name}",
+                    "Summary of proposed changes",
+                    "Legal rationale for each change",
+                ],
+                section_type="contract_cover_memo",
+            ),
+            SectionBlueprint(
+                heading="Redlined Agreement",
+                heading_level=1,
+                required_content=[
+                    "Original contract clauses with tracked changes",
+                    "Deletions shown as strikethrough or blackline",
+                    "Insertions shown as underline or bold",
+                    f"Reference to {case_name} where applicable",
+                ],
+                section_type="contract_redlined_text",
+            ),
+            SectionBlueprint(
+                heading="Revised Clauses",
+                heading_level=1,
+                required_content=[
+                    "Clean text of fully revised clauses",
+                    "Cross-references to original section numbers",
+                ],
+                section_type="contract_revised_clauses",
+            ),
+        ]
+    elif deliverable_id == "deposition_outline":
+        sections = [
+            SectionBlueprint(
+                heading="Witness Background",
+                heading_level=1,
+                required_content=[
+                    f"Witness identity and relationship to {client_name}",
+                    "Role in the case",
+                ],
+                section_type="deposition_background",
+            ),
+            SectionBlueprint(
+                heading="Direct Examination Outline",
+                heading_level=1,
+                required_content=[
+                    "Topics in logical order",
+                    "Key questions per topic",
+                    "Documents to authenticate",
+                ],
+                section_type="deposition_direct",
+            ),
+            SectionBlueprint(
+                heading="Cross Examination Prep",
+                heading_level=1,
+                required_content=[
+                    "Anticipated adverse questions",
+                    "Impeachment points",
+                    "Prior inconsistent statements",
+                ],
+                section_type="deposition_cross",
+            ),
+            SectionBlueprint(
+                heading="Exhibit and Document List",
+                heading_level=1,
+                required_content=[
+                    "Documents to introduce",
+                    "Expected objections and responses",
+                ],
+                section_type="deposition_exhibits",
             ),
         ]
 
-    fmt = "pdf" if deliverable_id in ("motion_to_dismiss", "deposition_outline", "legal_memo") else "docx"
+    fmt = "pdf" if deliverable_id in ("motion_to_dismiss", "deposition_outline", "legal_memo", "contract_redline") else "docx"
+
+    # Build richer expected values for exact-match rubric items
+    expected_values = [
+        ExpectedValue(
+            description="Precedent case citation",
+            value=citation or case_name,
+            location="Document header or first paragraph",
+        ),
+        ExpectedValue(
+            description="Client name",
+            value=client_name,
+            location="Facts section",
+        ),
+        ExpectedValue(
+            description="Opposing party name",
+            value=opposing_party,
+            location="Facts or Background section",
+        ),
+        ExpectedValue(
+            description="Court or forum",
+            value=court_code or "Federal District Court",
+            location="Caption or header",
+        ),
+        ExpectedValue(
+            description="Governing statute or regulation",
+            value=f"28 U.S.C. § 1331" if "jurisdiction" in deliverable_id else f"Federal Arbitration Act" if "arbitration" in archetype else f"Texas H.B. 1181" if "verification" in archetype else "Applicable federal statute",
+            location="Legal analysis section",
+        ),
+        ExpectedValue(
+            description="Assignment date",
+            value=assignment_date.strftime("%B %d, %Y"),
+            location="Document header or memo line",
+        ),
+    ]
 
     return ReferenceAnswer(
         format=fmt,
@@ -346,18 +471,7 @@ def _design_legal_blueprint(
             re=f"{deliverable_id.replace('_', ' ').title()} — {client_name}",
         ),
         title=f"{deliverable_id.replace('_', ' ').title()}: {client_name}",
-        expected_values=[
-            ExpectedValue(
-                description="Precedent case citation",
-                value=citation or case_name,
-                location="Document header or first paragraph",
-            ),
-            ExpectedValue(
-                description="Client name",
-                value=client_name,
-                location="Facts section",
-            ),
-        ],
+        expected_values=expected_values,
         narrative_prompt=f"""You are a {partner_name}, a partner at {firm_name}. Write professional legal prose for the following document structure. Use formal legal tone. Reference the precedent case {case_name} ({citation or ''}, {court_code}) correctly. Do NOT use AI hedging language. Write with authority.""",
     )
 
@@ -378,6 +492,7 @@ def build_lawyer_canonical(
     firm_name = rng.choice(_FICTIONAL_LAW_FIRMS)
     partner_name = rng.choice(_FICTIONAL_PARTNERS)
     fictional_client = f"{rng.choice(['Atlas', 'Meridian', 'Cardinal', 'Northbeam', 'Saltspring'])} {rng.choice(['Holdings', 'Industries', 'Logistics', 'Partners', 'Capital'])}, {rng.choice(['LLC', 'Inc.', 'LLP', 'Corp.'])}"
+    opposing_party = f"{rng.choice(['Acme', 'Global', 'Pacific', 'Summit', 'Vertex', 'Omni', 'Metro', 'Stellar'])} {rng.choice(['Corp.', 'Inc.', 'LLC', 'Ltd.', 'Holdings'])}"
 
     entities = [
         Entity(
@@ -457,6 +572,7 @@ def build_lawyer_canonical(
         archetype=archetype,
         difficulty=difficulty,
         text_excerpt=seed.text_excerpt[:1500],
+        opposing_party=opposing_party,
     )
 
     # Add input attachments probabilistically
@@ -765,8 +881,9 @@ def _design_dcf_blueprint(
         else:
             if label == "NOPAT":
                 for j in range(5):
-                    col = chr(66 + j)
-                    dcf_cells.append(CellBlueprint(ref=f"{col}{row_num}", formula=f"='Income Statement'!{col}12", number_format="#,##0"))
+                    col = chr(66 + j)           # DCF sheet col: B=Year1, C=Year2...
+                    is_col = chr(67 + j)        # Income Statement col: C=Year1, D=Year2...
+                    dcf_cells.append(CellBlueprint(ref=f"{col}{row_num}", formula=f"='Income Statement'!{is_col}12", number_format="#,##0"))
             elif label == "Unlevered FCFF":
                 for j in range(5):
                     col = chr(66 + j)
@@ -876,8 +993,19 @@ def _design_variance_blueprint(
     oi_m = (operating_income or revenue * 0.15) / 1_000_000
     ni_m = (net_income or revenue * 0.10) / 1_000_000
     cogs_m = rev_m - gp_m
+    sga_m = gp_m - oi_m  # SG&A = Gross Profit - Operating Income
 
-    # Build a simple 2-sheet workbook
+    # Get balance sheet data if available
+    total_assets = _get_fact(key_facts, "Assets")
+    total_liabilities = _get_fact(key_facts, "Liabilities")
+    equity = _get_fact(key_facts, "StockholdersEquity")
+    cash = _get_fact(key_facts, "CashAndCashEquivalentsAtCarryingValue") or _get_fact(key_facts, "CashCashEquivalentsAndShortTermInvestments")
+    assets_m = (total_assets or revenue * 2.0) / 1_000_000
+    liab_m = (total_liabilities or revenue * 1.2) / 1_000_000
+    equity_m = (equity or revenue * 0.8) / 1_000_000
+    cash_m = (cash or revenue * 0.15) / 1_000_000
+
+    # Build a 3-sheet workbook: P&L, Balance Sheet, Summary
     actual_cells = [
         CellBlueprint(ref="A1", value="Variance Analysis: Actual vs Budget", bold=True, fill="header"),
         CellBlueprint(ref="A3", value="Line Item", bold=True, fill="header"),
@@ -900,16 +1028,35 @@ def _design_variance_blueprint(
         CellBlueprint(ref="C6", value=round(gp_m * rng.uniform(0.90, 1.10), 1)),
         CellBlueprint(ref="D6", formula="=B6-C6"),
         CellBlueprint(ref="E6", formula="=D6/C6", number_format="0.0%"),
-        CellBlueprint(ref="A7", value="Operating Income"),
-        CellBlueprint(ref="B7", value=round(oi_m, 1)),
-        CellBlueprint(ref="C7", value=round(oi_m * rng.uniform(0.85, 1.15), 1)),
+        CellBlueprint(ref="A7", value="SG&A"),
+        CellBlueprint(ref="B7", value=round(sga_m, 1)),
+        CellBlueprint(ref="C7", value=round(sga_m * rng.uniform(0.90, 1.10), 1)),
         CellBlueprint(ref="D7", formula="=B7-C7"),
         CellBlueprint(ref="E7", formula="=D7/C7", number_format="0.0%"),
-        CellBlueprint(ref="A8", value="Net Income"),
-        CellBlueprint(ref="B8", value=round(ni_m, 1)),
-        CellBlueprint(ref="C8", value=round(ni_m * rng.uniform(0.85, 1.15), 1)),
+        CellBlueprint(ref="A8", value="Operating Income"),
+        CellBlueprint(ref="B8", value=round(oi_m, 1)),
+        CellBlueprint(ref="C8", value=round(oi_m * rng.uniform(0.85, 1.15), 1)),
         CellBlueprint(ref="D8", formula="=B8-C8"),
         CellBlueprint(ref="E8", formula="=D8/C8", number_format="0.0%"),
+        CellBlueprint(ref="A9", value="Net Income"),
+        CellBlueprint(ref="B9", value=round(ni_m, 1)),
+        CellBlueprint(ref="C9", value=round(ni_m * rng.uniform(0.85, 1.15), 1)),
+        CellBlueprint(ref="D9", formula="=B9-C9"),
+        CellBlueprint(ref="E9", formula="=D9/C9", number_format="0.0%"),
+    ]
+
+    bs_cells = [
+        CellBlueprint(ref="A1", value="Balance Sheet Snapshot", bold=True, fill="header"),
+        CellBlueprint(ref="A3", value="Line Item", bold=True, fill="header"),
+        CellBlueprint(ref="B3", value="Actual ($M)", bold=True, fill="header"),
+        CellBlueprint(ref="A4", value="Total Assets"),
+        CellBlueprint(ref="B4", value=round(assets_m, 1)),
+        CellBlueprint(ref="A5", value="Total Liabilities"),
+        CellBlueprint(ref="B5", value=round(liab_m, 1)),
+        CellBlueprint(ref="A6", value="Stockholders' Equity"),
+        CellBlueprint(ref="B6", value=round(equity_m, 1)),
+        CellBlueprint(ref="A7", value="Cash & Equivalents"),
+        CellBlueprint(ref="B7", value=round(cash_m, 1)),
     ]
 
     summary_cells = [
@@ -919,13 +1066,14 @@ def _design_variance_blueprint(
         CellBlueprint(ref="A4", value="Primary driver of margin variance"),
         CellBlueprint(ref="B4", value="Input cost inflation vs pricing power"),
         CellBlueprint(ref="A5", value="Largest $ variance line item"),
-        CellBlueprint(ref="B5", formula="=MAX('Actual vs Budget'!D4:D8)"),
+        CellBlueprint(ref="B5", formula="=MAX('Actual vs Budget'!D4:D9)"),
     ]
 
     return ReferenceAnswer(
         format="xlsx",
         sheets=[
             SheetBlueprint(name="Actual vs Budget", cells=actual_cells, column_widths={"A": 20, "B": 14, "C": 14, "D": 14, "E": 14}),
+            SheetBlueprint(name="Balance Sheet", cells=bs_cells, column_widths={"A": 25, "B": 16}),
             SheetBlueprint(name="Summary", cells=summary_cells, column_widths={"A": 35, "B": 30}),
         ],
         expected_values=[
@@ -972,8 +1120,11 @@ def _design_financial_docx_blueprint(
             SectionBlueprint(heading="Recommendation", heading_level=1, required_content=["Go/no-go", "Target ownership", "Capital deployment"]),
         ]
 
+    # Credit memos are often delivered as PDF in investment banking
+    fmt = "pdf" if deliverable_id == "credit_memo" else "docx"
+
     return ReferenceAnswer(
-        format="docx",
+        format=fmt,
         sections=sections,
         doc_header=DocHeaderBlueprint(
             to="Committee" if deliverable_id == "investment_committee_deck" else "Credit Committee",
@@ -986,6 +1137,8 @@ def _design_financial_docx_blueprint(
             ExpectedValue(description="Company", value=entity_name, location="Overview section"),
             ExpectedValue(description="Ticker", value=ticker, location="Overview section"),
             ExpectedValue(description="Revenue", value=f"${rev_m:.0f}M", location="Financial section"),
+            ExpectedValue(description="Debt/EBITDA ratio", value=f"{rng.uniform(0.8, 3.5):.1f}x", location="Risk Factors section"),
+            ExpectedValue(description="Credit rating", value=rng.choice(["A", "A-", "BBB+", "BBB", "BBB-", "BB+"]), location="Executive Summary"),
         ],
         narrative_prompt=f"Write a professional {deliverable_id.replace('_', ' ')} for {entity_name} ({ticker}) in the {sector} sector.",
     )

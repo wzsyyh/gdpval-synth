@@ -1,0 +1,1887 @@
+{
+  "candidate_id": "sc_114324923fef32c0",
+  "occupation": "financial_analyst",
+  "archetype": "variance_analysis",
+  "difficulty": "medium",
+  "seed_id": "114324923fef32c0",
+  "prompt": "You are a Senior Financial Analyst on Chevron Corp's (CVX) Corporate FP&A team. The Controller has asked you to prepare a quarterly variance analysis comparing Q1 2026 operating performance against Q3 2025, the most recent comparable quarterly period. This analysis will be presented at the upcoming earnings review meeting with the CFO and will feed into the mid-year budget discussion.\n\nMaterials provided:\n- Chevron Corp (CVX) Q1 2026 XBRL financial data including Revenues ($48.6B), RevenueFromContractWithCustomerExcludingAssessedTax ($47.6B), CostOfGoodsAndServicesSold ($28.3B), SellingGeneralAndAdministrativeExpense ($1.1B), NetIncomeLoss ($2.2B), and EarningsPerShareDiluted ($1.11)\n- Chevron Corp (CVX) Q3 2025 XBRL financial data including the same metrics: Revenues ($49.7B), RevenueExclTax ($48.2B), COGS ($27.4B), SG&A ($1.5B), Net Income ($3.5B), EPS ($1.82)\n- Chevron Corp (CVX) FY 2025 full-year figures for the same metrics as a reference benchmark: Revenues ($189.0B), RevenueExclTax ($184.4B), COGS ($108.2B), SG&A ($5.1B), Net Income ($12.3B), EPS ($6.63)\n- Recent filing history showing 10-Q filed 2026-05-07\n\nTask requirements:\n1. Build an Excel workbook with three tabs: 'Inputs', 'Variance Analysis', and 'Summary'.\n2. The 'Inputs' tab must house all raw quarterly figures from Q1 2026 and Q3 2025 for: Revenues, RevenueExclAssessedTax, COGS, SG&A, Net Income, and EPS (Diluted). Also include the FY 2025 annual figures for these same metrics as a reference column. All dollar figures must be stated in millions (divide raw XBRL values by 1,000,000). EPS remains as-is.\n3. The 'Variance Analysis' tab must calculate for each metric: (a) Q1 2026 value, (b) Q3 2025 value, (c) absolute variance (Q1 2026 minus Q3 2025), (d) percentage variance as (Q1 2026 - Q3 2025) / Q3 2025 formatted as a percentage, and (e) Q1 2026 as a percentage of FY 2025 annual total. All formulas must cell-reference the Inputs tab.\n4. The 'Summary' tab must contain written commentary addressing: (a) the two largest positive variances and two largest negative variances by absolute dollar magnitude, (b) an assessment of whether Q1 2026 gross margin (defined as (Revenues - COGS) / Revenues) and net margin (Net Income / Revenues) improved or deteriorated versus Q3 2025, and (c) a brief note on how Q1 2026 net income compares to the quarterly run-rate implied by dividing FY 2025 annual net income by 4.\n5. Display dollar amounts with comma separators and one decimal place. Percentage variances formatted as percentages with one decimal place. EPS with two decimal places.\n6. The Inputs tab is the single source of truth. All calculations on the Variance Analysis tab must reference Inputs via cell references, not hardcoded numbers.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted file is an Excel workbook (.xlsx format).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains exactly three sheets named 'Inputs', 'Variance Analysis', and 'Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet has column headers in row 1: 'Metric', 'Q1 2026 ($M)', 'Q3 2025 ($M)', 'FY 2025 ($M)'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B2 contains the Q1 2026 Revenues value of 48,607.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C2 contains the Q3 2025 Revenues value of 49,726.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D2 contains the FY 2025 Revenues value of 189,031.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B3 contains Q1 2026 RevenueExclAssessedTax of 47,556.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C3 contains Q3 2025 RevenueExclAssessedTax of 48,169.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D3 contains FY 2025 RevenueExclAssessedTax of 184,432.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B4 contains Q1 2026 COGS of 28,265.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C4 contains Q3 2025 COGS of 27,398.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D4 contains FY 2025 COGS of 108,214.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B5 contains Q1 2026 SG&A of 1,066.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C5 contains Q3 2025 SG&A of 1,524.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D5 contains FY 2025 SG&A of 5,126.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B6 contains Q1 2026 Net Income of 2,210.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C6 contains Q3 2025 Net Income of 3,539.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D6 contains FY 2025 Net Income of 12,299.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B7 contains Q1 2026 EPS Diluted of 1.11.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C7 contains Q3 2025 EPS Diluted of 1.82.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell D7 contains FY 2025 EPS Diluted of 6.63.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell B2 references Inputs!B2 for Q1 2026 Revenues.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell C2 references Inputs!C2 for Q3 2025 Revenues.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell D2 contains a formula calculating Q1 2026 minus Q3 2025 Revenues (Inputs!B2-Inputs!C2).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell E2 contains a percentage variance formula (Inputs!B2-Inputs!C2)/Inputs!C2 for Revenues.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell F2 contains a formula calculating Q1 2026 Revenues as a percentage of FY 2025 (Inputs!B2/Inputs!D2).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab cell D4 calculates the COGS absolute variance of 867 (28,265 - 27,398).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab cell D5 calculates the SG&A absolute variance of -458 (1,066 - 1,524).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab cell D6 calculates the Net Income absolute variance of -1,329 (2,210 - 3,539).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab cell D7 calculates the EPS absolute variance of -0.71 (1.11 - 1.82).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell E6 calculates Net Income percentage variance as approximately -37.6%.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell E5 calculates SG&A percentage variance as approximately -30.1%.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell E4 calculates COGS percentage variance as approximately +3.2%.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Variance Analysis tab cell F6 calculates Q1 2026 Net Income as approximately 18.0% of FY 2025 annual Net Income.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab contains written commentary identifying Net Income decline of $1,329M as the largest negative variance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab contains written commentary identifying COGS increase of $867M as the second-largest negative variance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab contains written commentary identifying SG&A decrease of $458M as a positive variance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab states that gross margin deteriorated from Q3 2025 to Q1 2026.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab states that net margin deteriorated from Q3 2025 to Q1 2026.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab calculates Q1 2026 gross margin as approximately 41.8%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab calculates Q3 2025 gross margin as approximately 44.9%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab calculates Q1 2026 net margin as approximately 4.5%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab calculates Q3 2025 net margin as approximately 7.1%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab states that FY 2025 annual net income implies a quarterly run-rate of approximately $3,074.8M.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab notes that Q1 2026 net income of $2,210M is below the implied quarterly run-rate.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs tab uses number formats with comma separators and one decimal place for dollar values.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab formats percentage variance cells as percentages.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis tab formats EPS cells with two decimal places.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "All Variance Analysis formulas cell-reference the Inputs tab rather than hardcoding numerical values.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "Any dollar value in Inputs differs from the correct converted figure by more than $1M (e.g., COGS shown as 28,200 instead of 28,265).",
+      "category": "data",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The Variance Analysis tab hardcodes numerical values instead of using formulas referencing the Inputs tab.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_114324923fef32c0",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "variance_analysis",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:CVX",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "48607",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "49726",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "189031",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "47556",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "48169",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "184432",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "28265",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "27398",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "108214",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "1066",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "1524",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "5126",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "2210",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "3539",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "12299",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "1.11",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "1.82",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "6.63",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "-1329",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "867",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "-458",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "-1119",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "3074.75",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "41.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "44.9",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "4.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "7.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "-2.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "-37.6",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "25.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "-0.71",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 48607,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "money",
+        "value": 49726,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 189031,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 47556,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 48169,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 184432,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 28265,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "money",
+        "value": 27398,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "money",
+        "value": 108214,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 1066,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 1524,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 5126,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 2210,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 3539,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 12299,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": 1.11,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 1.82,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "money",
+        "value": 6.63,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": -1329,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "money",
+        "value": 867,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "money",
+        "value": -458,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "money",
+        "value": -1119,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "money",
+        "value": 3074.75,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "money",
+        "value": 41.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 44.9,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "money",
+        "value": 4.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "money",
+        "value": 7.1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "money",
+        "value": -2.2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "money",
+        "value": -37.6,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "money",
+        "value": 25.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "money",
+        "value": -0.71,
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Inputs",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "left"
+            },
+            {
+              "ref": "B1",
+              "value": "Q1 2026 ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "C1",
+              "value": "Q3 2025 ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "D1",
+              "value": "FY 2025 ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "A2",
+              "value": "Revenues",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B2",
+              "value": 48607.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C2",
+              "value": 49726.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D2",
+              "value": 189031.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "RevenueExclAssessedTax",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": 47556.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": 48169.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": 184432.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 28265.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 27398.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": 108214.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 1066.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 1524.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 5126.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 2210.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 3539.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": 12299.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 1.11,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 1.82,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 6.63,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 28.0,
+            "B": 18.0,
+            "C": 18.0,
+            "D": 18.0
+          }
+        },
+        {
+          "name": "Variance Analysis",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "left"
+            },
+            {
+              "ref": "B1",
+              "value": "Q1 2026 ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "C1",
+              "value": "Q3 2025 ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "D1",
+              "value": "Abs Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "E1",
+              "value": "% Variance",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "F1",
+              "value": "% of FY 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": "center"
+            },
+            {
+              "ref": "A2",
+              "value": "Revenues",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B2",
+              "value": null,
+              "formula": "=Inputs!B2",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C2",
+              "value": null,
+              "formula": "=Inputs!C2",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D2",
+              "value": null,
+              "formula": "=Inputs!B2-Inputs!C2",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E2",
+              "value": null,
+              "formula": "=(Inputs!B2-Inputs!C2)/Inputs!C2",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F2",
+              "value": null,
+              "formula": "=Inputs!B2/Inputs!D2",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "RevenueExclAssessedTax",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": null,
+              "formula": "=Inputs!B3",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": null,
+              "formula": "=Inputs!C3",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": null,
+              "formula": "=Inputs!B3-Inputs!C3",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": null,
+              "formula": "=(Inputs!B3-Inputs!C3)/Inputs!C3",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": null,
+              "formula": "=Inputs!B3/Inputs!D3",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=Inputs!B4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=Inputs!C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=Inputs!B4-Inputs!C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=(Inputs!B4-Inputs!C4)/Inputs!C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "=Inputs!B4/Inputs!D4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=Inputs!B5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=Inputs!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=Inputs!B5-Inputs!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=(Inputs!B5-Inputs!C5)/Inputs!C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=Inputs!B5/Inputs!D5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=Inputs!B6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=Inputs!C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=Inputs!B6-Inputs!C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=(Inputs!B6-Inputs!C6)/Inputs!C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=Inputs!B6/Inputs!D6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=Inputs!B7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=Inputs!C7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=Inputs!B7-Inputs!C7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=(Inputs!B7-Inputs!C7)/Inputs!C7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": null,
+              "formula": "=Inputs!B7/Inputs!D7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 28.0,
+            "B": 18.0,
+            "C": 18.0,
+            "D": 20.0,
+            "E": 16.0,
+            "F": 16.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Chevron Corp (CVX) - Q1 2026 vs Q3 2025 Variance Analysis Summary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Largest Variances by Absolute Dollar Amount",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Largest Negative Variance #1: Net Income declined by $1,329.0M from Q3 2025 ($3,539.0M) to Q1 2026 ($2,210.0M), a -37.6% decrease. This is the largest unfavorable variance by absolute dollar magnitude.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest Negative Variance #2: COGS increased by $867.0M from Q3 2025 ($27,398.0M) to Q1 2026 ($28,265.0M), representing a +3.2% increase.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Largest Positive Variance #1: SG&A decreased by $458.0M from Q3 2025 ($1,524.0M) to Q1 2026 ($1,066.0M), a -30.1% reduction. This is the largest favorable variance by absolute dollar magnitude.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Largest Positive Variance #2: Revenues declined by only $1,119.0M (Q3 2025: $49,726.0M vs Q1 2026: $48,607.0M), a -2.2% decrease, relatively contained versus the net income decline.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Margin Analysis",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Gross Margin: Q1 2026 = (48,607.0 - 28,265.0) / 48,607.0 = 41.8%. Q3 2025 = (49,726.0 - 27,398.0) / 49,726.0 = 44.9%. Gross margin deteriorated by approximately 3.1 percentage points quarter-over-quarter.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Net Margin: Q1 2026 = 2,210.0 / 48,607.0 = 4.5%. Q3 2025 = 3,539.0 / 49,726.0 = 7.1%. Net margin deteriorated by approximately 2.6 percentage points.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A13",
+              "value": "Net Income Run-Rate Comparison",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "FY 2025 annual net income of $12,299.0M implies a quarterly run-rate of $3,074.8M ($12,299.0 / 4). Q1 2026 net income of $2,210.0M is $864.8M below this implied quarterly run-rate, representing a 28.1% shortfall. Q1 2026 is tracking well below FY 2025's annual pace.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A16",
+              "value": "Source: Chevron Corp XBRL filings. 10-Q filed 2026-05-07.",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {}
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "Chevron Corp (CVX) Q1 2026 financial data from XBRL filings (Revenues, RevenueExclAssessedTax, COGS, SG&A, Net Income, EPS Diluted, Assets, Liabilities, Stockholders' Equity)",
+          "content_blueprint": {
+            "title": "Chevron Corp (CVX) Q1 2026 financial data from XBRL filings (Revenues, RevenueExclAssessedTax, COGS, SG&A, Net Income, EPS Diluted, Assets, Liabilities, Stockholders' Equity)",
+            "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "Chevron Corp (CVX) Q3 2025 financial data from XBRL filings (same metrics)",
+          "content_blueprint": {
+            "title": "Chevron Corp (CVX) Q3 2025 financial data from XBRL filings (same metrics)",
+            "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "Chevron Corp (CVX) FY 2025 full-year financial data from XBRL filings (same metrics)",
+          "content_blueprint": {
+            "title": "Chevron Corp (CVX) FY 2025 full-year financial data from XBRL filings (same metrics)",
+            "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+          }
+        },
+        {
+          "attachment_id": "att_3",
+          "filename": "input_3.md",
+          "format": "md",
+          "description": "Recent filing history for CVX (Form 4, SD, 10-Q, 144 filings from May 2026)",
+          "content_blueprint": {
+            "title": "Recent filing history for CVX (Form 4, SD, 10-Q, 144 filings from May 2026)",
+            "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Inputs tab cell B2 contains Q1 2026 Revenues in millions",
+          "value": 48607,
+          "tolerance": null,
+          "location": "Inputs tab cell B2"
+        },
+        {
+          "description": "Inputs tab cell C2 contains Q3 2025 Revenues in millions",
+          "value": 49726,
+          "tolerance": null,
+          "location": "Inputs tab cell C2"
+        },
+        {
+          "description": "Inputs tab cell D2 contains FY 2025 Revenues in millions",
+          "value": 189031,
+          "tolerance": null,
+          "location": "Inputs tab cell D2"
+        },
+        {
+          "description": "Inputs tab cell B3 contains Q1 2026 RevenueExclAssessedTax in millions",
+          "value": 47556,
+          "tolerance": null,
+          "location": "Inputs tab cell B3"
+        },
+        {
+          "description": "Inputs tab cell C3 contains Q3 2025 RevenueExclAssessedTax in millions",
+          "value": 48169,
+          "tolerance": null,
+          "location": "Inputs tab cell C3"
+        },
+        {
+          "description": "Inputs tab cell D3 contains FY 2025 RevenueExclAssessedTax in millions",
+          "value": 184432,
+          "tolerance": null,
+          "location": "Inputs tab cell D3"
+        },
+        {
+          "description": "Inputs tab cell B4 contains Q1 2026 COGS in millions",
+          "value": 28265,
+          "tolerance": null,
+          "location": "Inputs tab cell B4"
+        },
+        {
+          "description": "Inputs tab cell C4 contains Q3 2025 COGS in millions",
+          "value": 27398,
+          "tolerance": null,
+          "location": "Inputs tab cell C4"
+        },
+        {
+          "description": "Inputs tab cell D4 contains FY 2025 COGS in millions",
+          "value": 108214,
+          "tolerance": null,
+          "location": "Inputs tab cell D4"
+        },
+        {
+          "description": "Inputs tab cell B5 contains Q1 2026 SG&A in millions",
+          "value": 1066,
+          "tolerance": null,
+          "location": "Inputs tab cell B5"
+        },
+        {
+          "description": "Inputs tab cell C5 contains Q3 2025 SG&A in millions",
+          "value": 1524,
+          "tolerance": null,
+          "location": "Inputs tab cell C5"
+        },
+        {
+          "description": "Inputs tab cell D5 contains FY 2025 SG&A in millions",
+          "value": 5126,
+          "tolerance": null,
+          "location": "Inputs tab cell D5"
+        },
+        {
+          "description": "Inputs tab cell B6 contains Q1 2026 Net Income in millions",
+          "value": 2210,
+          "tolerance": null,
+          "location": "Inputs tab cell B6"
+        },
+        {
+          "description": "Inputs tab cell C6 contains Q3 2025 Net Income in millions",
+          "value": 3539,
+          "tolerance": null,
+          "location": "Inputs tab cell C6"
+        },
+        {
+          "description": "Inputs tab cell D6 contains FY 2025 Net Income in millions",
+          "value": 12299,
+          "tolerance": null,
+          "location": "Inputs tab cell D6"
+        },
+        {
+          "description": "Inputs tab cell B7 contains Q1 2026 EPS Diluted",
+          "value": 1.11,
+          "tolerance": null,
+          "location": "Inputs tab cell B7"
+        },
+        {
+          "description": "Inputs tab cell C7 contains Q3 2025 EPS Diluted",
+          "value": 1.82,
+          "tolerance": null,
+          "location": "Inputs tab cell C7"
+        },
+        {
+          "description": "Inputs tab cell D7 contains FY 2025 EPS Diluted",
+          "value": 6.63,
+          "tolerance": null,
+          "location": "Inputs tab cell D7"
+        },
+        {
+          "description": "Variance Analysis cell D6 absolute variance for Net Income",
+          "value": -1329,
+          "tolerance": 1.0,
+          "location": "Variance Analysis tab cell D6"
+        },
+        {
+          "description": "Variance Analysis cell D4 absolute variance for COGS",
+          "value": 867,
+          "tolerance": 1.0,
+          "location": "Variance Analysis tab cell D4"
+        },
+        {
+          "description": "Variance Analysis cell D5 absolute variance for SG&A",
+          "value": -458,
+          "tolerance": 1.0,
+          "location": "Variance Analysis tab cell D5"
+        },
+        {
+          "description": "Variance Analysis cell D2 absolute variance for Revenues",
+          "value": -1119,
+          "tolerance": 1.0,
+          "location": "Variance Analysis tab cell D2"
+        },
+        {
+          "description": "FY 2025 implied quarterly net income run-rate",
+          "value": 3074.75,
+          "tolerance": 1.0,
+          "location": "Summary tab A14 commentary"
+        },
+        {
+          "description": "Q1 2026 gross margin percentage",
+          "value": 41.8,
+          "tolerance": 0.3,
+          "location": "Summary tab A10 commentary"
+        },
+        {
+          "description": "Q3 2025 gross margin percentage",
+          "value": 44.9,
+          "tolerance": 0.3,
+          "location": "Summary tab A10 commentary"
+        },
+        {
+          "description": "Q1 2026 net margin percentage",
+          "value": 4.5,
+          "tolerance": 0.3,
+          "location": "Summary tab A11 commentary"
+        },
+        {
+          "description": "Q3 2025 net margin percentage",
+          "value": 7.1,
+          "tolerance": 0.3,
+          "location": "Summary tab A11 commentary"
+        },
+        {
+          "description": "Variance Analysis cell E2 percentage variance for Revenues",
+          "value": -2.2,
+          "tolerance": 0.3,
+          "location": "Variance Analysis tab cell E2"
+        },
+        {
+          "description": "Variance Analysis cell E6 percentage variance for Net Income",
+          "value": -37.6,
+          "tolerance": 0.5,
+          "location": "Variance Analysis tab cell E6"
+        },
+        {
+          "description": "Q1 2026 Revenues as percentage of FY 2025 annual Revenues",
+          "value": 25.7,
+          "tolerance": 0.3,
+          "location": "Variance Analysis tab cell F2"
+        },
+        {
+          "description": "Q1 2026 EPS variance absolute value",
+          "value": -0.71,
+          "tolerance": 0.02,
+          "location": "Variance Analysis tab cell D7"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1685099081
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "Chevron Corp (CVX) Q1 2026 financial data from XBRL filings (Revenues, RevenueExclAssessedTax, COGS, SG&A, Net Income, EPS Diluted, Assets, Liabilities, Stockholders' Equity)",
+      "content_blueprint": {
+        "title": "Chevron Corp (CVX) Q1 2026 financial data from XBRL filings (Revenues, RevenueExclAssessedTax, COGS, SG&A, Net Income, EPS Diluted, Assets, Liabilities, Stockholders' Equity)",
+        "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "Chevron Corp (CVX) Q3 2025 financial data from XBRL filings (same metrics)",
+      "content_blueprint": {
+        "title": "Chevron Corp (CVX) Q3 2025 financial data from XBRL filings (same metrics)",
+        "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "Chevron Corp (CVX) FY 2025 full-year financial data from XBRL filings (same metrics)",
+      "content_blueprint": {
+        "title": "Chevron Corp (CVX) FY 2025 full-year financial data from XBRL filings (same metrics)",
+        "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+      }
+    },
+    {
+      "attachment_id": "att_3",
+      "filename": "input_3.md",
+      "format": "md",
+      "description": "Recent filing history for CVX (Form 4, SD, 10-Q, 144 filings from May 2026)",
+      "content_blueprint": {
+        "title": "Recent filing history for CVX (Form 4, SD, 10-Q, 144 filings from May 2026)",
+        "body": "# Seed Material: Chevron Corp (CVX)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CVX\n\nCompany: Chevron Corp\nTicker: CVX\nCIK: 0000093410\nSector: energy\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 48,607,000,000\n  FY 2025: 189,031,000,000\n  Q3 2025: 142,158,000,000\n  Q3 2025: 49,726,000,000\n  Q2 2025: 92,432,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 47,556,000,000\n  FY 2025: 184,432,000,000\n  Q3 2025: 138,645,000,000\n  Q3 2025: 48,169,000,000\n  Q2 2025: 90,476,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 28,265,000,000\n  FY 2025: 108,214,000,000\n  Q3 2025: 82,866,000,000\n  Q3 2025: 27,398,000,000\n  Q2 2025: 55,468,000,000\n\n### NetIncomeLoss\n  Q1 2026: 2,210,000,000\n  FY 2025: 12,299,000,000\n  None None: 12,300,000,000\n  Q3 2025: 9,529,000,000\n  Q3 2025: 3,539,000,000\n\n### Assets\n  Q1 2026: 329,551,000,000\n  FY 2025: 324,012,000,000\n  Q1 2026: 324,012,000,000\n  Q3 2025: 326,501,000,000\n  Q2 2025: 250,820,000,000\n\n### Liabilities\n  Q1 2026: 140,180,000,000\n  FY 2025: 131,836,000,000\n  Q1 2026: 131,836,000,000\n  Q3 2025: 130,901,000,000\n  Q2 2025: 103,562,000,000\n\n### StockholdersEquity\n  Q1 2026: 183,715,000,000\n  FY 2025: 186,450,000,000\n  Q1 2026: 186,450,000,000\n  Q3 2025: 189,843,000,000\n  Q2 2025: 146,417,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q2 2024: 4,008,000,000\n  Q1 2024: 6,278,000,000\n  FY 2023: 8,178,000,000\n  Q1 2024: 8,178,000,000\n  Q2 2024: 8,178,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 1.11\n  FY 2025: 6.63\n  Q3 2025: 5.27\n  Q3 2025: 1.82\n  Q2 2025: 3.45\n\n### ResearchAndDevelopmentExpense\n  FY 2025: 427,000,000\n  FY 2024: 353,000,000\n  FY 2025: 353,000,000\n  FY 2023: 320,000,000\n  FY 2024: 320,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,066,000,000\n  FY 2025: 5,126,000,000\n  Q3 2025: 3,634,000,000\n  Q3 2025: 1,524,000,000\n  Q2 2025: 2,110,000,000\n\n## Recent Filings\n  4 — 2026-05-08\n  4 — 2026-05-08\n  SD — 2026-05-08\n  10-Q — 2026-05-07\n  144 — 2026-05-06"
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T17:15:46.460795+00:00"
+}

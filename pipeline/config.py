@@ -12,7 +12,6 @@ from pydantic import BaseModel
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 SEEDS_STORE = PROJECT_ROOT / "pipeline" / "seeds" / "store"
-TAXONOMY_PATH = PROJECT_ROOT / "pipeline" / "taxonomy" / "occupations.yaml"
 
 
 class Settings(BaseModel):

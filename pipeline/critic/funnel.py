@@ -61,7 +61,7 @@ class FunnelResult:
 DEDUP_THRESHOLD = 0.85
 REALISM_MIN = 5  # overall realism ≥ 5 (single-critic scale; 5 = "borderline ok")
 SOLVABILITY_MIN = 5
-SOLVE_RATE_MAX = 7  # if any model predicts ≥7, task is too easy → reject
+SOLVE_RATE_MAX = 8  # if any model predicts ≥8, task is too easy → reject
 
 
 def _log(result: FunnelResult) -> None:

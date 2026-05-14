@@ -1,0 +1,1277 @@
+{
+  "candidate_id": "sc_e58f083906f8b16c",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "e58f083906f8b16c",
+  "prompt": "You are a senior frontend engineer on the Next.js core team. The Universal Webpack PR (#3578) has been merged, introducing major architectural changes to how Next.js handles webpack configuration for both client and server bundles. The engineering lead has asked you to create a technical design document that serves as an internal reference for the team and onboarding material for new contributors.\n\nThe document must explain the architectural decisions behind the Universal Webpack feature, the new plugin-based CSS/SASS/LESS/preact support system, the changes to the webpack configuration API, and the implications for the developer experience. This will be used in the next sprint planning to identify follow-up work and potential regressions.\n\n**Materials provided:**\n- PR #3578 description and diff excerpts showing the Universal Webpack implementation\n- Linked Issue #1564 describing the preact/React aliasing problem that motivated the change\n- Code changes in `client/index.js`, `bin/next-dev.js`, and other files showing the client-side and build-time modifications\n\n**Task requirements:**\n\n1. **Overview section**: Explain the motivation for Universal Webpack by referencing the specific issues it fixes (#1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597). Describe the problem of server-side code not being transpiled by webpack and how this PR changes that. Mention the number of changed files (60), additions (+1219), and deletions (-1606) from the PR metadata.\n\n2. **Webpack Configuration API section**: Document the new `webpack` function signature in `next.config.js` including the `isServer` parameter. List all properties passed: `dir`, `dev`, `isServer`, `buildId`, `config`, `defaultLoaders`. Explain that the function now runs twice—once for server, once for client—and that configurations can differ between them.\n\n3. **Plugin Architecture section**: Describe the plugin-based approach for CSS, SASS, LESS, and preact support. For each plugin, document:\n   - The npm package name (e.g., `@zeit/next-css`, `@zeit/next-sass`, `@zeit/next-less`, `@zeit/next-preact`)\n   - Required peer dependencies (e.g., `node-sass` for SASS, `less` for LESS)\n   - The `next.config.js` integration pattern using wrapper functions like `withCSS()`, `withSass()`, `withLess()`, `withPreact()`\n   - The `cssModules: true` option for CSS modules support\n\n4. **Typescript Support section**: Document the `@zeit/next-typescript` package, required dependencies (`typescript`), the `tsconfig.json` configuration with its key compiler options (`target: esnext`, `module: esnext`, `jsx: preserve`, `allowJs: true`, `moduleResolution: node`, `allowSyntheticDefaultImports: true`), and note that pages should use `.tsx` extension.\n\n5. **Preact and React Alternatives section**: Explain how Universal Webpack solves Issue #1564 where preact-compat and react were both bundled. Reference the specific change in `client/index.js` where the hydration logic was modified to check `typeof ReactDOM.hydrate === 'function'` to support React alternatives. Document the server-side alias setup using `@zeit/next-preact/alias`.\n\n6. **Client-Side Changes section**: Document the key changes visible in the diff:\n   - Removal of `source-map-support/register` import from `bin/next-dev.js`\n   - Change from `pkgUp` import to `require('pkg-up').sync('.')` inline usage\n   - Addition of `import * as asset from '../lib/asset'` and `asset.setAssetPrefix(assetPrefix)` in `client/index.js`\n   - Simplification of error handling: removal of `!props.err.ignore` check\n\n7. **Impact and Known Restrictions section**: Note that pages are restricted to core extensions (`.js,.jsx,.ts,.tsx`) despite custom extensions being supported for other files. Mention external source maps opt-in in production. Reference that this fixes issues #3445, #2391 for custom extensions and #1903 for source maps.\n\nThe final deliverable should be a Word document with appropriate section headings. Include a header with To: Next.js Engineering Team, From: [Your Name], Date: 2018-01-30, and Re: Universal Webpack (PR #3578) Technical Design Document.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "docx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document header 'To' field contains 'Next.js Engineering Team'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document header 'From' field is present (any value acceptable).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document header 'Date' field contains '2018-01-30'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document header 'Re' line references PR #3578.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section lists all eight fixed issues: #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the PR changed 60 files.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the PR had +1219 additions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the PR had -1606 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section explains that webpack now transpiles server-side code.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Webpack Configuration API section includes the isServer parameter in the function signature.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Webpack Configuration API section lists all six context properties: dir, dev, isServer, buildId, config, defaultLoaders.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Webpack Configuration API section explains the function runs twice (server and client).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Plugin Architecture section documents CSS support via @zeit/next-css.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Plugin Architecture section documents SASS support via @zeit/next-sass with node-sass as peer dependency.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Plugin Architecture section documents LESS support via @zeit/next-less with less as peer dependency.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Plugin Architecture section mentions the cssModules: true option for CSS modules support.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Plugin Architecture section documents Preact support via @zeit/next-preact.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Typescript Support section references the @zeit/next-typescript package.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Typescript Support section lists typescript as a required dependency.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'target: esnext'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'module: esnext'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'jsx: preserve'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'allowJs: true'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'moduleResolution: node'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Typescript Support section includes the tsconfig.json compiler option 'allowSyntheticDefaultImports: true'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Preact section references Issue #1564 and describes the bundle size problem with both preact-compat and react included.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Preact section documents the ReactDOM.hydrate check for 'typeof ... === function'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Preact section references the server-side alias setup via @zeit/next-preact/alias.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Client-Side Changes section documents removal of source-map-support/register import.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Client-Side Changes section documents the change from pkgUp import to require('pkg-up').sync('.').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Client-Side Changes section documents the addition of asset module import from '../lib/asset'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Client-Side Changes section documents the asset.setAssetPrefix(assetPrefix) call.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Client-Side Changes section documents the removal of !props.err.ignore check in error handling.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section states pages are restricted to .js, .jsx, .ts, .tsx extensions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section mentions custom extensions are supported for non-page files.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact section states external source maps are opt-in in production.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section references issues #3445 and #2391 for custom extensions.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section references issue #1903 for source maps.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact section mentions react-hot-loader was upgraded to v4.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Overview'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Webpack Configuration API'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Plugin Architecture'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Typescript Support'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Preact and React Alternatives'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Client-Side Changes'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a section titled 'Impact and Known Restrictions'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document does not mention the webpack function running twice (server and client).",
+      "category": "content",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document omits the isServer parameter from the webpack configuration API.",
+      "category": "content",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_e58f083906f8b16c",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:vercel/next.js#3578",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Universal Webpack (PR #3578) Technical Design Document",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "Next.js Engineering Team",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "Senior Frontend Engineer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "2018-01-30",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "PR #3578",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "#1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "+1219",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "-1606",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "isServer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "dir, dev, isServer, buildId, config, defaultLoaders",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "module.exports = { webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => { return config } }",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "@zeit/next-css",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "@zeit/next-sass",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "@zeit/next-less",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "@zeit/next-preact",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "cssModules: true",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "node-sass",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "less",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "@zeit/next-typescript",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "typescript",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "esnext",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "preserve",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "1.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "node",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "preact-compat and react were both included",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "function",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "@zeit/next-preact/alias",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "source-map-support/register",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "require('pkg-up').sync('.')",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "import * as asset from '../lib/asset'",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "asset.setAssetPrefix(assetPrefix)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "!props.err.ignore",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": ".js,.jsx,.ts,.tsx",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "external source maps opt-in in production",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "#3445, #2391",
+        "attrs": {}
+      },
+      {
+        "id": "ev_35",
+        "kind": "person",
+        "name": "#1903",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Universal Webpack (PR #3578) Technical Design Document",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "Next.js Engineering Team",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "Senior Frontend Engineer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "2018-01-30",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "PR #3578",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "#1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "60",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "+1219",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "-1606",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "isServer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "dir, dev, isServer, buildId, config, defaultLoaders",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "module.exports = { webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => { return config } }",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "@zeit/next-css",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "@zeit/next-sass",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "@zeit/next-less",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "@zeit/next-preact",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "cssModules: true",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "node-sass",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "less",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "@zeit/next-typescript",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "typescript",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "esnext",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "esnext",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "preserve",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 1.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "node",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "money",
+        "value": 1.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "preact-compat and react were both included",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "function",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "@zeit/next-preact/alias",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "source-map-support/register",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "require('pkg-up').sync('.')",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "import * as asset from '../lib/asset'",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "asset.setAssetPrefix(assetPrefix)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "!props.err.ignore",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "string",
+        "value": ".js,.jsx,.ts,.tsx",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "string",
+        "value": "external source maps opt-in in production",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "string",
+        "value": "#3445, #2391",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "string",
+        "value": "#1903",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "string",
+        "value": "v4",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "docx",
+      "sheets": null,
+      "sections": [
+        {
+          "heading": "Overview",
+          "heading_level": 1,
+          "required_content": [
+            "Reference to issues #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597",
+            "PR statistics: 60 changed files, +1219 additions, -1606 deletions",
+            "Server-side code now transpiled by webpack",
+            "Webpack function runs twice (client and server)"
+          ],
+          "paragraphs": [
+            "The Universal Webpack PR (#3578) represents a significant architectural change to Next.js, enabling webpack to transpile both client-side and server-side code. This resolves a long-standing limitation where server-side code was handled separately from the client build pipeline. The PR fixes multiple community-reported issues: #1564, #1245, #3068, #3241, #3560, #3318, #3203, and #3597.",
+            "The scope of this change is substantial: 60 files were modified, with +1219 lines added and -1606 lines removed, indicating both new functionality and significant refactoring of existing code. The primary user-facing change is that the `webpack` function in `next.config.js` now executes twice—once for the server bundle and once for the client bundle—allowing developers to configure each independently.",
+            "This design document covers the architectural decisions, the new plugin-based extensibility model, changes to the client-side runtime, and implications for the developer experience. It serves as the canonical reference for understanding the Universal Webpack implementation."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Webpack Configuration API",
+          "heading_level": 1,
+          "required_content": [
+            "webpack function signature with isServer parameter",
+            "All properties: dir, dev, isServer, buildId, config, defaultLoaders",
+            "Function runs twice for server and client",
+            "Configurations can differ between server and client"
+          ],
+          "paragraphs": [
+            "The webpack configuration API in `next.config.js` has been updated to support dual compilation. The function now receives a context object as its second argument containing the following properties: `dir`, `dev`, `isServer`, `buildId`, `config`, and `defaultLoaders`.",
+            "The `isServer` boolean is the key addition, allowing developers to branch their webpack configuration based on whether the current compilation target is the server or client bundle. This enables server-specific loaders, plugins, and optimizations that differ from the client build.",
+            "The function signature is: `module.exports = { webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => { return config } }`. This pattern maintains backward compatibility while exposing the new server-side compilation capability.",
+            "A critical implementation detail: the webpack function is now invoked twice during the build process. The first invocation configures the client bundle, and the second configures the server bundle. This allows entirely different loader chains, externals, and optimization settings for each target."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Plugin Architecture",
+          "heading_level": 1,
+          "required_content": [
+            "CSS support via @zeit/next-css",
+            "SASS support via @zeit/next-sass with node-sass peer dependency",
+            "LESS support via @zeit/next-less with less peer dependency",
+            "cssModules: true option",
+            "withCSS(), withSass(), withLess() wrapper pattern",
+            "Preact support via @zeit/next-preact"
+          ],
+          "paragraphs": [
+            "The Universal Webpack PR introduces a plugin-based architecture for CSS preprocessing and framework support. Each capability is packaged as a separate npm module that wraps the base Next.js webpack configuration, following the `withX()` higher-order component pattern.",
+            "CSS support is provided by `@zeit/next-css`. The module is installed via `yarn add @zeit/next-css` and integrated with a simple wrapper: `const withCSS = require('@zeit/next-css'); module.exports = withCSS()`. CSS modules can be enabled by passing `{ cssModules: true }` to the wrapper function, which works with SASS and LESS plugins as well.",
+            "SASS support requires two packages: `@zeit/next-sass` and `node-sass`. The integration follows the same pattern: `const withSass = require('@zeit/next-sass'); module.exports = withSass()`. This abstraction handles the webpack loader configuration for `.scss` files with server-side rendering compatibility.",
+            "LESS support uses `@zeit/next-less` with `less` as a peer dependency. The configuration mirrors the SASS pattern: `const withLess = require('@zeit/next-less'); module.exports = withLess()`. Note: there is a documentation inconsistency in the PR where the LESS example shows `withSass()` instead of `withLess()`; this should be flagged for correction.",
+            "Preact support is provided by `@zeit/next-preact`, which handles the React aliasing that was problematic in Issue #1564. The client-side integration uses `const withPreact = require('@zeit/next-preact'); module.exports = withPreact()`, while the server requires alias setup via `require('@zeit/next-preact/alias')()`."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Typescript Support",
+          "heading_level": 1,
+          "required_content": [
+            "@zeit/next-typescript package",
+            "typescript as required dependency",
+            "tsconfig.json compiler options: target esnext, module esnext, jsx preserve, allowJs true, moduleResolution node, allowSyntheticDefaultImports true",
+            "Pages use .tsx extension"
+          ],
+          "paragraphs": [
+            "TypeScript support is enabled through the `@zeit/next-typescript` plugin, which must be installed alongside the `typescript` compiler: `npm install --save @zeit/next-typescript typescript`. The integration follows the established plugin pattern: `const withTypescript = require('@zeit/next-typescript'); module.exports = withTypescript()`.",
+            "The recommended `tsconfig.json` configuration includes several important compiler options: `target` set to `esnext` for modern JavaScript output, `module` set to `esnext` for ES module syntax, `jsx` set to `preserve` to allow Next.js to handle JSX transformation, `allowJs` set to `true` for incremental adoption, and `moduleResolution` set to `node` for standard Node.js module resolution.",
+            "Additional TypeScript configuration options include `allowSyntheticDefaultImports: true` for compatibility with CommonJS modules, `noUnusedLocals: true` and `noUnusedParameters: true` for code quality, `removeComments: false` to preserve documentation, `preserveConstEnums: true`, `sourceMap: true` for debugging, `skipLibCheck: true` for faster compilation, and `baseUrl` set to `.`.",
+            "Pages should be created with the `.tsx` extension in the `pages` directory, as demonstrated by the example: `pages/index.tsx` containing `export default () => <div>Hello World</div>`. The `typeRoots` configuration points to `./node_modules/@types` and the `lib` array includes `dom`, `es2015`, and `es2016` for type definitions."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Preact and React Alternatives",
+          "heading_level": 1,
+          "required_content": [
+            "Issue #1564 background: preact-compat and react both bundled",
+            "ReactDOM.hydrate check for function type",
+            "@zeit/next-preact/alias for server-side setup",
+            "Client/index.js hydration logic change"
+          ],
+          "paragraphs": [
+            "Issue #1564 documented a significant problem with React alternatives: when aliasing React to Preact or Inferno, both `preact-compat` and `react` were included in the final bundle, resulting in bundles over 100kb. The issue was that `react` and `react-dom` packages still needed to be installed or errors would occur, and the bundle inspection revealed both the compatibility layer and the original React library were present.",
+            "The Universal Webpack PR addresses this through two mechanisms. First, the `@zeit/next-preact` plugin handles the webpack aliasing configuration to ensure only the Preact compatibility layer is included. Second, a critical change was made to `client/index.js`: the hydration logic now checks `typeof ReactDOM.hydrate === 'function'` before calling `ReactDOM.hydrate(reactEl, domEl)` on initial render. This allows React alternatives that don't implement the `hydrate` method to fall through to `ReactDOM.render`.",
+            "The server-side Preact configuration requires explicit alias setup: `require('@zeit/next-preact/alias')()` must be called before initializing the Next.js server. This ensures the server-side rendering uses Preact's implementation rather than React's.",
+            "The bundle size issue described in Issue #1564 is resolved because Universal Webpack's server-side compilation allows the aliasing to be applied consistently across both client and server builds, preventing the accidental inclusion of the original React library."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Client-Side Changes",
+          "heading_level": 1,
+          "required_content": [
+            "Removal of source-map-support/register import",
+            "pkgUp import changed to require('pkg-up').sync('.') inline",
+            "Asset module addition with setAssetPrefix",
+            "Error handling simplification: removed !props.err.ignore check"
+          ],
+          "paragraphs": [
+            "Several client-side changes were made in this PR. In `bin/next-dev.js`, the `source-map-support/register` import was removed, and the `pkgUp` import was changed from a top-level import to an inline require: `const pkgAppPath = require('pkg-up').sync('.')`. This reduces the initial module load and defers the dependency resolution.",
+            "A new asset management module was introduced in `client/index.js`. The code adds `import * as asset from '../lib/asset'` and calls `asset.setAssetPrefix(assetPrefix)` during initialization. This enables static assets to work across zones by setting the asset prefix for URL resolution.",
+            "The error handling in `client/index.js` was simplified. The previous logic checked `if (props.err && !props.err.ignore)` before rendering errors, but the condition was simplified to just `if (props.err)`. The comment explains: 'There are some errors we should ignore. Next.js rendering logic knows how to handle them. These are specially 404 errors'—this specific ignore logic was removed.",
+            "The `renderReactElement` function was updated to check `typeof ReactDOM.hydrate === 'function'` before calling hydrate on initial render, providing compatibility with React alternatives like Preact that may not implement the hydrate method."
+          ],
+          "section_type": "generic"
+        },
+        {
+          "heading": "Impact and Known Restrictions",
+          "heading_level": 1,
+          "required_content": [
+            "Pages restricted to .js,.jsx,.ts,.tsx extensions",
+            "Custom extensions supported for non-page files",
+            "External source maps opt-in in production",
+            "Issues fixed: #3445, #2391 for custom extensions, #1903 for source maps"
+          ],
+          "paragraphs": [
+            "While Universal Webpack enables support for nearly all loaders in the webpack ecosystem, pages remain restricted to the core defined extensions: `.js`, `.jsx`, `.ts`, and `.tsx`. This restriction ensures consistent behavior for the routing system and SSR pipeline. Custom extensions are supported for non-page files, fixing issues #3445 and #2391.",
+            "External source maps are now available as an opt-in feature in production builds, addressing issue #1903. This allows developers to debug production issues with source maps without including them in the default production bundle, balancing debuggability with bundle size.",
+            "The react-hot-loader was upgraded to its latest version (v4), which works in conjunction with Universal Webpack to provide hot module replacement for both client and server code during development.",
+            "The plugin architecture established in this PR creates an extensibility model that will support future additions to the CSS preprocessor ecosystem and framework integrations without requiring changes to the core Next.js build pipeline."
+          ],
+          "section_type": "generic"
+        }
+      ],
+      "doc_header": {
+        "to": "Next.js Engineering Team",
+        "from_": "Senior Frontend Engineer",
+        "date": "2018-01-30",
+        "re": "Universal Webpack (PR #3578) Technical Design Document",
+        "cc": null
+      },
+      "title": "Universal Webpack (PR #3578) Technical Design Document",
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #3578 description with feature list and linked issues",
+          "content_blueprint": {
+            "title": "PR #3578 description with feature list and linked issues",
+            "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "Diff excerpts from vercel/next.js#3578 showing changes to bin/next-dev, client/index.js, client/next-dev.js, and new asset.js",
+          "content_blueprint": {
+            "title": "Diff excerpts from vercel/next",
+            "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "Linked Issue #1564 describing the preact/React aliasing bundle size problem",
+          "content_blueprint": {
+            "title": "Linked Issue #1564 describing the preact/React aliasing bundle size problem",
+            "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title includes 'Universal Webpack' and 'PR #3578'",
+          "value": "Universal Webpack (PR #3578) Technical Design Document",
+          "tolerance": null,
+          "location": "Document title"
+        },
+        {
+          "description": "Header 'To' field",
+          "value": "Next.js Engineering Team",
+          "tolerance": null,
+          "location": "Document header To field"
+        },
+        {
+          "description": "Header 'From' field",
+          "value": "Senior Frontend Engineer",
+          "tolerance": null,
+          "location": "Document header From field"
+        },
+        {
+          "description": "Header 'Date' field",
+          "value": "2018-01-30",
+          "tolerance": null,
+          "location": "Document header Date field"
+        },
+        {
+          "description": "Header 'Re' line references PR number",
+          "value": "PR #3578",
+          "tolerance": null,
+          "location": "Document header Re line"
+        },
+        {
+          "description": "Overview section references all fixed issues",
+          "value": "#1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "PR statistics: number of changed files",
+          "value": "60",
+          "tolerance": null,
+          "location": "Overview section, PR statistics"
+        },
+        {
+          "description": "PR statistics: additions count",
+          "value": "+1219",
+          "tolerance": null,
+          "location": "Overview section, PR statistics"
+        },
+        {
+          "description": "PR statistics: deletions count",
+          "value": "-1606",
+          "tolerance": null,
+          "location": "Overview section, PR statistics"
+        },
+        {
+          "description": "Webpack function signature includes isServer parameter",
+          "value": "isServer",
+          "tolerance": null,
+          "location": "Webpack Configuration API section"
+        },
+        {
+          "description": "All webpack context properties listed",
+          "value": "dir, dev, isServer, buildId, config, defaultLoaders",
+          "tolerance": null,
+          "location": "Webpack Configuration API section"
+        },
+        {
+          "description": "Webpack function example code",
+          "value": "module.exports = { webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => { return config } }",
+          "tolerance": null,
+          "location": "Webpack Configuration API section"
+        },
+        {
+          "description": "CSS plugin package name",
+          "value": "@zeit/next-css",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "SASS plugin package name",
+          "value": "@zeit/next-sass",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "LESS plugin package name",
+          "value": "@zeit/next-less",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "Preact plugin package name",
+          "value": "@zeit/next-preact",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "CSS modules option",
+          "value": "cssModules: true",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "SASS peer dependency",
+          "value": "node-sass",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "LESS peer dependency",
+          "value": "less",
+          "tolerance": null,
+          "location": "Plugin Architecture section"
+        },
+        {
+          "description": "Typescript plugin package name",
+          "value": "@zeit/next-typescript",
+          "tolerance": null,
+          "location": "Typescript Support section"
+        },
+        {
+          "description": "Typescript compiler dependency",
+          "value": "typescript",
+          "tolerance": null,
+          "location": "Typescript Support section"
+        },
+        {
+          "description": "TypeScript target option",
+          "value": "esnext",
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "TypeScript module option",
+          "value": "esnext",
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "TypeScript jsx option",
+          "value": "preserve",
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "TypeScript allowJs option",
+          "value": 1.0,
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "TypeScript moduleResolution option",
+          "value": "node",
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "TypeScript allowSyntheticDefaultImports option",
+          "value": 1.0,
+          "tolerance": null,
+          "location": "Typescript Support section, tsconfig.json"
+        },
+        {
+          "description": "Issue #1564 describes bundle size problem with both preact-compat and react",
+          "value": "preact-compat and react were both included",
+          "tolerance": null,
+          "location": "Preact and React Alternatives section"
+        },
+        {
+          "description": "ReactDOM.hydrate check type",
+          "value": "function",
+          "tolerance": null,
+          "location": "Preact and React Alternatives section"
+        },
+        {
+          "description": "Server preact alias setup function",
+          "value": "@zeit/next-preact/alias",
+          "tolerance": null,
+          "location": "Preact and React Alternatives section"
+        },
+        {
+          "description": "Removed import in bin/next-dev.js",
+          "value": "source-map-support/register",
+          "tolerance": null,
+          "location": "Client-Side Changes section"
+        },
+        {
+          "description": "Changed require pattern in bin/next-dev.js",
+          "value": "require('pkg-up').sync('.')",
+          "tolerance": null,
+          "location": "Client-Side Changes section"
+        },
+        {
+          "description": "New asset module import",
+          "value": "import * as asset from '../lib/asset'",
+          "tolerance": null,
+          "location": "Client-Side Changes section"
+        },
+        {
+          "description": "Asset prefix function call",
+          "value": "asset.setAssetPrefix(assetPrefix)",
+          "tolerance": null,
+          "location": "Client-Side Changes section"
+        },
+        {
+          "description": "Removed error handling condition",
+          "value": "!props.err.ignore",
+          "tolerance": null,
+          "location": "Client-Side Changes section"
+        },
+        {
+          "description": "Page extensions restriction",
+          "value": ".js,.jsx,.ts,.tsx",
+          "tolerance": null,
+          "location": "Impact and Known Restrictions section"
+        },
+        {
+          "description": "Source maps feature availability",
+          "value": "external source maps opt-in in production",
+          "tolerance": null,
+          "location": "Impact and Known Restrictions section"
+        },
+        {
+          "description": "Custom extensions issues fixed",
+          "value": "#3445, #2391",
+          "tolerance": null,
+          "location": "Impact and Known Restrictions section"
+        },
+        {
+          "description": "Source maps issue fixed",
+          "value": "#1903",
+          "tolerance": null,
+          "location": "Impact and Known Restrictions section"
+        },
+        {
+          "description": "react-hot-loader version",
+          "value": "v4",
+          "tolerance": null,
+          "location": "Impact and Known Restrictions section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 323219942
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #3578 description with feature list and linked issues",
+      "content_blueprint": {
+        "title": "PR #3578 description with feature list and linked issues",
+        "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "Diff excerpts from vercel/next.js#3578 showing changes to bin/next-dev, client/index.js, client/next-dev.js, and new asset.js",
+      "content_blueprint": {
+        "title": "Diff excerpts from vercel/next",
+        "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "Linked Issue #1564 describing the preact/React aliasing bundle size problem",
+      "content_blueprint": {
+        "title": "Linked Issue #1564 describing the preact/React aliasing bundle size problem",
+        "body": "# Seed Material: vercel/next.js#3578: Universal Webpack\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#3578\n\nRepository: vercel/next.js\nPR Number: #3578\nPR Title: Universal Webpack\nMerged At: 2018-01-30T15:40:53Z\nChanged Files: 60\nAdditions: +1219, Deletions: -1606\n\n## PR Description\n- Support for nearly all loaders in the webpack ecosystem. Fixes #1564, #1245, #3068, #3241, #3560, #3318, #3203, #3597\r\n- CSS / SASS / LESS support, `css-modules` is also support with a flag. Fixes #3131, #3239, #2534, #3465, #1615, #3143, #2413, #3131, #3519, #3276, #3408\r\n- Support for custom extensions. Pages are still restricted to the core defined extensions though, which are: `.js,.jsx,.ts,.tsx` Fixes #3445, #2391\r\n- Typescript support. Fixes #3511, #2391, #3389, #3124 \r\n- Support for `preact` and any other React clone that supports server side rendering. Fixes #1564\r\n- External source maps opt-in in production.  Fixes #1903.\r\n- Latest version of react-hot-loader\r\n\r\nI'm going to add more issues here whenever I come across one fitting this pull request.\r\n\r\n## Webpack for Client / Server Side\r\nWebpack is now being used to transpile the server side code too. This new feature is mostly backwards compatible. The main user facing difference is that `webpack` in `next.config.js` is now being ran twice, once for the server and once for the client allowing configuration to differ for client and server rendering. This differentiation is marked by a new property `isServer` passed to the `webpack` function. All properties are outlined below:\r\n\r\n```js\r\nmodule.exports = {\r\n  webpack: (config, {dir, dev, isServer, buildId, config, defaultLoaders}) => {\r\n\t  return config\r\n  }\r\n}\r\n```\r\n\r\n## CSS / SASS / LESS\r\nFor importing `.css` `.scss` or `.less`  we’ve created modules which have sane defaults for server side rendering.\r\n\r\n```\r\n# css support\r\nyarn add @zeit/next-css\r\n```\r\n\r\n```\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS()\r\n```\r\n\r\n\r\n### CSS modules \r\n\r\nOptionally you can enable css modules using `cssModules: true` , which works with `withSass` and `withLess` too.\r\n\r\n```js\r\n// next.config.js\r\nconst withCSS = require('@zeit/next-css')\r\nmodule.exports = withCSS({\r\n\tcssModules: true\r\n})\r\n```\r\n\r\n### sass support\r\n\r\n```\r\nnpm install --save @zeit/next-sass node-sass\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withSass = require('@zeit/next-sass')\r\nmodule.exports = withSass()\r\n```\r\n\r\n### less support\r\n\r\n```\r\nnpm install --save @zeit/next-less less\r\n```\r\n\r\n```js\r\n// next.config.js\r\nconst withLess = require('@zeit/next-less')\r\nmodule.exports = withSass()\r\n```\r\n\r\n## Typescript\r\n`npm install --save @zeit/next-typescript typescript`\r\n\r\nCreate a `next.config.js`\r\n\r\n```js\r\n// next.config.js\r\nconst withTypescript = require('@zeit/next-typescript')\r\nmodule.exports = withTypescript()\r\n```\r\n\r\nThen create a `tsconfig.json` in your project\r\n\r\n```json\r\n\r\n{\r\n  \"compileOnSave\": false,\r\n  \"compilerOptions\": {\r\n    \"target\": \"esnext\",\r\n    \"module\": \"esnext\",\r\n    \"jsx\": \"preserve\",\r\n    \"allowJs\": true,\r\n    \"moduleResolution\": \"node\",\r\n    \"allowSyntheticDefaultImports\": true,\r\n    \"noUnusedLocals\": true,\r\n    \"noUnusedParameters\": true,\r\n    \"removeComments\": false,\r\n    \"preserveConstEnums\": true,\r\n    \"sourceMap\": true,\r\n    \"skipLibCheck\": true,\r\n    \"baseUrl\": \".\",\r\n    \"typeRoots\": [\r\n      \"./node_modules/@types\"\r\n    ],\r\n    \"lib\": [\r\n      \"dom\",\r\n      \"es2015\",\r\n      \"es2016\"\r\n    ]\r\n  }\r\n}\r\n```\r\n\r\nCreate pages in the `pages` directory\r\n\r\n```js\r\n// pages/index.tsx\r\nexport default () => <div>Hello World</div>\r\n```\r\n\r\n## preact\r\nWith universal webpack and the upgrade to react-hot-loader v4 `preact` is now easily configured\r\n\r\n```js\r\n// next.config.js\r\nconst withPreact = require('@zeit/next-preact')\r\nmodule.exports = withPreact()\r\n```\r\n\r\n```js\r\n// server.js\r\nrequire('@zeit/next-preact/alias')()\r\nconst { createServer } = require('http')\r\nconst next = require('next')\r\n\r\n\r\nconst app = next({ dev: process.env.NODE_ENV !== 'production' })\r\nconst handle = app.getRequestHandler()\r\n\r\napp.prepare()\r\n.then(() => {\r\n  createServer(handle)\r\n  .listen(port, () => {\r\n    console.log(`> Ready on http://localhost:${port}`)\r\n  })\r\n})\r\n```\r\n\r\n## Source Maps\r\nNext is configured to serve the `.js.map` route for bundled files. You\n\n## Linked Issue #1564\nSorry, I seem to be a nag... 😞\r\n\r\nI'm not sure at what point it was, but the latest few `beta` releases (and current `2.0` release 🎉) lost the ability to fully alias React.\r\n\r\nEven with a `next.config.js` fully configured for aliasing React to Preact or Inferno, the `react` and `react-dom`still need to be installed, or else an error is thrown instantly. Not all that reassuring to begin with.\r\n\r\nAfter installing those two, the final bundle (`.next/commons.js` in beta, `.next/app.js` in 2.0) is over 100kb. I recognize this to be larger than what the `using-{preact|inferno}` examples produced in the past. \r\n\r\nSo, suspiciously, I combed through the output code and, sure enough, `preact`, `preact-compat` **and** `react` are all there.\r\n\r\nI tested with Preact, but Inferno would operate exactly the same. \r\n\r\nFor combing, search for `expected a ReactNode`.  Neither of the \"compat\" packages include this error message.\n\n## Diff (first 3000 chars)\ndiff --git a/asset.js b/asset.js\nnew file mode 100644\nindex 000000000000..fd0bd5dbb15e\n--- /dev/null\n+++ b/asset.js\n@@ -0,0 +1 @@\n+module.exports = require('./dist/lib/asset')\ndiff --git a/bin/next-dev b/bin/next-dev\nindex bfdfc29c2780..edf2255b85ba 100755\n--- a/bin/next-dev\n+++ b/bin/next-dev\n@@ -1,11 +1,9 @@\n #!/usr/bin/env node\n-import 'source-map-support/register'\n import { resolve, join } from 'path'\n import parseArgs from 'minimist'\n import { existsSync, readFileSync } from 'fs'\n import Server from '../server'\n import { printAndExit } from '../lib/utils'\n-import pkgUp from 'pkg-up'\n \n const argv = parseArgs(process.argv.slice(2), {\n   alias: {\n@@ -64,7 +62,7 @@ srv.start(argv.port, argv.hostname)\n .catch((err) => {\n   if (err.code === 'EADDRINUSE') {\n     let errorMessage = `Port ${argv.port} is already in use.`\n-    const pkgAppPath = pkgUp.sync('.')\n+    const pkgAppPath = require('pkg-up').sync('.')\n     const appPackage = JSON.parse(readFileSync(pkgAppPath, 'utf8'))\n     const nextScript = Object.entries(appPackage.scripts).find(scriptLine => scriptLine[1] === 'next')\n     if (nextScript) errorMessage += `\\nUse \\`npm run ${nextScript[0]} -- -p <some other port>\\`.`\ndiff --git a/client/index.js b/client/index.js\nindex 0283d98197fd..78d953e5ae28 100644\n--- a/client/index.js\n+++ b/client/index.js\n@@ -6,6 +6,7 @@ import EventEmitter from '../lib/EventEmitter'\n import App from '../lib/app'\n import { loadGetInitialProps, getURL } from '../lib/utils'\n import PageLoader from '../lib/page-loader'\n+import * as asset from '../lib/asset'\n \n // Polyfill Promise globally\n // This is needed because Webpack2's dynamic loading(common chunks) code\n@@ -29,6 +30,9 @@ const {\n   location\n } = window\n \n+// With this, static assets will work across zones\n+asset.setAssetPrefix(assetPrefix)\n+\n const asPath = getURL()\n \n const pageLoader = new PageLoader(buildId, assetPrefix)\n@@ -93,10 +97,7 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa\n }\n \n export async function render (props) {\n-  // There are some errors we should ignore.\n-  // Next.js rendering logic knows how to handle them.\n-  // These are specially 404 errors\n-  if (props.err && !props.err.ignore) {\n+  if (props.err) {\n     await renderError(props.err)\n     return\n   }\n@@ -159,7 +160,8 @@ async function doRender ({ Component, props, hash, err, emitter: emitterProp = e\n \n let isInitialRender = true\n function renderReactElement (reactEl, domEl) {\n-  if (isInitialRender) {\n+  // The check for `.hydrate` is there to support React alternatives like preact\n+  if (isInitialRender && typeof ReactDOM.hydrate === 'function') {\n     ReactDOM.hydrate(reactEl, domEl)\n     isInitialRender = false\n   } else {\ndiff --git a/client/next-dev.js b/client/next-dev.js\nindex ef771c32c615..7f5e13e0005f 100644\n--- a/client/next-dev.js\n+++ b/client/next-dev.js\n@@ -1,10 +1,11 @@\n-import 'react-hot-loader/patch'\n import stripAnsi from 'strip-ansi'\n import initNext, * as next from './'\n import E"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_e58f083906f8b16c/design_doc.docx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e58f083906f8b16c/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e58f083906f8b16c/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e58f083906f8b16c/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:56:19.800964+00:00"
+}

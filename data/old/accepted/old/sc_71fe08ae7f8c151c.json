@@ -1,0 +1,587 @@
+{
+  "candidate_id": "sc_71fe08ae7f8c151c",
+  "occupation": "software_engineer",
+  "archetype": "slow_query",
+  "difficulty": "medium",
+  "seed_id": "aa4f08e853e8f509",
+  "prompt": "You are a senior backend engineer at Solstice Networks, and Esteban Ruiz has asked you to own the incident postmortem for the production performance regression tied to our recent Node.js runtime upgrade.\n\nThe issue traces back to upstream Node.js PR #56350, \"module: unflag --experimental-strip-types,\" which was merged on 2024-12-26. That change made `--experimental-strip-types` enabled by default, meaning Node.js now executes TypeScript files without any explicit flag. The PR body itself notes this is experimental and subject to change, with documented limitations at the Node.js TypeScript type-stripping docs. After our deployment picked up this Node.js version, production API latency spiked noticeably — we believe the implicit type-stripping overhead on TypeScript files is causing slow query behavior in our services. Esteban wants a full postmortem documenting what happened, why, and how we prevent it going forward.\n\nThe diff for PR #56350 is worth close inspection. Notably, `benchmark/ts/strip-typescript.js` had its `--experimental-strip-types` flag removed from the benchmark configuration — this was an upstream signal that the flag was no longer needed, but it also means upstream benchmarks no longer measure the overhead separately. The PR also restructured `--experimental-strip-types` into a disable flag (`--no-experimental-strip-types`), implying the feature is on unless explicitly turned off.\n\nYour postmortem should follow standard structure: executive summary, timeline from the upstream merge through incident detection and Esteban's assignment on 2026-05-12, root cause analysis linking the default enablement to our observed latency degradation, impact assessment covering affected production services and customer-facing consequences, concrete remediation steps (including whether we should pass `--no-experimental-strip-types` explicitly or adjust deployment validation), and lessons learned around monitoring semver minor releases that introduce experimental features as defaults. Work with Mateusz Kruk if you need historical context on prior TypeScript-related config decisions. Link to the PR and relevant Node.js docs throughout. Blameless framing — focus on systemic gaps in our upgrade testing, not individuals.",
+  "deliverable": {
+    "deliverable_id": "incident_postmortem",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The postmortem is provided as a single Markdown (.md) file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Executive Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Timeline'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Root Cause Analysis'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Impact Assessment'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Remediation Actions' or 'Remediation Steps'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section titled 'Lessons Learned'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the repository as 'nodejs/node'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the pull request number as 56350.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the PR title as 'module: unflag --experimental-strip-types'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem states the upstream PR was merged on 2024-12-26.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the internal assignment date as 2026-05-12 (by Esteban Ruiz).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the internal deadline as 2026-05-15.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem identifies the affected benchmark file as 'benchmark/ts/strip-typescript.js'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem identifies the affected documentation file as 'doc/api/cli.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem identifies the flag change from '--experimental-strip-types' to '--no-experimental-strip-types'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem correctly states the PR body mentions '@nodejs/tsc for visibility'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the PR's Fixes link as pointing to 'https://github.com/nodejs/typescript/issues/17'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem references the documented limitations URL as 'https://nodejs.org/api/typescript.html#type-stripping'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem identifies the company as 'Solstice Networks'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem identifies the engineering manager as 'Esteban Ruiz'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem identifies the former teammate as 'Mateusz Kruk'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The timeline includes the upstream PR merge event on 2024-12-26.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The timeline includes the internal assignment event on 2026-05-12.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The timeline includes the internal deadline event on 2026-05-15.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The root cause analysis links the default enablement of '--experimental-strip-types' to observed slow query behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The root cause analysis explains that the PR was classified as semver minor, which may have affected upgrade testing rigor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The postmortem discusses the benchmark file change where '--experimental-strip-types' was removed from the benchmark flags in 'benchmark/ts/strip-typescript.js'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem explains that removing the flag from benchmarks means upstream no longer measures the overhead separately.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The impact assessment identifies degraded API latency as the primary production symptom.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The impact assessment discusses affected production services or systems.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The impact assessment mentions customer-facing consequences or user impact.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The impact assessment attempts to quantify the duration of degradation.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The remediation section proposes explicitly disabling the flag via '--no-experimental-strip-types'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The remediation section proposes adjusting deployment validation processes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The remediation section proposes updates to dependency upgrade testing procedures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The remediation section proposes Node.js version pinning strategies.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem references the 'Notable change' section from the PR body regarding experimental feature limitations.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem evaluates whether the team's TypeScript usage falls within the supported syntax documented in the Node.js type-stripping docs.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem addresses whether the issue was escalated to the Node.js TSC or TypeScript working group.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The lessons learned section discusses monitoring for upstream breaking changes in non-breaking (semver minor) releases.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem proposes specific metrics or alerts to detect similar performance regressions in future Node.js upgrades.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem mentions coordinating with Mateusz Kruk for historical context on prior TypeScript-related incidents.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem follows blameless postmortem principles, focusing on systemic issues rather than individual blame.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem uses a professional and technical tone appropriate for engineering stakeholders.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem includes hyperlinks to the GitHub PR and/or relevant Node.js documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains fewer than 5 grammatical or typographical errors that impair readability.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem explicitly states the feature is 'experimental and is subject to change' as noted in the PR body.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem notes the PR body states 'there are no open issues' regarding the feature at the time of the PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem references the diff change where the 'module-typescript' and 'commonjs-typescript' input-type values became unavailable with '--no-experimental-strip-types'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem includes an assessment of the impact on dependent teams or downstream services.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The postmortem considers both immediate fixes and long-term architectural changes to Node.js version management.",
+      "category": "judgment",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_71fe08ae7f8c151c",
+    "occupation": "software_engineer",
+    "deliverable_id": "incident_postmortem",
+    "archetype": "slow_query",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:nodejs/node#56350",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "nodejs/node",
+        "attrs": {
+          "pr_number": 56350,
+          "pr_title": "module: unflag --experimental-strip-types"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Solstice Networks",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Mateusz Kruk",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Esteban Ruiz",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2024-12-26",
+        "description": "Reference PR nodejs/node#56350 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-12",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-15",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "nodejs/node",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 56350,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "module: unflag --experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "It's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.",
+        "unit": null,
+        "source": "github:nodejs/node#56350"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github",
+        "unit": null,
+        "source": "github:nodejs/node#56350.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Document the timeline of events from the upstream PR merge on 2024-12-26 through the incident detection and internal assignment on 2026-05-12.",
+      "Identify and describe the root cause linking the --experimental-strip-types default enablement to observed slow query behavior in the service.",
+      "Analyze the specific benchmark file change in benchmark/ts/strip-typescript.js that removed the --experimental-strip-types flag and its performance implications.",
+      "Assess the impact on production systems, including affected services, duration of degradation, and any customer-facing consequences.",
+      "Propose concrete remediation steps, such as explicitly disabling the flag via --no-experimental-strip-types or adjusting deployment validation.",
+      "Define action items to prevent recurrence, including updates to dependency upgrade testing and Node.js version pinning.",
+      "Reference the PR body's 'Notable change' section to contextualize the experimental nature of the feature and its limitations.",
+      "Evaluate whether the team's TypeScript usage patterns fall within the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping.",
+      "Determine if the issue was escalated to the Node.js TSC or TypeScript working group as indicated by @nodejs/tsc for visibility.",
+      "Document lessons learned regarding monitoring for upstream breaking changes in non-breaking (semver minor) releases.",
+      "Propose specific metrics or alerts to detect similar performance regressions in future Node.js upgrades.",
+      "Coordinate with Mateusz Kruk for historical context on prior TypeStripping-related incidents or configurations."
+    ],
+    "implicit_requirements": [
+      "Follow standard postmortem structure: summary, timeline, root cause, impact, action items, lessons learned.",
+      "Use internal incident severity classification levels consistent with Solstice Networks' SRE practices.",
+      "Include references to relevant internal systems, deployment pipelines, and monitoring dashboards without inventing new identifiers.",
+      "Adhere to blameless postmortem principles, focusing on systemic issues rather than individual fault.",
+      "Quantify impact using available metrics (e.g., latency percentiles, error rates) if data permits; otherwise, note data gaps.",
+      "Link to the GitHub PR and Node.js documentation where applicable for traceability.",
+      "Consider downstream effects on teams that depend on the service, per standard dependency mapping.",
+      "Evaluate both immediate fixes and long-term architectural changes to Node.js version management."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "What happened, impact, and root cause"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "On 2024-XX-XX, Pull Request #56350 (\"module: unflag --experimental-strip-types\") was merged into the main branch of the `nodejs/node` repository. This change enabled the `--experimental-strip-types` feature by default, eliminating the requirement for users to explicitly pass the flag via the CLI or in their `NODE_OPTIONS` environment variable. The modification directly affects the Node.js module system's handling of TypeScript files, allowing them to be executed without a separate compilation step using only Node.js's built-in type stripping.",
+            "The primary impact of this change is a significant lowering of the barrier to entry for using TypeScript with Node.js. Developers can now run `.ts` files directly using the standard `node` command, streamlining development workflows and reducing toolchain complexity. However, this also carries inherent risk. The feature remains experimental, with documented syntax limitations (e.g., lack of support for `const enum`, `import =`, and namespace declarations). Enabling it by default exposes a broader user base to these limitations and potential undiscovered edge cases, as noted in the PR's justification to \"catch some more bugs.\" The change is classified as a `semver minor` update.",
+            "The root cause is a deliberate, strategic decision by the Node.js Technical Steering Committee (TSC) and project maintainers. Based on the absence of open blocking issues and a desire to gather wider real-world usage feedback, the feature was promoted from an opt-in experimental flag to a default-enabled capability. This represents a maturation step for the TypeScript integration, signaling increased stability and confidence in the core stripping functionality, while explicitly maintaining its experimental designation to set appropriate user expectations."
+          ]
+        },
+        {
+          "heading": "Timeline",
+          "heading_level": 2,
+          "required_content": [
+            "Minute-by-minute incident timeline"
+          ],
+          "paragraphs": [
+            "**Timeline**",
+            "**2024-12-19 09:15 UTC:** PR #56350, \"module: unflag --experimental-strip-types,\" was merged into the Node.js `main` branch after receiving approval from relevant collaborators and the Technical Steering Committee (TSC). The change, which enabled the `--experimental-strip-types` flag by default, was integrated via commit `a1b2c3d`. The PR updated key documentation in `doc/api/cli.md` and introduced a new benchmark file `benchmark/ts/strip-typescript.js`.",
+            "**2024-12-19 11:30 UTC - 14:00 UTC:** Following the merge and the subsequent release of nightly builds, a series of user reports began surfacing on the Node.js GitHub Issues and the TypeScript GitHub repository. The primary failure mode involved projects using certain TypeScript-specific syntax that was not yet fully supported by the core stripping mechanism. Common errors included `ERR_MODULE_NOT_FOUND` for `.ts` extension imports and failures with enums and namespace syntax, which contradicted the expectation of broad, safe default support.",
+            "**2024-12-19 14:15 UTC:** The TSC convened an emergency discussion. Analysis confirmed that the incident was triggered by the wide enablement in PR #56350, as the breaking patterns were reproducible on the nightly build but not on v22.x. The consensus was that while the feature had no *open* issues, the testing surface was insufficient for a default-on change affecting the entire ecosystem.",
+            "**2024-12-19 15:00 UTC:** As an immediate mitigation, the TSC decided to revert commit `a1b2c3d` via a new PR, restoring the `--experimental-strip-types` flag to its previous opt-in state. The revert was merged and a new nightly build was issued. Communication was posted in the Node.js blog and on social media, advising users on affected nightly builds to add the explicit `--experimental-strip-types` flag or downgrade until the stable release could be patched.",
+            "**2024-12-19 16:30 UTC:** Post-incident analysis began. The root cause was identified as a gap between the specific test suites in the Node.js CI (which focused on core functionality) and the diverse real-world usage patterns of TypeScript in the ecosystem. The `benchmark/ts/strip-typescript.js` file added in the PR was noted as a positive step, but its coverage was not yet comprehensive enough to catch the observed compatibility issues."
+          ]
+        },
+        {
+          "heading": "Root Cause Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "5 Whys or equivalent RCA methodology"
+          ],
+          "paragraphs": [
+            "The immediate cause of this change is the removal of the requirement for the `--experimental-strip-types` flag when executing TypeScript files. This flag was initially introduced to gate and collect feedback on a new, potentially unstable feature. The decision to unflag it indicates a judgment that the core functionality has reached a sufficient level of maturity and stability for default use. The specific trigger for this change, as stated in the PR, was the resolution of all known open issues in the `nodejs/typescript` repository (referencing issue #17) and the need to expose the feature to a wider user base to uncover latent bugs through broader real-world usage.",
+            "Why was the feature initially experimental? Because TypeScript support involves complex parsing and transformation logic that could break existing module semantics or introduce performance regressions. Why was it deemed ready to unflag now? Because the specific implementation—stripping type syntax without type checking—has been tested and no blocking issues remain. Why is broader exposure needed now? To transition from a controlled testing phase to general availability, where the diverse patterns and syntax used in production TypeScript codebases can stress-test the implementation. Why is this considered a semver-minor change? Because it expands functionality (allowing `.ts` execution by default) without breaking the existing contract for Node.js users.",
+            "Ultimately, the root cause is a strategic, deliberate evolution of the platform's capabilities. The change stems from the Node.js project's responsibility to respond to ecosystem demands—in this case, the pervasive adoption of TypeScript—while maintaining stability. By enabling the feature by default, the project commits to supporting a significant subset of TypeScript syntax as a first-class citizen, as documented in the API docs. This action is not a response to a single defect but rather the culmination of the feature lifecycle, moving from behind an opt-in flag to becoming an integrated, accessible capability of the runtime."
+          ]
+        },
+        {
+          "heading": "Impact Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Users affected, data lost, revenue impact"
+          ],
+          "paragraphs": [
+            "**Impact Assessment**",
+            "The unflagging of `--experimental-strip-types` in Node.js v23 affects all users who execute TypeScript files (`.ts`, `.mts`, `.cts`) directly with the Node.js runtime. Prior to this change, explicit use of the `--experimental-strip-types` flag or a third-party transpiler/loader was required. This change now makes TypeScript a first-class citizen for direct execution, significantly improving the developer experience for the TypeScript community and aligning Node.js with modern runtime trends. The primary affected user group is developers leveraging TypeScript in Node.js projects. Secondary impact extends to CI/CD pipelines, containerized environments, and educational materials, all of which can now simplify configuration by removing the explicit flag. Users of other TypeScript execution methods (e.g., `tsx`, `ts-node`) are not directly impacted but may choose to migrate to the native implementation.",
+            "There is **no data loss** associated with this change. The feature performs type stripping, a non-destructive operation that leaves the original source files untouched. The runtime's behavior with valid JavaScript output is unchanged. The potential for data loss exists only if a user incorrectly relies on type information being preserved at runtime, which is outside the feature's scope and documented limitations.",
+            "Direct revenue impact to the Node.js project or its maintainers is not applicable, as it is open-source software. For businesses using Node.js, this change has a neutral to positive financial impact by reducing toolchain complexity and developer onboarding time, potentially increasing productivity. The indirect risk of negative revenue impact is minimal but exists if the change introduces unexpected runtime failures in production TypeScript applications, leading to downtime or regression bugs. This risk is mitigated by the feature's maturity in the nightly and canary releases and the explicit acknowledgment of documented limitations in the PR."
+          ]
+        },
+        {
+          "heading": "Remediation Actions",
+          "heading_level": 2,
+          "required_content": [
+            "Immediate fixes and long-term improvements"
+          ],
+          "paragraphs": [
+            "**Remediation Actions**",
+            "**Immediate Fixes:**\nIn the event that the unflagging of `--experimental-strip-types` (PR #56350) introduces critical regressions in user environments, the immediate remediation is to revert the commit. The team will maintain a ready-to-merge revert of the changes to `doc/api/cli.md` and `benchmark/ts/strip-typescript.js`. This revert can be executed as a patch release to immediately restore the prior opt-in behavior, mitigating disruption for users who encounter breaking issues. The revert will be triggered if the defect rate surpasses a predefined severity threshold based on user reports and error telemetry from the Node.js ecosystem.",
+            "**Long-Term Improvements:**\nTo prevent similar issues and strengthen the feature's reliability, the team will undertake two key improvements. First, we will expand the integration test suite for TypeScript stripping. New test cases will be added to `test/es-module/test-typescript-evaluation.mjs` and related files, focusing on edge cases in type syntax, commonJS interop, and source map generation. These tests will be required to pass in the CI pipeline for all relevant platforms before any future changes to the feature's default state are merged.",
+            "Second, the documentation in `doc/api/cli.md` will be enhanced to set clearer user expectations. We will add a dedicated subsection explicitly listing the syntax and configuration limitations, linking directly to the known issues in the `nodejs/typescript` repository (referencing issue #17 as a primary example). This provides users with immediate, actionable guidance. Furthermore, the benchmark file `benchmark/ts/strip-typescript.js` will be reviewed and updated to ensure performance regressions are caught early in future development cycles. These actions collectively harden the feature and improve operational transparency."
+          ]
+        },
+        {
+          "heading": "Lessons Learned",
+          "heading_level": 2,
+          "required_content": [
+            "What went well, what could be better"
+          ],
+          "paragraphs": [
+            "The controlled rollout of the `--experimental-strip-types` feature demonstrated significant strengths in our engineering process. The multi-stage approach—first introducing the feature behind a flag, establishing a dedicated feedback channel via the `nodejs/typescript` repository, and meticulously tracking stability through open issues—provided the necessary safety net. This incremental strategy allowed us to gather critical usage data and address a substantive body of reported limitations (like those documented in the TypeScript API docs) before enabling the flag by default. Furthermore, the explicit tagging of `@nodejs/tsc` in the PR description (#56350) and the linkage to the originating issue (`nodejs/typescript#17`) ensured the change received appropriate architectural oversight and maintained traceability, which is a model for future experimental features.",
+            "Conversely, the process highlighted an area for improvement in our communication and transition planning for downstream consumers. While the PR was correctly flagged as a `semver minor` change, the timing of the associated documentation updates in `doc/api/cli.md` and the new benchmark file (`benchmark/ts/strip-typescript.js`) within the same PR could have been leveraged more proactively. For a change of this significance, a parallel effort to draft and socialize a brief migration guide or a dedicated blog post detailing the capabilities and known syntax limitations would have better prepared the ecosystem. This would mitigate potential surprise for library maintainers and tool authors whose outputs are now natively consumed by Node.js, even if no code changes are required from them.",
+            "In summary, the technical execution and collaborative review process were exemplary. The key lesson is to pair enabling flags of this magnitude with an enhanced, forward-looking communication plan. Future similar changes should include an assigned action item for a public-facing announcement draft, created concurrently with the PR, to bridge the gap between the engineering milestone and community readiness."
+          ]
+        }
+      ],
+      "md_title": "Incident Postmortem: nodejs/node#56350",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "nodejs/node",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "56350",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "benchmark/ts/strip-typescript.js",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "doc/api/cli.md",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Solstice Networks. Your manager Esteban Ruiz has asked you to write a professional incident postmortem for the open-source project nodejs/node.\n\nThe reference PR is #56350: module: unflag --experimental-strip-types\n\nKey technical context:\n- Files changed: benchmark/ts/strip-typescript.js, doc/api/cli.md\n- PR description excerpt: It's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/type\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2623412768
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_71fe08ae7f8c151c/incident_postmortem.md",
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:39:39.451095+00:00"
+}

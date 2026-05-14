@@ -1,0 +1,24 @@
+{
+  "seed_id": "b7608fe00569c626",
+  "source": "github_issue_pr",
+  "occupation": "software_engineer",
+  "identifier": "pr:psf/requests#5688",
+  "title": "psf/requests#5688: Upgrade to chardet 4.x",
+  "fetched_at": "2026-05-13",
+  "payload": {
+    "repo": "psf/requests",
+    "pr_number": 5688,
+    "pr_title": "Upgrade to chardet 4.x",
+    "pr_body": "I just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.",
+    "linked_issue": null,
+    "issue_body": "",
+    "additions": 3,
+    "deletions": 5,
+    "changed_files": 2,
+    "merged_at": "2020-12-14T17:29:11Z",
+    "diff": "diff --git a/requests/__init__.py b/requests/__init__.py\nindex c00f556bbc..f8f94295f9 100644\n--- a/requests/__init__.py\n+++ b/requests/__init__.py\n@@ -65,10 +65,8 @@ def check_compatibility(urllib3_version, chardet_version):\n     # Check chardet for compatibility.\n     major, minor, patch = chardet_version.split('.')[:3]\n     major, minor, patch = int(major), int(minor), int(patch)\n-    # chardet >= 3.0.2, < 3.1.0\n-    assert major == 3\n-    assert minor < 1\n-    assert patch >= 2\n+    # chardet >= 3.0.2, < 5.0.0\n+    assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n \n \n def _check_cryptography(cryptography_version):\ndiff --git a/setup.py b/setup.py\nindex e714bfa441..7ba4b2a25f 100755\n--- a/setup.py\n+++ b/setup.py\n@@ -42,7 +42,7 @@ def run_tests(self):\n packages = ['requests']\n \n requires = [\n-    'chardet>=3.0.2,<4',\n+    'chardet>=3.0.2,<5',\n     'idna>=2.5,<3',\n     'urllib3>=1.21.1,<1.27',\n     'certifi>=2017.4.17'\n",
+    "diff_truncated": false,
+    "language": "Python"
+  },
+  "text_excerpt": "Repo: psf/requests\nPR #5688: Upgrade to chardet 4.x\n\nPR body:\nI just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.\n\nLinked issue #None:\n(none)"
+}

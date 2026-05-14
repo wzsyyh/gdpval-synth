@@ -1,0 +1,760 @@
+{
+  "candidate_id": "sc_0c4b66328875b76f",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "0c4b66328875b76f",
+  "prompt": "You are a Senior Software Engineer on the Pydantic Core Team. The maintainer, Samuel Colvin, has merged PR #2721, which adds VS Code autocomplete support via a `dataclass_transform` marker. The PR description references Eric Traut's draft standard and explains how a minimal `__dataclass_transform__` shim enables Pyright/Pylance support immediately. However, the PR description is informal and lacks the structured detail needed for onboarding new contributors or for archival in the project's technical documentation. Your task is to produce a formal Design Document that captures the motivation, technical approach, and impact of this change for the project's engineering wiki.\n\nMaterials provided: The full PR description and diff for pydantic/pydantic#2721 (merged 2021-09-06), including the changelog entry, documentation screenshots, and the new VS Code integration guide.\n\nTask requirements:\n1. Create a Design Document in Markdown format titled 'Design Document: VS Code Autocomplete Support via dataclass_transform'.\n2. The document must have the following sections in this order: Abstract, Motivation, Technical Approach, Implementation Details, Impact and Trade-offs, and References.\n3. In the Abstract, summarize the change in 2-3 sentences, mentioning the `__dataclass_transform__` mechanism and its effect on Pyright/Pylance.\n4. In the Motivation section, explain the user problem (lack of autocomplete in VS Code) and cite the draft standard discussion (pyright/discussions/1782) and the related pydantic discussion (pydantic/discussions/2698).\n5. In the Technical Approach, describe the decorator pattern applied to the metaclass, referencing the draft standard at `specs/dataclass_transforms.md`. Explain how the shim works before standard acceptance.\n6. In Implementation Details, reference the specific files changed: the changelog entry `changes/2721-tiangolo.md` and the new documentation file `docs/visual_studio_code.md`. Note the addition of 8 screenshot assets (`vs_code_01.png` through `vs_code_08.png`).\n7. In Impact and Trade-offs, discuss that this change enables autocomplete comparable to the PyCharm plugin by koxudaxi, and mention that if the standard is accepted, it could simplify the pydantic mypy plugin.\n8. The References section must list the draft standard URL, the pyright discussion URL, and the pydantic discussion URL as bullet points.\n9. Use professional, technical language throughout. Do not invent any technical details not present in the source material.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file with the title 'Design Document: VS Code Autocomplete Support via dataclass_transform'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains all six required section headings in order: Abstract, Motivation, Technical Approach, Implementation Details, Impact and Trade-offs, References.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Abstract section summarizes the change in 2-3 sentences.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Abstract explicitly mentions the `__dataclass_transform__` mechanism.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Abstract mentions that the mechanism affects Pyright or Pylance type checking.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section explains the user problem of lacking autocomplete in VS Code.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section references the pyright discussion URL containing '/pyright/discussions/1782'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section references the pydantic discussion URL containing '/pydantic/discussions/2698'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section mentions Eric Traut as the author of Pyright.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section mentions the draft standard is for `typing.dataclass_transform()`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Approach section references the draft standard path 'specs/dataclass_transforms.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Approach section describes applying a decorator to Pydantic's metaclass (ModelMetaclass).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Approach section explains the use of a custom `__dataclass_transform__` function as a shim before standard acceptance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Approach section notes that Pyright/Pylance already support the custom decorator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section references the changelog file 'changes/2721-tiangolo.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section references the new documentation file 'docs/visual_studio_code.md'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section mentions the addition of screenshot assets for VS Code integration.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section correctly states there are 8 screenshot assets.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section correctly names the screenshot range as 'vs_code_01.png' through 'vs_code_08.png'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact and Trade-offs section discusses improved developer experience for VS Code users.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact and Trade-offs section mentions that autocomplete is comparable to the PyCharm plugin by koxudaxi.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact and Trade-offs section mentions that if the standard is accepted, it could simplify the pydantic mypy plugin.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact and Trade-offs section notes the change is additive and does not affect runtime behavior or public API.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section is present and formatted as a list of URLs.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The References section includes the full URL for the draft standard: https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The References section includes the full URL for the pyright discussion: https://github.com/microsoft/pyright/discussions/1782",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The References section includes the full URL for the pydantic discussion: https://github.com/samuelcolvin/pydantic/discussions/2698",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses professional, technical language throughout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not invent technical details, names, or citations not present in the source material.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR number #2721 is mentioned at least once in the document.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The merged date (2021-09-06) is referenced or implied by context (e.g., 'merged PR').",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PyCharm plugin is credited to contributor koxudaxi.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Approach section explains that the shim uses a custom `__dataclass_transform__` function rather than `typing.dataclass_transform()`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section mentions the term 'dataclass-like' behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section acknowledges reliance on an unofficial draft standard as a trade-off.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section notes the documentation provides a guide for configuring VS Code.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain placeholders or TODO markers in the final output.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Abstract mentions the feature enables autocompletion or 'IntelliSense' for model instances.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Approach states that the decorator is applied to ModelMetaclass (Pydantic's metaclass).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact section notes that the change has no impact on Pydantic's runtime behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section mentions the gap in developer experience prior to the change.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section states that the code change itself is minimal and primarily adds a decorator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section uses bullet points for the three URLs.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document structure flows logically from problem to solution to impact.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Approach section mentions the draft standard proposes `typing.dataclass_transform()`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact and Trade-offs section explicitly mentions the PyCharm plugin is maintained by koxudaxi.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain spelling or grammatical errors that obscure meaning.",
+      "category": "style",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_0c4b66328875b76f",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:pydantic/pydantic#2721",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: VS Code Autocomplete Support via dataclass_transform",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "__dataclass_transform__",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "Pyright",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "pyright/discussions/1782",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "pydantic/discussions/2698",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "Eric Traut",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "specs/dataclass_transforms.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "metaclass",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "changes/2721-tiangolo.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "docs/visual_studio_code.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "vs_code_01.png through vs_code_08.png",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "koxudaxi",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "mypy plugin",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "https://github.com/microsoft/pyright/discussions/1782",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "https://github.com/samuelcolvin/pydantic/discussions/2698",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: VS Code Autocomplete Support via dataclass_transform",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "__dataclass_transform__",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "Pyright",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "pyright/discussions/1782",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "pydantic/discussions/2698",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "Eric Traut",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "specs/dataclass_transforms.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "metaclass",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "changes/2721-tiangolo.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "docs/visual_studio_code.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "8",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "vs_code_01.png through vs_code_08.png",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "koxudaxi",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "mypy plugin",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "https://github.com/microsoft/pyright/discussions/1782",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "https://github.com/samuelcolvin/pydantic/discussions/2698",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Abstract",
+          "heading_level": 2,
+          "required_content": [
+            "Summary of the change",
+            "Mention of __dataclass_transform__",
+            "Effect on Pyright/Pylance"
+          ],
+          "paragraphs": [
+            "This document describes the design and rationale for the change introduced in PR #2721, which adds autocomplete (\"IntelliSense\") support for Pydantic models in Visual Studio Code. The core mechanism is the application of a `__dataclass_transform__` marker to Pydantic's metaclass, which signals to type checkers like Pyright that the class behaves like a dataclass. This enables automatic generation of a typed `__init__` constructor, providing field name autocompletion during model instantiation in supported editors like VS Code via the Pylance extension."
+          ]
+        },
+        {
+          "heading": "Motivation",
+          "heading_level": 2,
+          "required_content": [
+            "User problem: lack of autocomplete",
+            "Reference to draft standard discussion (pyright/discussions/1782)",
+            "Reference to pydantic discussion (pydantic/discussions/2698)"
+          ],
+          "paragraphs": [
+            "Prior to this change, developers using Pydantic in Visual Studio Code did not receive autocompletion suggestions for field names when creating new instances of a model. While Pydantic's use of standard Python type annotations provides basic compatibility, the lack of an explicit signal to type checkers meant that the automatic `__init__` signature was not recognized, leaving a gap in the developer experience.",
+            "This gap was highlighted in community discussions. Eric Traut, the author of Pyright, initiated a draft standard for a `typing.dataclass_transform()` decorator to provide a uniform way for libraries to declare dataclass-like behavior. The draft standard and its rationale are documented in the pyright repository at `specs/dataclass_transforms.md`, with the community discussion occurring at `pyright/discussions/1782`. Within the Pydantic community, the potential for this standard was discussed in `pydantic/discussions/2698`, where the contributor koxudaxi pointed out the possibility."
+          ]
+        },
+        {
+          "heading": "Technical Approach",
+          "heading_level": 2,
+          "required_content": [
+            "Decorator pattern applied to metaclass",
+            "Reference to draft standard specs/dataclass_transforms.md",
+            "Explanation of the shim mechanism"
+          ],
+          "paragraphs": [
+            "The technical solution follows the draft standard's guidance for early adoption. The standard proposes a decorator `typing.dataclass_transform()` to be applied to a class or function that defines or returns a dataclass-like type. For Pydantic, this decorator would be applied to the metaclass that creates models.",
+            "Because the standard had not yet been accepted into Python's `typing` module, the PR implements a minimal shim. A custom `__dataclass_transform__` function is defined and used as a decorator on Pydantic's `ModelMetaclass`. This function serves the same purpose as the proposed `typing.dataclass_transform()` but works with current versions of Python. Type checkers that support the draft standard—specifically Pyright, and by extension Pylance in VS Code—already recognize this custom decorator and enable the enhanced autocompletion features."
+          ]
+        },
+        {
+          "heading": "Implementation Details",
+          "heading_level": 2,
+          "required_content": [
+            "Files changed: changes/2721-tiangolo.md, docs/visual_studio_code.md",
+            "Addition of 8 screenshot assets (vs_code_01.png through vs_code_08.png)",
+            "Brief description of documentation additions"
+          ],
+          "paragraphs": [
+            "The implementation consists of two main parts: a code change to apply the transform marker, and comprehensive documentation to guide users. The code change itself is minimal, as it only adds the decorator. The key files modified or added are:",
+            "- A changelog entry was created at `changes/2721-tiangolo.md` to describe the feature for the project's release notes.",
+            "- A new documentation page, `docs/visual_studio_code.md`, was added. This page provides a detailed guide on configuring VS Code to leverage the new autocomplete features, including installing the Pylance extension and configuring the Python language server.",
+            "- To support the documentation, eight new screenshot assets were added under `docs/img/`, named `vs_code_01.png` through `vs_code_08.png`. These screenshots visually demonstrate the autocomplete functionality in action."
+          ]
+        },
+        {
+          "heading": "Impact and Trade-offs",
+          "heading_level": 2,
+          "required_content": [
+            "Enables autocomplete comparable to PyCharm plugin by koxudaxi",
+            "Potential to simplify pydantic mypy plugin if standard is accepted",
+            "No breaking changes or functional impact on runtime behavior"
+          ],
+          "paragraphs": [
+            "The primary impact of this change is a significantly improved developer experience for users of Visual Studio Code. It provides autocompletion and error checking for Pydantic model instantiation that is comparable to the features offered by the dedicated PyCharm plugin maintained by koxudaxi. This brings VS Code support to a more feature-complete state without requiring users to install additional plugins beyond the standard Pylance extension.",
+            "A notable trade-off is the reliance on an unofficial, draft standard. The implementation uses a custom `__dataclass_transform__` function rather than the proposed `typing.dataclass_transform()`. While this works with current versions of Pyright/Pylance, it depends on continued support for this specific mechanism in those tools. If the draft standard is accepted and evolves, the implementation may need to be updated.",
+            "The PR description notes that if the `dataclass_transform` standard is accepted into Python, it could replace or simplify a large part of the Pydantic mypy plugin, which currently performs similar type-checking enhancements. This change is purely additive and has no impact on Pydantic's runtime behavior or its public API."
+          ]
+        },
+        {
+          "heading": "References",
+          "heading_level": 2,
+          "required_content": [
+            "Draft standard URL",
+            "Pyright discussion URL",
+            "Pydantic discussion URL"
+          ],
+          "paragraphs": []
+        }
+      ],
+      "md_title": "Design Document: VS Code Autocomplete Support via dataclass_transform",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR description and diff for pydantic/pydantic#2721 (merged 2021-09-06), including the changelog entry, documentation screenshots, and the new VS Code integration guide.",
+          "content_blueprint": {
+            "title": "PR description and diff for pydantic/pydantic#2721 (merged 2021-09-06), including the changelog entry, documentation screenshots, and the new VS Code integration guide",
+            "body": "# Seed Material: pydantic/pydantic#2721: ✨ Add autocomplete support for VS Code, via `dataclass_transform`\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2721\n\nRepository: pydantic/pydantic\nPR Number: #2721\nPR Title: ✨ Add autocomplete support for VS Code, via `dataclass_transform`\nMerged At: 2021-09-06T10:13:02Z\nChanged Files: 13\nAdditions: +303, Deletions: -17\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\n\r\n<!-- Please give a short summary of the changes. -->\r\n\r\nIn short, this adds ✨ autocomplete ✨ for fields when creating a new instance of a Pydantic model. 🎉\r\n\r\n![Selection_408](https://user-images.githubusercontent.com/1326112/116777149-255de600-aa6d-11eb-84b7-e978951d2266.png)\r\n\r\n### Details\r\n\r\nEric Traut, Pyright's author, is writing a proposal for a new standard for Python `typing` to help declare models like *pydantic* and others as dataclass-like, to support autocompletion when creating a new instance (automatic typed `__init__` constructor).\r\n\r\nThe gist is that a new decorator `typing.dataclass_transform()` that would be applied in *pydantic*'s metaclass (not needed by final users) would give it those extra powers.\r\n\r\nThe draft standard is here: https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md\r\n\r\nThe discussion is here: https://github.com/microsoft/pyright/discussions/1782\r\n\r\nThe draft includes a small trick to adopt it right away even before the standard is accepted, adding a custom minimal `__dataclass_transform__` to the codebase. Pyright, and so, Pylance, and so VS Code, **already support it**.\r\n\r\nSo, this simple change in this PR enables autocompletion in VS Code right away. In a similar way that it is provided in PyCharm by @koxudaxi's awesome plug-in.\r\n\r\nAs a side note, if this standard is accepted, I think it would also replace and/or simplify a large part of the *pydantic* mypy plugin.\r\n\r\nThanks @koxudaxi for pointing me to this in the discussions! https://github.com/samuelcolvin/pydantic/discussions/2698\r\n\r\n## Related issue number\r\n\r\nI understand Samuel was already aware this was in progress and already in comm with Eric, so I'm not sure this justifies an issue. If so, let me know and I'll make one.\r\n\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [ ] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/changes/2721-tiangolo.md b/changes/2721-tiangolo.md\nnew file mode 100644\nindex 00000000000..a64f9c18d84\n--- /dev/null\n+++ b/changes/2721-tiangolo.md\n@@ -0,0 +1 @@\n+Add support for autocomplete in VS Code via `__dataclass_transform__`\ndiff --git a/docs/img/vs_code_01.png b/docs/img/vs_code_01.png\nnew file mode 100644\nindex 00000000000..24920c79381\nBinary files /dev/null and b/docs/img/vs_code_01.png differ\ndiff --git a/docs/img/vs_code_02.png b/docs/img/vs_code_02.png\nnew file mode 100644\nindex 00000000000..c78536be6b9\nBinary files /dev/null and b/docs/img/vs_code_02.png differ\ndiff --git a/docs/img/vs_code_03.png b/docs/img/vs_code_03.png\nnew file mode 100644\nindex 00000000000..85a7eb9b2d8\nBinary files /dev/null and b/docs/img/vs_code_03.png differ\ndiff --git a/docs/img/vs_code_04.png b/docs/img/vs_code_04.png\nnew file mode 100644\nindex 00000000000..77bf2e529c4\nBinary files /dev/null and b/docs/img/vs_code_04.png differ\ndiff --git a/docs/img/vs_code_05.png b/docs/img/vs_code_05.png\nnew file mode 100644\nindex 00000000000..b5feb9fef02\nBinary files /dev/null and b/docs/img/vs_code_05.png differ\ndiff --git a/docs/img/vs_code_06.png b/docs/img/vs_code_06.png\nnew file mode 100644\nindex 00000000000..af4dc48fb8e\nBinary files /dev/null and b/docs/img/vs_code_06.png differ\ndiff --git a/docs/img/vs_code_07.png b/docs/img/vs_code_07.png\nnew file mode 100644\nindex 00000000000..eec492586d9\nBinary files /dev/null and b/docs/img/vs_code_07.png differ\ndiff --git a/docs/img/vs_code_08.png b/docs/img/vs_code_08.png\nnew file mode 100644\nindex 00000000000..1e21af90feb\nBinary files /dev/null and b/docs/img/vs_code_08.png differ\ndiff --git a/docs/visual_studio_code.md b/docs/visual_studio_code.md\nnew file mode 100644\nindex 00000000000..98c58fb01f4\n--- /dev/null\n+++ b/docs/visual_studio_code.md\n@@ -0,0 +1,269 @@\n+*pydantic* works well with any editor or IDE out of the box because it's made on top of standard Python type annotations.\n+\n+When using [Visual Studio Code (VS Code)](https://code.visualstudio.com/), there are some **additional editor features** supported, comparable to the ones provided by the [PyCharm plugin](./pycharm_plugin.md).\n+\n+This means that you will have **autocompletion** (or \"IntelliSense\") and **error checks** for types and required arguments even while creating new *pydantic* model instances.\n+\n+![pydantic autocompletion in VS Code](./img/vs_code_01.png)\n+\n+## Configure VS Code\n+\n+To take advantage of these features, you need to make sure you configure VS Code correctly, using the recommended settings.\n+\n+In case you have a different configuration, here's a short overview of the steps.\n+\n+### Install Pylance\n+\n+You should use the [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) extension for VS Code. It is the recommended, next-generation, official VS Code plug-in for Python.\n+\n+Pylance is installed as part of the [Python Extension for VS Code](https://marketplace.visualstudio.com/items?itemName"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title matches requirement",
+          "value": "Design Document: VS Code Autocomplete Support via dataclass_transform",
+          "tolerance": null,
+          "location": "Document title (first line or heading)"
+        },
+        {
+          "description": "Abstract mentions __dataclass_transform__ mechanism",
+          "value": "__dataclass_transform__",
+          "tolerance": null,
+          "location": "Abstract section"
+        },
+        {
+          "description": "Abstract mentions Pyright/Pylance effect",
+          "value": "Pyright",
+          "tolerance": null,
+          "location": "Abstract section"
+        },
+        {
+          "description": "Motivation section references pyright/discussions/1782",
+          "value": "pyright/discussions/1782",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Motivation section references pydantic/discussions/2698",
+          "value": "pydantic/discussions/2698",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Motivation section mentions Eric Traut",
+          "value": "Eric Traut",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Technical Approach references draft standard path specs/dataclass_transforms.md",
+          "value": "specs/dataclass_transforms.md",
+          "tolerance": null,
+          "location": "Technical Approach section"
+        },
+        {
+          "description": "Technical Approach describes applying decorator to metaclass",
+          "value": "metaclass",
+          "tolerance": null,
+          "location": "Technical Approach section"
+        },
+        {
+          "description": "Implementation Details references changelog file changes/2721-tiangolo.md",
+          "value": "changes/2721-tiangolo.md",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Implementation Details references documentation file docs/visual_studio_code.md",
+          "value": "docs/visual_studio_code.md",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Implementation Details mentions 8 screenshot assets",
+          "value": "8",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Implementation Details mentions screenshot name range vs_code_01.png through vs_code_08.png",
+          "value": "vs_code_01.png through vs_code_08.png",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Impact section mentions PyCharm plugin by koxudaxi",
+          "value": "koxudaxi",
+          "tolerance": null,
+          "location": "Impact and Trade-offs section"
+        },
+        {
+          "description": "Impact section mentions potential simplification of mypy plugin",
+          "value": "mypy plugin",
+          "tolerance": null,
+          "location": "Impact and Trade-offs section"
+        },
+        {
+          "description": "References section lists draft standard URL",
+          "value": "https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md",
+          "tolerance": null,
+          "location": "References section"
+        },
+        {
+          "description": "References section lists pyright discussion URL",
+          "value": "https://github.com/microsoft/pyright/discussions/1782",
+          "tolerance": null,
+          "location": "References section"
+        },
+        {
+          "description": "References section lists pydantic discussion URL",
+          "value": "https://github.com/samuelcolvin/pydantic/discussions/2698",
+          "tolerance": null,
+          "location": "References section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1038358307
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR description and diff for pydantic/pydantic#2721 (merged 2021-09-06), including the changelog entry, documentation screenshots, and the new VS Code integration guide.",
+      "content_blueprint": {
+        "title": "PR description and diff for pydantic/pydantic#2721 (merged 2021-09-06), including the changelog entry, documentation screenshots, and the new VS Code integration guide",
+        "body": "# Seed Material: pydantic/pydantic#2721: ✨ Add autocomplete support for VS Code, via `dataclass_transform`\nSource: github_issue_pr\nIdentifier: pr:pydantic/pydantic#2721\n\nRepository: pydantic/pydantic\nPR Number: #2721\nPR Title: ✨ Add autocomplete support for VS Code, via `dataclass_transform`\nMerged At: 2021-09-06T10:13:02Z\nChanged Files: 13\nAdditions: +303, Deletions: -17\n\n## PR Description\n<!-- Thank you for your contribution! -->\r\n<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->\r\n<!-- See https://pydantic-docs.helpmanual.io/contributing/ for help on Contributing -->\r\n\r\n## Change Summary\r\n\r\n<!-- Please give a short summary of the changes. -->\r\n\r\nIn short, this adds ✨ autocomplete ✨ for fields when creating a new instance of a Pydantic model. 🎉\r\n\r\n![Selection_408](https://user-images.githubusercontent.com/1326112/116777149-255de600-aa6d-11eb-84b7-e978951d2266.png)\r\n\r\n### Details\r\n\r\nEric Traut, Pyright's author, is writing a proposal for a new standard for Python `typing` to help declare models like *pydantic* and others as dataclass-like, to support autocompletion when creating a new instance (automatic typed `__init__` constructor).\r\n\r\nThe gist is that a new decorator `typing.dataclass_transform()` that would be applied in *pydantic*'s metaclass (not needed by final users) would give it those extra powers.\r\n\r\nThe draft standard is here: https://github.com/microsoft/pyright/blob/master/specs/dataclass_transforms.md\r\n\r\nThe discussion is here: https://github.com/microsoft/pyright/discussions/1782\r\n\r\nThe draft includes a small trick to adopt it right away even before the standard is accepted, adding a custom minimal `__dataclass_transform__` to the codebase. Pyright, and so, Pylance, and so VS Code, **already support it**.\r\n\r\nSo, this simple change in this PR enables autocompletion in VS Code right away. In a similar way that it is provided in PyCharm by @koxudaxi's awesome plug-in.\r\n\r\nAs a side note, if this standard is accepted, I think it would also replace and/or simplify a large part of the *pydantic* mypy plugin.\r\n\r\nThanks @koxudaxi for pointing me to this in the discussions! https://github.com/samuelcolvin/pydantic/discussions/2698\r\n\r\n## Related issue number\r\n\r\nI understand Samuel was already aware this was in progress and already in comm with Eric, so I'm not sure this justifies an issue. If so, let me know and I'll make one.\r\n\r\n<!-- Are there any issues opened that will be resolved by merging this change? -->\r\n\r\n## Checklist\r\n\r\n* [ ] Unit tests for the changes exist\r\n* [x] Tests pass on CI and coverage remains at 100%\r\n* [x] Documentation reflects the changes where applicable\r\n* [x] `changes/<pull request or issue id>-<github username>.md` file added describing change\r\n  (see [changes/README.md](https://github.com/samuelcolvin/pydantic/blob/master/changes/README.md) for details)\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/changes/2721-tiangolo.md b/changes/2721-tiangolo.md\nnew file mode 100644\nindex 00000000000..a64f9c18d84\n--- /dev/null\n+++ b/changes/2721-tiangolo.md\n@@ -0,0 +1 @@\n+Add support for autocomplete in VS Code via `__dataclass_transform__`\ndiff --git a/docs/img/vs_code_01.png b/docs/img/vs_code_01.png\nnew file mode 100644\nindex 00000000000..24920c79381\nBinary files /dev/null and b/docs/img/vs_code_01.png differ\ndiff --git a/docs/img/vs_code_02.png b/docs/img/vs_code_02.png\nnew file mode 100644\nindex 00000000000..c78536be6b9\nBinary files /dev/null and b/docs/img/vs_code_02.png differ\ndiff --git a/docs/img/vs_code_03.png b/docs/img/vs_code_03.png\nnew file mode 100644\nindex 00000000000..85a7eb9b2d8\nBinary files /dev/null and b/docs/img/vs_code_03.png differ\ndiff --git a/docs/img/vs_code_04.png b/docs/img/vs_code_04.png\nnew file mode 100644\nindex 00000000000..77bf2e529c4\nBinary files /dev/null and b/docs/img/vs_code_04.png differ\ndiff --git a/docs/img/vs_code_05.png b/docs/img/vs_code_05.png\nnew file mode 100644\nindex 00000000000..b5feb9fef02\nBinary files /dev/null and b/docs/img/vs_code_05.png differ\ndiff --git a/docs/img/vs_code_06.png b/docs/img/vs_code_06.png\nnew file mode 100644\nindex 00000000000..af4dc48fb8e\nBinary files /dev/null and b/docs/img/vs_code_06.png differ\ndiff --git a/docs/img/vs_code_07.png b/docs/img/vs_code_07.png\nnew file mode 100644\nindex 00000000000..eec492586d9\nBinary files /dev/null and b/docs/img/vs_code_07.png differ\ndiff --git a/docs/img/vs_code_08.png b/docs/img/vs_code_08.png\nnew file mode 100644\nindex 00000000000..1e21af90feb\nBinary files /dev/null and b/docs/img/vs_code_08.png differ\ndiff --git a/docs/visual_studio_code.md b/docs/visual_studio_code.md\nnew file mode 100644\nindex 00000000000..98c58fb01f4\n--- /dev/null\n+++ b/docs/visual_studio_code.md\n@@ -0,0 +1,269 @@\n+*pydantic* works well with any editor or IDE out of the box because it's made on top of standard Python type annotations.\n+\n+When using [Visual Studio Code (VS Code)](https://code.visualstudio.com/), there are some **additional editor features** supported, comparable to the ones provided by the [PyCharm plugin](./pycharm_plugin.md).\n+\n+This means that you will have **autocompletion** (or \"IntelliSense\") and **error checks** for types and required arguments even while creating new *pydantic* model instances.\n+\n+![pydantic autocompletion in VS Code](./img/vs_code_01.png)\n+\n+## Configure VS Code\n+\n+To take advantage of these features, you need to make sure you configure VS Code correctly, using the recommended settings.\n+\n+In case you have a different configuration, here's a short overview of the steps.\n+\n+### Install Pylance\n+\n+You should use the [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) extension for VS Code. It is the recommended, next-generation, official VS Code plug-in for Python.\n+\n+Pylance is installed as part of the [Python Extension for VS Code](https://marketplace.visualstudio.com/items?itemName"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_0c4b66328875b76f/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_0c4b66328875b76f/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:28:46.341491+00:00"
+}

@@ -1,0 +1,833 @@
+{
+  "candidate_id": "sc_b7608fe00569c626",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "light",
+  "seed_id": "b7608fe00569c626",
+  "prompt": "You are a senior software engineer on the psf/requests maintenance team. The team is evaluating PR #5688, which proposes upgrading the chardet dependency to support chardet 4.x. Your task is to produce a code review document that evaluates the changes in this pull request for correctness, risk, and completeness.\n\nMaterials provided:\n- The PR diff for psf/requests#5688 showing changes to `requests/__init__.py` and `setup.py`\n- The PR description noting that chardet 4.0.0 is backward compatible with 3.x and that the next major release targeting Python 3.6+ is not imminent\n\nTask requirements:\n1. Analyze the two changed files and describe what each change does in specific technical terms. Reference the exact lines and assertions modified.\n2. Evaluate the version constraint change in `setup.py`: assess whether expanding from `chardet>=3.0.2,<4` to `chardet>=3.0.2,<5` is appropriate given the stated backward compatibility claim.\n3. Evaluate the compatibility check in `requests/__init__.py`: compare the old assertion logic (three separate assert statements checking major==3, minor<1, patch>=2) against the new tuple comparison `assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)`. Assess whether the new logic is correct and equivalent for the 3.x range while properly extending to 4.x.\n4. Identify any potential risks or concerns with this change, including edge cases in version parsing, backward compatibility, or scope of the version range.\n5. Provide a clear recommendation: approve, approve with comments, or request changes, with justification.\n\nDeliverable specification:\n- Submit a Markdown file\n- Use the following section structure: Summary, Analysis of Changes, Risk Assessment, Recommendation\n- Each section must contain substantive technical content with specific references to the code diff\n- Code references must use backtick formatting for inline code and code blocks for multi-line snippets",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title heading includes the PR number 5688.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title heading references 'chardet 4.x' or 'chardet 4'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with heading 'Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with heading 'Analysis of Changes'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with heading 'Risk Assessment'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with heading 'Recommendation'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section mentions both changed files: requests/__init__.py and setup.py.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section states a recommendation (approve, approve with comments, or request changes).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section describes the setup.py change from 'chardet>=3.0.2,<4' to 'chardet>=3.0.2,<5'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Analysis section describes the old assertion logic using three separate assert statements.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section quotes or references the exact old assertion line 'assert major == 3'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section quotes or references the exact old assertion line 'assert minor < 1'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section quotes or references the exact old assertion line 'assert patch >= 2'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section quotes or references the new tuple comparison 'assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section notes that the old logic restricted versions to the 3.0.x series.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Analysis section explains Python's tuple comparison for version ordering.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Analysis section notes the consistency between setup.py constraint and runtime check.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section references the PR author as the chardet maintainer.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section references backward compatibility of chardet 4.x with 3.x.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions the PR description claim that chardet 4.0.0 is 'faster'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section discusses the version parsing approach using split('.').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions the next major release targeting Python 3.6+.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section discusses the upper bound of the version range (<5).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section identifies at least one potential edge case or concern.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendation section clearly states the review recommendation as 'approved' or 'approve'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section provides justification for the recommendation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendation section references the tuple comparison as an improvement over the old logic.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses backtick formatting for inline code references (e.g., `setup.py`, `requests/__init__.py`).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document uses Markdown code blocks (triple backticks) for multi-line code snippets.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the PR author's statement about chardet backward compatibility.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the change is minimal (two files changed).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Analysis section contains a code block showing the old assertion code.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Analysis section contains a code block showing the new assertion code.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section explains that the new tuple comparison leverages Python's native lexicographic ordering.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes the version range in setup.py changed from <4 to <5.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section acknowledges the chardet maintainer's credibility on compatibility claims.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that requests uses chardet's public API for encoding detection.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section notes the old logic was narrower than the setup.py constraint (restricted to 3.0.x).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section notes the changes are internally consistent between the two files.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes the function name 'check_compatibility' when discussing requests/__init__.py.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section discusses the lower bound (3.0.2) remaining unchanged.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the line numbers of the changed code in the diff.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Analysis section correctly identifies that the old logic used 'minor < 1' meaning only 3.0.x versions were accepted.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section mentions the PR purpose is to support chardet 4.x.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section characterizes the changes as 'minimal'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document incorrectly states that the old logic accepted chardet 3.1.x or higher versions.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document recommends rejecting the PR without providing technical justification from the diff.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_b7608fe00569c626",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:psf/requests#5688",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "5688",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "chardet 4.x",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "requests/__init__.py and setup.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "backward compatible",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "approval",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "chardet>=3.0.2,<4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "chardet>=3.0.2,<5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "assert major == 3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "assert minor < 1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "assert patch >= 2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "(3, 0, 2) <= (major, minor, patch) < (5, 0, 0)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "3.0.x",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "chardet maintainer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "faster and fully backward compatible",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "split('.')[:3]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "Python 3.6+",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "approved",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "tuple comparison",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "```python",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "5688",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "chardet 4.x",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "requests/__init__.py and setup.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "backward compatible",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "approval",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "chardet>=3.0.2,<4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "chardet>=3.0.2,<5",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "assert major == 3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "assert minor < 1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "assert patch >= 2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "(3, 0, 2) <= (major, minor, patch) < (5, 0, 0)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "3.0.x",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "chardet maintainer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "faster and fully backward compatible",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "split('.')[:3]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "Python 3.6+",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "<5",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "approved",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "tuple comparison",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "```python",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Code Review: PR #5688 - Upgrade to chardet 4.x",
+          "heading_level": 1,
+          "required_content": [
+            "Title includes PR number 5688",
+            "Title references upgrade to chardet 4.x"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Overview of the PR purpose",
+            "Mention of two changed files: requests/__init__.py and setup.py",
+            "Reference to chardet 4.0.0 backward compatibility claim",
+            "Statement of review recommendation"
+          ],
+          "paragraphs": [
+            "PR #5688 updates the requests library to support chardet 4.x by modifying two files: `requests/__init__.py` and `setup.py`. The change expands the accepted chardet version range from `>=3.0.2,<4` to `>=3.0.2,<5` in the package dependency, and updates the runtime compatibility check accordingly. The PR author states that chardet 4.0.0 is fully backward compatible with chardet 3.x for standard usage. This review finds the changes correct and recommends approval."
+          ]
+        },
+        {
+          "heading": "Analysis of Changes",
+          "heading_level": 2,
+          "required_content": [
+            "Description of setup.py change from chardet>=3.0.2,<4 to chardet>=3.0.2,<5",
+            "Description of the old assertion logic in requests/__init__.py: three separate asserts checking major==3, minor<1, patch>=2",
+            "Description of the new tuple comparison assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)",
+            "Assessment of whether the new logic covers the same 3.x range as the old logic",
+            "Code snippets showing the old and new assertion code"
+          ],
+          "paragraphs": [
+            "### setup.py Dependency Change",
+            "In `setup.py`, the chardet dependency constraint changes from `'chardet>=3.0.2,<4'` to `'chardet>=3.0.2,<5'`. This is a single-line change on line 45 of the file that broadens the accepted version range to include any chardet release from 3.0.2 up to but not including 5.0.0. This aligns with the PR author's claim that chardet 4.x is backward compatible.",
+            "### requests/__init__.py Compatibility Check",
+            "The `check_compatibility` function in `requests/__init__.py` previously used three separate assert statements to validate the chardet version:\n\n```python\n# chardet >= 3.0.2, < 3.1.0\nassert major == 3\nassert minor < 1\nassert patch >= 2\n```\n\nThis enforced the range chardet >= 3.0.2 and < 3.1.0, restricting to the 3.0.x series specifically. The new code replaces these with a single tuple comparison:\n\n```python\n# chardet >= 3.0.2, < 5.0.0\nassert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n```\n\nThis is both more concise and more correct. The tuple comparison leverages Python's native lexicographic ordering, which correctly compares major, then minor, then patch versions. The new range accepts chardet versions from 3.0.2 through any 4.x release, matching the `setup.py` constraint. Note that the old logic was narrower than the `setup.py` constraint at the time (it restricted to 3.0.x only, while setup.py allowed any 3.x). The new code is internally consistent between the two files."
+          ]
+        },
+        {
+          "heading": "Risk Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Assessment of backward compatibility risk",
+            "Discussion of the version parsing approach using split('.')[:3]",
+            "Note on the PR author's statement about next major release targeting Python 3.6+",
+            "Evaluation of whether the upper bound <5.0.0 is appropriate",
+            "Any edge cases or concerns"
+          ],
+          "paragraphs": [
+            "The primary risk is whether chardet 4.x is truly backward compatible as claimed. The PR author, who is the chardet maintainer, explicitly states that chardet 4.0.0 is 'faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly).' Since requests only uses chardet's public API for character encoding detection, this risk is low.\n\nThe version parsing logic using `chardet_version.split('.')[:3]` handles standard version strings correctly. The tuple comparison `(3, 0, 2) <= (major, minor, patch) < (5, 0, 0)` is robust and Pythonic. One minor consideration: the upper bound of `<5` in setup.py and `<5.0.0` in the assertion are consistent, though the assertion code provides finer-grained control if needed.\n\nThe PR author notes that the next major release targeting Python 3.6+ is unlikely to come soon, given it took three years for this release. Setting the upper bound at <5 provides reasonable future-proofing without overcommitting to a distant major version."
+          ]
+        },
+        {
+          "heading": "Recommendation",
+          "heading_level": 2,
+          "required_content": [
+            "Clear approve/reject recommendation",
+            "Justification referencing the analysis above",
+            "Note on backward compatibility",
+            "Note on code quality improvement"
+          ],
+          "paragraphs": [
+            "This PR should be **approved**. The changes are minimal, correct, and well-justified. The expanded version range in `setup.py` properly allows chardet 4.x while maintaining the lower bound of 3.0.2. The updated assertion in `requests/__init__.py` is not only correct but an improvement in code clarity over the original three-statement approach, using Python's native tuple comparison for clean version range checking. The backward compatibility claim from the chardet maintainer is credible given that requests uses only the public detection API. The changes in both files are consistent with each other, with the setup.py constraint and the runtime check covering the same version range of >=3.0.2, <5.0.0."
+          ]
+        }
+      ],
+      "md_title": "Code Review: PR #5688 - Upgrade to chardet 4.x",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #5688 diff showing changes to requests/__init__.py and setup.py",
+          "content_blueprint": {
+            "title": "PR #5688 diff showing changes to requests/__init__",
+            "body": "# Seed Material: psf/requests#5688: Upgrade to chardet 4.x\nSource: github_issue_pr\nIdentifier: pr:psf/requests#5688\n\nRepository: psf/requests\nPR Number: #5688\nPR Title: Upgrade to chardet 4.x\nMerged At: 2020-12-14T17:29:11Z\nChanged Files: 2\nAdditions: +3, Deletions: -5\n\n## PR Description\nI just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.\n\n## Diff (first 3000 chars)\ndiff --git a/requests/__init__.py b/requests/__init__.py\nindex c00f556bbc..f8f94295f9 100644\n--- a/requests/__init__.py\n+++ b/requests/__init__.py\n@@ -65,10 +65,8 @@ def check_compatibility(urllib3_version, chardet_version):\n     # Check chardet for compatibility.\n     major, minor, patch = chardet_version.split('.')[:3]\n     major, minor, patch = int(major), int(minor), int(patch)\n-    # chardet >= 3.0.2, < 3.1.0\n-    assert major == 3\n-    assert minor < 1\n-    assert patch >= 2\n+    # chardet >= 3.0.2, < 5.0.0\n+    assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n \n \n def _check_cryptography(cryptography_version):\ndiff --git a/setup.py b/setup.py\nindex e714bfa441..7ba4b2a25f 100755\n--- a/setup.py\n+++ b/setup.py\n@@ -42,7 +42,7 @@ def run_tests(self):\n packages = ['requests']\n \n requires = [\n-    'chardet>=3.0.2,<4',\n+    'chardet>=3.0.2,<5',\n     'idna>=2.5,<3',\n     'urllib3>=1.21.1,<1.27',\n     'certifi>=2017.4.17'\n"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description text from the author regarding chardet 4.0.0 release and backward compatibility",
+          "content_blueprint": {
+            "title": "PR description text from the author regarding chardet 4",
+            "body": "# Seed Material: psf/requests#5688: Upgrade to chardet 4.x\nSource: github_issue_pr\nIdentifier: pr:psf/requests#5688\n\nRepository: psf/requests\nPR Number: #5688\nPR Title: Upgrade to chardet 4.x\nMerged At: 2020-12-14T17:29:11Z\nChanged Files: 2\nAdditions: +3, Deletions: -5\n\n## PR Description\nI just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.\n\n## Diff (first 3000 chars)\ndiff --git a/requests/__init__.py b/requests/__init__.py\nindex c00f556bbc..f8f94295f9 100644\n--- a/requests/__init__.py\n+++ b/requests/__init__.py\n@@ -65,10 +65,8 @@ def check_compatibility(urllib3_version, chardet_version):\n     # Check chardet for compatibility.\n     major, minor, patch = chardet_version.split('.')[:3]\n     major, minor, patch = int(major), int(minor), int(patch)\n-    # chardet >= 3.0.2, < 3.1.0\n-    assert major == 3\n-    assert minor < 1\n-    assert patch >= 2\n+    # chardet >= 3.0.2, < 5.0.0\n+    assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n \n \n def _check_cryptography(cryptography_version):\ndiff --git a/setup.py b/setup.py\nindex e714bfa441..7ba4b2a25f 100755\n--- a/setup.py\n+++ b/setup.py\n@@ -42,7 +42,7 @@ def run_tests(self):\n packages = ['requests']\n \n requires = [\n-    'chardet>=3.0.2,<4',\n+    'chardet>=3.0.2,<5',\n     'idna>=2.5,<3',\n     'urllib3>=1.21.1,<1.27',\n     'certifi>=2017.4.17'\n"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title references PR number 5688",
+          "value": "5688",
+          "tolerance": null,
+          "location": "Document title heading"
+        },
+        {
+          "description": "Document title references chardet 4.x upgrade",
+          "value": "chardet 4.x",
+          "tolerance": null,
+          "location": "Document title heading"
+        },
+        {
+          "description": "Summary mentions both changed files",
+          "value": "requests/__init__.py and setup.py",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary references chardet 4.0.0 backward compatibility",
+          "value": "backward compatible",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary includes a recommendation statement",
+          "value": "approval",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Analysis describes setup.py change with exact old constraint",
+          "value": "chardet>=3.0.2,<4",
+          "tolerance": null,
+          "location": "Analysis of Changes section, setup.py subsection"
+        },
+        {
+          "description": "Analysis describes setup.py change with exact new constraint",
+          "value": "chardet>=3.0.2,<5",
+          "tolerance": null,
+          "location": "Analysis of Changes section, setup.py subsection"
+        },
+        {
+          "description": "Analysis quotes old assertion code with three separate asserts",
+          "value": "assert major == 3",
+          "tolerance": null,
+          "location": "Analysis of Changes section, code block"
+        },
+        {
+          "description": "Analysis quotes old assertion checking minor<1",
+          "value": "assert minor < 1",
+          "tolerance": null,
+          "location": "Analysis of Changes section, code block"
+        },
+        {
+          "description": "Analysis quotes old assertion checking patch>=2",
+          "value": "assert patch >= 2",
+          "tolerance": null,
+          "location": "Analysis of Changes section, code block"
+        },
+        {
+          "description": "Analysis quotes new assertion with tuple comparison",
+          "value": "(3, 0, 2) <= (major, minor, patch) < (5, 0, 0)",
+          "tolerance": null,
+          "location": "Analysis of Changes section, code block"
+        },
+        {
+          "description": "Analysis notes old logic restricted to 3.0.x series",
+          "value": "3.0.x",
+          "tolerance": null,
+          "location": "Analysis of Changes section"
+        },
+        {
+          "description": "Risk assessment references PR author as chardet maintainer",
+          "value": "chardet maintainer",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        },
+        {
+          "description": "Risk assessment quotes PR description about chardet speed improvement",
+          "value": "faster and fully backward compatible",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        },
+        {
+          "description": "Risk assessment mentions the version parsing approach using split",
+          "value": "split('.')[:3]",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        },
+        {
+          "description": "Risk assessment mentions Python 3.6+ target for next major release",
+          "value": "Python 3.6+",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        },
+        {
+          "description": "Risk assessment notes upper bound consistency between files",
+          "value": "<5",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        },
+        {
+          "description": "Recommendation is clearly stated as approve",
+          "value": "approved",
+          "tolerance": null,
+          "location": "Recommendation section"
+        },
+        {
+          "description": "Recommendation references tuple comparison as improvement",
+          "value": "tuple comparison",
+          "tolerance": null,
+          "location": "Recommendation section"
+        },
+        {
+          "description": "Document uses code blocks for multi-line code snippets",
+          "value": "```python",
+          "tolerance": null,
+          "location": "Analysis of Changes section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1723676078
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #5688 diff showing changes to requests/__init__.py and setup.py",
+      "content_blueprint": {
+        "title": "PR #5688 diff showing changes to requests/__init__",
+        "body": "# Seed Material: psf/requests#5688: Upgrade to chardet 4.x\nSource: github_issue_pr\nIdentifier: pr:psf/requests#5688\n\nRepository: psf/requests\nPR Number: #5688\nPR Title: Upgrade to chardet 4.x\nMerged At: 2020-12-14T17:29:11Z\nChanged Files: 2\nAdditions: +3, Deletions: -5\n\n## PR Description\nI just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.\n\n## Diff (first 3000 chars)\ndiff --git a/requests/__init__.py b/requests/__init__.py\nindex c00f556bbc..f8f94295f9 100644\n--- a/requests/__init__.py\n+++ b/requests/__init__.py\n@@ -65,10 +65,8 @@ def check_compatibility(urllib3_version, chardet_version):\n     # Check chardet for compatibility.\n     major, minor, patch = chardet_version.split('.')[:3]\n     major, minor, patch = int(major), int(minor), int(patch)\n-    # chardet >= 3.0.2, < 3.1.0\n-    assert major == 3\n-    assert minor < 1\n-    assert patch >= 2\n+    # chardet >= 3.0.2, < 5.0.0\n+    assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n \n \n def _check_cryptography(cryptography_version):\ndiff --git a/setup.py b/setup.py\nindex e714bfa441..7ba4b2a25f 100755\n--- a/setup.py\n+++ b/setup.py\n@@ -42,7 +42,7 @@ def run_tests(self):\n packages = ['requests']\n \n requires = [\n-    'chardet>=3.0.2,<4',\n+    'chardet>=3.0.2,<5',\n     'idna>=2.5,<3',\n     'urllib3>=1.21.1,<1.27',\n     'certifi>=2017.4.17'\n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description text from the author regarding chardet 4.0.0 release and backward compatibility",
+      "content_blueprint": {
+        "title": "PR description text from the author regarding chardet 4",
+        "body": "# Seed Material: psf/requests#5688: Upgrade to chardet 4.x\nSource: github_issue_pr\nIdentifier: pr:psf/requests#5688\n\nRepository: psf/requests\nPR Number: #5688\nPR Title: Upgrade to chardet 4.x\nMerged At: 2020-12-14T17:29:11Z\nChanged Files: 2\nAdditions: +3, Deletions: -5\n\n## PR Description\nI just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.\n\n## Diff (first 3000 chars)\ndiff --git a/requests/__init__.py b/requests/__init__.py\nindex c00f556bbc..f8f94295f9 100644\n--- a/requests/__init__.py\n+++ b/requests/__init__.py\n@@ -65,10 +65,8 @@ def check_compatibility(urllib3_version, chardet_version):\n     # Check chardet for compatibility.\n     major, minor, patch = chardet_version.split('.')[:3]\n     major, minor, patch = int(major), int(minor), int(patch)\n-    # chardet >= 3.0.2, < 3.1.0\n-    assert major == 3\n-    assert minor < 1\n-    assert patch >= 2\n+    # chardet >= 3.0.2, < 5.0.0\n+    assert (3, 0, 2) <= (major, minor, patch) < (5, 0, 0)\n \n \n def _check_cryptography(cryptography_version):\ndiff --git a/setup.py b/setup.py\nindex e714bfa441..7ba4b2a25f 100755\n--- a/setup.py\n+++ b/setup.py\n@@ -42,7 +42,7 @@ def run_tests(self):\n packages = ['requests']\n \n requires = [\n-    'chardet>=3.0.2,<4',\n+    'chardet>=3.0.2,<5',\n     'idna>=2.5,<3',\n     'urllib3>=1.21.1,<1.27',\n     'certifi>=2017.4.17'\n"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_b7608fe00569c626/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b7608fe00569c626/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b7608fe00569c626/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:50:47.187797+00:00"
+}

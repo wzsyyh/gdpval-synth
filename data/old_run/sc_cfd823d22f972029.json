@@ -1,0 +1,2448 @@
+{
+  "candidate_id": "sc_cfd823d22f972029",
+  "occupation": "financial_analyst",
+  "archetype": "variance_analysis",
+  "difficulty": "medium",
+  "seed_id": "cfd823d22f972029",
+  "prompt": "You are a senior financial analyst on Amazon's Corporate FP&A team. The VP of Finance has requested a quarterly variance analysis for Q1 2026 performance to prepare for the upcoming Board of Directors meeting. Your task is to build a self-contained Excel workbook that reconciles actual Q1 2026 results against prior periods, calculates key financial ratios, and isolates the drivers of quarter-over-quarter and year-over-year changes.\n\nMaterials provided: The attached file contains raw XBRL financial data for Amazon.com, Inc. (CIK: 0001018724) covering Q1 2026, Q3 2025, Q2 2025, and FY 2025. The data includes RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, OperatingIncomeLoss, NetIncomeLoss, Assets, StockholdersEquity, CashAndCashEquivalentsAtCarryingValue, and EarningsPerShareDiluted.\n\nTask requirements:\n1. Create a sheet titled 'P&L Summary' with the following line items as rows: Revenue, Cost of Revenue, Gross Profit, Operating Income, Net Income, and EPS (Diluted). Populate columns for Q1 2026, Q3 2025, Q2 2025, and FY 2025 quarterly average (divide FY 2025 annual figure by 4). Calculate Gross Profit as Revenue minus Cost of Revenue for each period.\n2. Create a sheet titled 'QoQ Variance' comparing Q1 2026 vs Q3 2025. For each P&L line item, calculate: (a) the absolute dollar change, (b) the percentage change. Present results in a table with columns for Q1 2026 Actual, Q3 2025 Actual, Variance ($), and Variance (%). Format dollar amounts in billions with one decimal place.\n3. Create a sheet titled 'Balance Sheet' with rows for Total Assets, Stockholders' Equity, and Cash and Cash Equivalents. Show Q1 2026, FY 2025, Q3 2025, and Q2 2025 values. Calculate the quarter-over-quarter change from FY 2025 to Q1 2026 for each line item.\n4. Create a sheet titled 'Key Ratios' that computes and displays the following ratios for Q1 2026 and Q3 2025: (a) Gross Margin = Gross Profit / Revenue, (b) Operating Margin = Operating Income / Revenue, (c) Net Margin = Net Income / Revenue, (d) Return on Equity = Net Income / Stockholders Equity, (e) Return on Assets = Net Income / Total Assets. Format percentages to one decimal place.\n5. On the 'QoQ Variance' sheet, include a brief written commentary (3-5 bullet points) below the variance table identifying the two largest absolute dollar drivers of the QoQ revenue and operating income changes.\n\nDeliverable specification: Submit a single Excel workbook (.xlsx) with four sheet tabs in the order listed above. Use consistent formatting: headers in bold, input cells in light blue fill, calculated cells in light green fill, and total or subtotal rows with yellow fill. All dollar figures should be formatted as numbers in billions rather than raw integers.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted workbook contains exactly four sheet tabs named 'P&L Summary', 'QoQ Variance', 'Balance Sheet', and 'Key Ratios'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The P&L Summary sheet contains the title 'Amazon.com, Inc. - P&L Summary' in cell A1.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The P&L Summary sheet contains the subtitle '(Amounts in Billions unless otherwise noted)' in cell A2.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The P&L Summary sheet has column headers 'Q1 2026', 'Q3 2025', 'Q2 2025', and 'FY2025 Avg' in cells B3 through E3.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The P&L Summary sheet lists 'Revenue', 'Cost of Revenue', 'Gross Profit', 'Operating Income', 'Net Income', and 'EPS (Diluted)' as row labels in column A.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B4 in P&L Summary contains the Q1 2026 Revenue value of 181.5 (representing 181,519,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C4 in P&L Summary contains the Q3 2025 Revenue value of 180.2 (representing 180,169,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell D4 in P&L Summary contains the Q2 2025 Revenue value of 161.7 (derived from Q2 2025 cumulative 323,369 minus Q1 2025 implied data).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell E4 in P&L Summary contains the FY 2025 quarterly average revenue of 179.2 (716,924 / 4 = 179,231 million, rounded to 179.2 billion).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B5 in P&L Summary contains the Q1 2026 Cost of Revenue value of 87.5 (representing 87,463,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C5 in P&L Summary contains the Q3 2025 Cost of Revenue value of 88.7 (representing 88,670,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B6 in P&L Summary contains a formula (=B4-B5) or calculated value of 94.0 for Q1 2026 Gross Profit.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C6 in P&L Summary contains a formula (=C4-C5) or calculated value of 91.5 for Q3 2025 Gross Profit.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B7 in P&L Summary contains the Q1 2026 Operating Income value of 23.9 (representing 23,852,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C7 in P&L Summary contains the Q3 2025 Operating Income value of 17.4 (representing 17,422,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B8 in P&L Summary contains the Q1 2026 Net Income value of 30.3 (representing 30,255,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C8 in P&L Summary contains the Q3 2025 Net Income value of 19.5 (representing 19,460,000,000 estimated from data).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cell B9 in P&L Summary contains the Q1 2026 EPS (Diluted) value of 2.78.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cell C9 in P&L Summary contains the Q3 2025 EPS (Diluted) value of 1.95.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The QoQ Variance sheet contains the title 'Amazon.com, Inc. - Q1 2026 vs Q3 2025 Variance' in cell A1.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The QoQ Variance sheet has column headers 'Q1 2026', 'Q3 2025', 'Variance ($)', and 'Variance (%)' in cells B3 through E3.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell D4 in QoQ Variance contains a formula (=B4-C4) calculating revenue variance as 1.3 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell E4 in QoQ Variance contains a formula (=D4/C4) calculating revenue variance percentage as approximately 0.7%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell D7 in QoQ Variance contains a formula (=B7-C7) calculating Operating Income variance as 6.5 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell E7 in QoQ Variance contains a formula (=D7/C7) calculating Operating Income variance percentage as approximately 37.4%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell D8 in QoQ Variance contains a formula (=B8-C8) calculating Net Income variance as 10.8 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell E8 in QoQ Variance contains a formula (=D8/C8) calculating Net Income variance percentage as approximately 55.4%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The QoQ Variance sheet includes a 'Commentary' section with 3-5 bullet points below the variance table identifying Net Income and Operating Income as the two largest absolute dollar QoQ drivers.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Balance Sheet sheet contains rows for 'Total Assets', 'Stockholders Equity', and 'Cash and Cash Equivalents' with values for Q1 2026, FY 2025, Q3 2025, and Q2 2025.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B4 in Balance Sheet contains the Q1 2026 Total Assets value of 916.6 (representing 916,630,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C4 in Balance Sheet contains the FY 2025 Total Assets value of 818.0 (representing 818,042,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B5 in Balance Sheet contains the Q1 2026 Stockholders Equity value of 441.9 (representing 441,914,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C5 in Balance Sheet contains the FY 2025 Stockholders Equity value of 411.1 (representing 411,065,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B6 in Balance Sheet contains the Q1 2026 Cash and Cash Equivalents value of 101.8 (representing 101,816,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C6 in Balance Sheet contains the FY 2025 Cash and Cash Equivalents value of 86.8 (representing 86,810,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell F4 in Balance Sheet contains a formula (=B4-C4) calculating QoQ Total Assets change as 98.6 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell F5 in Balance Sheet contains a formula (=B5-C5) calculating QoQ Stockholders Equity change as 30.8 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell F6 in Balance Sheet contains a formula (=B6-C6) calculating QoQ Cash change as 15.0 billion.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Key Ratios sheet contains rows for 'Gross Margin', 'Operating Margin', 'Net Margin', 'Return on Equity', and 'Return on Assets'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B4 in Key Ratios contains a formula computing Q1 2026 Gross Margin as Gross Profit / Revenue, yielding approximately 51.8%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C4 in Key Ratios contains a formula computing Q3 2025 Gross Margin as Gross Profit / Revenue, yielding approximately 50.8%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B5 in Key Ratios contains a formula computing Q1 2026 Operating Margin as Operating Income / Revenue, yielding approximately 13.2%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell C5 in Key Ratios contains a formula computing Q3 2025 Operating Margin as Operating Income / Revenue, yielding approximately 9.7%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B7 in Key Ratios contains a formula computing Q1 2026 Return on Equity as Net Income / Stockholders Equity, yielding approximately 6.9%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B8 in Key Ratios contains a formula computing Q1 2026 Return on Assets as Net Income / Total Assets, yielding approximately 3.3%.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Dollar figures throughout the workbook are formatted in billions with one decimal place (e.g., 181.5) rather than raw integer values.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Headers throughout the workbook are formatted in bold text.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Input cells use light blue fill, calculated cells use light green fill, and subtotal or total rows use yellow fill.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -3,
+      "criterion": "The workbook uses raw integer values (e.g., 181519000000) instead of billions formatting for any dollar line item.",
+      "category": "style",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_cfd823d22f972029",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "variance_analysis",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:AMZN",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "181.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "180.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "161.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "179.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "87.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "88.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "94.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "91.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "23.9",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "17.4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "30.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "19.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "2.78",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "1.95",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "1.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "-1.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "6.5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "10.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "916.6",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "818.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "441.9",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "411.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "101.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "86.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "98.6",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "30.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "15.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "51.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "50.8",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "13.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "9.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "16.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "6.9",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "5.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "3.3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_35",
+        "kind": "person",
+        "name": "2.7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_36",
+        "kind": "person",
+        "name": "=B4-B5",
+        "attrs": {}
+      },
+      {
+        "id": "ev_37",
+        "kind": "person",
+        "name": "=B4-C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_38",
+        "kind": "person",
+        "name": "=D4/C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_39",
+        "kind": "person",
+        "name": "=('P&L Summary'!B6)/('P&L Summary'!B4)",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 181.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "money",
+        "value": 180.2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 161.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 179.2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 87.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 88.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 94.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "money",
+        "value": 91.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "money",
+        "value": 23.9,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 17.4,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 30.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 19.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 2.78,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 1.95,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 1.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": -1.2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 6.5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "money",
+        "value": 10.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": 916.6,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "money",
+        "value": 818.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "money",
+        "value": 441.9,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "money",
+        "value": 411.1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "money",
+        "value": 101.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "money",
+        "value": 86.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 98.6,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "money",
+        "value": 30.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "money",
+        "value": 15.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "money",
+        "value": 51.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "money",
+        "value": 50.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "money",
+        "value": 13.2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "money",
+        "value": 9.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "money",
+        "value": 16.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "money",
+        "value": 10.8,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "money",
+        "value": 6.9,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "money",
+        "value": 5.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "money",
+        "value": 3.3,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "money",
+        "value": 2.7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "string",
+        "value": "=B4-B5",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "string",
+        "value": "=B4-C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "string",
+        "value": "=D4/C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_40",
+        "kind": "string",
+        "value": "=('P&L Summary'!B6)/('P&L Summary'!B4)",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "P&L Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Amazon.com, Inc. - P&L Summary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "(Amounts in Billions unless otherwise noted)",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Q2 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "FY2025 Avg",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 181.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 180.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": 161.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": 179.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Cost of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 87.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 88.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 78.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": 89.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=B4-B5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=C4-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=D4-D5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=E4-E5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 23.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 17.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 18.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": 20.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 30.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 19.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": 19.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": 19.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 2.78,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 1.95,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": 3.27,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": 1.79,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 15.0,
+            "C": 15.0,
+            "D": 15.0,
+            "E": 15.0
+          }
+        },
+        {
+          "name": "QoQ Variance",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Amazon.com, Inc. - Q1 2026 vs Q3 2025 Variance",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "(Amounts in Billions)",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 181.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 180.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Cost of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 87.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 88.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=B4-B5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=C4-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 23.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 17.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 30.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 19.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "EPS (Diluted)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 2.78,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 1.95,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Commentary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "Net Income of $30.3B represents the largest QoQ variance driver at +$10.8B (+55.4%), driven by non-operating gains.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A13",
+              "value": "Revenue grew modestly by $1.3B QoQ (+0.7%), indicating stable top-line performance.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "Cost of Revenue decreased by $1.2B QoQ (-1.4%), contributing to margin expansion.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A15",
+              "value": "Operating Income increased $6.5B QoQ (+37.4%), the second largest absolute dollar improvement.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0,
+            "C": 15.0,
+            "D": 15.0,
+            "E": 15.0
+          }
+        },
+        {
+          "name": "Balance Sheet",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Amazon.com, Inc. - Balance Sheet Summary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "(Amounts in Billions)",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "FY 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Q2 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "QoQ Change",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Total Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 916.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 818.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": 727.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": 682.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Stockholders Equity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 441.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 411.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 369.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": 333.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Cash and Cash Equivalents",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 101.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 86.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": 66.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": 57.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0.0",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "#,##0.0",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0,
+            "C": 15.0,
+            "D": 15.0,
+            "E": 15.0,
+            "F": 15.0
+          }
+        },
+        {
+          "name": "Key Ratios",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Amazon.com, Inc. - Key Financial Ratios",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "(Percentages unless otherwise noted)",
+              "formula": null,
+              "bold": false,
+              "italic": true,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Ratio",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Gross Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=('P&L Summary'!B6)/('P&L Summary'!B4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=('P&L Summary'!C6)/('P&L Summary'!C4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Operating Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=('P&L Summary'!B7)/('P&L Summary'!B4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=('P&L Summary'!C7)/('P&L Summary'!C4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Net Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=('P&L Summary'!B8)/('P&L Summary'!B4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=('P&L Summary'!C8)/('P&L Summary'!C4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Return on Equity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=('P&L Summary'!B8)/('Balance Sheet'!B5)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=('P&L Summary'!C8)/('Balance Sheet'!D5)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Return on Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=('P&L Summary'!B8)/('Balance Sheet'!B4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=('P&L Summary'!C8)/('Balance Sheet'!D4)",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0,
+            "C": 15.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "Amazon.com Inc (AMZN) XBRL Financial Data covering Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods",
+          "content_blueprint": {
+            "title": "Amazon",
+            "body": "# Seed Material: AMAZON.COM, INC. (AMZN)\nSource: sec_edgar_xbrl\nIdentifier: ticker:AMZN\n\nCompany: AMAZON.COM, INC.\nTicker: AMZN\nCIK: 0001018724\nSector: retail_ecom\n\n## Financial Data (XBRL)\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 181,519,000,000\n  FY 2025: 716,924,000,000\n  Q3 2025: 503,538,000,000\n  Q3 2025: 180,169,000,000\n  Q2 2025: 323,369,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 87,463,000,000\n  FY 2025: 356,414,000,000\n  Q3 2025: 246,455,000,000\n  Q3 2025: 88,670,000,000\n  Q2 2025: 157,785,000,000\n\n### GrossProfit\n  FY 2009: 5,531,000,000\n  Q3 2009: 3,554,000,000\n  Q3 2009: 1,273,000,000\n  Q2 2009: 2,281,000,000\n  Q2 2009: 1,133,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 23,852,000,000\n  FY 2025: 79,975,000,000\n  Q3 2025: 54,998,000,000\n  Q3 2025: 17,422,000,000\n  Q2 2025: 37,576,000,000\n\n### NetIncomeLoss\n  Q1 2026: 90,798,000,000\n  Q1 2026: 30,255,000,000\n  FY 2025: 77,670,000,000\n  None None: 77,670,000,000\n  Q3 2025: 76,482,000,000\n\n### Assets\n  Q1 2026: 916,630,000,000\n  FY 2025: 818,042,000,000\n  Q1 2026: 818,042,000,000\n  Q3 2025: 727,921,000,000\n  Q2 2025: 682,170,000,000\n\n### StockholdersEquity\n  Q1 2026: 441,914,000,000\n  FY 2025: 411,065,000,000\n  Q1 2026: 411,065,000,000\n  Q3 2025: 369,631,000,000\n  Q2 2025: 333,775,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 101,816,000,000\n  FY 2025: 86,810,000,000\n  Q1 2026: 86,810,000,000\n  Q3 2025: 66,922,000,000\n  Q2 2025: 57,741,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 2.78\n  FY 2025: 7.17\n  Q3 2025: 5.22\n  Q3 2025: 1.95\n  Q2 2025: 3.27\n\n## Recent Filings\n  4 — 2026-05-06\n  144 — 2026-05-05\n  4 — 2026-05-05\n  4 — 2026-05-05\n  13F-HR — 2026-05-05"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Q1 2026 Revenue value in P&L Summary",
+          "value": 181.5,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B4"
+        },
+        {
+          "description": "Q3 2025 Revenue value in P&L Summary",
+          "value": 180.2,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C4"
+        },
+        {
+          "description": "Q2 2025 Revenue value in P&L Summary",
+          "value": 161.7,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell D4"
+        },
+        {
+          "description": "FY 2025 average quarterly revenue",
+          "value": 179.2,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell E4"
+        },
+        {
+          "description": "Q1 2026 Cost of Revenue value",
+          "value": 87.5,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B5"
+        },
+        {
+          "description": "Q3 2025 Cost of Revenue value",
+          "value": 88.7,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C5"
+        },
+        {
+          "description": "Q1 2026 Gross Profit calculated as Revenue minus Cost of Revenue",
+          "value": 94.0,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B6"
+        },
+        {
+          "description": "Q3 2025 Gross Profit calculated as Revenue minus Cost of Revenue",
+          "value": 91.5,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C6"
+        },
+        {
+          "description": "Q1 2026 Operating Income",
+          "value": 23.9,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B7"
+        },
+        {
+          "description": "Q3 2025 Operating Income",
+          "value": 17.4,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C7"
+        },
+        {
+          "description": "Q1 2026 Net Income",
+          "value": 30.3,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B8"
+        },
+        {
+          "description": "Q3 2025 Net Income",
+          "value": 19.5,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C8"
+        },
+        {
+          "description": "Q1 2026 EPS (Diluted)",
+          "value": 2.78,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B9"
+        },
+        {
+          "description": "Q3 2025 EPS (Diluted)",
+          "value": 1.95,
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell C9"
+        },
+        {
+          "description": "QoQ Revenue Variance dollar amount",
+          "value": 1.3,
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell D4"
+        },
+        {
+          "description": "QoQ Cost of Revenue Variance dollar amount",
+          "value": -1.2,
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell D5"
+        },
+        {
+          "description": "QoQ Operating Income Variance dollar amount",
+          "value": 6.5,
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell D7"
+        },
+        {
+          "description": "QoQ Net Income Variance dollar amount",
+          "value": 10.8,
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell D8"
+        },
+        {
+          "description": "Q1 2026 Total Assets",
+          "value": 916.6,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell B4"
+        },
+        {
+          "description": "FY 2025 Total Assets",
+          "value": 818.0,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell C4"
+        },
+        {
+          "description": "Q1 2026 Stockholders Equity",
+          "value": 441.9,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell B5"
+        },
+        {
+          "description": "FY 2025 Stockholders Equity",
+          "value": 411.1,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell C5"
+        },
+        {
+          "description": "Q1 2026 Cash and Cash Equivalents",
+          "value": 101.8,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell B6"
+        },
+        {
+          "description": "FY 2025 Cash and Cash Equivalents",
+          "value": 86.8,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell C6"
+        },
+        {
+          "description": "QoQ Total Assets change from FY2025 to Q1 2026",
+          "value": 98.6,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell F4"
+        },
+        {
+          "description": "QoQ Stockholders Equity change from FY2025 to Q1 2026",
+          "value": 30.8,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell F5"
+        },
+        {
+          "description": "QoQ Cash change from FY2025 to Q1 2026",
+          "value": 15.0,
+          "tolerance": null,
+          "location": "Balance Sheet sheet, cell F6"
+        },
+        {
+          "description": "Q1 2026 Gross Margin ratio",
+          "value": 51.8,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell B4"
+        },
+        {
+          "description": "Q3 2025 Gross Margin ratio",
+          "value": 50.8,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell C4"
+        },
+        {
+          "description": "Q1 2026 Operating Margin ratio",
+          "value": 13.2,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell B5"
+        },
+        {
+          "description": "Q3 2025 Operating Margin ratio",
+          "value": 9.7,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell C5"
+        },
+        {
+          "description": "Q1 2026 Net Margin ratio",
+          "value": 16.7,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell B6"
+        },
+        {
+          "description": "Q3 2025 Net Margin ratio",
+          "value": 10.8,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell C6"
+        },
+        {
+          "description": "Q1 2026 Return on Equity",
+          "value": 6.9,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell B7"
+        },
+        {
+          "description": "Q3 2025 Return on Equity",
+          "value": 5.3,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell C7"
+        },
+        {
+          "description": "Q1 2026 Return on Assets",
+          "value": 3.3,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell B8"
+        },
+        {
+          "description": "Q3 2025 Return on Assets",
+          "value": 2.7,
+          "tolerance": 0.5,
+          "location": "Key Ratios sheet, cell C8"
+        },
+        {
+          "description": "Gross Profit formula in P&L Summary for Q1 2026",
+          "value": "=B4-B5",
+          "tolerance": null,
+          "location": "P&L Summary sheet, cell B6"
+        },
+        {
+          "description": "Revenue Variance formula in QoQ Variance",
+          "value": "=B4-C4",
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell D4"
+        },
+        {
+          "description": "Revenue Variance percentage formula",
+          "value": "=D4/C4",
+          "tolerance": null,
+          "location": "QoQ Variance sheet, cell E4"
+        },
+        {
+          "description": "Gross Margin formula on Key Ratios sheet",
+          "value": "=('P&L Summary'!B6)/('P&L Summary'!B4)",
+          "tolerance": null,
+          "location": "Key Ratios sheet, cell B4"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1131179163
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "Amazon.com Inc (AMZN) XBRL Financial Data covering Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods",
+      "content_blueprint": {
+        "title": "Amazon",
+        "body": "# Seed Material: AMAZON.COM, INC. (AMZN)\nSource: sec_edgar_xbrl\nIdentifier: ticker:AMZN\n\nCompany: AMAZON.COM, INC.\nTicker: AMZN\nCIK: 0001018724\nSector: retail_ecom\n\n## Financial Data (XBRL)\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q1 2026: 181,519,000,000\n  FY 2025: 716,924,000,000\n  Q3 2025: 503,538,000,000\n  Q3 2025: 180,169,000,000\n  Q2 2025: 323,369,000,000\n\n### CostOfGoodsAndServicesSold\n  Q1 2026: 87,463,000,000\n  FY 2025: 356,414,000,000\n  Q3 2025: 246,455,000,000\n  Q3 2025: 88,670,000,000\n  Q2 2025: 157,785,000,000\n\n### GrossProfit\n  FY 2009: 5,531,000,000\n  Q3 2009: 3,554,000,000\n  Q3 2009: 1,273,000,000\n  Q2 2009: 2,281,000,000\n  Q2 2009: 1,133,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 23,852,000,000\n  FY 2025: 79,975,000,000\n  Q3 2025: 54,998,000,000\n  Q3 2025: 17,422,000,000\n  Q2 2025: 37,576,000,000\n\n### NetIncomeLoss\n  Q1 2026: 90,798,000,000\n  Q1 2026: 30,255,000,000\n  FY 2025: 77,670,000,000\n  None None: 77,670,000,000\n  Q3 2025: 76,482,000,000\n\n### Assets\n  Q1 2026: 916,630,000,000\n  FY 2025: 818,042,000,000\n  Q1 2026: 818,042,000,000\n  Q3 2025: 727,921,000,000\n  Q2 2025: 682,170,000,000\n\n### StockholdersEquity\n  Q1 2026: 441,914,000,000\n  FY 2025: 411,065,000,000\n  Q1 2026: 411,065,000,000\n  Q3 2025: 369,631,000,000\n  Q2 2025: 333,775,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 101,816,000,000\n  FY 2025: 86,810,000,000\n  Q1 2026: 86,810,000,000\n  Q3 2025: 66,922,000,000\n  Q2 2025: 57,741,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 2.78\n  FY 2025: 7.17\n  Q3 2025: 5.22\n  Q3 2025: 1.95\n  Q2 2025: 3.27\n\n## Recent Filings\n  4 — 2026-05-06\n  144 — 2026-05-05\n  4 — 2026-05-05\n  4 — 2026-05-05\n  13F-HR — 2026-05-05"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_cfd823d22f972029/variance_analysis.xlsx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_cfd823d22f972029/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:48:45.191906+00:00"
+}

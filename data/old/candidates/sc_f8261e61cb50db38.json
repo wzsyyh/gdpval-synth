@@ -1,0 +1,539 @@
+{
+  "candidate_id": "sc_f8261e61cb50db38",
+  "occupation": "software_engineer",
+  "archetype": "regression",
+  "difficulty": "medium",
+  "seed_id": "db58701973ee8fff",
+  "prompt": "You are a software engineer at Brookspring Software working on internal ML pipelines that depend on scikit-learn. Mira Fontaine, your engineering manager, assigned you to investigate and fix a regression that appeared after the upstream scikit-learn PR #27315 (\"ENH Adds polars output support to `set_output` API\") was merged on November 19, 2023. That PR introduced a `ContainerAdapterProtocol` abstraction and added `set_output(transform=\"polars\")` support to all transformers, along with a polars minimum dependency bump from 0.18.2 to 0.19.12. Dani Olarte, a former teammate, left code in our pipeline that interacts with scikit-learn's `set_output` API — likely written against the pre-#27315 behavior — and something in the new transformer output wrapping/unwrapping path is causing failures in our workflow.\n\nThe upstream PR body notes that polars does not have zero round-trip between ndarrays and DataFrames, meaning memory copies happen when wrapping and unwrapping in pipelines (unlike pandas, which uses a block manager for 2d ndarrays). The diff touches `sklearn/_config.py`, `sklearn/compose/_column_transformer.py`, and several other modules that govern how transformers produce their output. The regression likely lives in how the new protocol interacts with transformers that previously only needed to handle the pandas path.\n\nI need you to produce a markdown document covering four sections: a Problem Statement describing the regression, a Root Cause analysis pointing at the specific code path introduced by PR #27315 that breaks our usage, a Proposed Fix that resolves the regression while preserving the new polars output functionality and backwards compatibility with the pre-1.4 pandas set_output behavior, and a Testing Strategy that includes a regression test reproducing the failure plus verification against the full test suite. The fix should follow the ContainerAdapterProtocol pattern established upstream rather than hardcoding polars-specific logic, and should reference the minimum dependency version bump where relevant for any test skips. If documentation or docstrings around `set_output` behavior need updating, include that in the proposed fix. Format the PR description to clearly reference upstream PR #27315 and the regression.",
+  "deliverable": {
+    "deliverable_id": "bug_fix_pr",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "Deliverable is provided as a single markdown (.md) file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is organized into four distinct sections with headings: Problem Statement, Root Cause, Proposed Fix, and Testing Strategy.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the target repository as scikit-learn/scikit-learn.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explicitly references upstream PR number 27315.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR title as 'ENH Adds polars output support to `set_output` API'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Problem Statement section describes a regression caused by the polars output support changes in scikit-learn PR #27315.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Problem Statement section references former teammate Dani Olarte's code as the source of the interaction with the set_output API.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Problem Statement section mentions the internal deadline of May 14, 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section identifies the specific code path or mechanism introduced by PR #27315 (e.g., ContainerAdapterProtocol, wrapping/unwrapping logic) that breaks usage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause section mentions the file doc/whats_new/v1.4.rst as a file changed in the upstream PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause section mentions the file sklearn/_config.py as a file changed in the upstream PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause section mentions the file sklearn/_min_dependencies.py as a file changed in the upstream PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause section mentions the file sklearn/compose/_column_transformer.py as a file changed in the upstream PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section notes the polars minimum dependency version bump from 0.18.2 to 0.19.12.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section explains the difference in memory copy behavior between pandas (block manager) and polars (no zero round-trip) as a contributing factor.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause section references the issue of transformers wrapping and unwrapping dataframes via the new protocol.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix section describes a solution that uses the ContainerAdapterProtocol abstraction pattern.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix section specifies that the solution preserves backwards compatibility with the pre-1.4 pandas set_output behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix section describes how the fix will interact with both pandas and polars set_output modes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix section includes updates to relevant documentation or docstrings that reference set_output behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix section references the related PRs mentioned in the upstream PR body: #26683 and #27258.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix section references the related issues mentioned in the upstream PR body: #25896 and #26835.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix section mentions that the solution should adapt Brookspring's usage rather than revert upstream changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix includes code snippets or pseudo-code illustrating the proposed changes.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section includes a regression test that reproduces the failure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy section states that the regression test passes after the fix is applied.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions running the full scikit-learn test suite to verify no other regressions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes verification of compatibility with both pandas and polars set_output modes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section references the polars minimum dependency version 0.19.12 for any test skips or version checks.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section includes code for the regression test.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description section clearly references upstream PR #27315.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description section mentions the regression in its description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document follows scikit-learn's contribution guidelines (CONTRIBUTING.md) style for the PR description format.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses a professional, technical tone appropriate for a software engineering deliverable.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is well-organized with clear headings and logical flow.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is free of major spelling or grammatical errors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the merged date of upstream PR #27315 as November 19, 2023.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the assignment date as May 10, 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause analysis provides a plausible technical explanation for why the regression occurs, identifying a specific interaction between the new protocol and legacy code.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix demonstrates an understanding that the fix must be minimal and targeted given the 4-day turnaround.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document avoids suggesting reverts of upstream PR #27315 as a primary solution.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the set_output API configuration options 'default', 'pandas', and 'polars' as described in the diff.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section describes the regression test as a pytest-compatible test function.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix section considers edge cases where the transformer output format might be None (unchanged).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a reference to the upstream PR URL format (github:scikit-learn/scikit-learn#27315) or equivalent.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the employer Brookspring Software or the internal pipeline context.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references manager Mira Fontaine in the context of the assignment.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The document is missing one or more of the four required sections (Problem Statement, Root Cause, Proposed Fix, Testing Strategy).",
+      "category": "structure",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_f8261e61cb50db38",
+    "occupation": "software_engineer",
+    "deliverable_id": "bug_fix_pr",
+    "archetype": "regression",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:scikit-learn/scikit-learn#27315",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "scikit-learn/scikit-learn",
+        "attrs": {
+          "pr_number": 27315,
+          "pr_title": "ENH Adds polars output support to `set_output` API"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Brookspring Software",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Dani Olarte",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Mira Fontaine",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2023-11-19",
+        "description": "Reference PR scikit-learn/scikit-learn#27315 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-10",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-14",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "scikit-learn/scikit-learn",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 27315,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "ENH Adds polars output support to `set_output` API",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull r",
+        "unit": null,
+        "source": "github:scikit-learn/scikit-learn#27315"
+      },
+      {
+        "id": "issue_body_excerpt",
+        "kind": "string",
+        "value": "This should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n",
+        "unit": null,
+        "source": "github:scikit-learn/scikit-learn#1234"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi",
+        "unit": null,
+        "source": "github:scikit-learn/scikit-learn#27315.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Identify the specific regression caused by the polars output support changes in scikit-learn PR #27315",
+      "Write a bug fix that resolves the regression without breaking existing polars output functionality",
+      "Include a regression test that reproduces the failure and passes after the fix",
+      "Ensure the fix is compatible with scikit-learn's set_output API for both pandas and polars modes",
+      "Update any affected documentation or docstrings that reference set_output behavior",
+      "Submit a PR with a clear description referencing the upstream PR #27315 and the regression"
+    ],
+    "implicit_requirements": [
+      "Follow scikit-learn's contribution guidelines (CONTRIBUTING.md) for PR format and style",
+      "Use the ContainerAdapterProtocol abstraction pattern established in PR #27315 rather than hardcoding polars-specific logic",
+      "Ensure backwards compatibility with the pre-1.4 set_output API (pandas mode)",
+      "Run the full scikit-learn test suite to verify no other regressions are introduced",
+      "Reference the polars minimum dependency version bump to 0.19.12 from PR #27315 in any test skips or version checks"
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Problem Statement",
+          "heading_level": 2,
+          "required_content": [
+            "Clear description of the bug"
+          ],
+          "paragraphs": [
+            "**Problem Statement**",
+            "The `set_output` API in scikit-learn currently lacks support for alternative DataFrame libraries, most notably Polars. This limitation prevents users who work in ecosystems outside of pandas from seamlessly integrating scikit-learn transformers and pipelines into their workflows. When `set_output` is configured for a transformer, the resulting output is always returned as a `pandas.DataFrame`, irrespective of the user's preferred or environmentally mandated DataFrame format. This behavior forces an unnecessary and potentially performance-limiting dependency on pandas.",
+            "For users leveraging Polars—a high-performance DataFrame library frequently used in data-intensive applications—the inability to receive transformed data as a `polars.DataFrame` represents a significant workflow impediment. They must implement manual conversion steps after each transformation, which is cumbersome, inefficient, and undermines the purpose of the streamlined `set_output` API. This gap effectively creates a barrier to adoption for scikit-learn within Polars-centric pipelines and broader efforts toward library interoperability.",
+            "The fix requires modifying the core configuration and output transformation machinery within `sklearn/_config.py` to recognize and dispatch to Polars-specific output logic. Furthermore, `sklearn/_min_dependencies.py` must be updated to include Polars as an optional dependency for this feature. The `doc/whats_new/v1.4.rst` file will document this new capability, aligning it with the 1.4 release's feature set. The goal is to extend the `set_output` API's flexibility, allowing it to natively produce outputs in the user's configured DataFrame library, thereby enhancing scikit-learn's interoperability with modern data tooling."
+          ]
+        },
+        {
+          "heading": "Root Cause",
+          "heading_level": 2,
+          "required_content": [
+            "Technical explanation of why the bug occurred"
+          ],
+          "paragraphs": [
+            "The bug stems from a design limitation in the `set_output` API's configuration layer. The `set_output` API, introduced to standardize estimator output formats, initially only supported two output types: `\"pandas\"` for pandas DataFrames and `\"default\"` for NumPy arrays. This implementation was built around a global configuration dictionary in `sklearn/_config.py` that stored the desired output type as a simple string. However, the system lacked the necessary infrastructure to accommodate alternative DataFrame libraries like Polars, which was gaining traction in the data science ecosystem.",
+            "The core technical gap was in the `_check_array_api_backend` function within `sklearn/utils/_set_output.py` and the underlying configuration validation. The validation logic for the global `transform_output` setting explicitly checked for an allowed list of values (`{\"default\", \"pandas\"}`), causing any other value, such as `\"polars\"`, to raise a `ValueError`. Furthermore, the `_wrap_in_pandas_container` function, responsible for converting output arrays to DataFrame objects, was hardcoded to use `pandas.DataFrame` without any pathway to dispatch to a different library based on the requested output type. The configuration system had no notion of a Polars output option, and there was no corresponding adapter or conversion function to create Polars DataFrames from NumPy arrays.",
+            "Therefore, the root cause was not a runtime error in the transformers themselves, but an incomplete specification in the global configuration system. The `set_output` API's configuration validation and DataFrame creation logic were monolithic, tightly coupled to pandas, and not designed for extensibility. To resolve this, the fix required expanding the allowed `transform_output` values, updating the configuration documentation and validation, and introducing a new `polars` output path that utilizes the `polars` library (listed as an optional dependency in `_min_dependencies.py`) to convert arrays, ensuring the API could flexibly support modern DataFrame libraries."
+          ]
+        },
+        {
+          "heading": "Proposed Fix",
+          "heading_level": 2,
+          "required_content": [
+            "Code change description"
+          ],
+          "paragraphs": [
+            "The proposed fix addresses the need for native polars DataFrame output support within scikit-learn's `set_output` API by implementing a targeted integration of polars as a new output configuration option. The core change resides in `sklearn/_config.py`, where the global `_global_config` dictionary is updated to recognize \"polars\" as a valid value for the `\"transform_output\"` key. The `set_config` function is modified to include this new option in its validation, ensuring that downstream transformer operations can correctly dispatch data to a polars DataFrame when this configuration is active. This update allows the `set_output` API to function seamlessly with polars, mirroring the existing support for pandas DataFrames and other formats.",
+            "To ensure the dependency is correctly declared and available when the feature is used, the `sklearn/_min_dependencies.py` file is updated. The change adds `polars` to the `DEPENDENCIES` mapping with a specific minimum version, `0.19.2`, as a runtime dependency only when the output is configured to use it. This approach maintains scikit-learn's modular dependency structure, avoiding a mandatory installation for all users while guaranteeing compatibility for those who opt into the polars functionality.",
+            "Finally, the documentation in `doc/whats_new/v1.4.rst` is updated to announce this new feature. A new entry under the \"Enhancements\" section explicitly highlights the addition of polars support via `set_output(\"polars\")`, referencing the primary configuration file changes. This ensures the improvement is clearly communicated to users in the release notes, guiding them on how to leverage the new capability. Together, these changes provide a complete, documented, and dependency-aware implementation that extends scikit-learn's output API to support the polars library."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Unit tests, integration tests, edge cases"
+          ],
+          "paragraphs": [
+            "The testing strategy for this change is designed to validate the new polars output functionality while ensuring existing behavior remains stable. It is structured into three complementary categories: unit tests for core logic, integration tests for real-world usage, and targeted edge case coverage.",
+            "**Unit tests** will be added to verify the new functions and modifications in `sklearn/_config.py`, particularly focusing on the `set_output` API's configuration handling for the \"polars\" target. These tests will confirm that setting the global configuration or per-estimator `transform_output` parameter to \"polars\" correctly stores the intended setting and that the internal validation logic rejects unsupported values. Additionally, tests for the `_wrap_in_pandas_container` function (or its new polars counterpart) will ensure it correctly converts array-like inputs into polars DataFrames, preserving feature names when provided.",
+            "**Integration tests** are crucial to validate end-to-end behavior. These will involve instantiating common transformers (e.g., `StandardScaler`, `SimpleImputer`), setting their output to \"polars,\" and calling `fit_transform` to assert the output is a polars DataFrame with correct shape, column names, and data types. Tests will also cover pipeline functionality, verifying that a `Pipeline` configured with `set_output(transform=\"polars\")` produces a polars DataFrame from its final step. This confirms the change works within scikit-learn's core composability patterns.",
+            "Finally, **edge cases** will be rigorously tested to ensure robustness. This includes handling inputs without feature names (where polars should generate default column names like \"column_0\"), empty DataFrames, and mixed-type DataFrames. Tests will also verify proper error messages are raised when polars is not installed but the output is configured for it, and when an estimator does not support the `set_output` API. The strategy also includes confirming that the default behavior (\"pandas\" or None) is preserved when the new configuration is not used, preventing regressions."
+          ]
+        }
+      ],
+      "md_title": "Bug Fix Pr: scikit-learn/scikit-learn#27315",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "scikit-learn/scikit-learn",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "27315",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "doc/whats_new/v1.4.rst",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "sklearn/_config.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 3",
+          "value": "sklearn/_min_dependencies.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Brookspring Software. Your manager Mira Fontaine has asked you to write a professional bug fix pr for the open-source project scikit-learn/scikit-learn.\n\nThe reference PR is #27315: ENH Adds polars output support to `set_output` API\n\nKey technical context:\n- Files changed: doc/whats_new/v1.4.rst, sklearn/_config.py, sklearn/_min_dependencies.py\n- PR description excerpt: <!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-reque\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1594483192
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:14:05.796666+00:00"
+}

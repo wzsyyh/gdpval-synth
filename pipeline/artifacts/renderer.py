@@ -11,6 +11,8 @@ during synthesis and stored in the blueprint. Rendering is pure code assembly.
 from __future__ import annotations
 
 import logging
+import shutil
+import subprocess
 from pathlib import Path
 
 from pipeline.artifacts.base import deliverable_dir
@@ -22,6 +24,34 @@ logger = logging.getLogger(__name__)
 
 GOLD_DIR = DATA_DIR / "gold"
 GOLD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def maybe_render_pdf(docx_path: Path) -> Path | None:
+    """Use LibreOffice headless to convert .docx → .pdf if available."""
+    soffice = shutil.which("soffice") or shutil.which("libreoffice")
+    if not soffice:
+        logger.info("LibreOffice not found; skipping PDF rendering")
+        return None
+    try:
+        subprocess.run(
+            [
+                soffice,
+                "--headless",
+                "--convert-to", "pdf",
+                "--outdir", str(docx_path.parent),
+                str(docx_path),
+            ],
+            check=True,
+            capture_output=True,
+            timeout=60,
+        )
+        pdf_path = docx_path.with_suffix(".pdf")
+        if pdf_path.exists():
+            logger.info("  PDF rendered → %s", pdf_path)
+            return pdf_path
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        logger.warning("PDF rendering failed: %s", e)
+    return None
 
 
 # ─────────────────────────── XLSX Rendering ───────────────────────────
@@ -206,7 +236,6 @@ def render_deliverable(task: TaskCandidate) -> Path:
         docx_path = out_dir / f"{task.deliverable.deliverable_id}.docx"
         pdf_path = out_dir / f"{task.deliverable.deliverable_id}.pdf"
         _render_docx(blueprint, docx_path)
-        from pipeline.artifacts.docx_renderer import maybe_render_pdf
         converted = maybe_render_pdf(docx_path)
         if converted:
             return converted

@@ -1,0 +1,1257 @@
+{
+  "candidate_id": "sc_84576c4f06f3388c",
+  "occupation": "financial_analyst",
+  "archetype": "qoq_margin",
+  "difficulty": "medium",
+  "seed_id": "5fd515f1d6a6f6a8",
+  "prompt": "You are an associate analyst on the Halverson Stuyvesant consumer sector team. Rashida Holm, the managing director, has asked you to prepare a quarter-over-quarter margin variance analysis on NIKE, Inc. (NKE) ahead of an internal investment committee discussion on the company's margin trajectory. Your analysis will be based on the latest 10-Q and the attached historical financial summary (NKE_historical_financials.xlsx).\n\nPull the three-month period ended figures for the quarter ending February 28, 2026. The pinned P&L data: Revenue of $35.426B, COGS of $20.908B, Gross Profit of $14.518B, SGA of $12.032B, and Net Income of $2.039B. Diluted EPS was $1.38. Total Assets stood at $37.064B, Stockholders' Equity at $14.09B, and Cash at $6.66B.\n\nBuild the deliverable as an Excel workbook with the following structure:\n\n1. Calculate gross margin, operating margin (Gross Profit less SGA), and net margin for Q3 FY2026 (three months ended 2/28/2026) using the figures above. Express all margins as percentages and to two decimal places.\n\n2. Source the corresponding three-month period figures for the immediately prior sequential quarter from the most recent prior 10-Q on EDGAR and compute the same three margins. Use only the quarterly column, not YTD.\n\n3. Compute the quarter-over-quarter basis-point change for gross margin, operating margin, and net margin. Present all margin deltas in basis points — institutional audience.\n\n4. Decompose the gross margin variance into volume/mix, price, and cost components to the extent the filing's MD&A and footnotes allow. If disclosures are insufficient for clean separation, note what's available and what isn't.\n\n5. Attribute the operating margin variance between gross profit flow-through and SGA leverage (SGA as a % of revenue). Show the mechanical bridge.\n\n6. Build a waterfall-style variance bridge tab showing the QoQ change in each margin line item from gross margin through net margin, with intermediate operating margin waterfall.\n\n7. Flag any one-time or non-recurring items disclosed in the filing that materially affected the margin comparison (restructuring, impairment, tax items, etc.).\n\n8. Include a 2-3 sentence qualitative commentary section summarizing the primary margin drivers for the quarter.\n\nFormat notes: follow Halverson Stuyvesant template conventions — header row formatting, color coding distinguishing inputs from formulas, consistent number formatting. Negative variances in parentheses, not minus signs. All EDGAR-sourced figures must reconcile to the original filing with no unannotated manual adjustments. This will be presented to the investment committee with minimal further review.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "Deliverable is provided as a single .xlsx file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a sheet named 'Actual vs Budget'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a sheet named 'Balance Sheet'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a sheet named 'Summary'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Header row uses bold formatting and a consistent fill color per Halverson Stuyvesant template.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Color coding distinguishes input cells from formula cells (e.g., blue for inputs, black for formulas).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All dollar figures are formatted with thousands separator and two decimal places where appropriate.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Negative variances are displayed in parentheses (e.g., (125)) rather than with a minus sign.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B4 on the 'Actual vs Budget' sheet contains Revenue of 35426.0 (representing $35,426M).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cell B6 on the 'Actual vs Budget' sheet contains Gross Profit of 14518.0 (representing $14,518M).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "COGS for Q3 FY2026 is correctly listed as $20,908M or 20908.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "SGA expense for Q3 FY2026 is correctly listed as $12,032M or 12032.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Net Income for Q3 FY2026 is correctly listed as $2,039M or 2039.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Diluted EPS for Q3 FY2026 is correctly identified as $1.38.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Total Assets as of February 28, 2026 is correctly listed as $37,064M or 37064.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Stockholders' Equity as of February 28, 2026 is correctly listed as $14,090M or 14090.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cash and Cash Equivalents as of February 28, 2026 is correctly listed as $6,660M or 6660.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin for Q3 FY2026 is calculated as Gross Profit / Revenue = 14518 / 35426 = 40.98% (±0.05%).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Operating margin for Q3 FY2026 is calculated as (Gross Profit - SGA) / Revenue = (14518 - 12032) / 35426 = 7.02% (±0.05%).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Net margin for Q3 FY2026 is calculated as Net Income / Revenue = 2039 / 35426 = 5.76% (±0.05%).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter (Q2 FY2026, three months ended November 30, 2025) figures are sourced from the most recent prior 10-Q filing on EDGAR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter Revenue figure is correctly extracted from the 10-Q filing (three-month column, not YTD).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter COGS figure is correctly extracted from the 10-Q filing (three-month column, not YTD).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter SGA figure is correctly extracted from the 10-Q filing (three-month column, not YTD).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter Net Income figure is correctly extracted from the 10-Q filing (three-month column, not YTD).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter gross margin is calculated correctly from sourced figures.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter operating margin is calculated correctly from sourced figures.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Prior quarter net margin is calculated correctly from sourced figures.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "QoQ change in gross margin is expressed in basis points (e.g., +25 bps or -150 bps).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "QoQ change in operating margin is expressed in basis points.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "QoQ change in net margin is expressed in basis points.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin variance decomposition includes a volume/mix component based on available MD&A disclosures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin variance decomposition includes a price component based on available MD&A disclosures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin variance decomposition includes a cost component based on available MD&A disclosures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "If disclosures are insufficient for clean separation of volume/mix, price, and cost, the workbook explicitly notes what is available and what is not.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Operating margin variance is attributed to gross profit flow-through (change in gross margin dollars relative to prior revenue).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Operating margin variance is attributed to SGA leverage (change in SGA as a percentage of revenue).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The mechanical bridge from gross margin to operating margin is shown with intermediate line items.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "A waterfall-style variance bridge tab exists showing the QoQ change in gross margin, operating margin, and net margin.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The waterfall bridge correctly shows the step from gross margin to operating margin through the SGA impact.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The waterfall bridge correctly shows the step from operating margin to net margin through tax and other items.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "One-time or non-recurring items disclosed in the filing (e.g., restructuring, impairment, tax items) are flagged if they materially affected the margin comparison.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "If no material one-time items are disclosed, the workbook explicitly states that no non-recurring items were identified.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Qualitative commentary section is present and contains 2-3 sentences summarizing primary margin drivers.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The qualitative commentary plausibly references the calculated margin changes and identifies the primary drivers (e.g., revenue mix, cost pressures, SGA leverage).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All EDGAR-sourced figures include a source annotation or footnote referencing the specific filing (e.g., '10-Q, three months ended ...').",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "No unannotated manual adjustments are present; any adjustments to source data are clearly noted.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Actual vs Budget' sheet contains approximately 36 populated cells.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Balance Sheet' sheet contains approximately 11 populated cells.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Summary' sheet contains approximately 7 populated cells.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "Deliverable uses a format other than .xlsx (e.g., .csv, .pdf).",
+      "category": "format",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_84576c4f06f3388c",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "qoq_margin",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:NKE",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "NIKE, Inc.",
+        "attrs": {
+          "ticker": "NKE",
+          "sector": "apparel",
+          "cik": "0000320187"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Halverson Stuyvesant",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Priya Doshi",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Halverson Stuyvesant"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Rashida Holm",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Halverson Stuyvesant"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-12",
+        "description": "NKE filed SCHEDULE 13G",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-12",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-18",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_RevenueFromContractWithCustome",
+        "kind": "money",
+        "value": 35426000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:RevenueFromContractWithCustomerExcludingAssessedTax:2026-02-28"
+      },
+      {
+        "id": "fact_CostOfGoodsAndServicesSold",
+        "kind": "money",
+        "value": 20908000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:CostOfGoodsAndServicesSold:2026-02-28"
+      },
+      {
+        "id": "fact_GrossProfit",
+        "kind": "money",
+        "value": 14518000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:GrossProfit:2026-02-28"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 2039000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:NetIncomeLoss:2026-02-28"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 37064000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:Assets:2026-02-28"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 14090000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:StockholdersEquity:2026-02-28"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 6660000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:CashAndCashEquivalentsAtCarryingValue:2026-02-28"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 1.38,
+        "unit": "USD/share",
+        "source": "EDGAR:NKE:EarningsPerShareDiluted:2026-02-28"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 12032000000,
+        "unit": "USD",
+        "source": "EDGAR:NKE:SellingGeneralAndAdministrativeExpense:2026-02-28"
+      }
+    ],
+    "explicit_requirements": [
+      "Calculate gross margin, operating margin (using SGA as the primary operating expense line), and net margin for the quarter ending 2026-02-28 using the pinned facts.",
+      "Source and calculate the same three margins for the immediately preceding quarter (the prior sequential quarter) from the most recent prior 10-Q filing on EDGAR.",
+      "Compute the QoQ basis-point change for gross margin, operating margin, and net margin.",
+      "Decompose gross margin variance into volume/mix, price, and cost components to the extent disclosures allow.",
+      "Attribute operating margin variance between gross profit flow-through and SGA leverage (SGA as a percentage of revenue).",
+      "Present a clean variance bridge (waterfall-style) in the workbook showing the quarter-over-quarter change in each margin line item.",
+      "Flag any one-time or non-recurring items disclosed in the filing that materially affected the margin comparison.",
+      "Include a brief (2-3 sentence) qualitative commentary section summarizing the primary margin drivers."
+    ],
+    "implicit_requirements": [
+      "Margins must be expressed in basis points, not just percentage-point deltas, since the audience is institutional investors.",
+      "All dollar figures sourced from EDGAR XBRL must be reconciled to the original filing; no manual adjustments without annotation.",
+      "The workbook must follow the standard Halverson Stuyvesant formatting template (header row, color coding for inputs vs. formulas, consistent number formatting).",
+      "Operating income should be derived as Gross Profit minus SGA unless the filing explicitly reports a separate Operating Income line item, in which case use the reported figure.",
+      "Use the three-month period ended columns (not YTD) for all quarterly comparisons.",
+      "Negative variances should be presented in parentheses, not with minus signs, per firm convention."
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 35426.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 33476.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 20908.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 21682.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 14518.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 14114.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 9204.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 9414.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 5313.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 5471.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 2039.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 1769.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Balance Sheet",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Balance Sheet Snapshot",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Total Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 37064.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Total Liabilities",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 42511.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Stockholders' Equity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 14090.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Cash & Equivalents",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 6660.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 16.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D9)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_NKE",
+          "filename": "NKE_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for NIKE, Inc. (NKE)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                863.8,
+                953.0,
+                984.8,
+                952.9,
+                1141.8
+              ],
+              [
+                "COGS ($M)",
+                527.6,
+                516.9,
+                521.8,
+                548.4,
+                590.0
+              ],
+              [
+                "Gross Profit ($M)",
+                261.9,
+                401.8,
+                487.7,
+                422.9,
+                354.3
+              ],
+              [
+                "Operating Income ($M)",
+                252.8,
+                307.3,
+                336.5,
+                181.7,
+                357.2
+              ],
+              [
+                "Net Income ($M)",
+                172.3,
+                187.6,
+                225.6,
+                203.4,
+                244.3
+              ],
+              [
+                "D&A ($M)",
+                45.9,
+                53.9,
+                67.4,
+                35.7,
+                85.2
+              ],
+              [
+                "CapEx ($M)",
+                63.4,
+                67.5,
+                104.6,
+                138.3,
+                159.4
+              ],
+              [
+                "Shares Outstanding (M)",
+                21.8,
+                41.8,
+                43.0,
+                46.5,
+                25.5
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "35426.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "14518.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for NIKE, Inc. (NKE) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2170891446
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_NKE",
+      "filename": "NKE_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for NIKE, Inc. (NKE)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            863.8,
+            953.0,
+            984.8,
+            952.9,
+            1141.8
+          ],
+          [
+            "COGS ($M)",
+            527.6,
+            516.9,
+            521.8,
+            548.4,
+            590.0
+          ],
+          [
+            "Gross Profit ($M)",
+            261.9,
+            401.8,
+            487.7,
+            422.9,
+            354.3
+          ],
+          [
+            "Operating Income ($M)",
+            252.8,
+            307.3,
+            336.5,
+            181.7,
+            357.2
+          ],
+          [
+            "Net Income ($M)",
+            172.3,
+            187.6,
+            225.6,
+            203.4,
+            244.3
+          ],
+          [
+            "D&A ($M)",
+            45.9,
+            53.9,
+            67.4,
+            35.7,
+            85.2
+          ],
+          [
+            "CapEx ($M)",
+            63.4,
+            67.5,
+            104.6,
+            138.3,
+            159.4
+          ],
+          [
+            "Shares Outstanding (M)",
+            21.8,
+            41.8,
+            43.0,
+            46.5,
+            25.5
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_84576c4f06f3388c/variance_analysis.xlsx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_84576c4f06f3388c/NKE_historical_financials.xlsx"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:30:40.313867+00:00"
+}

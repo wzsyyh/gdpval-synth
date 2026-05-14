@@ -1,0 +1,70 @@
+{
+  "seed_id": "b4100edc4478b8bd",
+  "source": "github_issue_pr",
+  "occupation": "software_engineer",
+  "identifier": "pr:pandas-dev/pandas#63915",
+  "title": "deploy_failure",
+  "fetched_at": "2024-01-01",
+  "payload": {
+    "title": "deploy_failure",
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "pandas-dev/pandas"
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Brookspring Software"
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Mateusz Kruk"
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Aurora Lindqvist"
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "pandas-dev/pandas",
+        "unit": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": "63915",
+        "unit": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "BUG:to_datetime with origin",
+        "unit": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "When pass in parameter origin to to_datetime will truncate time in origin. This fix preserves time in origin.\r\n\r\nCloses https://github.com/pandas-dev/pandas/issues/63419\r\n\r\n- [x] closes #xxxx (Replace xxxx with the GitHub issue number)\r\n- [x] [Tests added and passed](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#writing-tests) if fixing a bug or adding a new feature\r\n- [x] All [code checks passed](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#pre-commit).\r\n- [ ] Added [type annotations](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#type-hints) to new arguments/methods/functions.\r\n- [x] Added an entry in the latest `doc/source/whatsnew/vX.X.X.rst` file if fixing a bug or adding a new feature.\r\n- [x] I have reviewed and followed all the [contribution guidelines](https://pandas.pydata.org/docs/dev/development/contributing.html)\r\n- [ ] If I used AI to develop this pull request, I prompted it to follow `AGENTS.md`.\r\n",
+        "unit": null
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/doc/source/whatsnew/v3.1.0.rst b/doc/source/whatsnew/v3.1.0.rst\nindex aa1a5c2e2b893..2fb4fc1cf830c 100644\n--- a/doc/source/whatsnew/v3.1.0.rst\n+++ b/doc/source/whatsnew/v3.1.0.rst\n@@ -224,6 +224,7 @@ Datetimelike\n - Bug in :func:`date_range` where calendar-based offsets (e.g. ``MS``, ``ME``, ``QS``, ``YS``) could exclude the last offset boundary when ``end``'s time-of-day was earlier than ``start``'s (:issue:`35342`)\n - Bug in :func:`to_datetime` and :func:`to_timedelta` on ARM platforms where round ``float`` values outside the int64 domain (e.g. ``float(2**63)``) could silently produce incorrect results instead of raising (:issue:`64619`)\n - Bug in :func:`to_datetime` and :func:`to_timedelta` where ``uint64`` values greater than ``int64`` max silently overflowed instead of raising :class:`OutOfBoundsDatetime` or :class:`OutOfBoundsTimedelta` (:issue:`60677`)\n+- Bug in :func:`to_datetime` when using a low time resolution ``unit``, higher resolution in ``origin`` is now preserved instead of silently dropped (e.g. ``unit=\"D\"`` with microsecond precision origin) (:issue:`63419`)\n - Bug in :meth:`DataFrame.replace` and :meth:`Series.replace` raising ``AssertionError`` instead of :class:`OutOfBoundsDatetime` when replacing with a ``datetime`` value outside the ``datetime64[ns]`` range (:issue:`61671`)\n - Bug in :meth:`DataFrame.to_string` and :meth:`Series.to_string` where ``na_rep`` was ignored for datetime and timedelta columns, always displaying ``NaT`` (:issue:`55426`)\n - Bug in :meth:`DatetimeArray.isin` and :meth:`TimedeltaArray.isin` where mismatched resolutions could silently truncate finer-resolution values, leading to false matches (:issue:`64545`)\ndiff --git a/pandas/core/tools/datetimes.py b/pandas/core/tools/datetimes.py\nindex da02621225045..eeb5db911cd76 100644\n--- a/pandas/core/tools/datetimes.py\n+++ b/pandas/core/tools/datetimes.py\n@@ -23,7 +23,6 @@\n from pandas._libs.tslibs import (\n     NaT,\n     OutOfBoundsDatetime,\n-    Timedelta,\n     Timestamp,\n     astype_overflowsafe,\n     get_supported_dtype,\n@@ -77,6 +76,7 @@\n from pandas.core.construction import extract_array\n from pandas.core.indexes.base import Index\n from pandas.core.indexes.datetimes import DatetimeIndex\n+from pandas.core.tools.timedeltas import to_timedelta\n \n if TYPE_CHECKING:\n     from collections.abc import (\n@@ -601,7 +601,7 @@ def _adjust_to_origin(arg, origin, unit):\n \n     Returns\n     -------\n-    ndarray or scalar of adjusted date(s)\n+    DatetimeArray, ndarray, or scalar of adjusted date(s)\n     \"\"\"\n     if origin == \"julian\":\n         original = arg\n@@ -647,16 +647,7 @@ def _adjust_to_origin(arg, origin, unit):\n \n         if offset.tz is not None:\n             raise ValueError(f\"origin offset {offset} must be tz-naive\")\n-        td_offset = offset - Timestamp(0)\n-\n-        # convert the offset to the unit of the arg\n-        # this should be lossless in terms of precision\n-        ioffset = td_offset // Timedelta(1, unit=unit)\n-\n-        # scalar",
+        "unit": null
+      }
+    ],
+    "merged_at": "2024-01-01T00:00:00Z",
+    "additions": 100,
+    "deletions": 50,
+    "changed_files": 5
+  },
+  "text_excerpt": "Task: deploy_failure\nrepo: pandas-dev/pandas\ncompany: Brookspring Software\nperson: Mateusz Kruk\nstring: pandas-dev/pandas\ncount: 63915\nstring: BUG:to_datetime with origin\nstring: When pass in parameter origin to to_datetime will truncate time in origin. This fix preserves time in origin.\r\n\r\nCloses https://github.com/pandas-dev/pandas/issues/63419\r\n\r\n- [x] closes #xxxx (Replace xxxx with the GitHub issue number)\r\n- [x] [Tests added and passed](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#writing-tests) if fixing a bug or adding a new feature\r\n- [x] All [code checks passed](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#pre-commit).\r\n- [ ] Added [type annotations](https://pandas.pydata.org/pandas-docs/dev/development/contributing_codebase.html#type-hints) to new arguments/methods/functions.\r\n- [x] Added an entry in the latest `doc/source/whatsnew/vX.X.X.rst` file if fixing a bug or adding a new feature.\r\n- [x] I have reviewed and followed all the [contribution guidelines](https://pandas.pydata.org/docs/dev/development/contributing.html)\r\n- [ ] If I used AI to develop this pull request, I prompted it to follow `AGENTS.md`.\r\n\nstring: diff --git a/doc/source/whatsnew/v3.1.0.rst b/doc/source/whatsnew/v3.1.0.rst\nindex aa1a5c2e2b893..2fb4fc1cf830c 100644\n--- a/doc/source/whatsnew/v3.1.0.rst\n+++ b/doc/source/whatsnew/v3.1.0.rst\n@@ -224,6 +224,7 @@ Datetimelike\n - Bug in :func:`date_range` where calendar-based offsets (e.g. ``MS``, ``ME``, ``QS``, ``YS``) could exclude the last offset boundary when ``end``'s time-of-day was earlier than ``start``'s (:issue:`35342`)\n - Bug in :func:`to_datetime` and :func:`to_timedelta` on ARM platforms where round ``float`` values outside the int64 domain (e.g. ``float(2**63)``) could silently produce incorrect results instead of raising (:issue:`64619`)\n - Bug in :func:`to_datetime` and :func:`to_timedelta` where ``uint64`` values greater than ``int64`` max silently overflowed instead of raising :class:`OutOfBoundsDatetime` or :class:`OutOfBoundsTimedelta` (:issue:`60677`)\n+- Bug in :func:`to_datetime` when using a low time resolution ``unit``, higher resolution in ``origin`` is now preserved instead of silently dropped (e.g. ``unit=\"D\"`` with microsecond precision origin) (:issue:`63419`)\n - Bug in :meth:`DataFrame.replace` and :meth:`Series.replace` raising ``AssertionError`` instead of :class:`OutOfBoundsDatetime` when replacing with a ``datetime`` value outside the ``datetime64[ns]`` range (:issue:`61671`)\n - Bug in :meth:`DataFrame.to_string` and :meth:`Series.to_string` where ``na_rep`` was ignored for datetime and timedelta columns, always displaying ``NaT`` (:issue:`55426`)\n - Bug in :meth:`DatetimeArray.isin` and :meth:`TimedeltaArray.isin` where mismatched resolutions could silently truncate finer-resolution values, leading to false matches (:issue:`64545`)\ndiff --git a/pandas/core/tools/datetimes.py b/pandas/core/tools/datetimes.py\nindex da02621225045..eeb5db911cd76 100644\n--- a/pandas/core/tools/datetimes.py\n+++ b/pandas/core/tools/datetimes.py\n@@ -23,7 +23,6 @@\n from pandas._libs.tslibs import (\n     NaT,\n     OutOfBoundsDatetime,\n-    Timedelta,\n     Timestamp,\n     astype_overflowsafe,\n     get_supported_dtype,\n@@ -77,6 +76,7 @@\n from pandas.core.construction import extract_array\n from pandas.core.indexes.base import Index\n from pandas.core.indexes.datetimes import DatetimeIndex\n+from pandas.core.tools.timedeltas import to_timedelta\n \n if TYPE_CHECKING:\n     from collections.abc import (\n@@ -601,7 +601,7 @@ def _adjust_to_origin(arg, origin, unit):\n \n     Returns\n     -------\n-    ndarray or scalar of adjusted date(s)\n+    DatetimeArray, ndarray, or scalar of adjusted date(s)\n     \"\"\"\n     if origin == \"julian\":\n         original = arg\n@@ -647,16 +647,7 @@ def _adjust_to_origin(arg, origin, unit):\n \n         if offset.tz is not None:\n             raise ValueError(f\"origin offset {offset} must be tz-naive\")\n-        td_offset = offset - Timestamp(0)\n-\n-        # convert the offset to the unit of the arg\n-        # this should be lossless in terms of precision\n-        ioffset = td_offset // Timedelta(1, unit=unit)\n-\n-        # scalar"
+}

@@ -1,0 +1,565 @@
+{
+  "candidate_id": "sc_52524db1c7e73c4a",
+  "occupation": "software_engineer",
+  "archetype": "outage_rca",
+  "difficulty": "medium",
+  "seed_id": "40e1b0c28c2a2a83",
+  "prompt": "You are a software engineer at Solstice Networks responsible for post-incident documentation. Your engineering manager, Esteban Ruiz, has asked you to write the postmortem for a production outage caused by an upstream Rust compiler change.\n\nThe outage traces back to PR rust-lang/rust#132833, which stabilized `let` chains in the 2024 edition. That PR introduced edition-dependent behavior in the parser — specifically modifying `parse_expr_if`, `parse_expr_cond`, and `parse_expr_while` in `compiler/rustc_parse/src/parser/expr.rs` to accept a new `LetChainsPolicy` enum and changed the `CondChecker` constructor signature. The diff also references a rustfmt fork (tucant/rustfmt) that called the public `parse_expr_cond` method directly, which means the signature change broke that fork when it synced to the new compiler. Our team depended on that fork for internal tooling.\n\nHere's what the postmortem needs to cover, in this order:\n\n1. **Executive Summary** — Brief description of the incident, what broke, and the blast radius. Mention that the feature context comes from [RFC 2497](https://github.com/rust-lang/rfcs/pull/2497) and tracking issue [rust-lang/rust#53667](https://github.com/rust-lang/rust/issues/53667).\n\n2. **Timeline** — Start from the PR merge on 2025-04-22 through the outage and your assignment on 2026-05-10. Address the ~13-month gap between merge and internal detection — why did upstream CI, nightly builds, or dependency monitoring not surface this earlier?\n\n3. **Root Cause Analysis** — Pinpoint the 3-4 critical code hunks from the diff that matter: the `LetChainsPolicy` introduction, the `parse_expr_cond` signature change, the `CondChecker::new` call change, and the edition scoping in `parse_expr_while`. Explain how each contributed to the breakage. Do not reproduce the full diff.\n\n4. **Impact Assessment** — Which Solstice Networks services were affected, estimated duration of the outage, and user-facing symptoms. Note that Dani Olarte, who originally owned the rustfmt integration, is unavailable and has not reviewed this section — flag that as a known gap.\n\n5. **Remediation Actions** — Concrete, assignable action items (upstream CI pinning strategy, rustfmt fork sync cadence, monitoring for public API changes in compiler internals). Each item needs an owner and target.\n\n6. **Lessons Learned** — Blameless framing. Focus on systemic factors: reliance on a fork of a fork, no contract testing against upstream parser APIs, silent dependency on a public-but-unstable method.\n\nWrite this for an audience of engineering managers and senior engineers at Solstice Networks. Use Markdown with headers, tables where appropriate, and hyperlink all PR/issue references.",
+  "deliverable": {
+    "deliverable_id": "incident_postmortem",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document identifies the repository as rust-lang/rust.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR number as 132833.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the affected file as compiler/rustc_parse/src/parser/expr.rs.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the tracking issue as rust-lang/rust#53667.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the RFC as RFC 2497.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR merge date as 2025-04-22.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the internal assignment date as 2026-05-10.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the internal deadline as 2026-05-15.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the engineering manager as Esteban Ruiz.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the former teammate as Dani Olarte.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the rustfmt fork as tucant/rustfmt.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an Executive Summary section that briefly describes the incident and blast radius.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Executive Summary mentions the feature context from RFC 2497 and tracking issue rust-lang/rust#53667.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Timeline section starting from the PR merge date (2025-04-22) through the outage and assignment date (2026-05-10).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Timeline section addresses the approximately 13-month gap between merge and internal detection.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Root Cause Analysis section that identifies the specific parser code changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis identifies the introduction of the LetChainsPolicy enum as a critical code change.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis identifies the parse_expr_cond signature change as a critical code change.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis identifies the CondChecker::new call change as a critical code change.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis identifies the edition scoping in parse_expr_while as a critical code change.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause Analysis explains how each identified code change contributed to the breakage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an Impact Assessment section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment documents which Solstice Networks services were affected.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment provides an estimated duration of the outage.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment describes user-facing symptoms.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment notes that Dani Olarte is unavailable and has not reviewed the section.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Remediation Actions section with concrete, assignable action items.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Remediation Actions include an item for upstream CI pinning strategy.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Remediation Actions include an item for rustfmt fork sync cadence.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Remediation Actions include an item for monitoring public API changes in compiler internals.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each remediation action item includes an owner and target date.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Lessons Learned section with blameless framing.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Lessons Learned addresses reliance on a fork of a fork as a systemic factor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Lessons Learned addresses lack of contract testing against upstream parser APIs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Lessons Learned addresses silent dependency on a public-but-unstable method.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses the company name Solstice Networks consistently without abbreviation or aliasing.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is written for an audience of engineering managers and senior engineers.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown with headers.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses tables where appropriate.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "All PR and issue references are hyperlinked in the document.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the diff excerpt showing changes to compiler/rustc_parse/src/parser/expr.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the public parse_expr_cond method from the rustfmt fork as called in the PR body.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document follows a blameless postmortem format (no individual blame).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes the six specified sections: Executive Summary, Timeline, Root Cause Analysis, Impact Assessment, Remediation Actions, Lessons Learned.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that the feature is stabilized only for the 2024 edition and future editions, with users of past editions receiving an error.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the LetChainsPolicy enum as EditionDependent with a current_edition field.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a direct link to the tracking issue rust-lang/rust#53667.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a direct link to RFC 2497.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a direct link to the 2024 edition guide.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a direct link to the PR rust-lang/rust#132833.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains how the parse_expr_cond signature change broke the tucant/rustfmt fork.",
+      "category": "content",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_52524db1c7e73c4a",
+    "occupation": "software_engineer",
+    "deliverable_id": "incident_postmortem",
+    "archetype": "outage_rca",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:rust-lang/rust#132833",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "rust-lang/rust",
+        "attrs": {
+          "pr_number": 132833,
+          "pr_title": "Stabilize let chains in the 2024 edition"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Solstice Networks",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Dani Olarte",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Esteban Ruiz",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-04-22",
+        "description": "Reference PR rust-lang/rust#132833 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-10",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-15",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "rust-lang/rust",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 132833,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "Stabilize let chains in the 2024 edition",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "# Stabilization report\r\n\r\nThis proposes the stabilization of `let_chains` ([tracking issue], [RFC 2497]) in the [2024 edition] of Rust.\r\n\r\n[tracking issue]: https://github.com/rust-lang/rust/issues/53667\r\n[RFC 2497]: https://github.com/rust-lang/rfcs/pull/2497\r\n[2024 edition]: https://doc.rust-lang.org/nightly/edition-guide/rust-2024/index.html\r\n\r\n## What is being stabilized\r\n\r\nThe ability to `&&`-chain `let` statements inside `if` and `while` is being stabilized, allowing intermixture with boolean expressions. The patterns inside the `let` sub-expressions can be irrefutable or refutable.\r\n\r\n```Rust\r\nstruct FnCall<'a> {\r\n    fn_name: &'a str,\r\n    args: Vec<i32>,\r\n}\r\n\r\nfn is_legal_ident(s: &str) -> bool {\r\n    s.chars()\r\n        .all(|c| ('a'..='z').contains(&c) || ('A'..='Z').contains(&c))\r\n}\r\n\r\nimpl<'a> FnCall<'a> {\r\n    fn parse(s: &'a str) -> Option<Self> {\r\n        if let Some((fn_name, after_name)) = s.split_once(\"(\")\r\n            && !fn_name.is_empty()\r\n            && is_legal_ident(fn_name)\r\n            && let Some((args_str, \"\")) = after_name.rsplit_once(\")\")\r\n        {\r\n            let args = args_str\r\n                .split(',')\r\n                .map(|arg| arg.parse())\r\n                .collect::<Result<Vec<_>, _>>();\r\n            args.ok().map(|args| FnCall { fn_name, args })\r\n        } else {\r\n            None\r\n        }\r\n    }\r\n    fn exec(&self) -> Option<i32> {\r\n        let iter = self.args.iter().copied();\r\n        match self.fn_name {\r\n            \"sum\" => Some(iter.sum()),\r\n            \"max\" => iter.max(),\r\n            \"min\" => iter.min(),\r\n            _ => None,\r\n        }\r\n    }\r\n}\r\n\r\nfn main() {\r\n    println!(\"{:?}\", FnCall::parse(\"sum(1,2,3)\").unwrap().exec());\r\n    println!(\"{:?}\", FnCall::parse(\"max(4,5)\").unwrap().exec());\r\n}\r\n```\r\n\r\nThe feature will only be stabilized for the 2024 edition and future editions. Users of past editions will get an error with a hint to update the edition.\r\n\r\ncloses rust-lang/rust#53667\r\n\r\n## Why 2024 edition?\r\n",
+        "unit": null,
+        "source": "github:rust-lang/rust#132833"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/compiler/rustc_parse/src/parser/expr.rs b/compiler/rustc_parse/src/parser/expr.rs\nindex df44b3cc23c86..20a5252624d55 100644\n--- a/compiler/rustc_parse/src/parser/expr.rs\n+++ b/compiler/rustc_parse/src/parser/expr.rs\n@@ -26,6 +26,7 @@ use rustc_macros::Subdiagnostic;\n use rustc_session::errors::{ExprParenthesesNeeded, report_lit_error};\n use rustc_session::lint::BuiltinLintDiag;\n use rustc_session::lint::builtin::BREAK_WITH_LABEL_AND_LOOP;\n+use rustc_span::edition::Edition;\n use rustc_span::source_map::{self, Spanned};\n use rustc_span::{BytePos, ErrorGuaranteed, Ident, Pos, Span, Symbol, kw, sym};\n use thin_vec::{ThinVec, thin_vec};\n@@ -2605,7 +2606,10 @@ impl<'a> Parser<'a> {\n     /// Parses an `if` expression (`if` token already eaten).\n     fn parse_expr_if(&mut self) -> PResult<'a, P<Expr>> {\n         let lo = self.prev_token.span;\n-        let cond = self.parse_expr_cond()?;\n+        // Scoping code checks the top level edition of the `if`; let's match it here.\n+        // The `CondChecker` also checks the edition of the `let` itself, just to make sure.\n+        let let_chains_policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition() };\n+        let cond = self.parse_expr_cond(let_chains_policy)?;\n         self.parse_if_after_cond(lo, cond)\n     }\n \n@@ -2714,18 +2718,17 @@ impl<'a> Parser<'a> {\n     }\n \n     /// Parses the condition of a `if` or `while` expression.\n+    ///\n+    /// The specified `edition` in `let_chains_policy` should be that of the whole `if` construct,\n+    /// i.e. the same span we use to later decide whether the drop behaviour should be that of\n+    /// edition `..=2021` or that of `2024..`.\n     // Public because it is used in rustfmt forks such as https://github.com/tucant/rustfmt/blob/30c83df9e1db10007bdd16dafce8a86b404329b2/src/parse/macros/html.rs#L57 for custom if expressions.\n-    pub fn parse_expr_cond(&mut self) -> PResult<'a, P<Expr>> {\n+    pub fn parse_expr_cond(&mut self, let_chains_policy: LetChainsPolicy) -> PResult<'a, P<Expr>> {\n         let attrs = self.parse_outer_attributes()?;\n         let (mut cond, _) =\n             self.parse_expr_res(Restrictions::NO_STRUCT_LITERAL | Restrictions::ALLOW_LET, attrs)?;\n \n-        CondChecker::new(self).visit_expr(&mut cond);\n-\n-        if let ExprKind::Let(_, _, _, Recovered::No) = cond.kind {\n-            // Remove the last feature gating of a `let` expression since it's stable.\n-            self.psess.gated_spans.ungate_last(sym::let_chains, cond.span);\n-        }\n+        CondChecker::new(self, let_chains_policy).visit_expr(&mut cond);\n \n         Ok(cond)\n     }\n@@ -3020,7 +3023,8 @@ impl<'a> Parser<'a> {\n \n     /// Parses a `while` or `while let` expression (`while` token already eaten).\n     fn parse_expr_while(&mut self, opt_label: Option<Label>, lo: Span) -> PResult<'a, P<Expr>> {\n-        let cond = self.parse_expr_cond().map_err(|mut err| {\n+        let policy = LetChainsPolicy::EditionDependent { current_edition: lo.edition()",
+        "unit": null,
+        "source": "github:rust-lang/rust#132833.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Produce an incident postmortem document covering the RCA (root cause analysis) for the outage caused by upstream PR rust-lang/rust#132833.",
+      "Identify the specific parser code changes in compiler/rustc_parse/src/parser/expr.rs (parse_expr_if, parse_expr_cond, parse_expr_while) that introduced edition-dependent let-chains behavior.",
+      "Map the timeline from PR merge date (2025-04-22) to the internal assignment date (2026-05-10) and explain the gap in detection.",
+      "Document the impact scope: which Solstice Networks services were affected, duration of outage, and user-facing symptoms.",
+      "Include a section on the downstream dependency on the rustfmt fork (referenced in the PR body as tucant/rustfmt) and how its parse_expr_cond signature change caused the breakage.",
+      "List concrete action items with owners and target dates to prevent recurrence (e.g., upstream CI pinning, rustfmt fork sync cadence).",
+      "Structure the postmortem using a blameless format: summary, impact, root cause, timeline, contributing factors, and remediation.",
+      "Cite the tracking issue rust-lang/rust#53667 and RFC 2497 as context for the feature being stabilized."
+    ],
+    "implicit_requirements": [
+      "The postmortem must follow industry-standard incident postmortem structure (no single points of failure listed as blame, action items are SMART).",
+      "All technical references (PR numbers, issue links, file paths) must be accurate and hyperlinked where the format allows.",
+      "The document must be written for an audience of engineering managers and senior engineers, not for external customers.",
+      "Use the company name Solstice Networks consistently; do not abbreviate or alias it."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "What happened, impact, and root cause"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "On October 26, 2024, pull request #132833 was merged into the `rust-lang/rust` repository, stabilizing the `let_chains` feature for the Rust 2024 language edition. This change allows developers to write `if let` and `while let` patterns with `&&` operators in a single control flow statement, a feature previously gated behind a nightly compiler flag. The stabilization represents a significant ergonomic improvement for Rust developers, reducing boilerplate and improving code readability for complex conditional logic involving pattern matching.",
+            "The primary impact is positive, enabling a more expressive language feature across the ecosystem for code using the 2024 edition. The change itself was confined to the compiler's parser, specifically in `compiler/rustc_parse/src/parser/expr.rs`. The root technical challenge that necessitated careful stabilization was the parser's need to correctly handle the grammatical ambiguity between `&&` as a boolean operator and as part of a `let` chain, especially when mixed with other boolean expressions. The implementation required a precise parsing strategy to avoid breaking existing code and to ensure consistent behavior exclusively within the designated edition boundary."
+          ]
+        },
+        {
+          "heading": "Timeline",
+          "heading_level": 2,
+          "required_content": [
+            "Minute-by-minute incident timeline"
+          ],
+          "paragraphs": [
+            "**Incident Timeline**",
+            "The incident began on November 15, 2024, at 14:22 UTC with the merge of PR #132833, which stabilized the `let_chains` feature in the Rust 2024 edition. The PR modified `compiler/rustc_parse/src/parser/expr.rs` to alter parser logic for `if let` and `while let` expressions, contingent on the active edition. Within 90 minutes, the first downstream CI pipeline breakage was reported by a contributor. The primary failure pattern was a new, unexpected compile error in crates testing against the nightly compiler when parsing mixed `let` and boolean conditions. The error stemmed from the edition-specific parser now rejecting syntax that was previously accepted under a feature gate.",
+            "At 16:05 UTC, the core team escalated the incident to Severity 2 after triaging multiple reports and confirming the breakage was widespread, affecting both open-source repositories and internal Solstice Networks projects using `nightly` toolchains. A review of the PR's commit history and CI logs revealed the root cause: the stabilization enabled stricter syntax validation tied to the `edition = \"2024\"` feature gate, but the transition logic did not correctly account for crates using `edition = \"2021\"` in their `Cargo.toml` while compiling with a nightly compiler that now implicitly understood the 2024 edition's parser changes. The team identified that the feature gate check in the parser was not sufficiently isolated, allowing a bleed-over effect.",
+            "By 17:48 UTC, a direct revert of PR #132833 was prepared as the most immediate mitigation. The revert, PR #132890, was merged at 18:15 UTC. This action immediately resolved the compilation failures across the ecosystem. Subsequent analysis pinpointed the exact misstep: the edition-dependent parser logic in `expr.rs` required a more robust fallback mechanism for crates that had not yet opted into the 2024 edition, ensuring backward compatibility was maintained during the transition period. The feature will require a revised stabilization approach that implements a cleaner, opt-in boundary for the new syntax."
+          ]
+        },
+        {
+          "heading": "Root Cause Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "5 Whys or equivalent RCA methodology"
+          ],
+          "paragraphs": [
+            "**Root Cause Analysis**",
+            "The root cause of the parsing inconsistency was a direct modification to the `rustc_parse` parser's expression handling logic in `compiler/rustc_parse/src/parser/expr.rs` without adequate validation against the feature's intended edition-specific behavior. Applying the 5 Whys methodology yields the following chain:",
+            "1.  **Why** did stable code suddenly behave differently? The parser's internal representation and handling of `let` chains in `if` and `while` conditions were altered for stabilization, unintentionally altering its interaction with other edition-specific syntax gates.\n2.  **Why** was the parser alteration insufficiently guarded? The stabilization PR focused on removing the feature gate (`#![feature(let_chains)]`) for the 2024 edition but did not fully account for how the now-stable syntax would interact with the parser's pre-existing 2024 edition mechanics.\n3.  **Why** was this interaction not caught during review? The integration test suite for the stabilization primarily validated the feature in isolation, on the 2024 edition. It lacked a targeted test case to verify that the feature gate's removal did not inadvertently affect the parsing and error behavior of similar, but distinct, syntax in the same codebase for users of older editions.\n4.  **Why** did the test suite have this gap? The test infrastructure for cross-edition parser behavior is complex. The risk was perceived as low because the feature was explicitly gated to the new edition, leading to an oversight in explicitly testing the *boundary condition* where a user on an older edition encounters the now-familiar syntax, expecting a specific error.\n5.  **Why** was the risk perceived as low? The primary change was a syntactic stabilization, and the historical pattern assumed that feature gates and edition gates were orthogonal. This incident reveals a systemic gap: the validation process did not mandate a specific integration test for syntax features that are stabilized *for a new edition*, to ensure that the parser's stateful context (current edition) and the feature's state (stable/unstable) are handled coherently across all compiler stages.",
+            "The core lesson is that stabilizing an edition-specific feature requires validation not just within that edition, but also at the parser's boundaries, ensuring clean separation and unambiguous error reporting when the same token sequences are evaluated under a different edition's rules."
+          ]
+        },
+        {
+          "heading": "Impact Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Users affected, data lost, revenue impact"
+          ],
+          "paragraphs": [
+            "**Impact Assessment**",
+            "This stabilization PR directly impacts all Rust developers utilizing the 2024 edition, primarily affecting those working with complex conditional logic in `if let` and `while let` constructs. The change is not backward-compatible and is gated behind the 2024 edition, meaning it will affect codebases during migration to the new edition. The primary user base impacted is the global Rust developer community, with the most significant effects felt by library and application authors who employ advanced pattern matching. The modification to `compiler/rustc_parse/src/parser/expr.rs` enables new, more expressive syntax patterns, which will influence coding style and potentially simplify deeply nested conditional structures across millions of Rust projects.",
+            "From an operational or data perspective, this change has no direct revenue impact, nor does it result in any data loss. It is a purely syntactic and semantic evolution of the language compiler. There are no database, storage, or network components involved. The \"data\" affected is the abstract syntax tree (AST) representation of Rust source code, which is transiently created during compilation. The impact is on the compilation process itself, introducing a new parsing path and associated semantic checks within the compiler. This could theoretically affect compile times for codebases that heavily adopt the new syntax, but such effects are expected to be negligible and within normal compiler performance benchmarks.",
+            "The broader impact is on the Rust ecosystem's evolution and developer productivity. Stabilizing let chains addresses a long-standing ergonomic limitation (tracking issue #53667), reducing boilerplate and potential for error in certain refactoring patterns. While no immediate breakage occurs in existing editions, the change sets a precedent for future language design and will be a key consideration in the 2024 edition migration guide. Library authors may begin exposing APIs or idioms that are best consumed with let chains, encouraging broader adoption once the edition is stabilized. The impact is therefore a strategic, positive advancement in language capability rather than an operational incident with measurable downtime or financial loss."
+          ]
+        },
+        {
+          "heading": "Remediation Actions",
+          "heading_level": 2,
+          "required_content": [
+            "Immediate fixes and long-term improvements"
+          ],
+          "paragraphs": [
+            "## Remediation Actions",
+            "To address the root cause of the instability and prevent recurrence, we have implemented immediate corrective measures and are planning long-term process improvements. The immediate fix was deployed by reverting the specific changes in `compiler/rustc_parse/src/parser/expr.rs` that introduced the regression. This revert was executed in PR #132840, which directly corrected the parser's handling of `let` chain expressions in certain complex boolean contexts. Concurrently, a targeted regression test suite, comprising the specific failing patterns identified during the incident, has been merged. These tests are now mandatory gates in our CI pipeline for any future modifications to expression parsing, ensuring identical regressions cannot be reintroduced without immediate detection.",
+            "For long-term improvement, we are refining our stabilization protocol for complex, edition-gated features. Going forward, any feature gate removal affecting core compiler phases like parsing will require a dedicated \"interaction test matrix.\" This matrix must explicitly document and test combinations of the stabilized feature with other active or recently stabilized features (in this case, interactions with other 2024 edition changes). Furthermore, we are enhancing our fuzz testing corpus to include a new category of \"feature interaction\" fuzzers, which will systematically generate syntactic combinations of unstable/stable features to surface unexpected parser or validation failures earlier in the development cycle.",
+            "Finally, we are improving our diagnostic and observability tooling. The stabilization of `let_chains` will now trigger a compiler diagnostic (a new lint) in the 2024 edition if the user's code constructs a `let` chain in a context that, while syntactically valid, is historically prone to ambiguity, such as complex nested `if` conditions with multiple binding sites. This lint will warn developers to consider explicit parentheses for clarity, thereby reducing the surface area for subtle runtime logic errors post-stabilization. This proactive diagnostic serves as both a documentation tool and a safeguard against ambiguous code patterns that the parser may handle differently in future maintenance."
+          ]
+        },
+        {
+          "heading": "Lessons Learned",
+          "heading_level": 2,
+          "required_content": [
+            "What went well, what could be better"
+          ],
+          "paragraphs": [
+            "The stabilization of let chains in the 2024 edition (#132833) demonstrated a mature, systematic approach to complex language feature rollout. The primary success was the rigorous, RFC-first process (RFC 2497) which provided a clear technical specification years before implementation, preventing scope creep. The implementation itself was executed methodically, with the core parsing changes isolated to `compiler/rustc_parse/src/parser/expr.rs`, limiting blast radius. The dedicated tracking issue (#53667) served as an effective coordination point for bug reports and refinements over multiple compiler cycles, ensuring edge cases were identified and fixed in nightly long before stabilization. This extended bake period is a proven strength of the Rust development model.",
+            "However, the process also highlighted a gap in automated testing for complex precedence and interaction scenarios. While unit tests for the parser logic were thorough, integration tests probing the intersection of let chains with other control flow constructs (like labeled breaks or nested conditions) were less exhaustive. Some post-merge breakage reports indicated that certain combinations—while adhering to the RFC's semantics—produced surprising behavior or diagnostics for users. This suggests that future stabilization efforts should include a dedicated test suite focusing on composability, explicitly defining and verifying how the new feature interacts with all adjacent syntax in the grammar.",
+            "Furthermore, the stabilization report's focus on the 2024 edition boundary, while necessary, introduced complexity for users and tool maintainers. The compiler must now carry two distinct parsing and analysis paths indefinitely for the feature. A potential improvement for similar future migrations would be to invest earlier in automated tooling or linting to assist with edition transitions, reducing the long-term maintenance burden on the compiler's codebase and simplifying the mental model for developers targeting different editions. The let chains experience validates Rust's caution but also underscores the need for even stronger tooling support to manage edition-based feature fragmentation."
+          ]
+        }
+      ],
+      "md_title": "Incident Postmortem: rust-lang/rust#132833",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "rust-lang/rust",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "132833",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "compiler/rustc_parse/src/parser/expr.rs",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Solstice Networks. Your manager Esteban Ruiz has asked you to write a professional incident postmortem for the open-source project rust-lang/rust.\n\nThe reference PR is #132833: Stabilize let chains in the 2024 edition\n\nKey technical context:\n- Files changed: compiler/rustc_parse/src/parser/expr.rs\n- PR description excerpt: # Stabilization report\r\n\r\nThis proposes the stabilization of `let_chains` ([tracking issue], [RFC 2497]) in the [2024 edition] of Rust.\r\n\r\n[tracking issue]: https://github.com/rust-lang/rust/issues/53667\r\n[RFC 2497]: https://github.com/rust-lang/rfcs/pull/2497\r\n[2024 edition]: https://doc.rust-lang.org/nightly/edition-guide/rust-2024/index.html\r\n\r\n## What is being stabilized\r\n\r\nThe ability to `&&`-chain `let` statements inside `if` and `while` is being stabilized, allowing intermixture with bool\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1549820349
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:33:43.720949+00:00"
+}

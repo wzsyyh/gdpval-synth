@@ -104,7 +104,7 @@ class CourtListenerClient:
         self.client.close()
 
 
-def _extract_excerpt(opinion_json: dict, max_chars: int = 2000) -> str:
+def _extract_excerpt(opinion_json: dict, max_chars: int = 10000) -> str:
     for key in ("plain_text", "html_with_citations", "html", "html_lawbox"):
         body = opinion_json.get(key) or ""
         if body and len(body) > 200:

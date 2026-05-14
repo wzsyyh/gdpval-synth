@@ -1,0 +1,1092 @@
+{
+  "candidate_id": "sc_f2e74b979bebdcc4",
+  "occupation": "financial_analyst",
+  "archetype": "qoq_margin",
+  "difficulty": "medium",
+  "seed_id": "2eb2cc92c811a476",
+  "prompt": "You are a senior analyst in the Westlake Capital Markets equity research team. James Marchetti needs a margin variance model for Home Depot ahead of next week's client discussions. The FY2026 10-K (period ending February 2026) has just been filed; we need to analyze the QoQ margin movement versus the prior quarter.\n\nBuild an Excel workbook with the analysis. Use the attached historical summary for context on prior periods.\n\n- The model must contain a clear QoQ margin variance analysis for HD's gross margin, operating margin, and net margin.\n- Use the pinned annual revenue of $164,683M and gross profit of $54,865M for the latest period (Q1 FY2026). Source the comparative prior-quarter (Q4 FY2025) figures from the most recent 10-Q filing if the 10-K does not provide quarterly segments.\n- Calculate each margin as a percentage of revenue and show both the absolute and basis-point change QoQ.\n- Decompose the gross margin variance into its key drivers where the data is available (e.g., COGS components).\n- Break out SG&A as a percentage of revenue and flag any line items moving more than 50 bps.\n- Include a summary table at the top that calls out the two or three largest margin movers with a one-line driver note for each.\n- Format all dollar figures in millions with one decimal place, and percentages to two decimal places. Negative variances must be in red or parentheses.\n- Use standard sell-side tab structure: Summary, Revenue, Margins, SG&A Detail, Source Notes. Ensure the Source tab notes the specific EDGAR filing (citing the XBRL concept names and filing dates) for every data point. The workbook should be clean and presentation-ready with consistent formatting and no merged cells.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The workbook is provided as a single .xlsx file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'Summary'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'Actual vs Budget'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'Revenue'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'Margins'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'SG&A Detail'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named 'Source Notes'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains no merged cells in any sheet.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary tab has no visible gridlines.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook uses a consistent professional font (e.g., Calibri, Arial) throughout all tabs.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All dollar figures in the workbook are formatted in millions with one decimal place.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All percentage figures in the workbook are formatted to two decimal places.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Negative variance items are formatted in red font or with parenthetical notation.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Column headers in the analysis sheets include period labels with fiscal quarter identifiers (e.g., Q1 FY2026 vs Q4 FY2025).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The cell at location 'Actual vs Budget'!B4 contains the value 52871.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The cell at location 'Actual vs Budget'!B6 contains the value 54865.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook uses the pinned revenue figure of $164,683 million for the latest period.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook uses the pinned gross profit figure of $54,865 million for the latest period.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The operating income loss value for the latest period matches the pinned fact of $20,890 million.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The net income loss value for the latest period matches the pinned fact of $14,156 million.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The selling, general and administrative expense value for the latest period matches the pinned fact of $30,702 million.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The diluted earnings per share for the latest period is reported as $14.23.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook correctly identifies the target company as THE HOME DEPOT, INC. (ticker HD).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the sector of the target company as retail.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the analyst as Henrik Ådahl.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the senior analyst as James Marchetti.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the employer as Westlake Capital Markets.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains a calculation of gross margin as a percentage of revenue for the latest period.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains a calculation of operating margin as a percentage of revenue for the latest period.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains a calculation of net margin as a percentage of revenue for the latest period.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook shows the absolute change in basis points for gross margin quarter-over-quarter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook shows the absolute change in basis points for operating margin quarter-over-quarter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook shows the absolute change in basis points for net margin quarter-over-quarter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes a decomposition of gross margin variance into key drivers (e.g., COGS components).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook breaks out SG&A as a percentage of revenue for the latest period.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook shows the QoQ change in SG&A as a percentage of revenue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook flags any SG&A line items that moved more than 50 basis points quarter-over-quarter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary tab includes a table that identifies the two or three largest margin movers.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The summary table includes a brief one-line annotation for each of the two or three largest margin movers.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis correctly uses the latest annual filing period (ending February 2026) for the Q1 FY2026 data.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook sources prior-quarter (Q4 FY2025) data from the most recent 10-Q filing if the 10-K does not provide quarterly segments.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Source Notes tab includes XBRL concept names for every major data point (e.g., RevenueFromContractWithCustomerExcludingAssessedTax).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Source Notes tab includes filing dates for every major data point.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook references the EDGAR filing for the latest period.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes a print area set to fit on one landscape page for the Summary tab.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook has no volatile formulas (e.g., INDIRECT, OFFSET).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the latest filing date as 2026-05-07 for the PX14A6G filing.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the assignment date as 2026-05-11.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the deadline as 2026-05-16.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly identifies the CIK of THE HOME DEPOT, INC. as 0000354950.",
+      "category": "accuracy",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_f2e74b979bebdcc4",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "qoq_margin",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:HD",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "THE HOME DEPOT, INC.",
+        "attrs": {
+          "ticker": "HD",
+          "sector": "retail",
+          "cik": "0000354950"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Westlake Capital Markets",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Henrik Ådahl",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Westlake Capital Markets"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "James Marchetti",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Westlake Capital Markets"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-07",
+        "description": "HD filed PX14A6G",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-11",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-16",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 52871000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Revenues:2010-10-31"
+      },
+      {
+        "id": "fact_RevenueFromContractWithCustome",
+        "kind": "money",
+        "value": 164683000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:RevenueFromContractWithCustomerExcludingAssessedTax:2026-02-01"
+      },
+      {
+        "id": "fact_GrossProfit",
+        "kind": "money",
+        "value": 54865000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:GrossProfit:2026-02-01"
+      },
+      {
+        "id": "fact_OperatingIncomeLoss",
+        "kind": "money",
+        "value": 20890000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:OperatingIncomeLoss:2026-02-01"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 14156000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:NetIncomeLoss:2026-02-01"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 105095000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Assets:2026-02-01"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 92282000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Liabilities:2026-02-01"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 12813000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:StockholdersEquity:2026-02-01"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 1389000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:CashAndCashEquivalentsAtCarryingValue:2026-02-01"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 14.23,
+        "unit": "USD/share",
+        "source": "EDGAR:HD:EarningsPerShareDiluted:2026-02-01"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 30702000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:SellingGeneralAndAdministrativeExpense:2026-02-01"
+      }
+    ],
+    "explicit_requirements": [
+      "Build an Excel workbook with a QoQ margin variance analysis for Home Depot covering gross margin, operating margin, and net margin using the most recent annual filing period and prior comparable period data from SEC EDGAR.",
+      "Calculate each margin line item as a percentage of revenue and show the absolute and basis-point change quarter-over-quarter.",
+      "Decompose gross margin variance into the key drivers where data is available from the filing (COGS components, occupancy, shrinkage, etc.).",
+      "Break out SG&A as a percentage of revenue and show the QoQ change, noting any line items that moved more than 50 bps.",
+      "Include a summary table at the top of the workbook that flags the two or three largest margin movers with a brief one-line annotation per driver.",
+      "Use the pinned revenue figure of $164.683B and gross profit of $54.865B for the latest period; source prior-quarter estimates from the most recent 10-Q if the 10-K does not segment quarterly data.",
+      "Ensure all dollar figures are in millions with one decimal, and percentages are carried to two decimal places throughout."
+    ],
+    "implicit_requirements": [
+      "Workbook tabs should follow a standard sell-side convention: Summary, Revenue, Margins, SG&A Detail, Source Notes.",
+      "Every data cell must trace back to a specific EDGAR filing line item; include a Source tab or footnotes with XBRL concept names and filing dates.",
+      "Negative variance items (margin compression) should be formatted in red or parenthetical notation per banking convention.",
+      "Column headers must include period labels with fiscal quarter identifiers (e.g., Q1 FY2026 vs Q4 FY2025), not just dates.",
+      "The workbook should be presentation-ready: consistent font, number formatting, no gridlines on the Summary tab, print area set to fit on one landscape page."
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 52871.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 48971.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": -1994.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": -1962.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 54865.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 52069.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 20890.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 20220.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 14156.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 14079.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D8)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_HD",
+          "filename": "HD_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for THE HOME DEPOT, INC. (HD)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                42526.1,
+                49507.2,
+                56218.0,
+                63075.1,
+                73119.0
+              ],
+              [
+                "COGS ($M)",
+                27059.5,
+                30125.6,
+                29217.9,
+                35380.2,
+                38057.3
+              ],
+              [
+                "Gross Profit ($M)",
+                14807.0,
+                16391.4,
+                23588.2,
+                26389.1,
+                29139.5
+              ],
+              [
+                "Operating Income ($M)",
+                12826.7,
+                16785.2,
+                18221.2,
+                15669.0,
+                21296.5
+              ],
+              [
+                "Net Income ($M)",
+                6147.1,
+                10452.8,
+                7975.3,
+                12075.9,
+                14008.6
+              ],
+              [
+                "D&A ($M)",
+                2583.1,
+                2959.3,
+                1729.0,
+                2005.6,
+                4161.8
+              ],
+              [
+                "CapEx ($M)",
+                2545.8,
+                6096.8,
+                7095.4,
+                5200.2,
+                8835.9
+              ],
+              [
+                "Shares Outstanding (M)",
+                41.8,
+                33.4,
+                29.8,
+                23.6,
+                46.7
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "52871.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "54865.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for THE HOME DEPOT, INC. (HD) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2915738023
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_HD",
+      "filename": "HD_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for THE HOME DEPOT, INC. (HD)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            42526.1,
+            49507.2,
+            56218.0,
+            63075.1,
+            73119.0
+          ],
+          [
+            "COGS ($M)",
+            27059.5,
+            30125.6,
+            29217.9,
+            35380.2,
+            38057.3
+          ],
+          [
+            "Gross Profit ($M)",
+            14807.0,
+            16391.4,
+            23588.2,
+            26389.1,
+            29139.5
+          ],
+          [
+            "Operating Income ($M)",
+            12826.7,
+            16785.2,
+            18221.2,
+            15669.0,
+            21296.5
+          ],
+          [
+            "Net Income ($M)",
+            6147.1,
+            10452.8,
+            7975.3,
+            12075.9,
+            14008.6
+          ],
+          [
+            "D&A ($M)",
+            2583.1,
+            2959.3,
+            1729.0,
+            2005.6,
+            4161.8
+          ],
+          [
+            "CapEx ($M)",
+            2545.8,
+            6096.8,
+            7095.4,
+            5200.2,
+            8835.9
+          ],
+          [
+            "Shares Outstanding (M)",
+            41.8,
+            33.4,
+            29.8,
+            23.6,
+            46.7
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:22:38.657469+00:00"
+}

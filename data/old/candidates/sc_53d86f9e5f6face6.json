@@ -1,0 +1,1255 @@
+{
+  "candidate_id": "sc_53d86f9e5f6face6",
+  "occupation": "financial_analyst",
+  "archetype": "budget_vs_actual",
+  "difficulty": "light",
+  "seed_id": "f647cd2b4380eadc",
+  "prompt": "You are an associate analyst in the Industrials & Energy group at Brennan Brothers & Co. Rashida Holm, your managing director, has asked you to prepare a budget-vs-actual variance analysis on Exxon Mobil (XOM) following their Q1 2026 earnings release. She will use this in a client presentation and needs a clean, self-explanatory workbook. Refer to the attached historical financials file for reference context.\n\nBuild the deliverable as an .xlsx workbook with the following structure:\n\n- **Cover sheet**: Company name (Exxon Mobil, XOM), analyst name (Priya Doshi), date, and a confidentiality disclaimer.\n- **Raw Data tab**: Pull Q1 2026 actual figures for Revenues ($85,138M), Net Income ($4,183M), EPS diluted ($1.00), SGA ($2,684M), and Cash ($8,435M) directly from the EDGAR filings cited for the quarter ended 2026-03-31. Include prior-period comparison figures sourced the same way — use the Q2 2023 revenue figure ($164,439M from RevenueFromContractWithCustomerExcludingAssessedTax) and R&D expense ($1,200M from 2025 full year) where relevant to establish baseline context.\n- **Variance tab**: For each line item, calculate dollar variance (Actual − Prior Period) and percentage variance using (Actual − Prior) / |Prior|. Flag any variance exceeding ±10% in absolute terms — these are the ones Rashida will want to discuss with the client.\n- **Summary/Dashboard tab**: An executive summary in investment banking memo format — situation, findings, implications. Highlight the top two material variances by magnitude. Round all figures to the nearest million. Keep this tab presentation-ready; the MD has a 15-minute window and it needs to read cleanly on its own.\n\nFormatting conventions: blue font for hardcoded inputs, black for formulas, green for cross-sheet links. All sheets should have consistent headers and be print-formatted. State clearly which baseline period you're using for the comparison and note that Q1 2026 figures are preliminary and subject to revision.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "Deliverable is provided as a single .xlsx file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a tab explicitly named 'Cover' or 'Cover Sheet' with project metadata.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cover sheet identifies the target company as Exxon Mobil Corporation (XOM).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cover sheet identifies the analyst as Priya Doshi.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cover sheet includes the date of preparation (expected 2026-05-12 or 2026-05-13).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cover sheet includes a confidentiality disclaimer statement.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a tab for raw source data (e.g., named 'Raw Data' or 'Data').",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Q1 2026 Revenues figure of $85,138M (85,138,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Q1 2026 Net Income figure of $4,183M (4,183,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Q1 2026 Earnings Per Share Diluted of $1.00.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Q1 2026 Selling, General & Administrative Expense of $2,684M (2,684,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Q1 2026 Cash and Cash Equivalents of $8,435M (8,435,000,000).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes prior-period comparison figures for Revenues using Q2 2023 RevenueFromContractWithCustomer figure of $164,439M.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Raw data tab includes Research and Development Expense of $1,200M (1,200,000,000) from 2025 full year as baseline context.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Raw data tab cites EDGAR filing source for each Q1 2026 figure (quarter ended 2026-03-31).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Raw data tab cites the specific SEC filing (DEFA14A, 10-Q, or 8-K) for each data point.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook explicitly states which baseline period is used for the comparison (e.g., prior quarter, year-ago quarter, or consensus).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a dedicated tab for variance calculations (e.g., named 'Variance' or 'Variance Analysis').",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance tab calculates dollar variance (Actual − Prior Period) for each of the five line items (Revenues, Net Income, EPS, SGA, Cash).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance tab calculates percentage variance using formula (Actual − Prior) / |Prior| with absolute value in denominator for each line item.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance tab flags (visually or via annotation) any variance exceeding ±10% in absolute terms.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance calculations are implemented as Excel formulas referencing the raw data cells, not hardcoded numbers.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Workbook contains a summary or dashboard tab (e.g., named 'Summary' or 'Dashboard').",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Summary tab includes an executive summary structured as an investment banking memo with situation, findings, and implications sections.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Summary tab identifies and highlights the top two material variances by magnitude.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Summary tab rounds all dollar figures to the nearest million (e.g., $85,138M).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Summary tab notes that Q1 2026 figures are preliminary and subject to revision.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Hardcoded input cells use blue font color.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Formula cells use black font color.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Cells containing links to other sheets use green font color.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All sheets have consistent header rows with column labels.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All sheets are print-formatted (e.g., defined print area, appropriate scaling, headers/footers).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Actual vs Budget' sheet contains exactly 36 populated cells with source data and calculations.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Balance Sheet' sheet contains exactly 11 populated cells including Assets ($464,410M), Liabilities ($203,414M), and Stockholders' Equity ($254,381M).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Summary' sheet contains exactly 7 populated cells including key variance highlights.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Raw data tab includes Total Assets of $464,410M (464,410,000,000) as of 2026-03-31.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Raw data tab includes Total Liabilities of $203,414M (203,414,000,000) as of 2026-03-31.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Raw data tab includes Stockholders' Equity of $254,381M (254,381,000,000) as of 2026-03-31.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Revenue figure in the Actual vs Budget sheet matches exactly 85,138 (in millions) at cell location B4.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross Profit figure in the Actual vs Budget sheet matches exactly 34,055.2 (in millions) at cell location B6.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook references Exxon Mobil's CIK number 0000034088 in data sourcing.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The variance tab uses the absolute value function (ABS) or equivalent in the percentage variance denominator.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary identifies at least one specific dollar variance amount (e.g., Revenue variance of $X million).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary identifies at least one specific percentage variance (e.g., Revenue down X%).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the employer as Brennan Brothers & Co.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the managing director as Rashida Holm.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes a cover sheet with a professional presentation layout suitable for client-facing use.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The summary dashboard is self-explanatory and visually clean for a 15-minute presentation window.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The memo format plausibly follows investment banking conventions with situation, findings, and implications clearly delineated.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The deliverable is provided in any format other than .xlsx (e.g., .csv, .pdf, .xls).",
+      "category": "format",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_53d86f9e5f6face6",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "budget_vs_actual",
+    "difficulty": "light",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:XOM",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "Exxon Mobil Corporation",
+        "attrs": {
+          "ticker": "XOM",
+          "sector": "energy",
+          "cik": "0000034088"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Brennan Brothers & Co.",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Priya Doshi",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Brennan Brothers & Co."
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Rashida Holm",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Brennan Brothers & Co."
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-12",
+        "description": "XOM filed DEFA14A",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-12",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-14",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 85138000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:Revenues:2026-03-31"
+      },
+      {
+        "id": "fact_RevenueFromContractWithCustome",
+        "kind": "money",
+        "value": 164439000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:RevenueFromContractWithCustomerExcludingAssessedTax:2023-06-30"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 4183000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:NetIncomeLoss:2026-03-31"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 464410000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:Assets:2026-03-31"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 203414000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:Liabilities:2026-03-31"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 254381000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:StockholdersEquity:2026-03-31"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 8435000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:CashAndCashEquivalentsAtCarryingValue:2026-03-31"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 1,
+        "unit": "USD/share",
+        "source": "EDGAR:XOM:EarningsPerShareDiluted:2026-03-31"
+      },
+      {
+        "id": "fact_ResearchAndDevelopmentExpense",
+        "kind": "money",
+        "value": 1200000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:ResearchAndDevelopmentExpense:2025-12-31"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 2684000000,
+        "unit": "USD",
+        "source": "EDGAR:XOM:SellingGeneralAndAdministrativeExpense:2026-03-31"
+      }
+    ],
+    "explicit_requirements": [
+      "Build a variance analysis spreadsheet comparing XOM's Q1 2026 actual financials (Revenues, Net Income, EPS, SGA, Cash) against the prior quarter or year-ago quarter figures sourced from EDGAR filings.",
+      "Calculate dollar and percentage variances for each key line item.",
+      "Flag any variance exceeding 10% in absolute terms for management attention.",
+      "Include a brief executive summary section within the workbook summarizing the top two material variances.",
+      "Source all data points directly from the pinned EDGAR facts and clearly cite the filing source for each figure.",
+      "Format the workbook with separate tabs for raw data, variance calculations, and the summary dashboard.",
+      "Deliver the final file in .xlsx format."
+    ],
+    "implicit_requirements": [
+      "Use standard financial modeling color-coding: blue for inputs/hardcodes, black for formulas, green for links to other sheets.",
+      "Variance percentages should be calculated as (Actual - Budget) / |Budget|, using absolute value of the budget figure in the denominator to handle negative budget numbers.",
+      "The executive summary should follow an investment banking memo style: situation, findings, implications.",
+      "Round all dollar figures to the nearest million (e.g., $85,138M) for readability in the summary dashboard.",
+      "Include a cover sheet with project details (company name, analyst, date, confidentiality disclaimer).",
+      "All sheets must have consistent headers and be print-formatted for presentation."
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 85138.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 78806.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 51082.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 50483.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 34055.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 36352.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 21284.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 23354.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 12770.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 11272.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 4183.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 4081.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Balance Sheet",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Balance Sheet Snapshot",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Total Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 464410.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Total Liabilities",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 203414.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Stockholders' Equity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 254381.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Cash & Equivalents",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 8435.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 16.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D9)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_XOM",
+          "filename": "XOM_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for Exxon Mobil Corporation (XOM)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                75592.3,
+                73538.3,
+                90077.5,
+                109196.2,
+                104625.0
+              ],
+              [
+                "COGS ($M)",
+                48975.2,
+                41242.7,
+                61296.4,
+                63698.5,
+                53772.5
+              ],
+              [
+                "Gross Profit ($M)",
+                35090.2,
+                35187.3,
+                42138.8,
+                36813.7,
+                40050.8
+              ],
+              [
+                "Operating Income ($M)",
+                15555.9,
+                21661.1,
+                18000.9,
+                27511.9,
+                24051.9
+              ],
+              [
+                "Net Income ($M)",
+                13175.7,
+                14543.7,
+                9109.8,
+                25205.6,
+                19669.2
+              ],
+              [
+                "D&A ($M)",
+                5135.4,
+                3331.2,
+                6608.6,
+                7562.6,
+                4837.5
+              ],
+              [
+                "CapEx ($M)",
+                9983.5,
+                6711.3,
+                7638.9,
+                6438.5,
+                11584.3
+              ],
+              [
+                "Shares Outstanding (M)",
+                21.7,
+                45.4,
+                35.0,
+                34.5,
+                29.1
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "85138.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "34055.2",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for Exxon Mobil Corporation (XOM) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 6301221
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_XOM",
+      "filename": "XOM_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for Exxon Mobil Corporation (XOM)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            75592.3,
+            73538.3,
+            90077.5,
+            109196.2,
+            104625.0
+          ],
+          [
+            "COGS ($M)",
+            48975.2,
+            41242.7,
+            61296.4,
+            63698.5,
+            53772.5
+          ],
+          [
+            "Gross Profit ($M)",
+            35090.2,
+            35187.3,
+            42138.8,
+            36813.7,
+            40050.8
+          ],
+          [
+            "Operating Income ($M)",
+            15555.9,
+            21661.1,
+            18000.9,
+            27511.9,
+            24051.9
+          ],
+          [
+            "Net Income ($M)",
+            13175.7,
+            14543.7,
+            9109.8,
+            25205.6,
+            19669.2
+          ],
+          [
+            "D&A ($M)",
+            5135.4,
+            3331.2,
+            6608.6,
+            7562.6,
+            4837.5
+          ],
+          [
+            "CapEx ($M)",
+            9983.5,
+            6711.3,
+            7638.9,
+            6438.5,
+            11584.3
+          ],
+          [
+            "Shares Outstanding (M)",
+            21.7,
+            45.4,
+            35.0,
+            34.5,
+            29.1
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:03:13.339437+00:00"
+}

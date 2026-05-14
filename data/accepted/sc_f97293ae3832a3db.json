@@ -1,0 +1,1246 @@
+{
+  "candidate_id": "sc_f97293ae3832a3db",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "light",
+  "seed_id": "f97293ae3832a3db",
+  "prompt": "You are a senior frontend engineer on the Next.js core team. Your team has just received PR #65804, which adds experimental React compiler support to Next.js via a new `experimental.reactCompiler` configuration option. Before merging to the main branch, you need to produce a thorough code review document that evaluates the design decisions, implementation quality, and potential risks of this change.\n\n**Materials provided:**\n- The PR diff for vercel/next.js#65804 showing changes to the Next.js configuration and build pipeline\n- The PR description explaining the feature: exposing `experimental.reactCompiler` that can be boolean or an object with compiler options\n\n**Your task:**\nProduce a Markdown code review document with the following sections:\n\n1. **Summary**: Describe the PR's purpose, scope, and the files affected. Reference the PR number and title.\n\n2. **Architecture & Design Review**: Analyze the design of the `ReactCompilerOptionsOrBoolean` enum, `ReactCompilerOptions` struct, and `ReactCompilerMode` enum defined in `next_config.rs`. Evaluate whether the untagged enum pattern is appropriate for user-facing configuration. Discuss how the feature integrates with both webpack and turbopack build paths.\n\n3. **Type Safety & Derive Macros**: Review the addition of `Eq` derive to `RuleConfigItemOptions`, `RuleConfigItemOrShortcut`, `RuleConfigItem`, and `LoaderItem` structs. Explain why this change was made and assess whether it introduces any risks.\n\n4. **Configuration Surface Area**: Evaluate the `ReactCompilerOptions` struct's fields (`compilation_mode` and `panic_threshold`). Assess whether the exposed configuration subset is appropriate and whether the `Option` wrapping with `skip_serializing_if` is correctly applied.\n\n5. **Risks & Concerns**: Identify at least three potential risks or open questions about this implementation, such as backward compatibility, interaction with existing `.babelrc` files, or the experimental nature of the compiler itself.\n\n6. **Recommendations**: Provide actionable suggestions for the author, including any additional tests, documentation, or follow-up work needed.\n\nYour review should reference specific struct names, enum variants, file paths, and line-level decisions from the diff. Format all struct and enum names in backtick code formatting.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title or first heading references PR number #65804.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title or first heading includes the phrase experimental react compiler support.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section references the repository vercel/next.js.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section mentions that the configuration can be boolean or an object.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section references the file packages/next-swc/crates/next-core/src/next_config.rs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section mentions 15 changed files.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section mentions the number of additions and deletions (538 and 89).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section explains that both webpack and turbopack build paths are affected.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture and Design Review section discusses the ReactCompilerOptionsOrBoolean enum.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture and Design Review section discusses the ReactCompilerOptions struct.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture and Design Review section discusses the ReactCompilerMode enum and its variants (Infer, Annotation, All).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture and Design Review section mentions the #[serde(untagged)] pattern.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture and Design Review section mentions turbo_tasks::value(shared) on at least one of the new types.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture and Design Review section references OptionalReactCompilerOptions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture and Design Review section mentions the integration mechanism involves a babel plugin.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture and Design Review section references the serde rename_all = camelCase attribute.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Type Safety section identifies RuleConfigItemOptions as one of the four structs that gained the Eq derive.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Type Safety section identifies RuleConfigItemOrShortcut as one of the four structs that gained the Eq derive.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Type Safety section identifies RuleConfigItem as one of the four structs that gained the Eq derive.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Type Safety section identifies LoaderItem as one of the four structs that gained the Eq derive.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Type Safety section explains that Eq was likely added for turbo_tasks compatibility or derive requirements.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Type Safety section notes that the field types are safe for Eq.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Configuration Surface Area section discusses the compilation_mode field.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Configuration Surface Area section discusses the panic_threshold field.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Configuration Surface Area section mentions skip_serializing_if = Option::is_none.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Configuration Surface Area section notes that panic_threshold is a String rather than a typed enum.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risks and Concerns section identifies at least three distinct risks.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risks and Concerns section discusses the babel dependency introduced by this PR as a risk.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risks and Concerns section discusses untagged enum error messages as a risk.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risks and Concerns section discusses the experimental nature of the React compiler as a risk.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risks and Concerns section discusses panic_threshold validation gap.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risks and Concerns section discusses Eq trait additions as a minor concern.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risks and Concerns section mentions .babelrc file interaction.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section includes at least three actionable suggestions.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section suggests adding integration tests.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section suggests improving error messages for invalid configuration values.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section suggests documenting the babel requirement.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the ServerActionsOrLegacyBool pattern as a precedent.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the React compiler URL react.dev/learn/react-compiler.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses backtick code formatting for struct and enum names throughout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a dedicated Recommendations section with actionable items for the PR author.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Architecture and Design Review section evaluates whether the untagged enum pattern is appropriate for user-facing configuration.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Risks and Concerns section provides reasoning for each identified risk rather than merely listing them.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to reference PR number #65804 anywhere in the text.",
+      "category": "reference",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document invents file names, function names, or configuration options not present in the provided PR diff or description.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_f97293ae3832a3db",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:vercel/next.js#65804",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "#65804",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "experimental react compiler support",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "feat(next): experimental react compiler support",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "vercel/next.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "experimental.reactCompiler",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "boolean or object",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "packages/next-swc/crates/next-core/src/next_config.rs",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "15 files",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "538 additions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "89 deletions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "ReactCompilerOptionsOrBoolean",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "ReactCompilerOptions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "ReactCompilerMode",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "Infer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Annotation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "All",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "untagged",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "turbo_tasks::value(shared)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "OptionalReactCompilerOptions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "webpack and turbopack",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "babel plugin",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "RuleConfigItemOptions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "RuleConfigItemOrShortcut",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "RuleConfigItem",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "LoaderItem",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "compilation_mode",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "panic_threshold",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "skip_serializing_if",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "babel dependency",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "untagged enum",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "experimental compiler",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "Eq trait",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "integration tests",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "error messages",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "babel requirement",
+        "attrs": {}
+      },
+      {
+        "id": "ev_35",
+        "kind": "person",
+        "name": ".babelrc",
+        "attrs": {}
+      },
+      {
+        "id": "ev_36",
+        "kind": "person",
+        "name": "ServerActionsOrLegacyBool",
+        "attrs": {}
+      },
+      {
+        "id": "ev_37",
+        "kind": "person",
+        "name": "react.dev/learn/react-compiler",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "#65804",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "experimental react compiler support",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "#65804",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "feat(next): experimental react compiler support",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "vercel/next.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "experimental.reactCompiler",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "boolean or object",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "packages/next-swc/crates/next-core/src/next_config.rs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "15 files",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "538 additions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "89 deletions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "ReactCompilerOptionsOrBoolean",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "ReactCompilerOptions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "ReactCompilerMode",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Infer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "Annotation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "All",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "untagged",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "turbo_tasks::value(shared)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "OptionalReactCompilerOptions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "webpack and turbopack",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "babel plugin",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "RuleConfigItemOptions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "RuleConfigItemOrShortcut",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "RuleConfigItem",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "LoaderItem",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "compilation_mode",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "panic_threshold",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "skip_serializing_if",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "babel dependency",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "untagged enum",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "experimental compiler",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "panic_threshold",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "Eq trait",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "integration tests",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "string",
+        "value": "error messages",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "string",
+        "value": "babel requirement",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "string",
+        "value": ".babelrc",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "string",
+        "value": "ServerActionsOrLegacyBool",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "string",
+        "value": "react.dev/learn/react-compiler",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Code Review: PR #65804 - feat(next): experimental react compiler support",
+          "heading_level": 1,
+          "required_content": [
+            "Title must reference PR number #65804 and the feature name",
+            "Must state this is a code review document"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Reference PR number #65804",
+            "State the PR title feat(next): experimental react compiler support",
+            "Mention the repository vercel/next.js",
+            "Describe the purpose: exposing new experimental configuration experimental.reactCompiler",
+            "Mention the config can be boolean or object with compiler options",
+            "State that both webpack and turbopack paths are affected via babel plugin addition",
+            "Mention the changed files count 15 files and additions/deletions +538/-89",
+            "Reference the file packages/next-swc/crates/next-core/src/next_config.rs as a key changed file"
+          ],
+          "paragraphs": [
+            "PR #65804, titled \"feat(next): experimental react compiler support\", introduces a new experimental configuration option `experimental.reactCompiler` to the Next.js framework in the vercel/next.js repository. The change spans 15 files with 538 additions and 89 deletions. The primary purpose is to expose configuration for the React compiler (https://react.dev/learn/react-compiler), allowing users to opt into automatic memoization through the build pipeline. The configuration value accepts either a boolean toggle or an object containing a partial set of the compiler's own configuration options.",
+            "A key file in this PR is `packages/next-swc/crates/next-core/src/next_config.rs`, which defines the Rust-side configuration types that Next.js uses to parse and validate user-provided configuration. For both webpack and turbopack build paths, the feature is enabled by adding a babel plugin for the React compiler. If a user has an existing `.babelrc`, the plugin is appended; otherwise, SWC (for webpack) or turbopack handles the general transform while only the compiler babel plugin runs through babel."
+          ]
+        },
+        {
+          "heading": "Architecture and Design Review",
+          "heading_level": 2,
+          "required_content": [
+            "Analyze ReactCompilerOptionsOrBoolean enum with Boolean and Option variants",
+            "Analyze ReactCompilerOptions struct with compilation_mode and panic_threshold fields",
+            "Analyze ReactCompilerMode enum with Infer, Annotation, and All variants",
+            "Discuss the untagged serde enum pattern for user-facing config",
+            "Mention turbo_tasks::value(shared) attribute on ReactCompilerMode and ReactCompilerOptions",
+            "Discuss OptionalReactCompilerOptions as a transparent turbo_tasks value",
+            "Evaluate integration with both webpack and turbopack build paths",
+            "Reference the serde rename_all = camelCase attribute"
+          ],
+          "paragraphs": [
+            "The PR introduces three new types in `next_config.rs`: `ReactCompilerMode` (an enum with variants `Infer`, `Annotation`, and `All`), `ReactCompilerOptions` (a struct with optional `compilation_mode` and `panic_threshold` fields), and `ReactCompilerOptionsOrBoolean` (an untagged serde enum that accepts either a boolean or the options struct). This design mirrors existing patterns in the Next.js config surface, for example, `ServerActionsOrLegacyBool` appears nearby in the `ExperimentalConfig` struct. The use of `#[serde(untagged)]` on `ReactCompilerOptionsOrBoolean` is appropriate here because it allows users to write either `reactCompiler: true` or `reactCompiler: { compilationMode: 'all', panicThreshold: '...' }` in their `next.config.js` without discriminating tags.",
+            "Both `ReactCompilerMode` and `ReactCompilerOptions` are annotated with `#[turbo_tasks::value(shared)]`, meaning they are first-class values in the turbopack incremental computation graph. This is the correct approach for configuration data that turbopack will need to read during compilation. The `OptionalReactCompilerOptions` type is declared as a transparent turbo_tasks value wrapping `Option<Vc<ReactCompilerOptions>>`, enabling it to participate in turbo_tasks' memoization and dependency tracking.",
+            "The integration strategy is noteworthy: the React compiler is added as a babel plugin rather than a native SWC or turbopack transform. The PR description explains that if a user has an existing `.babelrc`, the plugin is appended to it; otherwise, the general transform still runs through SWC (webpack) or turbopack, but only the compiler babel plugin executes through babel. This hybrid approach introduces a babel dependency even for projects that previously relied entirely on SWC, which has performance implications worth monitoring."
+          ]
+        },
+        {
+          "heading": "Type Safety and Derive Macro Changes",
+          "heading_level": 2,
+          "required_content": [
+            "Identify the four structs that gained the Eq derive: RuleConfigItemOptions, RuleConfigItemOrShortcut, RuleConfigItem, LoaderItem",
+            "Explain why Eq was added likely needed for turbo_tasks compatibility or derive requirements",
+            "Discuss whether Eq is safe to derive given the field types",
+            "Note that these structs already had PartialEq, Clone, Debug, Serialize, Deserialize, TraceRawVcs",
+            "Assess any risks from adding Eq to types that previously only had PartialEq"
+          ],
+          "paragraphs": [
+            "Four existing structs in `next_config.rs` had the `Eq` trait added to their derive list in this PR: `RuleConfigItemOptions`, `RuleConfigItemOrShortcut`, `RuleConfigItem`, and `LoaderItem`. Each of these previously derived `Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs` and now also derives `Eq`. The addition of `Eq` is likely required because these types are used in contexts that demand full equivalence checking, for example, as keys in hash maps or within turbo_tasks value comparisons.",
+            "All four types contain only `String`, `bool`, `Option<String>`, and `Vec<LoaderItem>` fields, which are types that naturally implement `Eq`. Since `Eq` is a marker trait extending `PartialEq` with the guarantee that `a == a` is always true, and none of the fields involve floating-point numbers or other non-reflexive types, the addition is safe. This is a low-risk, mechanically sound change that aligns with Rust's trait coherence requirements."
+          ]
+        },
+        {
+          "heading": "Configuration Surface Area",
+          "heading_level": 2,
+          "required_content": [
+            "Evaluate ReactCompilerOptions fields: compilation_mode of type Option<ReactCompilerMode> and panic_threshold of type Option<String>",
+            "Discuss the skip_serializing_if = Option::is_none attribute on both fields",
+            "Assess whether the exposed subset of compiler options is appropriate",
+            "Note that panic_threshold is a String rather than a typed enum",
+            "Consider whether additional compiler options should be exposed in the future"
+          ],
+          "paragraphs": [
+            "The `ReactCompilerOptions` struct exposes exactly two fields from the broader React compiler configuration: `compilation_mode` (typed as `Option<ReactCompilerMode>`) and `panic_threshold` (typed as `Option<String>`). Both fields use `#[serde(skip_serializing_if = \"Option::is_none\")]`, ensuring that `None` values are omitted from serialized output rather than emitting null. This is the standard Next.js convention for optional configuration fields and is correctly applied here.",
+            "The choice of `panic_threshold` as a `String` rather than a typed enum (for example, a `PanicThreshold` enum with variants like `None`, `Critical`, `All`) is a pragmatic decision because it forwards the value directly to the React compiler's own configuration without needing to track upstream changes. However, it does shift validation responsibility to the compiler itself, meaning invalid values will not be caught at the Next.js config parsing stage. This is an acceptable tradeoff for an experimental feature but should be revisited if the feature moves out of experimental status.",
+            "The `ReactCompilerMode` enum provides three modes: `Infer`, `Annotation`, and `All`, which correspond to the React compiler's own compilation modes. This subset appears sufficient for initial experimental use. Future iterations may need to expose additional options such as custom component filters or module-level granularity."
+          ]
+        },
+        {
+          "heading": "Risks and Concerns",
+          "heading_level": 2,
+          "required_content": [
+            "Identify at least three risks or open questions",
+            "Discuss backward compatibility implications",
+            "Discuss interaction with existing .babelrc files",
+            "Discuss the experimental nature of the React compiler itself",
+            "Discuss the hybrid babel plus SWC and turbopack approach and its performance implications",
+            "Discuss the untagged enums error messages for invalid config",
+            "Note that Eq additions could mask future bugs if float types are added later"
+          ],
+          "paragraphs": [
+            "**1. Babel dependency for all users:** The PR adds a babel plugin even for projects that do not have a `.babelrc`. This means enabling `reactCompiler: true` forces babel into the build pipeline, potentially negating SWC's performance advantages. Users expecting a pure-SWC build will encounter unexpected babel invocations. This should be clearly documented, and benchmarks should be provided comparing build times with and without the compiler enabled.",
+            "**2. Untagged enum error messages:** The `#[serde(untagged)]` attribute on `ReactCompilerOptionsOrBoolean` can produce confusing deserialization error messages when users provide invalid configuration. If a user writes `reactCompiler: \"invalid\"`, serde will attempt to parse it as a boolean (fail), then as `ReactCompilerOptions` (fail), and return a generic error. Next.js should add custom validation or error handling to surface actionable messages.",
+            "**3. Experimental compiler stability:** The React compiler itself is experimental (as noted by the https://react.dev/learn/react-compiler reference). Shipping experimental compiler support as a Next.js configuration option means users may encounter compiler bugs that manifest as Next.js issues. Clear communication about the experimental status and a way to disable the compiler without reverting configuration are essential.",
+            "**4. `panic_threshold` validation gap:** As noted above, `panic_threshold` is an untyped `String`. Invalid values will pass Next.js config validation silently and only fail at compile time within the React compiler. A typed enum or at least a regex validation would improve the user experience.",
+            "**5. Eq trait additions:** While the addition of `Eq` to `RuleConfigItemOptions`, `RuleConfigItemOrShortcut`, `RuleConfigItem`, and `LoaderItem` is safe for current field types, it sets a precedent. If a floating-point field is ever added to any of these structs, the `Eq` derive will fail to compile, which is actually the correct behavior. However, if someone removes the `Eq` derive to unblock compilation, they may introduce subtle equality bugs. This is a minor concern but worth noting for future maintainers."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Provide actionable suggestions for the PR author",
+            "Include suggestions about testing, documentation, or follow-up work",
+            "Reference specific types or patterns from the diff",
+            "Suggest benchmarking babel versus SWC and turbopack performance",
+            "Suggest improving error messages for untagged enum validation",
+            "Suggest adding more compiler options as the React compiler stabilizes"
+          ],
+          "paragraphs": [
+            "**Add integration tests** for the new configuration surface. Specifically, test that `reactCompiler: true`, `reactCompiler: false`, and `reactCompiler: { compilationMode: 'all', panicThreshold: '...' }` all parse correctly from `next.config.js` and produce the expected babel plugin configuration. Test edge cases such as `reactCompiler: {}` (empty object) and `reactCompiler: 42` (invalid type).",
+            "**Improve error messages** for invalid `reactCompiler` values. Consider adding a custom serde deserializer or post-parse validation step that produces actionable error messages rather than serde's generic \"data did not match any variant\" error for `ReactCompilerOptionsOrBoolean`.",
+            "**Document the babel requirement** prominently in the Next.js documentation for this feature. Users should understand that enabling the React compiler introduces a babel dependency and may impact build performance. Include a benchmark comparing build times with and without `reactCompiler` enabled on a representative Next.js application.",
+            "**Add a configuration guide** explaining the three `ReactCompilerMode` variants (`Infer`, `Annotation`, `All`) and when to use each. Since `panic_threshold` is a free-form string, document the valid values that the React compiler accepts.",
+            "**Consider typed validation** for `panic_threshold`. Even if the React compiler's upstream configuration changes, a validation step at the Next.js layer would catch obvious mistakes (for example, empty string or numeric values) before they reach the compiler.",
+            "**Track upstream React compiler changes.** As the React compiler evolves from experimental to stable, the `ReactCompilerOptions` struct should be expanded to expose additional configuration options. Create a tracking issue for this follow-up work."
+          ]
+        }
+      ],
+      "md_title": "Code Review: PR #65804 - feat(next): experimental react compiler support",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #65804 diff showing changes across 15 files with +538 additions and -89 deletions",
+          "content_blueprint": {
+            "title": "PR #65804 diff showing changes across 15 files with +538 additions and -89 deletions",
+            "body": "# Seed Material: vercel/next.js#65804: feat(next): experimental react compiler support\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#65804\n\nRepository: vercel/next.js\nPR Number: #65804\nPR Title: feat(next): experimental react compiler support\nMerged At: 2024-05-16T09:22:28Z\nChanged Files: 15\nAdditions: +538, Deletions: -89\n\n## PR Description\n### What\r\n\r\nThis PR exposes new experimental configuration for next.js, `experimental.reactCompiler`. Under the hood, this option configures to use new experimental react compiler (https://react.dev/learn/react-compiler#). `reactCompiler` value can be either boolean or an object contains partial set of compiler itself's configuration option.\r\n\r\nFor the webpack and turbopack both it is enabled by adding a babel plugin for the react compiler. If user have an existing .babelrc, plugin will be appended to the config. Otherwise, swc will still kicks in (for webpack) or turbopack for the general transform but only compiler babel plugin will run via babel. \r\n\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next-swc/crates/next-core/src/next_config.rs b/packages/next-swc/crates/next-core/src/next_config.rs\nindex 93cf4bda13ae..490bbcdae34b 100644\n--- a/packages/next-swc/crates/next-core/src/next_config.rs\n+++ b/packages/next-swc/crates/next-core/src/next_config.rs\n@@ -419,7 +419,7 @@ pub struct ExperimentalTurboConfig {\n     pub use_swc_css: Option<bool>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct RuleConfigItemOptions {\n     pub loaders: Vec<LoaderItem>,\n@@ -427,14 +427,14 @@ pub struct RuleConfigItemOptions {\n     pub rename_as: Option<String>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItemOrShortcut {\n     Loaders(Vec<LoaderItem>),\n     Advanced(RuleConfigItem),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItem {\n     Options(RuleConfigItemOptions),\n@@ -442,7 +442,7 @@ pub enum RuleConfigItem {\n     Boolean(bool),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(untagged)]\n pub enum LoaderItem {\n     LoaderName(String),\n@@ -456,6 +456,36 @@ pub enum MdxRsOptions {\n     Option(MdxTransformOptions),\n }\n \n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub enum ReactCompilerMode {\n+    Infer,\n+    Annotation,\n+    All,\n+}\n+\n+/// Subset of react compiler options\n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub struct ReactCompilerOptions {\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub compilation_mode: Option<ReactCompilerMode>,\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub panic_threshold: Option<String>,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[serde(untagged)]\n+pub enum ReactCompilerOptionsOrBoolean {\n+    Boolean(bool),\n+    Option(ReactCompilerOptions),\n+}\n+\n+#[turbo_tasks::value(transparent)]\n+pub struct OptionalReactCompilerOptions(Option<Vc<ReactCompilerOptions>>);\n+\n #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct ExperimentalConfig {\n@@ -489,6 +519,7 @@ pub struct ExperimentalConfig {\n     pub web_vitals_attribution: Option<Vec<String>>,\n     pub server_actions: Option<ServerActionsOrLegacyBool>,\n     pub sri: Option<SubResourceIntegrity>,\n+    react_compiler: Option<ReactCompilerOptionsOrBoolean>,\n \n     // ---\n     // UNSUPPORTED\n@@ -961,6 +992,29 @@ impl"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description explaining experimental.reactCompiler configuration for React compiler support in Next.js",
+          "content_blueprint": {
+            "title": "PR description explaining experimental",
+            "body": "# Seed Material: vercel/next.js#65804: feat(next): experimental react compiler support\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#65804\n\nRepository: vercel/next.js\nPR Number: #65804\nPR Title: feat(next): experimental react compiler support\nMerged At: 2024-05-16T09:22:28Z\nChanged Files: 15\nAdditions: +538, Deletions: -89\n\n## PR Description\n### What\r\n\r\nThis PR exposes new experimental configuration for next.js, `experimental.reactCompiler`. Under the hood, this option configures to use new experimental react compiler (https://react.dev/learn/react-compiler#). `reactCompiler` value can be either boolean or an object contains partial set of compiler itself's configuration option.\r\n\r\nFor the webpack and turbopack both it is enabled by adding a babel plugin for the react compiler. If user have an existing .babelrc, plugin will be appended to the config. Otherwise, swc will still kicks in (for webpack) or turbopack for the general transform but only compiler babel plugin will run via babel. \r\n\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next-swc/crates/next-core/src/next_config.rs b/packages/next-swc/crates/next-core/src/next_config.rs\nindex 93cf4bda13ae..490bbcdae34b 100644\n--- a/packages/next-swc/crates/next-core/src/next_config.rs\n+++ b/packages/next-swc/crates/next-core/src/next_config.rs\n@@ -419,7 +419,7 @@ pub struct ExperimentalTurboConfig {\n     pub use_swc_css: Option<bool>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct RuleConfigItemOptions {\n     pub loaders: Vec<LoaderItem>,\n@@ -427,14 +427,14 @@ pub struct RuleConfigItemOptions {\n     pub rename_as: Option<String>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItemOrShortcut {\n     Loaders(Vec<LoaderItem>),\n     Advanced(RuleConfigItem),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItem {\n     Options(RuleConfigItemOptions),\n@@ -442,7 +442,7 @@ pub enum RuleConfigItem {\n     Boolean(bool),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(untagged)]\n pub enum LoaderItem {\n     LoaderName(String),\n@@ -456,6 +456,36 @@ pub enum MdxRsOptions {\n     Option(MdxTransformOptions),\n }\n \n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub enum ReactCompilerMode {\n+    Infer,\n+    Annotation,\n+    All,\n+}\n+\n+/// Subset of react compiler options\n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub struct ReactCompilerOptions {\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub compilation_mode: Option<ReactCompilerMode>,\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub panic_threshold: Option<String>,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[serde(untagged)]\n+pub enum ReactCompilerOptionsOrBoolean {\n+    Boolean(bool),\n+    Option(ReactCompilerOptions),\n+}\n+\n+#[turbo_tasks::value(transparent)]\n+pub struct OptionalReactCompilerOptions(Option<Vc<ReactCompilerOptions>>);\n+\n #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct ExperimentalConfig {\n@@ -489,6 +519,7 @@ pub struct ExperimentalConfig {\n     pub web_vitals_attribution: Option<Vec<String>>,\n     pub server_actions: Option<ServerActionsOrLegacyBool>,\n     pub sri: Option<SubResourceIntegrity>,\n+    react_compiler: Option<ReactCompilerOptionsOrBoolean>,\n \n     // ---\n     // UNSUPPORTED\n@@ -961,6 +992,29 @@ impl"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title references PR number #65804",
+          "value": "#65804",
+          "tolerance": null,
+          "location": "Document title or first heading"
+        },
+        {
+          "description": "Document title references the feature name experimental react compiler support",
+          "value": "experimental react compiler support",
+          "tolerance": null,
+          "location": "Document title or first heading"
+        },
+        {
+          "description": "Summary section mentions PR number #65804",
+          "value": "#65804",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions the PR title feat next experimental react compiler support",
+          "value": "feat(next): experimental react compiler support",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section references the repository vercel/next.js",
+          "value": "vercel/next.js",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions experimental.reactCompiler as the configuration option",
+          "value": "experimental.reactCompiler",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section states the config accepts boolean or object",
+          "value": "boolean or object",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions the file packages/next-swc/crates/next-core/src/next_config.rs",
+          "value": "packages/next-swc/crates/next-core/src/next_config.rs",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions 15 changed files",
+          "value": "15 files",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions +538 additions",
+          "value": "538 additions",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Summary section mentions -89 deletions",
+          "value": "89 deletions",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Architecture section references ReactCompilerOptionsOrBoolean enum",
+          "value": "ReactCompilerOptionsOrBoolean",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section references ReactCompilerOptions struct",
+          "value": "ReactCompilerOptions",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section references ReactCompilerMode enum",
+          "value": "ReactCompilerMode",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions the Infer variant of ReactCompilerMode",
+          "value": "Infer",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions the Annotation variant of ReactCompilerMode",
+          "value": "Annotation",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions the All variant of ReactCompilerMode",
+          "value": "All",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions the untagged serde enum pattern",
+          "value": "untagged",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section references turbo_tasks::value(shared) attribute",
+          "value": "turbo_tasks::value(shared)",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section references OptionalReactCompilerOptions",
+          "value": "OptionalReactCompilerOptions",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions integration with both webpack and turbopack",
+          "value": "webpack and turbopack",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Architecture section mentions babel plugin as integration mechanism",
+          "value": "babel plugin",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Type Safety section identifies RuleConfigItemOptions as gaining Eq derive",
+          "value": "RuleConfigItemOptions",
+          "tolerance": null,
+          "location": "Type Safety and Derive Macro Changes section"
+        },
+        {
+          "description": "Type Safety section identifies RuleConfigItemOrShortcut as gaining Eq derive",
+          "value": "RuleConfigItemOrShortcut",
+          "tolerance": null,
+          "location": "Type Safety and Derive Macro Changes section"
+        },
+        {
+          "description": "Type Safety section identifies RuleConfigItem as gaining Eq derive",
+          "value": "RuleConfigItem",
+          "tolerance": null,
+          "location": "Type Safety and Derive Macro Changes section"
+        },
+        {
+          "description": "Type Safety section identifies LoaderItem as gaining Eq derive",
+          "value": "LoaderItem",
+          "tolerance": null,
+          "location": "Type Safety and Derive Macro Changes section"
+        },
+        {
+          "description": "Configuration Surface Area section discusses compilation_mode field",
+          "value": "compilation_mode",
+          "tolerance": null,
+          "location": "Configuration Surface Area section"
+        },
+        {
+          "description": "Configuration Surface Area section discusses panic_threshold field",
+          "value": "panic_threshold",
+          "tolerance": null,
+          "location": "Configuration Surface Area section"
+        },
+        {
+          "description": "Configuration Surface Area section mentions skip_serializing_if attribute",
+          "value": "skip_serializing_if",
+          "tolerance": null,
+          "location": "Configuration Surface Area section"
+        },
+        {
+          "description": "Risks section identifies babel dependency as a risk",
+          "value": "babel dependency",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Risks section identifies untagged enum error messages as a risk",
+          "value": "untagged enum",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Risks section identifies experimental compiler stability as a risk",
+          "value": "experimental compiler",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Risks section identifies panic_threshold validation gap as a risk",
+          "value": "panic_threshold",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Risks section mentions Eq trait additions as a concern",
+          "value": "Eq trait",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Recommendations section suggests adding integration tests",
+          "value": "integration tests",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Recommendations section suggests improving error messages",
+          "value": "error messages",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Recommendations section suggests documenting the babel requirement",
+          "value": "babel requirement",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Document mentions .babelrc interaction",
+          "value": ".babelrc",
+          "tolerance": null,
+          "location": "Risks and Concerns section"
+        },
+        {
+          "description": "Document references ServerActionsOrLegacyBool as a pattern",
+          "value": "ServerActionsOrLegacyBool",
+          "tolerance": null,
+          "location": "Architecture and Design Review section"
+        },
+        {
+          "description": "Document mentions the React compiler URL",
+          "value": "react.dev/learn/react-compiler",
+          "tolerance": null,
+          "location": "Summary or Architecture section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1784736747
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #65804 diff showing changes across 15 files with +538 additions and -89 deletions",
+      "content_blueprint": {
+        "title": "PR #65804 diff showing changes across 15 files with +538 additions and -89 deletions",
+        "body": "# Seed Material: vercel/next.js#65804: feat(next): experimental react compiler support\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#65804\n\nRepository: vercel/next.js\nPR Number: #65804\nPR Title: feat(next): experimental react compiler support\nMerged At: 2024-05-16T09:22:28Z\nChanged Files: 15\nAdditions: +538, Deletions: -89\n\n## PR Description\n### What\r\n\r\nThis PR exposes new experimental configuration for next.js, `experimental.reactCompiler`. Under the hood, this option configures to use new experimental react compiler (https://react.dev/learn/react-compiler#). `reactCompiler` value can be either boolean or an object contains partial set of compiler itself's configuration option.\r\n\r\nFor the webpack and turbopack both it is enabled by adding a babel plugin for the react compiler. If user have an existing .babelrc, plugin will be appended to the config. Otherwise, swc will still kicks in (for webpack) or turbopack for the general transform but only compiler babel plugin will run via babel. \r\n\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next-swc/crates/next-core/src/next_config.rs b/packages/next-swc/crates/next-core/src/next_config.rs\nindex 93cf4bda13ae..490bbcdae34b 100644\n--- a/packages/next-swc/crates/next-core/src/next_config.rs\n+++ b/packages/next-swc/crates/next-core/src/next_config.rs\n@@ -419,7 +419,7 @@ pub struct ExperimentalTurboConfig {\n     pub use_swc_css: Option<bool>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct RuleConfigItemOptions {\n     pub loaders: Vec<LoaderItem>,\n@@ -427,14 +427,14 @@ pub struct RuleConfigItemOptions {\n     pub rename_as: Option<String>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItemOrShortcut {\n     Loaders(Vec<LoaderItem>),\n     Advanced(RuleConfigItem),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItem {\n     Options(RuleConfigItemOptions),\n@@ -442,7 +442,7 @@ pub enum RuleConfigItem {\n     Boolean(bool),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(untagged)]\n pub enum LoaderItem {\n     LoaderName(String),\n@@ -456,6 +456,36 @@ pub enum MdxRsOptions {\n     Option(MdxTransformOptions),\n }\n \n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub enum ReactCompilerMode {\n+    Infer,\n+    Annotation,\n+    All,\n+}\n+\n+/// Subset of react compiler options\n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub struct ReactCompilerOptions {\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub compilation_mode: Option<ReactCompilerMode>,\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub panic_threshold: Option<String>,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[serde(untagged)]\n+pub enum ReactCompilerOptionsOrBoolean {\n+    Boolean(bool),\n+    Option(ReactCompilerOptions),\n+}\n+\n+#[turbo_tasks::value(transparent)]\n+pub struct OptionalReactCompilerOptions(Option<Vc<ReactCompilerOptions>>);\n+\n #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct ExperimentalConfig {\n@@ -489,6 +519,7 @@ pub struct ExperimentalConfig {\n     pub web_vitals_attribution: Option<Vec<String>>,\n     pub server_actions: Option<ServerActionsOrLegacyBool>,\n     pub sri: Option<SubResourceIntegrity>,\n+    react_compiler: Option<ReactCompilerOptionsOrBoolean>,\n \n     // ---\n     // UNSUPPORTED\n@@ -961,6 +992,29 @@ impl"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description explaining experimental.reactCompiler configuration for React compiler support in Next.js",
+      "content_blueprint": {
+        "title": "PR description explaining experimental",
+        "body": "# Seed Material: vercel/next.js#65804: feat(next): experimental react compiler support\nSource: github_issue_pr\nIdentifier: pr:vercel/next.js#65804\n\nRepository: vercel/next.js\nPR Number: #65804\nPR Title: feat(next): experimental react compiler support\nMerged At: 2024-05-16T09:22:28Z\nChanged Files: 15\nAdditions: +538, Deletions: -89\n\n## PR Description\n### What\r\n\r\nThis PR exposes new experimental configuration for next.js, `experimental.reactCompiler`. Under the hood, this option configures to use new experimental react compiler (https://react.dev/learn/react-compiler#). `reactCompiler` value can be either boolean or an object contains partial set of compiler itself's configuration option.\r\n\r\nFor the webpack and turbopack both it is enabled by adding a babel plugin for the react compiler. If user have an existing .babelrc, plugin will be appended to the config. Otherwise, swc will still kicks in (for webpack) or turbopack for the general transform but only compiler babel plugin will run via babel. \r\n\n\n## Diff (first 3000 chars)\ndiff --git a/packages/next-swc/crates/next-core/src/next_config.rs b/packages/next-swc/crates/next-core/src/next_config.rs\nindex 93cf4bda13ae..490bbcdae34b 100644\n--- a/packages/next-swc/crates/next-core/src/next_config.rs\n+++ b/packages/next-swc/crates/next-core/src/next_config.rs\n@@ -419,7 +419,7 @@ pub struct ExperimentalTurboConfig {\n     pub use_swc_css: Option<bool>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct RuleConfigItemOptions {\n     pub loaders: Vec<LoaderItem>,\n@@ -427,14 +427,14 @@ pub struct RuleConfigItemOptions {\n     pub rename_as: Option<String>,\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItemOrShortcut {\n     Loaders(Vec<LoaderItem>),\n     Advanced(RuleConfigItem),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\", untagged)]\n pub enum RuleConfigItem {\n     Options(RuleConfigItemOptions),\n@@ -442,7 +442,7 @@ pub enum RuleConfigItem {\n     Boolean(bool),\n }\n \n-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(untagged)]\n pub enum LoaderItem {\n     LoaderName(String),\n@@ -456,6 +456,36 @@ pub enum MdxRsOptions {\n     Option(MdxTransformOptions),\n }\n \n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub enum ReactCompilerMode {\n+    Infer,\n+    Annotation,\n+    All,\n+}\n+\n+/// Subset of react compiler options\n+#[turbo_tasks::value(shared)]\n+#[derive(Clone, Debug)]\n+#[serde(rename_all = \"camelCase\")]\n+pub struct ReactCompilerOptions {\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub compilation_mode: Option<ReactCompilerMode>,\n+    #[serde(skip_serializing_if = \"Option::is_none\")]\n+    pub panic_threshold: Option<String>,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n+#[serde(untagged)]\n+pub enum ReactCompilerOptionsOrBoolean {\n+    Boolean(bool),\n+    Option(ReactCompilerOptions),\n+}\n+\n+#[turbo_tasks::value(transparent)]\n+pub struct OptionalReactCompilerOptions(Option<Vc<ReactCompilerOptions>>);\n+\n #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TraceRawVcs)]\n #[serde(rename_all = \"camelCase\")]\n pub struct ExperimentalConfig {\n@@ -489,6 +519,7 @@ pub struct ExperimentalConfig {\n     pub web_vitals_attribution: Option<Vec<String>>,\n     pub server_actions: Option<ServerActionsOrLegacyBool>,\n     pub sri: Option<SubResourceIntegrity>,\n+    react_compiler: Option<ReactCompilerOptionsOrBoolean>,\n \n     // ---\n     // UNSUPPORTED\n@@ -961,6 +992,29 @@ impl"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_f97293ae3832a3db/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_f97293ae3832a3db/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_f97293ae3832a3db/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:39:01.154081+00:00"
+}

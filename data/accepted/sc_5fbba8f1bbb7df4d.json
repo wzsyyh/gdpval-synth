@@ -1,0 +1,729 @@
+{
+  "candidate_id": "sc_5fbba8f1bbb7df4d",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "hard",
+  "seed_id": "5fbba8f1bbb7df4d",
+  "prompt": "You are a senior technical writer on the documentation team for the psf/requests library. The engineering team has received PR #6258, which adds a new 'Example: Automatic Retries' section to the Advanced Usage documentation (docs/user/advanced.rst). Before merging, your lead has asked you to perform a comprehensive technical and editorial review of the proposed changes.\n\nYour review will inform the maintainers' decision on whether to approve, request changes, or suggest modifications. The PR author has specifically asked for feedback on the content, the code example, and the import style for `urllib3.util.Retry`.\n\nMaterials provided:\n- The full PR diff for psf/requests#6258, showing the addition of the 'Example: Automatic Retries' section to `docs/user/advanced.rst`.\n- The PR description, which outlines the author's rationale, questions about import style, and the request for feedback.\n\nYour deliverable is a formal code review document in Markdown format. Structure your review as follows:\n\n1. **Executive Summary**: A concise paragraph summarizing your overall assessment and recommendation (approve, request changes, or comment).\n2. **Content and Technical Accuracy**: Analyze the added documentation text and code example for technical correctness. Verify the `Retry` object instantiation against the urllib3.util.Retry class signature, confirming that the parameters `total`, `backoff_factor`, `status_forcelist`, and `allowed_methods` are valid and appropriately valued. Assess whether the example is complete and demonstrates a realistic use case.\n3. **Documentation Style and Consistency**: Evaluate the new section's adherence to the existing documentation style in the Advanced Usage guide. Comment on heading format, RST syntax, placement within the 'Transport Adapters' section, and the link to the `urllib3.util.Retry` documentation.\n4. **Import Style Feedback**: The PR author asked specifically about the best practice for importing `Retry`. Analyze the three options mentioned (`from urllib3.util import Retry`, `from urllib3 import Retry`, `from requests.adapters import Retry`). Provide a clear recommendation with justification based on library ownership, clarity, and alignment with urllib3's own documentation.\n5. **Specific Comments and Suggestions**: Provide line-by-line or itemized feedback on specific parts of the diff. This should include any typos, grammar, clarity issues, or potential improvements to the code example.\n6. **HISTORY Entry**: Address the author's question about whether this change warrants a HISTORY entry, with reasoning.\n\nThe final document must be a single Markdown file. Use code blocks for any code references, and be precise in your citations (e.g., mention specific line numbers from the diff).",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title or first heading references PR #6258.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the psf/requests repository.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Executive Summary section contains a clear overall recommendation (approve, request changes, or comment).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Executive Summary summarizes the key findings of the review.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Content and Technical Accuracy section analyzes the code example from the PR diff.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review verifies that the `total` parameter in the code example is set to 3.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review verifies that the `backoff_factor` parameter is set to 0.1.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review verifies that the `status_forcelist` parameter is set to [502, 503, 504].",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review verifies that the `allowed_methods` parameter is set to {'POST'}.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review notes the adapter is mounted to the `https://` scheme.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review comments on the realism and completeness of the code example.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Style and Consistency section evaluates the heading format of the new section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review identifies the heading underline character (`^^^^`) as consistent with the existing style.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review assesses the placement of the new section within the Transport Adapters section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review notes the RST link definition for `urllib3.util.Retry` and its URL.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The URL for the `urllib3.util.Retry` link is correctly cited as `https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Import Style Feedback section analyzes the three import options mentioned in the PR description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The three import options are listed: `from urllib3.util import Retry`, `from urllib3 import Retry`, and `from requests.adapters import Retry`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review provides a clear recommendation for the import style.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The recommendation is for `from urllib3.util import Retry`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The recommendation is justified based on alignment with urllib3's own documentation.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review argues against `from requests.adapters import Retry` because it implies Requests ownership of the class.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Specific Comments and Suggestions section provides itemized feedback on parts of the diff.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The HISTORY Entry section addresses the author's question about needing a HISTORY entry.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review recommends against adding a HISTORY entry.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The reasoning for the HISTORY decision mentions it is a documentation-only change.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the existing 'SSLv3' example in relation to placement.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review uses code blocks for any code references.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review is structured with clear section headings.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document maintains a professional and objective tone suitable for a code review.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the `HTTPAdapter` class in the context of the example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the `requests.Session` class in the context of the example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review discusses the `allowed_methods` parameter's role in safety for non-idempotent operations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review notes the new section is placed after the existing SSLv3 example.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions that Requests does not retry by default.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions that the retry capability comes from urllib3.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review is a single file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review does not recommend a HISTORY entry, stating it does not affect public API or behavior.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the `backoff_factor` will introduce a growing delay.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the `status_forcelist` targets 5xx gateway errors.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the RST heading uses the `^^^^` underline for a third-level heading.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains fabricated file names, function names, or issue numbers not present in the PR diff or description.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The review fails to address the PR author's specific question about import style.",
+      "category": "completeness",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_5fbba8f1bbb7df4d",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:psf/requests#6258",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "approve with minor modifications",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "PR #6258",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "psf/requests",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "total=3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "backoff_factor=0.1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "[502, 503, 504]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "{'POST'}",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "https://",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "^^^^",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": ".. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "from urllib3.util import Retry",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "from requests.adapters import Retry",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "falsely implies that Requests owns or defines the Retry class",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "does not warrant a HISTORY entry",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "documentation-only change that adds an example",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "approve with minor modifications",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "PR #6258",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "psf/requests",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "total=3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "backoff_factor=0.1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "[502, 503, 504]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "{'POST'}",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "https://",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "^^^^",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": ".. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "from urllib3.util import Retry",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "from requests.adapters import Retry",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "falsely implies that Requests owns or defines the Retry class",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "does not warrant a HISTORY entry",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "documentation-only change that adds an example",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Code Review: PR #6258 - Add an Example for automatic retries to the Advanced Usage docs",
+          "heading_level": 1,
+          "required_content": [
+            "Title matches PR #6258 topic",
+            "References to psf/requests repository"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Overall recommendation (approve, request changes, or comment)",
+            "Summary of key findings"
+          ],
+          "paragraphs": [
+            "This review recommends approving PR #6258 with minor modifications. The proposed addition of an 'Example: Automatic Retries' section to the Advanced Usage documentation is a valuable contribution that addresses a common and underdocumented use case. The code example is technically sound and follows the style of the existing documentation. The primary points for discussion are the import style for `Retry` and the potential need for a HISTORY entry. With minor editorial adjustments and a decision on the import standard, this change is ready for merge."
+          ]
+        },
+        {
+          "heading": "Content and Technical Accuracy",
+          "heading_level": 2,
+          "required_content": [
+            "Analysis of the code example's technical correctness",
+            "Verification of Retry parameters (total, backoff_factor, status_forcelist, allowed_methods)",
+            "Assessment of the example's completeness and realism"
+          ],
+          "paragraphs": [
+            "The code example correctly demonstrates the integration of `urllib3.util.Retry` with a `requests.Session` and `HTTPAdapter`. The `Retry` object is instantiated with four parameters: `total=3`, `backoff_factor=0.1`, `status_forcelist=[502, 503, 504]`, and `allowed_methods={'POST'}`. These parameters are all valid attributes of the `urllib3.util.Retry` class and are configured in a manner consistent with a realistic retry strategy for transient server errors. Setting `total=3` allows up to three retries, which is a common default. The `backoff_factor=0.1` will introduce a small, growing delay between retries, which is a best practice to avoid overwhelming the server. The `status_forcelist` correctly targets common 5xx gateway errors that are often transient. The `allowed_methods` parameter restricts retries to `POST` requests, which is an important safety consideration to avoid non-idempotent operations unless explicitly intended. The example mounts this configured adapter to the `https://` scheme, making it active for all HTTPS requests made by the session. This is a complete, self-contained example that effectively illustrates the feature."
+          ]
+        },
+        {
+          "heading": "Documentation Style and Consistency",
+          "heading_level": 2,
+          "required_content": [
+            "Evaluation of heading format and RST syntax",
+            "Assessment of placement within the Transport Adapters section",
+            "Comment on the link to urllib3.util.Retry documentation"
+          ],
+          "paragraphs": [
+            "The new section follows the existing documentation style. The heading 'Example: Automatic Retries' uses the `^^^^` underline character, which is consistent with the third-level heading format used for other examples within the 'Transport Adapters' section of the Advanced Usage guide. The introductory text is clear and concise, correctly noting that Requests does not retry by default and that this capability comes from urllib3. The RST link definition `.. _`urllib3.util.Retry`: ...` is placed correctly among the other link definitions at the end of the relevant code block. The link target points to the correct urllib3 documentation URL (`https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry`). The placement of the new section, immediately after the existing 'SSLv3' example and before the link definitions, is logical and maintains the flow of the document."
+          ]
+        },
+        {
+          "heading": "Import Style Feedback",
+          "heading_level": 2,
+          "required_content": [
+            "Analysis of the three import options",
+            "Clear recommendation with justification"
+          ],
+          "paragraphs": [
+            "The PR author has raised a pertinent question about the best practice for importing the `Retry` class. The three options are: (1) `from urllib3.util import Retry`, (2) `from urllib3 import Retry`, and (3) `from requests.adapters import Retry`. Option (3) should be avoided as it falsely implies that Requests owns or defines the `Retry` class, which could mislead users about where to seek support or documentation, and could become a maintenance issue if urllib3 ever changes its internal structure. Option (2) `from urllib3 import Retry` works because `urllib3` re-exports it from its top-level namespace for convenience, but this is not the canonical location as defined in urllib3's own documentation. Option (1) `from urllib3.util import Retry` is the canonical import path as used in the urllib3 documentation (e.g., in the urllib3.util.Retry class reference). Therefore, the import style chosen in the PR (`from urllib3.util import Retry`) is the recommended best practice. It is explicit, aligns with the upstream library's documentation, and correctly signals to the user where the class is defined."
+          ]
+        },
+        {
+          "heading": "Specific Comments and Suggestions",
+          "heading_level": 2,
+          "required_content": [
+            "Itemized feedback on specific parts of the diff",
+            "Comments on any potential improvements or issues"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "HISTORY Entry",
+          "heading_level": 2,
+          "required_content": [
+            "Address the question about a HISTORY entry",
+            "Provide reasoning"
+          ],
+          "paragraphs": [
+            "Regarding the author's question, this change does not warrant a HISTORY entry. HISTORY entries in the Requests project are typically reserved for changes that affect the library's public API, behavior, or core functionality. This PR is a documentation-only change that adds an example. While valuable to users, it does not alter how the library behaves or what it exposes. Therefore, it should not be documented in the HISTORY file."
+          ]
+        }
+      ],
+      "md_title": "Code Review: PR #6258 - Add an Example for automatic retries to the Advanced Usage docs",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "Full PR diff for psf/requests#6258 (docs/user/advanced.rst changes).",
+          "content_blueprint": {
+            "title": "Full PR diff for psf/requests#6258 (docs/user/advanced",
+            "body": "# Seed Material: psf/requests#6258: Add an Example for automatic retries to the Advanced Usage docs\nSource: github_issue_pr\nIdentifier: pr:psf/requests#6258\n\nRepository: psf/requests\nPR Number: #6258\nPR Title: Add an Example for automatic retries to the Advanced Usage docs\nMerged At: 2023-07-03T20:38:22Z\nChanged Files: 1\nAdditions: +22, Deletions: -0\n\n## PR Description\nWhile Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters), so I thought it would be useful to have a simple Example of this capability.\r\n\r\nI took a stab at such an addition, and tried to follow the style of the rest of the docs pretty closely.\r\n\r\nLinking over to the [`urllib3.util.Retry` docs](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry) seems like it should reinforce the fact that Requests isn't the owner of that code and that library should be consulted with questions about that class (rather than Requests' support of it).\r\n\r\nI'm curious if maintainers have any feedback about the content or code example. Specifically I was curious whether you have any opinions as to the appropriate standard for the `Retry` import. While `urllib3.util.Retry` is where the class lives and what the `urllib3` docs reference, `from urllib3 import Retry` also works, and in some StackOverflow posts I've seen people use `from requests.adapters import Retry`. I felt that last one would telegraph an ownership by Requests that would be undesirable, but I'm wondering if anyone is particularly picky about the best practice for that import.\r\n\r\nAlso, let me know if this is non-trivial enough to add a HISTORY entry for.\n\n## Diff (first 3000 chars)\ndiff --git a/docs/user/advanced.rst b/docs/user/advanced.rst\nindex c664a83d30..055c88a956 100644\n--- a/docs/user/advanced.rst\n+++ b/docs/user/advanced.rst\n@@ -1026,8 +1026,30 @@ library to use SSLv3::\n                 num_pools=connections, maxsize=maxsize,\n                 block=block, ssl_version=ssl.PROTOCOL_SSLv3)\n \n+Example: Automatic Retries\n+^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+By default, Requests does not retry failed connections. However, it is possible\n+to implement automatic retries with a powerful array of features, including\n+backoff, within a Requests :class:`Session <requests.Session>` using the\n+`urllib3.util.Retry`_ class::\n+\n+    from urllib3.util import Retry\n+    from requests import Session\n+    from requests.adapters import HTTPAdapter\n+\n+    s = Session()\n+    retries = Retry(\n+        total=3,\n+        backoff_factor=0.1,\n+        status_forcelist=[502, 503, 504],\n+        allowed_methods={'POST'},\n+    )\n+    s.mount('https://', HTTPAdapter(max_retries=retries))\n+\n .. _`described here`: https://kenreitz.org/essays/2012/06/14/the-future-of-python-http\n .. _`urllib3`: https://github.com/urllib3/urllib3\n+.. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry\n \n .. _blocking-or-nonblocking:\n \n"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description text for psf/requests#6258.",
+          "content_blueprint": {
+            "title": "PR description text for psf/requests#6258",
+            "body": "# Seed Material: psf/requests#6258: Add an Example for automatic retries to the Advanced Usage docs\nSource: github_issue_pr\nIdentifier: pr:psf/requests#6258\n\nRepository: psf/requests\nPR Number: #6258\nPR Title: Add an Example for automatic retries to the Advanced Usage docs\nMerged At: 2023-07-03T20:38:22Z\nChanged Files: 1\nAdditions: +22, Deletions: -0\n\n## PR Description\nWhile Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters), so I thought it would be useful to have a simple Example of this capability.\r\n\r\nI took a stab at such an addition, and tried to follow the style of the rest of the docs pretty closely.\r\n\r\nLinking over to the [`urllib3.util.Retry` docs](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry) seems like it should reinforce the fact that Requests isn't the owner of that code and that library should be consulted with questions about that class (rather than Requests' support of it).\r\n\r\nI'm curious if maintainers have any feedback about the content or code example. Specifically I was curious whether you have any opinions as to the appropriate standard for the `Retry` import. While `urllib3.util.Retry` is where the class lives and what the `urllib3` docs reference, `from urllib3 import Retry` also works, and in some StackOverflow posts I've seen people use `from requests.adapters import Retry`. I felt that last one would telegraph an ownership by Requests that would be undesirable, but I'm wondering if anyone is particularly picky about the best practice for that import.\r\n\r\nAlso, let me know if this is non-trivial enough to add a HISTORY entry for.\n\n## Diff (first 3000 chars)\ndiff --git a/docs/user/advanced.rst b/docs/user/advanced.rst\nindex c664a83d30..055c88a956 100644\n--- a/docs/user/advanced.rst\n+++ b/docs/user/advanced.rst\n@@ -1026,8 +1026,30 @@ library to use SSLv3::\n                 num_pools=connections, maxsize=maxsize,\n                 block=block, ssl_version=ssl.PROTOCOL_SSLv3)\n \n+Example: Automatic Retries\n+^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+By default, Requests does not retry failed connections. However, it is possible\n+to implement automatic retries with a powerful array of features, including\n+backoff, within a Requests :class:`Session <requests.Session>` using the\n+`urllib3.util.Retry`_ class::\n+\n+    from urllib3.util import Retry\n+    from requests import Session\n+    from requests.adapters import HTTPAdapter\n+\n+    s = Session()\n+    retries = Retry(\n+        total=3,\n+        backoff_factor=0.1,\n+        status_forcelist=[502, 503, 504],\n+        allowed_methods={'POST'},\n+    )\n+    s.mount('https://', HTTPAdapter(max_retries=retries))\n+\n .. _`described here`: https://kenreitz.org/essays/2012/06/14/the-future-of-python-http\n .. _`urllib3`: https://github.com/urllib3/urllib3\n+.. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry\n \n .. _blocking-or-nonblocking:\n \n"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Overall recommendation in Executive Summary",
+          "value": "approve with minor modifications",
+          "tolerance": null,
+          "location": "Executive Summary section"
+        },
+        {
+          "description": "Reference to PR number",
+          "value": "PR #6258",
+          "tolerance": null,
+          "location": "Title and throughout document"
+        },
+        {
+          "description": "Repository name mentioned",
+          "value": "psf/requests",
+          "tolerance": null,
+          "location": "Title or introduction"
+        },
+        {
+          "description": "Code example parameter: total",
+          "value": "total=3",
+          "tolerance": null,
+          "location": "Content and Technical Accuracy section"
+        },
+        {
+          "description": "Code example parameter: backoff_factor",
+          "value": "backoff_factor=0.1",
+          "tolerance": null,
+          "location": "Content and Technical Accuracy section"
+        },
+        {
+          "description": "Code example parameter: status_forcelist",
+          "value": "[502, 503, 504]",
+          "tolerance": null,
+          "location": "Content and Technical Accuracy section"
+        },
+        {
+          "description": "Code example parameter: allowed_methods",
+          "value": "{'POST'}",
+          "tolerance": null,
+          "location": "Content and Technical Accuracy section"
+        },
+        {
+          "description": "Target scheme for mounting the adapter",
+          "value": "https://",
+          "tolerance": null,
+          "location": "Content and Technical Accuracy section"
+        },
+        {
+          "description": "Heading underline character for new section",
+          "value": "^^^^",
+          "tolerance": null,
+          "location": "Documentation Style and Consistency section"
+        },
+        {
+          "description": "RST link definition for urllib3.util.Retry",
+          "value": ".. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry",
+          "tolerance": null,
+          "location": "Documentation Style and Consistency section"
+        },
+        {
+          "description": "Recommended import style",
+          "value": "from urllib3.util import Retry",
+          "tolerance": null,
+          "location": "Import Style Feedback section"
+        },
+        {
+          "description": "Import style to avoid",
+          "value": "from requests.adapters import Retry",
+          "tolerance": null,
+          "location": "Import Style Feedback section"
+        },
+        {
+          "description": "Reasoning against requests.adapters import",
+          "value": "falsely implies that Requests owns or defines the Retry class",
+          "tolerance": null,
+          "location": "Import Style Feedback section"
+        },
+        {
+          "description": "HISTORY entry recommendation",
+          "value": "does not warrant a HISTORY entry",
+          "tolerance": null,
+          "location": "HISTORY Entry section"
+        },
+        {
+          "description": "Reasoning for HISTORY decision",
+          "value": "documentation-only change that adds an example",
+          "tolerance": null,
+          "location": "HISTORY Entry section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 10464516
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "Full PR diff for psf/requests#6258 (docs/user/advanced.rst changes).",
+      "content_blueprint": {
+        "title": "Full PR diff for psf/requests#6258 (docs/user/advanced",
+        "body": "# Seed Material: psf/requests#6258: Add an Example for automatic retries to the Advanced Usage docs\nSource: github_issue_pr\nIdentifier: pr:psf/requests#6258\n\nRepository: psf/requests\nPR Number: #6258\nPR Title: Add an Example for automatic retries to the Advanced Usage docs\nMerged At: 2023-07-03T20:38:22Z\nChanged Files: 1\nAdditions: +22, Deletions: -0\n\n## PR Description\nWhile Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters), so I thought it would be useful to have a simple Example of this capability.\r\n\r\nI took a stab at such an addition, and tried to follow the style of the rest of the docs pretty closely.\r\n\r\nLinking over to the [`urllib3.util.Retry` docs](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry) seems like it should reinforce the fact that Requests isn't the owner of that code and that library should be consulted with questions about that class (rather than Requests' support of it).\r\n\r\nI'm curious if maintainers have any feedback about the content or code example. Specifically I was curious whether you have any opinions as to the appropriate standard for the `Retry` import. While `urllib3.util.Retry` is where the class lives and what the `urllib3` docs reference, `from urllib3 import Retry` also works, and in some StackOverflow posts I've seen people use `from requests.adapters import Retry`. I felt that last one would telegraph an ownership by Requests that would be undesirable, but I'm wondering if anyone is particularly picky about the best practice for that import.\r\n\r\nAlso, let me know if this is non-trivial enough to add a HISTORY entry for.\n\n## Diff (first 3000 chars)\ndiff --git a/docs/user/advanced.rst b/docs/user/advanced.rst\nindex c664a83d30..055c88a956 100644\n--- a/docs/user/advanced.rst\n+++ b/docs/user/advanced.rst\n@@ -1026,8 +1026,30 @@ library to use SSLv3::\n                 num_pools=connections, maxsize=maxsize,\n                 block=block, ssl_version=ssl.PROTOCOL_SSLv3)\n \n+Example: Automatic Retries\n+^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+By default, Requests does not retry failed connections. However, it is possible\n+to implement automatic retries with a powerful array of features, including\n+backoff, within a Requests :class:`Session <requests.Session>` using the\n+`urllib3.util.Retry`_ class::\n+\n+    from urllib3.util import Retry\n+    from requests import Session\n+    from requests.adapters import HTTPAdapter\n+\n+    s = Session()\n+    retries = Retry(\n+        total=3,\n+        backoff_factor=0.1,\n+        status_forcelist=[502, 503, 504],\n+        allowed_methods={'POST'},\n+    )\n+    s.mount('https://', HTTPAdapter(max_retries=retries))\n+\n .. _`described here`: https://kenreitz.org/essays/2012/06/14/the-future-of-python-http\n .. _`urllib3`: https://github.com/urllib3/urllib3\n+.. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry\n \n .. _blocking-or-nonblocking:\n \n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description text for psf/requests#6258.",
+      "content_blueprint": {
+        "title": "PR description text for psf/requests#6258",
+        "body": "# Seed Material: psf/requests#6258: Add an Example for automatic retries to the Advanced Usage docs\nSource: github_issue_pr\nIdentifier: pr:psf/requests#6258\n\nRepository: psf/requests\nPR Number: #6258\nPR Title: Add an Example for automatic retries to the Advanced Usage docs\nMerged At: 2023-07-03T20:38:22Z\nChanged Files: 1\nAdditions: +22, Deletions: -0\n\n## PR Description\nWhile Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters), so I thought it would be useful to have a simple Example of this capability.\r\n\r\nI took a stab at such an addition, and tried to follow the style of the rest of the docs pretty closely.\r\n\r\nLinking over to the [`urllib3.util.Retry` docs](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry) seems like it should reinforce the fact that Requests isn't the owner of that code and that library should be consulted with questions about that class (rather than Requests' support of it).\r\n\r\nI'm curious if maintainers have any feedback about the content or code example. Specifically I was curious whether you have any opinions as to the appropriate standard for the `Retry` import. While `urllib3.util.Retry` is where the class lives and what the `urllib3` docs reference, `from urllib3 import Retry` also works, and in some StackOverflow posts I've seen people use `from requests.adapters import Retry`. I felt that last one would telegraph an ownership by Requests that would be undesirable, but I'm wondering if anyone is particularly picky about the best practice for that import.\r\n\r\nAlso, let me know if this is non-trivial enough to add a HISTORY entry for.\n\n## Diff (first 3000 chars)\ndiff --git a/docs/user/advanced.rst b/docs/user/advanced.rst\nindex c664a83d30..055c88a956 100644\n--- a/docs/user/advanced.rst\n+++ b/docs/user/advanced.rst\n@@ -1026,8 +1026,30 @@ library to use SSLv3::\n                 num_pools=connections, maxsize=maxsize,\n                 block=block, ssl_version=ssl.PROTOCOL_SSLv3)\n \n+Example: Automatic Retries\n+^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+By default, Requests does not retry failed connections. However, it is possible\n+to implement automatic retries with a powerful array of features, including\n+backoff, within a Requests :class:`Session <requests.Session>` using the\n+`urllib3.util.Retry`_ class::\n+\n+    from urllib3.util import Retry\n+    from requests import Session\n+    from requests.adapters import HTTPAdapter\n+\n+    s = Session()\n+    retries = Retry(\n+        total=3,\n+        backoff_factor=0.1,\n+        status_forcelist=[502, 503, 504],\n+        allowed_methods={'POST'},\n+    )\n+    s.mount('https://', HTTPAdapter(max_retries=retries))\n+\n .. _`described here`: https://kenreitz.org/essays/2012/06/14/the-future-of-python-http\n .. _`urllib3`: https://github.com/urllib3/urllib3\n+.. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry\n \n .. _blocking-or-nonblocking:\n \n"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_5fbba8f1bbb7df4d/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5fbba8f1bbb7df4d/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5fbba8f1bbb7df4d/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:46:19.392640+00:00"
+}

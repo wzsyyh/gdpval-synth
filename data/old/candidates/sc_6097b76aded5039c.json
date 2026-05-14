@@ -1,0 +1,597 @@
+{
+  "candidate_id": "sc_6097b76aded5039c",
+  "occupation": "software_engineer",
+  "archetype": "perf_refactor",
+  "difficulty": "light",
+  "seed_id": "644a5832054562d0",
+  "prompt": "You are a senior software engineer on the ML infrastructure team at Driftwood Systems. Aurora Lindqvist has asked you to produce a short design doc analyzing a pattern from an upstream change in the huggingface/transformers repository — specifically PR #36630, which added an attention visualization tool and changed the `_update_causal_mask` signature to add a default value of `False` to the `output_attentions` parameter across numerous model implementations.\n\nThe PR touched files like `src/transformers/models/aria/modeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, `src/transformers/models/chameleon/modeling_chameleon.py`, `src/transformers/models/codegen/modeling_codegen.py`, and `src/transformers/models/cohere/modeling_cohere.py`, among others in the full diff. Your doc needs to map each affected upstream model file to the corresponding Driftwood internal model wrapper class, or explicitly flag where no mapping exists.\n\nYour design doc should follow the standard Driftwood RFC structure: Problem, Proposed Solution, Alternatives Considered, Risks, and Open Questions. Keep it under four pages when rendered. The core analysis needs to cover backward-compatibility impact — identify any internal callers that pass `output_attentions` positionally and would break under the new signature. Propose a concrete migration plan with code changes, test updates, and rollout sequencing. You should also evaluate the `AttentionMaskVisualizer` utility introduced in the PR and recommend whether Driftwood should vendor it, fork it, or depend on it via the upstream package.\n\nQuantitative performance claims should be grounded — cite upstream benchmark data from the PR or describe the internal benchmarking methodology you'd use to measure memory and compute savings when `output_attentions` defaults to `False` versus our current default. Be aware that the PR body lists open TODOs including adding tests and making the tool work on all models, so don't treat the upstream code as fully production-stable. Also note that Rin Sato previously built Driftwood's attention profiling hooks — flag any potential conflicts with that code path as a question for Aurora rather than a resolved dependency.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document identifies the upstream repository as huggingface/transformers.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the specific PR number as 36630.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR title or description as \"Add attention visualization tool\".",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists src/transformers/models/aria/modeling_aria.py as an affected file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists src/transformers/models/bloom/modeling_bloom.py as an affected file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists src/transformers/models/chameleon/modeling_chameleon.py as an affected file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists src/transformers/models/codegen/modeling_codegen.py as an affected file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists src/transformers/models/cohere/modeling_cohere.py as an affected file.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the AttentionMaskVisualizer utility class introduced in the PR.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly describes the signature change as adding `output_attentions: bool = False` default to `_update_causal_mask`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document maps each of the five listed upstream model files to corresponding Driftwood internal model classes or explicitly flags missing mappings.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies internal callers that pass `output_attentions` positionally and would break.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document proposes a migration plan with concrete code changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document proposes test updates as part of the migration plan.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document specifies rollout sequencing for a 2-week sprint.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document evaluates whether Driftwood should vendor, fork, or depend on AttentionMaskVisualizer via upstream.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document estimates memory savings when `output_attentions` defaults to `False`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document estimates compute savings when `output_attentions` defaults to `False`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies at least two risks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document proposes mitigations for each identified risk.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references Rin Sato's attention profiling hooks as a potential conflict.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes the PR has open TODOs (add tests, work on all models) indicating upstream incompleteness.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions Aurora Lindqvist as the engineering manager reviewing the doc.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document follows the RFC template structure: Problem, Proposed Solution, Alternatives Considered, Risks, Open Questions.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an Executive Summary section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Background section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Goals section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Non-Goals section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an Alternatives Considered section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Risks & Mitigations section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Rollout Plan section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is delivered as a single Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document is under 4 pages when rendered (approximately 1200-1600 words or equivalent).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes specific file paths in `src/transformers/models/` format when referencing upstream code.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document accounts for Driftwood's pinned transformers version and discusses a version upgrade path if needed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document cites upstream benchmark data or describes an internal benchmarking methodology for performance claims.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document frames dependency on Rin Sato's code as a question for Aurora rather than a blocker.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies the PR merge date as 2025-03-19.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the internal deadline as 2026-05-13.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document lists additional files beyond the five excerpts in the full diff and maps them accordingly.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes code examples or snippets showing the signature change pattern.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies specific Driftwood internal callers that would break due to positional argument passing of `output_attentions`.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides concrete timeline milestones for the 2-week sprint rollout.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document discusses backward compatibility implications for existing inference pipelines.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document addresses silent behavior change risk when `output_attentions` defaults to `False`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses professional and technical tone appropriate for engineering review.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown headings, bullet points, and code blocks appropriately.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has no significant grammatical or spelling errors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The document claims upstream benchmarks exist without citing specific numbers or PR references (hand-wavy performance estimates).",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_6097b76aded5039c",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "perf_refactor",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:huggingface/transformers#36630",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "huggingface/transformers",
+        "attrs": {
+          "pr_number": 36630,
+          "pr_title": "Add attention visualization tool "
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Driftwood Systems",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Rin Sato",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Aurora Lindqvist",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-03-19",
+        "description": "Reference PR huggingface/transformers#36630 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-11",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-13",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "huggingface/transformers",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 36630,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "Add attention visualization tool ",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "# What does this PR do?\r\n\r\nTODOS\r\n- [ ] Add some tests\r\n- [ ] make it work on all models\r\n\r\ncc @yonigozlan and @zucchini-nlp @molbap \r\n\r\nThis will be available as: \r\n```python\r\n\r\nfrom transformers.utils.attention_visualizer import AttentionMaskVisualizer\r\nvisualizer = AttentionMaskVisualizer(\"meta-llama/Llama-3.2-3B-Instruct\")\r\nvisualizer(\"A normal attention mask\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"mistralai/Mistral-Small-24B-Instruct-2501\")\r\nvisualizer(\"A normal attention mask with a long text to see how it is displayed, and if it is displayed correctly\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/paligemma2-3b-mix-224\")\r\nvisualizer(\"<img> You are an assistant.\", suffix = \"What is on the image?\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/gemma-2b\")\r\nvisualizer(\"You are an assistant. Make sure you print me\") # we should have slidiing on non sliding side by side\r\n\r\nvisualizer = AttentionMaskVisualizer(\"google/gemma-3-27b-it\")\r\nvisualizer(\"<img>You are an assistant. Make sure you print me\") # we should have slidiing on non sliding side by side\r\n```\r\n![image](https://github.com/user-attachments/assets/d10f63f2-ad5e-4550-a30f-7181be554a67)",
+        "unit": null,
+        "source": "github:huggingface/transformers#36630"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/src/transformers/models/aria/modeling_aria.py b/src/transformers/models/aria/modeling_aria.py\nindex 252ddb694f31..e44cd709dfcf 100644\n--- a/src/transformers/models/aria/modeling_aria.py\n+++ b/src/transformers/models/aria/modeling_aria.py\n@@ -1015,7 +1015,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/bloom/modeling_bloom.py b/src/transformers/models/bloom/modeling_bloom.py\nindex 504220c788b5..932787993344 100644\n--- a/src/transformers/models/bloom/modeling_bloom.py\n+++ b/src/transformers/models/bloom/modeling_bloom.py\n@@ -747,7 +747,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/chameleon/modeling_chameleon.py b/src/transformers/models/chameleon/modeling_chameleon.py\nindex 3c3bcb4d0117..1f714bb05a82 100644\n--- a/src/transformers/models/chameleon/modeling_chameleon.py\n+++ b/src/transformers/models/chameleon/modeling_chameleon.py\n@@ -1390,7 +1390,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/codegen/modeling_codegen.py b/src/transformers/models/codegen/modeling_codegen.py\nindex 89e46a5523d9..1d7d3b6d27cd 100644\n--- a/src/transformers/models/codegen/modeling_codegen.py\n+++ b/src/transformers/models/codegen/modeling_codegen.py\n@@ -592,7 +592,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.Tensor,\n         past_key_values: Cache,\n-        output_attentions: bool,\n+        output_attentions: bool = False,\n     ):\n         if self.config._attn_implementation == \"flash_attention_2\":\n             if attention_mask is not None and (attention_mask == 0.0).any():\ndiff --git a/src/transformers/models/cohere/modeling_cohere.py b/src/transformers/models/cohere/modeling_cohere.py\nindex 018fc3b8622c..01b5ee3b9e7a 100644\n--- a/src/transformers/models/cohere/modeling_cohere.py\n+++ b/src/transformers/models/cohere/modeling_cohere.py\n@@ -665,7 +665,7 @@ def _update_causal_mask(\n         input_tensor: torch.Tensor,\n         cache_position: torch.",
+        "unit": null,
+        "source": "github:huggingface/transformers#36630.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Produce a design doc analyzing the `_update_causal_mask` signature change (adding `output_attentions: bool = False` default) from PR #36630 and how to propagate that pattern to Driftwood Systems' internal model wrappers.",
+      "List every model file touched in the PR diff excerpt (aria, bloom, chameleon, codegen, cohere, plus additional files in the full diff) and map each to the corresponding Driftwood internal model class, or explicitly flag if no mapping exists.",
+      "Assess the backward-compatibility impact: which internal callers pass `output_attentions` positionally and will break if the parameter becomes keyword-only or defaults to `False`.",
+      "Propose a migration plan with concrete steps: code changes, test updates, and rollout sequencing, scoped to a single sprint (2 weeks).",
+      "Reference the AttentionMaskVisualizer utility class from the PR and evaluate whether Driftwood should vendor it, fork it, or depend on it via the upstream `transformers` package.",
+      "Document performance implications of the default change—specifically, estimate memory and compute savings when `output_attentions` defaults to `False` versus the current Driftwood default.",
+      "Identify at least two risks (e.g., silent behavior change in inference pipelines, conflict with Rin Sato's attention profiling hooks) and propose mitigations.",
+      "Produce the design doc in Markdown format, under 4 pages when rendered, suitable for review by engineering manager Aurora Lindqvist."
+    ],
+    "implicit_requirements": [
+      "Design doc must follow Driftwood Systems' internal RFC template (Problem, Proposed Solution, Alternatives Considered, Risks, Open Questions) even though no template link is provided.",
+      "Quantitative performance claims should cite either upstream benchmark numbers from the PR or internal benchmarking methodology—hand-wavy estimates are not acceptable.",
+      "All references to `transformers` library code must include the specific file path within the `src/transformers/models/` directory structure as shown in the diff.",
+      "The doc should account for Driftwood's pinned `transformers` version; if the upstream version is newer, a version upgrade path must be discussed."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "One-paragraph summary of the proposal"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "This document outlines the design for integrating an attention visualization tool into the Hugging Face Transformers library, as proposed in PR #36630. The core objective is to provide users and researchers with a standardized, accessible method for inspecting the attention patterns generated by various transformer models. Currently, visualizing attention requires custom, model-specific scripting, creating a barrier to interpretability and debugging. This proposal introduces a utility class, `AttentionMaskVisualizer`, which abstracts this complexity, offering a consistent API to load any supported model and produce clear visualizations of its attention behavior for a given input text.",
+            "The technical implementation leverages the existing model architecture files, specifically modifying `arimodeling_aria.py`, `modeling_bloom.py`, and `modeling_chameleon.py` to ensure compatibility. The solution follows a modular design pattern, where a central `AttentionMaskVisualizer` utility handles model loading, tokenization, and orchestrates the forward pass with appropriate hooks to capture attention matrices. This approach ensures the tool is decoupled from individual model implementations, promoting maintainability and extensibility. The resulting visualizations will directly support debugging model behavior, educational exploration of transformer mechanisms, and research into attention head specialization.",
+            "The primary impact of this feature is a significant reduction in friction for model interpretability tasks. By providing a single, well-documented entry point (`from transformers.utils.attention_visualizer import AttentionMaskVisualizer`), we empower users to move from a high-level question about model focus to a concrete visualization in two lines of code. This aligns with the library's goal of democratizing access to advanced ML tools. The design prioritizes a consistent user experience across different model families while providing a clear extension point for future integration with additional model architectures."
+          ]
+        },
+        {
+          "heading": "Background",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to huggingface/transformers PR #36630",
+            "Context for why this change is needed"
+          ],
+          "paragraphs": [
+            "**Background**",
+            "Pull Request #36630 proposes the introduction of a dedicated attention mask visualization utility within the `transformers` library. This tool, implemented via a new `AttentionMaskVisualizer` class, is designed to render graphical representations of the attention masks computed during a model's forward pass. The change is driven by the need to improve both developer ergonomics and user understanding when working with Transformer-based models. Attention masks are a critical, yet often opaque, component that dictates how tokens interact during self-attention. Currently, inspecting these masks requires custom code to intercept or extract tensor data, followed by manual plotting—a cumbersome process that hinders rapid debugging and intuitive learning.",
+            "The motivation for this tool stems from two primary use cases: **debugging complex attention patterns** and **educational clarity**. For developers, visualizing masks provides immediate insight into issues such as incorrect padding handling, faulty causal masking, or unexpected behavior in specialized attention variants like those in bidirectional or prefix-based models. This is particularly valuable when adapting or debugging models with intricate attention mechanisms. For users and researchers, a built-in visualization function lowers the barrier to understanding how models like decoder-only Transformers process sequences, making abstract concepts like causal masking tangible.",
+            "The scope of the initial implementation, as indicated by the files changed—`src/transformers/models/arimodeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, and `src/transformers/models/chameleon/modeling_chameleon.py`—demonstrates the intent to integrate this capability across a diverse set of architectures. The reference implementation targets both modern multimodal models (Aria, Chameleon) and earlier text-only models (Bloom), establishing a pattern for model-agnostic integration. The ultimate goal, as noted in the PR, is to extend this functionality to all compatible models within the library, providing a unified and standardized visualization API."
+          ]
+        },
+        {
+          "heading": "Goals",
+          "heading_level": 2,
+          "required_content": [
+            "2-4 concrete, measurable goals"
+          ],
+          "paragraphs": [
+            "## Goals",
+            "This design document outlines the objectives for integrating the attention visualization tool into the `huggingface/transformers` library. The primary aims are to establish a foundational utility, ensure broad applicability, and guarantee production-level quality.",
+            "The first goal is to deliver a functional and accessible `AttentionMaskVisualizer` tool that can be instantiated with any supported model identifier and used to generate visual representations of attention masks for given text inputs. This utility will be located in `src/transformers/utils/attention_visualizer.py` and will provide a clear, high-level API, as demonstrated by the usage pattern `visualizer(\"A normal attention mask\")`. Success will be measured by the tool's ability to process inputs and produce an accurate visual output for at least one model class upon initial release.",
+            "The second goal is to ensure the tool is extensible and compatible with a significant subset of the library's model architectures. This requires implementing the necessary hooks and adaptations within individual model files, starting with the targeted files in the PR: `src/transformers/models/arimodeling_aria.py`, `src/transformers/models/bloom/modeling_bloom.py`, and `src/transformers/models/chameleon/modeling_chameleon.py`. The measurable target is to achieve verified visualization support for at least five distinct model families (e.g., Llama, Bloom, Mistral, Chameleon, Aria) by the end of the project, addressing the PR's TODO to \"make it work on all models.\"",
+            "The third goal is to establish the tool's reliability and maintainability through comprehensive testing and documentation. This involves creating a dedicated test suite that validates the visualizer's initialization, input handling, and output generation across different model types and attention configurations. The target is to achieve over 90% test coverage for the new `attention_visualizer` module and to include clear docstrings and usage examples, ensuring the tool is self-documenting for library contributors and end-users."
+          ]
+        },
+        {
+          "heading": "Non-Goals",
+          "heading_level": 2,
+          "required_content": [
+            "Explicitly out-of-scope items"
+          ],
+          "paragraphs": [
+            "**Non-Goals**",
+            "The primary objective of this initiative is to provide a focused, standalone utility for visualizing attention masks. To maintain a clear scope and ensure successful delivery, the following items are explicitly out-of-scope for this project.",
+            "First, this tool is designed solely for visualization and analysis. It must not alter, compute, or interfere with the forward pass of any model. The implementation will wrap existing model architectures (e.g., `LlamaForCausalLM`, `MistralForCausalLM`) without modifying their core attention computation logic or output. The goal is to be a passive inspection layer, not an active participant in the model's execution graph.",
+            "Second, performance optimization of the core model inference is a non-goal. The `AttentionMaskVisualizer` is a developer and research utility. Its operation may introduce computational overhead for the sake of generating comprehensive visualizations. Its design will prioritize clarity and completeness of the visualization data over minimal latency. Optimizing the base model’s attention mechanism is a separate, broader concern handled by model-specific optimization efforts.",
+            "Finally, achieving uniform, first-class integration across every model in the `transformers` library is a non-goal for the initial version. The PR scope targets specific model implementations (`aria`, `bloom`, `chameleon`) as starting points. While the architecture should be extensible, the initial deliverable will focus on establishing a robust pattern and demonstrating utility on a subset of models. Broader adoption will follow iteratively."
+          ]
+        },
+        {
+          "heading": "Proposed Design",
+          "heading_level": 2,
+          "required_content": [
+            "Must reference affected files: src/transformers/models/arimodeling_aria.py, src/transformers/models/bloom/modeling_bloom.py, src/transformers/models/chameleon/modeling_chameleon.py",
+            "Technical approach with justification"
+          ],
+          "paragraphs": [
+            "The proposed design introduces a centralized `AttentionMaskVisualizer` class within a new utility module at `transformers/utils/attention_visualizer.py`. This class will serve as the primary user-facing API. Its core technical approach is to leverage a pattern of model-specific adapter functions, registered via a dispatch mechanism, to translate the high-level user call (e.g., `visualizer(\"text\")`) into the precise sequence of operations required to construct and visualize the attention mask for a given model architecture. This is necessary because attention mask construction is not uniform; it varies significantly based on model architecture, attention implementation (e.g., eager, Flash Attention 2, SDPA), and specific techniques like causal masking or sliding windows.",
+            "The justification for this adapter-based design is threefold. First, it isolates the visualization logic from the core model forward passes, adhering to the single-responsibility principle and preventing bloat in critical modeling code. Second, it provides a clear, scalable path to support all models in the library. Each adapter encapsulates the knowledge of how to call a specific model's attention mask preparation (e.g., by invoking `self._update_causal_mask` or manipulating `attention_mask` tensors) and how to handle its unique configuration parameters. Third, it ensures correctness by replicating the exact mask creation pathway the model would use for a given input, which is crucial for accurate visualization, especially for complex masks used in models like `Bloom` (with its alibi positions) or `Chameleon` (with its multimodal patches).",
+            "To operationalize this, adapters will be implemented for the three initially targeted architectures. For `Aria`, the adapter must handle its specific multimodal and text-only mask patterns as seen in `modeling_aria.py`. The `Bloom` adapter, referencing `modeling_bloom.py`, will need to account for the alibi positional embeddings and their interaction with the causal mask. Similarly, the `Chameleon` adapter, based on `modeling_chameleon.py`, will manage the distinct mask shapes required for processing interleaved image and text tokens. Each adapter will ultimately delegate the final rendering to a shared plotting utility, ensuring visual consistency across all model types."
+          ]
+        },
+        {
+          "heading": "Alternatives Considered",
+          "heading_level": 2,
+          "required_content": [
+            "At least 2 alternatives with tradeoff analysis"
+          ],
+          "paragraphs": [
+            "## Alternatives Considered",
+            "**Alternative 1: Model-Specific Visualization Logic**\nThe primary alternative was to implement visualization logic directly within each model's `modeling_*.py` file. This approach would maintain full model-specific customization and keep the visualization tightly coupled with the model's unique attention mask generation code (e.g., for sliding window attention in Mistral or block-sparse attention in Bloom). However, this design was rejected because it would introduce significant code duplication across the `src/transformers/models/` directory. Every model requiring visualization would need a new method or function, complicating maintenance and violating the DRY (Don't Repeat Yourself) principle. This approach would also place the burden on model contributors to remember to implement and update visualization logic, creating a long-tail maintenance task.",
+            "**Alternative 2: Hook-Based or Callback-Driven System**\nA more generic alternative involved creating a hook or callback system that users could attach to any model's forward pass to intercept and log attention masks. This would offer high flexibility and be model-agnostic from the start. The tradeoff is a significant increase in user-facing complexity and a less intuitive API. Users would need to understand the model's hook registration system, write custom callback functions, and manage state themselves. This approach also makes it more challenging to provide a standardized, polished visualization output \"out of the box.\" While powerful for advanced research use cases, it fails to meet the goal of a simple, declarative `visualizer(\"input text\")` API for quick inspection and debugging.",
+            "**Rationale for the Proposed Design**\nThe chosen design—a centralized `AttentionMaskVisualizer` utility class in `src/transformers/utils/`—strikes an optimal balance. It encapsulates all visualization logic in a single, maintainable location. It provides a clean, high-level API that abstracts away model intricacies, as seen in the PR's usage example. The class can internally handle model-specific attention mask patterns by dispatching on the model type or configuration, thus preserving correctness without polluting individual model files. This design centralizes testing and ensures any improvements to the visualization (e.g., new plot types, caching) benefit all supported models immediately. It aligns with existing Hugging Face patterns for shared utilities while advancing the project's goal of robust, user-friendly tooling."
+          ]
+        },
+        {
+          "heading": "Risks & Mitigations",
+          "heading_level": 2,
+          "required_content": [
+            "Specific risks and how to address them"
+          ],
+          "paragraphs": [
+            "## Risks & Mitigations",
+            "The primary technical risk lies in the need for consistent, per-model adaptation of the `AttentionMaskVisualizer` across the diverse model architectures in the `transformers` library. The initial PR modifies core files like `arimodeling_aria.py`, `modeling_bloom.py`, and `modeling_chameleon.py` by injecting visualization hooks. Extending this to all models, as indicated by the PR's TODOs, risks introducing subtle incompatibilities. Each model's unique attention implementation (e.g., standard, FlashAttention, or custom kernels like in Bloom) may require different hooking strategies. A misaligned implementation could break model inference or generate misleading visualizations.",
+            "To mitigate this, the implementation should establish a rigorous, test-driven development process. A comprehensive test suite, as noted in the PR's pending tasks, must validate the visualizer against a matrix of model types, attention implementations, and input scenarios (e.g., standard masking, sliding window attention). Tests should verify both functional correctness (mask shape/content) and that the visualization hooks do not degrade model performance or alter output logits. Furthermore, the visualizer should be developed against an explicit abstraction layer for attention mask extraction, isolating it from model-specific forward pass details. This would minimize the surface area for change when adding support for new models.",
+            "A secondary risk involves performance and memory overhead. The visualization process requires capturing and processing potentially large intermediate tensors (attention masks) during the forward pass. In contexts with long sequences or large batch sizes, this could lead to significant memory consumption. The mitigation is to implement the visualizer as an opt-in utility that is explicitly activated, ensuring no overhead during standard model usage. The documentation must clearly state that it is intended for debugging and analysis, not production inference. Additionally, the tool should include safeguards, such as a warning when processing inputs that exceed a configurable memory threshold, to prevent unintended resource exhaustion."
+          ]
+        },
+        {
+          "heading": "Rollout Plan",
+          "heading_level": 2,
+          "required_content": [
+            "Phased deployment strategy"
+          ],
+          "paragraphs": [
+            "## Rollout Plan",
+            "The deployment of the Attention Mask Visualizer will follow a phased strategy to ensure stability, gather community feedback, and manage integration complexity across the diverse model ecosystem in the `transformers` library.",
+            "**Phase 1: Initial Release with Limited Model Support.** The tool will be deployed first with explicit support for the model architectures already addressed in the development PR: `Aria` (`arimodeling_aria.py`), `Bloom` (`modeling_bloom.py`), and `Chameleon` (`modeling_chameleon.py`). The core `AttentionMaskVisualizer` class and its core visualization logic will be merged into `src/transformers/utils/attention_visualizer.py`. This initial release will be communicated as a beta feature in the PR description and relevant documentation. This phased approach allows us to validate the core API (`visualizer(\"A normal attention mask\")`) and its integration with these specific model families before scaling.",
+            "**Phase 2: Expansion to Core Model Families.** Following the initial release and based on feedback from the community and internal testing, development will focus on extending the tool's compatibility to a curated set of high-usage model architectures. This will involve implementing the necessary `get_attention_mask` or equivalent hook methods for models like Llama, Mistral, Falcon, and GPT-2, as referenced in the TODO list. Each new model integration will be accompanied by targeted tests to verify correct mask generation for standard, sliding window, and custom attention patterns. This phase will be tracked via issues and PRs linked to the main project.",
+            "**Phase 3: Generalization and Hardening.** The final phase aims to move the feature from a specialized tool to a standard, robust utility. This involves developing a more automated or standardized approach for model authors to integrate the visualization hooks, comprehensive testing across the full model test suite, and finalizing documentation with detailed examples. The goal is to complete the \"make it work on all models\" objective by establishing a clear pattern and ensuring the tool degrades gracefully for models where explicit mask visualization is not yet implemented. The feature will be considered GA (General Availability) once this phase is complete."
+          ]
+        }
+      ],
+      "md_title": "Design Doc: huggingface/transformers#36630",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "huggingface/transformers",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "36630",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "src/transformers/models/arimodeling_aria.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "src/transformers/models/bloom/modeling_bloom.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 3",
+          "value": "src/transformers/models/chameleon/modeling_chameleon.py",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Driftwood Systems. Your manager Aurora Lindqvist has asked you to write a professional design doc for the open-source project huggingface/transformers.\n\nThe reference PR is #36630: Add attention visualization tool \n\nKey technical context:\n- Files changed: src/transformers/models/arimodeling_aria.py, src/transformers/models/bloom/modeling_bloom.py, src/transformers/models/chameleon/modeling_chameleon.py\n- PR description excerpt: # What does this PR do?\r\n\r\nTODOS\r\n- [ ] Add some tests\r\n- [ ] make it work on all models\r\n\r\ncc @yonigozlan and @zucchini-nlp @molbap \r\n\r\nThis will be available as: \r\n```python\r\n\r\nfrom transformers.utils.attention_visualizer import AttentionMaskVisualizer\r\nvisualizer = AttentionMaskVisualizer(\"meta-llama/Llama-3.2-3B-Instruct\")\r\nvisualizer(\"A normal attention mask\")\r\n\r\nvisualizer = AttentionMaskVisualizer(\"mistralai/Mistral-Small-24B-Instruct-2501\")\r\nvisualizer(\"A normal attention mask with a lon\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1402419270
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:14:31.273477+00:00"
+}

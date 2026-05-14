@@ -1,0 +1,1035 @@
+{
+  "candidate_id": "sc_6029a8995521084a",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "6029a8995521084a",
+  "prompt": "You are a senior software engineer on the Redis core team. The team has just merged PR #14661, which replaces the C++ fast_float library with a pure C implementation. Your manager has asked you to produce a Design Document that captures the rationale, technical approach, and impact of this change for the internal engineering knowledge base.\n\nThe document should serve as a reference for future contributors who need to understand why the change was made, how the new implementation works, and what build/CI adjustments were required. It will also be used in onboarding new engineers to the Redis build system.\n\n**Materials provided:**\n- The full PR description and diff summary for redis/redis#14661 (attached as \"pr_14661_description.md\")\n- The CI workflow diffs showing build step changes (attached as \"ci_diffs.txt\")\n- The Cursor Bugbot risk assessment comment (attached as \"risk_assessment.md\")\n\n**Task requirements:**\n1. Write a Design Document in Markdown format with the following sections:\n   - **Title**: Use the format \"Design Document: [Topic]\" (e.g., \"Design Document: Replacing fast_float C++ Library with Pure C\")\n   - **Overview**: A 2-3 paragraph summary of the problem, solution, and key outcomes. Include the PR number and merge date.\n   - **Motivation**: Explain why removing C++/libstdc++ dependencies matters for Redis. Reference specific issues mentioned in the PR description (e.g., build failures without g++, embedded systems constraints).\n   - **Technical Design**: Describe the two-tier parsing approach (Clinger's fast path for mantissa <= 2^53 and exponent in [-22, 22]; fallback to strtod). Explain how this maintains correctness while improving simplicity.\n   - **API Changes**: Document the new `fast_float_strtod(const char*, size_t, ...)` function signature and list the call sites that were updated (RESP double parsing, zset score parsing, DEBUG SLEEP).\n   - **Build & CI Impact**: Summarize the changes to the dependency system (removal of deps/fast_float directory, removal of -lstdc++ from linker flags) and CI workflows (removal of g++/gcc-c++ installation steps). Reference specific workflow files changed (ci.yml, daily.yml).\n   - **Testing & Validation**: Describe the testing strategy mentioned in the PR (10,000+ test cases, edge cases, special values, random inputs) and note the addition of the fastfloat unit test and SORT regression test.\n   - **Risk Assessment**: Incorporate the Cursor Bugbot risk rating (Medium Risk) and explain the rationale (core floating-point parsing change, potential impact on command semantics).\n\n2. Each section must contain substantive content with specific facts from the provided materials. Do not invent new technical details.\n\n3. The document must be well-structured with clear headings and logical flow. Use bullet points where appropriate for readability.\n\n**Deliverable specification:**\n- Output a single Markdown file named \"design_doc_fast_float_replacement.md\"\n- Use Markdown headings (## for sections, ### for subsections if needed)\n- Include the PR number (#14661) and merge date (2026-04-15) in the Overview section\n- Reference the specific line count change: +600 additions, -3995 deletions\n- Mention the two specific CI workflow files that were modified (ci.yml, daily.yml)",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading (H1) that contains the phrase \"Design Document:\".",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section includes the PR number #14661.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section includes the merge date 2026-04-15.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the change size with +600 additions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the change size with -3995 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the primary benefit as eliminating the C++ dependency.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section explains that the build process would fail without g++ installed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section mentions that Redis is sometimes compiled for embedded systems lacking the g++ toolchain.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section includes the phrase \"there is no reason to depend on C++ in a project written in C\" or a close paraphrase.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section describes a two-tier parsing approach (fast path and fallback).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section specifies the fast path criteria: mantissa <= 2^53 and exponent in [-22, 22].",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section states the fast path covers approximately 99% of real-world cases.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section mentions the fallback to strtod() for complex cases.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section documents the new function signature: fast_float_strtod(const char*, size_t, ...).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section lists RESP double parsing as an updated call site.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section lists zset score parsing as an updated call site.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section lists DEBUG SLEEP as an updated call site.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Changes section mentions the tightening of string2d to reject partial parses.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Build & CI Impact section references the workflow file .github/workflows/ci.yml.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Build & CI Impact section references the workflow file .github/workflows/daily.yml.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Build & CI Impact section mentions the removal of g++/gcc-c++ installation steps.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Build & CI Impact section mentions the removal of the -lstdc++ linker flag.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions 10,000+ test cases.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions testing against edge cases.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions testing against special values like inf or NaN.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions the addition of a fastfloat unit test.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions the addition of a SORT regression test.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section states the Cursor Bugbot risk rating as Medium Risk.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section explains that the risk is due to altering a core floating-point parsing component.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section mentions the potential impact on command semantics.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an Overview section with the heading \"Overview\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Motivation section with the heading \"Motivation\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Technical Design section with the heading \"Technical Design\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an API Changes section with the heading \"API Changes\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Build & CI Impact section with the heading \"Build & CI Impact\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Testing & Validation section with the heading \"Testing & Validation\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a Risk Assessment section with the heading \"Risk Assessment\".",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains factual information not present in the provided materials (e.g., invented names, numbers, or citations).",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": 1,
+      "criterion": "The Build & CI Impact section mentions the removal of the deps/fast_float directory.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section mentions the original C++ library was approximately 3800 lines.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section mentions the new C implementation is approximately 360 lines.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Changes section mentions the new function uses a length-based interface (takes a size_t parameter).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions testing against the original C++ implementation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing & Validation section mentions testing against the standard strtod function.",
+      "category": "content",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_6029a8995521084a",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:redis/redis#14661",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Replacing fast_float C++ Library with Pure C Implementation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#14661",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "2026-04-15",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "+600",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "-3995",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "eliminate C++ dependency",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "build process would fail in environments where g++ was not installed",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "embedded systems that lack the g++ toolchain",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "there is no reason to depend on C++ in a project written in C",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "two-tier strategy",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "mantissa <= 2^53 and exponent in [-22, 22]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "~99% of real-world cases",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "fallback to the standard C library function strtod()",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "fast_float_strtod(const char*, size_t, ...)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "RESP double parsing",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "zset score parsing",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "DEBUG SLEEP",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "reject partial parses",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "ci.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "daily.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "10,000+ test cases",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "edge cases",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "inf",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "fastfloat unit test",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "SORT regression test",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "Medium Risk",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "core component—the floating-point parser",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Replacing fast_float C++ Library with Pure C Implementation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#14661",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "2026-04-15",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "+600",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "-3995",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "eliminate C++ dependency",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "build process would fail in environments where g++ was not installed",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "embedded systems that lack the g++ toolchain",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "there is no reason to depend on C++ in a project written in C",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "two-tier strategy",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "mantissa <= 2^53 and exponent in [-22, 22]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "~99% of real-world cases",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "fallback to the standard C library function strtod()",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "fast_float_strtod(const char*, size_t, ...)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "RESP double parsing",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "zset score parsing",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "DEBUG SLEEP",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "reject partial parses",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "ci.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "daily.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "10,000+ test cases",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "edge cases",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "inf",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "fastfloat unit test",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "SORT regression test",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "Medium Risk",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "core component—the floating-point parser",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Replacing fast_float C++ Library with Pure C Implementation",
+          "heading_level": 1,
+          "required_content": [
+            "Title uses the specified format"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Mention PR #14661",
+            "Include merge date (2026-04-15)",
+            "Mention change size (+600/-3995)",
+            "Summarize the core change: replace C++ fast_float with pure C",
+            "State the key benefit: eliminate C++ dependency"
+          ],
+          "paragraphs": [
+            "This design document captures the rationale and technical approach for PR #14661, merged on 2026-04-15, which replaces the bundled `deps/fast_float` C++ library with a minimal pure C implementation for floating-point parsing in Redis. The change introduces 600 lines of new code while removing 3995 lines of the previous C++ template library, resulting in a net reduction of complexity and the complete elimination of the C++ (libstdc++) build dependency from the Redis project.",
+            "The primary motivation was to simplify the Redis build process. The C++ fast_float library required the g++ toolchain and libstdc++ to be present during compilation and linking, which is not guaranteed in minimal Linux distributions or embedded systems environments. By replacing it with a single-file C implementation (`src/fast_float_strtod.c`), Redis can now be built with just a C compiler (gcc), making the build process more accessible and robust.",
+            "The new implementation preserves full correctness and performance for the vast majority of cases through a two-tier parsing strategy: a fast path based on Clinger's algorithm handles numbers with mantissa <= 2^53 and exponent in the range [-22, 22] (covering ~99% of real-world inputs), while a fallback to the standard `strtod()` function ensures correctly-rounded results for all edge cases. This approach was validated with over 10,000 test cases, including special values (infinity, NaN) and random inputs."
+          ]
+        },
+        {
+          "heading": "Motivation",
+          "heading_level": 2,
+          "required_content": [
+            "Explain build failures without g++",
+            "Mention embedded systems lacking g++ toolchain",
+            "State the goal of simplest possible build process",
+            "Quote or reference the PR statement about no reason to depend on C++"
+          ],
+          "paragraphs": [
+            "Redis is a project written in C. The prior dependency on the fast_float C++ library introduced an unnecessary and problematic requirement for a C++ compiler (`g++`) and its standard library (`libstdc++`). As stated in the PR description, \"there is no reason to depend on C++ in a project written in C.\"",
+            "This dependency caused practical issues. The Redis build process would fail in environments where `g++` was not installed, which is a common situation even on Linux distributions that have the basic C build tools (`gcc`) installed. Furthermore, Redis is sometimes compiled for embedded systems that lack the `g++` toolchain entirely, making the build impossible without complex workarounds.",
+            "The core goal was to make the build process of Redis \"the simplest possible\". Removing the C++ dependency achieves this by ensuring that only a standard C compiler is required. This reduces the barrier to entry for developers and system administrators, simplifies CI environments, and aligns the build toolchain with the language of the project itself."
+          ]
+        },
+        {
+          "heading": "Technical Design",
+          "heading_level": 2,
+          "required_content": [
+            "Describe two-tier parsing approach",
+            "Explain Clinger's fast path for mantissa <= 2^53 and exponent in [-22, 22]",
+            "Note this covers ~99% of real-world cases",
+            "Explain fallback to strtod() for complex cases",
+            "State the goal of correctly-rounded results"
+          ],
+          "paragraphs": [
+            "The new implementation in `src/fast_float_strtod.c` and `src/fast_float_strtod.h` replaces the 3800-line C++ template library with approximately 360 lines of pure C code. The design follows a two-tier strategy to balance performance with correctness.",
+            "**Fast Path (Clinger's Algorithm)**: For the common case of decimal floating-point numbers where the mantissa (significand) can be represented exactly in 53 bits (i.e., <= 2^53) and the exponent is within the range of -22 to 22, the algorithm computes the value directly using integer arithmetic. This fast path is highly optimized and is estimated to cover approximately 99% of real-world floating-point parsing cases encountered by Redis (e.g., scores, weights, configuration values).",
+            "**Fallback to `strtod()`**: For any input that does not meet the criteria for the fast path—such as numbers with very large exponents, very long mantissas, or special values—the implementation falls back to the standard C library function `strtod()`. This ensures that all inputs are parsed correctly with properly rounded results, maintaining full compatibility with the behavior expected by Redis commands and data structures."
+          ]
+        },
+        {
+          "heading": "API Changes",
+          "heading_level": 2,
+          "required_content": [
+            "Document new function signature: fast_float_strtod(const char*, size_t, ...)",
+            "List call sites updated: RESP double parsing, zset score parsing, DEBUG SLEEP",
+            "Mention tightening of string2d to reject partial parses"
+          ],
+          "paragraphs": [
+            "The replacement involved introducing a new API and updating all internal call sites that previously used the fast_float C++ interface. The primary new function is `fast_float_strtod(const char*, size_t, ...)`. This function takes a character pointer and a length, providing a safer, length-based interface compared to null-terminated string alternatives.",
+            "All relevant floating-point parsing within the Redis source code was updated to use this new function. The key call sites that were modified include:",
+            "- **RESP Double Parsing**: The protocol parser that handles double values in the Redis Serialization Protocol (RESP) was updated.",
+            "- **Zset Score Parsing**: The code that parses scores for sorted set (zset) commands now uses the new implementation.",
+            "- **DEBUG SLEEP Command**: The parsing of the sleep duration argument in the `DEBUG SLEEP` command was also migrated.",
+            "Additionally, the `string2d` helper function was tightened to ensure it rejects partial parses. This means it will only accept strings where the entire input represents a valid floating-point number, improving data integrity."
+          ]
+        },
+        {
+          "heading": "Build & CI Impact",
+          "heading_level": 2,
+          "required_content": [
+            "Summarize removal of deps/fast_float directory",
+            "State removal of -lstdc++ from linker flags",
+            "Reference specific workflow files: ci.yml, daily.yml",
+            "Describe removal of g++/gcc-c++ installation steps in CI"
+          ],
+          "paragraphs": [
+            "The change significantly simplifies the Redis build system and continuous integration (CI) pipelines. The entire `deps/fast_float` directory, which contained the C++ library and its build rules, was removed from the dependency tree.",
+            "Consequently, the linker flag `-lstdc++` was dropped from the build process, as the pure C implementation has no dependency on the C++ standard library. The new implementation file `fast_float_strtod.c` was moved into the `src/` directory as it no longer requires a separate dependency folder.",
+            "The CI workflows were updated to reflect the reduced build requirements. Specific changes were made to:",
+            "- **`.github/workflows/ci.yml`**: Installation commands for `g++-multilib` and `gcc-c++` were removed from jobs like `build-32bit` and `build-fedora`.",
+            "- **`.github/workflows/daily.yml`**: Similar removal of `g++` installation from multiple jobs, including the `test-fedora` and `test-valgrind` configurations.",
+            "These changes ensure that CI environments only install the necessary C compiler, reducing setup time and potential points of failure."
+          ]
+        },
+        {
+          "heading": "Testing & Validation",
+          "heading_level": 2,
+          "required_content": [
+            "Mention 10,000+ test cases",
+            "List test categories: edge cases, special values (inf/nan), random inputs",
+            "Reference comparison against strtod and original C++ implementation",
+            "Note addition of fastfloat unit test and SORT regression test"
+          ],
+          "paragraphs": [
+            "Rigorous testing was performed to ensure the new implementation is correct and robust. The PR description states the implementation was tested against both the standard `strtod` function and the original C++ fast_float library.",
+            "The test suite comprised over 10,000 test cases, covering:",
+            "- **Edge Cases**: Numbers with extreme precision requirements, boundary values for mantissa and exponent limits.",
+            "- **Special Values**: Inputs representing positive/negative infinity (`inf`) and Not-a-Number (`NaN`).",
+            "- **Random Inputs**: A large set of randomly generated floating-point strings to ensure statistical coverage.",
+            "To integrate this testing into the Redis development workflow, two new test assets were added:",
+            "- A dedicated `fastfloat` unit test to validate the core parsing logic in isolation.",
+            "- A `SORT` regression test to ensure the correct behavior of sorted set operations that rely on score parsing."
+          ]
+        },
+        {
+          "heading": "Risk Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "State the Cursor Bugbot risk rating: Medium Risk",
+            "Explain the rationale: core floating-point parsing change",
+            "Mention potential impact on command semantics",
+            "Reference the risk is due to parsing correctness and edge-case behavior"
+          ],
+          "paragraphs": [
+            "The change was assessed as **Medium Risk** by the automated Cursor Bugbot review system. This rating is appropriate given the nature of the modification.",
+            "The primary risk stems from altering a core component—the floating-point parser—that is fundamental to how Redis interprets numeric data. Incorrect parsing could affect the semantics of numerous commands, including those for sorted sets (scores), Lua scripting (numbers), and configuration settings.",
+            "The risk is further compounded by the need to handle edge cases and special values (like `inf` and `NaN`) correctly across different platforms. While the two-tier design and extensive testing mitigate this risk, any subtle behavioral difference between the new implementation and the old one (or `strtod`) could potentially lead to data inconsistencies or command failures.",
+            "Therefore, the change required careful review and validation, which was achieved through the comprehensive test suite described above."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Replacing fast_float C++ Library with Pure C Implementation",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "pr_14661_description.md: Contains the PR title, description, merge date, and change summary for redis/redis#14661.",
+          "content_blueprint": {
+            "title": "pr_14661_description",
+            "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "ci_diffs.txt: Contains the diff hunks from .github/workflows/ci.yml and .github/workflows/daily.yml showing removal of g++ installation steps.",
+          "content_blueprint": {
+            "title": "ci_diffs",
+            "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "risk_assessment.md: Contains the Cursor Bugbot 'Medium Risk' rating and rationale for the fast_float replacement PR.",
+          "content_blueprint": {
+            "title": "risk_assessment",
+            "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title uses the specified format",
+          "value": "Design Document: Replacing fast_float C++ Library with Pure C Implementation",
+          "tolerance": null,
+          "location": "Markdown heading level 1"
+        },
+        {
+          "description": "Overview section mentions PR number",
+          "value": "#14661",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section includes merge date",
+          "value": "2026-04-15",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section mentions change size additions",
+          "value": "+600",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section mentions change size deletions",
+          "value": "-3995",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section states key benefit: eliminate C++ dependency",
+          "value": "eliminate C++ dependency",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Motivation section references build failures without g++",
+          "value": "build process would fail in environments where g++ was not installed",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Motivation section mentions embedded systems lacking g++ toolchain",
+          "value": "embedded systems that lack the g++ toolchain",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Motivation section quotes PR about no reason to depend on C++",
+          "value": "there is no reason to depend on C++ in a project written in C",
+          "tolerance": null,
+          "location": "Motivation section, first paragraph"
+        },
+        {
+          "description": "Technical Design section describes two-tier approach",
+          "value": "two-tier strategy",
+          "tolerance": null,
+          "location": "Technical Design section, first paragraph"
+        },
+        {
+          "description": "Technical Design section specifies fast path criteria",
+          "value": "mantissa <= 2^53 and exponent in [-22, 22]",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Technical Design section states fast path coverage",
+          "value": "~99% of real-world cases",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Technical Design section mentions fallback to strtod",
+          "value": "fallback to the standard C library function strtod()",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "API Changes section documents function signature",
+          "value": "fast_float_strtod(const char*, size_t, ...)",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "API Changes section lists RESP double parsing as updated call site",
+          "value": "RESP double parsing",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "API Changes section lists zset score parsing as updated call site",
+          "value": "zset score parsing",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "API Changes section lists DEBUG SLEEP as updated call site",
+          "value": "DEBUG SLEEP",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "API Changes section mentions string2d tightened to reject partial parses",
+          "value": "reject partial parses",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "Build & CI Impact section references ci.yml",
+          "value": "ci.yml",
+          "tolerance": null,
+          "location": "Build & CI Impact section"
+        },
+        {
+          "description": "Build & CI Impact section references daily.yml",
+          "value": "daily.yml",
+          "tolerance": null,
+          "location": "Build & CI Impact section"
+        },
+        {
+          "description": "Testing section mentions 10,000+ test cases",
+          "value": "10,000+ test cases",
+          "tolerance": null,
+          "location": "Testing & Validation section"
+        },
+        {
+          "description": "Testing section mentions edge cases",
+          "value": "edge cases",
+          "tolerance": null,
+          "location": "Testing & Validation section"
+        },
+        {
+          "description": "Testing section mentions special values (inf/nan)",
+          "value": "inf",
+          "tolerance": null,
+          "location": "Testing & Validation section"
+        },
+        {
+          "description": "Testing section mentions fastfloat unit test",
+          "value": "fastfloat unit test",
+          "tolerance": null,
+          "location": "Testing & Validation section"
+        },
+        {
+          "description": "Testing section mentions SORT regression test",
+          "value": "SORT regression test",
+          "tolerance": null,
+          "location": "Testing & Validation section"
+        },
+        {
+          "description": "Risk Assessment states Cursor Bugbot risk rating",
+          "value": "Medium Risk",
+          "tolerance": null,
+          "location": "Risk Assessment section, first paragraph"
+        },
+        {
+          "description": "Risk Assessment explains rationale for risk rating",
+          "value": "core component—the floating-point parser",
+          "tolerance": null,
+          "location": "Risk Assessment section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1959051052
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "pr_14661_description.md: Contains the PR title, description, merge date, and change summary for redis/redis#14661.",
+      "content_blueprint": {
+        "title": "pr_14661_description",
+        "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "ci_diffs.txt: Contains the diff hunks from .github/workflows/ci.yml and .github/workflows/daily.yml showing removal of g++ installation steps.",
+      "content_blueprint": {
+        "title": "ci_diffs",
+        "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "risk_assessment.md: Contains the Cursor Bugbot 'Medium Risk' rating and rationale for the fast_float replacement PR.",
+      "content_blueprint": {
+        "title": "risk_assessment",
+        "body": "# Seed Material: redis/redis#14661: Replace fast_float C++ library with pure C implementation\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14661\n\nRepository: redis/redis\nPR Number: #14661\nPR Title: Replace fast_float C++ library with pure C implementation\nMerged At: 2026-04-15T12:33:55Z\nChanged Files: 19\nAdditions: +600, Deletions: -3995\n\n## PR Description\nThe fast_float dependency required C++ (libstdc++) to build Redis. This commit replaces the 3800-line C++ template library with a minimal pure C implementation (~360 lines) that provides the same functionality needed by Redis.\r\n\r\nThis is **very important** because Redis build process would fail without g++ installed, a common situation in Linux distributions even after installing the basic build tools: we want the build process of Redis to be the simplest possible. Also Redis sometimes is compiled in embedded systems lacking the g++ toolchain. There is no reason to depend on C++ in a project written in C.\r\n\r\n## The C implementation uses\r\n1. Fast path (Clinger's algorithm) for numbers with mantissa <= 2^53 and exponent in [-22, 22], covering ~99% of real-world cases.\r\n2. Fallback to strtod() for complex cases to ensure correctly-rounded results.\r\n\r\n## Changes\r\n- Move new fast_float_strtod.c(C implementation) from deps into Redis core since it is now a single file and no longer needs a separate directory.\r\n- Remove all c++ dependencies\r\n\r\nThe implementation was tested against both strtod and the original C++ implementation with 10,000+ test cases including edge cases, special values (inf/nan), and random inputs.\r\n\r\n\n<!-- CURSOR_SUMMARY -->\n---\n\n> [!NOTE]\n> **Medium Risk**\n> Replaces core floating-point parsing and build/link settings to remove C++/`libstdc++` dependencies; parsing correctness and edge-case behavior could affect command semantics and tests across platforms.\n> \n> **Overview**\n> Replaces the bundled `deps/fast_float` C++ library with a new in-tree C implementation (`src/fast_float_strtod.c`/`.h`) that parses common decimal floats via a fast path and falls back to `strtod` for complex cases.\n> \n> Updates all call sites to use the new length-based `fast_float_strtod(const char*, size_t, ...)` API (including RESP double parsing, zset score parsing, and `DEBUG SLEEP`), tightens `string2d` to reject partial parses, and adds a dedicated `fastfloat` unit test plus a SORT regression test.\n> \n> Simplifies builds by removing `fast_float` from dependency targets, dropping `-lstdc++` and the `deps/fast_float` static library, cleaning up `.gitignore`/deps `Makefile`, and adjusting CI workflows to no longer install `g++`/`gcc-c++`.\n> \n> <sup>Reviewed by [Cursor Bugbot](https://cursor.com/bugbot) for commit 605c2a22fab4d71256582fa69b368408e6a6281c. Bugbot is set up for automated code reviews on this repo. Configure [here](https://www.cursor.com/dashboard/bugbot).</sup>\n<!-- /CURSOR_SUMMARY -->\n\n## Diff (first 3000 chars)\ndiff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4fe75a6fa2d..75a8ff62da5 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -62,7 +62,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make REDIS_CFLAGS='-Werror' 32bit\n \n   build-libc-malloc:\n@@ -79,7 +79,7 @@ jobs:\n     - uses: actions/checkout@v4\n     - name: make\n       run: |\n-        dnf -y install which gcc gcc-c++ make\n+        dnf -y install which gcc make\n         make REDIS_CFLAGS='-Werror'\n \n   build-old-chain-jemalloc:\n@@ -96,7 +96,6 @@ jobs:\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5\n         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32\n         apt-get update\n-        apt-get install -y make gcc-4.8 g++-4.8\n+        apt-get install -y make gcc-4.8\n         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100\n-        update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100\n         make CC=gcc REDIS_CFLAGS='-Werror'\ndiff --git a/.github/workflows/daily.yml b/.github/workflows/daily.yml\nindex fdac6d994c7..36edb75296b 100644\n--- a/.github/workflows/daily.yml\n+++ b/.github/workflows/daily.yml\n@@ -240,7 +240,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        apt-get update && apt-get install -y make gcc g++\n+        apt-get update && apt-get install -y make gcc\n         make CC=gcc REDIS_CFLAGS='-Werror -DREDIS_TEST -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'\n     - name: testprep\n       run: sudo apt-get install -y tcl8.6 tclx procps\n@@ -347,7 +347,7 @@ jobs:\n         ref: ${{ env.GITHUB_HEAD_REF }}\n     - name: make\n       run: |\n-        sudo apt-get update && sudo apt-get install libc6-dev-i386 g++ gcc-multilib g++-multilib\n+        sudo apt-get update && sudo apt-get install libc6-dev-i386 gcc-multilib\n         make 32bit REDIS_CFLAGS='-Werror -DREDIS_TEST'\n         make -C tests/modules 32bit # the script below doesn't have an argument, we must build manually ahead of time\n     - name: testprep\n@@ -580,7 +580,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       # Note that valgrind's overhead doesn't pair well with io-threads so we\n@@ -645,7 +645,7 @@ jobs:\n     - name: testprep\n       run: |\n         sudo apt-get update\n-        sudo apt-get install tcl8.6 tclx valgrind g++ -y\n+        sudo apt-get install tcl8.6 tclx valgrind -y\n     - name: test\n       if: true && !contains(github.event.inputs.skiptests, 'redis')\n       run: ./runtest --valgrind --tags -iothreads --no-latency"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_6029a8995521084a/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_6029a8995521084a/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_6029a8995521084a/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_6029a8995521084a/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:03:25.555965+00:00"
+}

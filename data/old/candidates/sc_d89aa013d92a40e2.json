@@ -1,0 +1,3211 @@
+{
+  "candidate_id": "sc_d89aa013d92a40e2",
+  "occupation": "financial_analyst",
+  "archetype": "ipo_pricing",
+  "difficulty": "light",
+  "seed_id": "2eb2cc92c811a476",
+  "prompt": "You are an associate analyst at Marshfield Croft Partners, working under Managing Director Lin Wei-chen on a potential equity offering mandate for Home Depot. Lin needs a fully-linked DCF model to support a pitch deck the team is presenting to the client.\n\nStart with the attached HD_historical_financials.xlsx for context, but build your base year projections from the fiscal 2026 figures filed in the February 2026 10-K. Revenue of $164.68B, gross profit of $54.87B, operating income of $20.89B, and net income of $14.156B all flow from GAAP-reported numbers — use those as-is without adjustments. Diluted EPS came in at $14.23 and that's the reconciliation anchor for your equity value bridge.\n\nThe model needs an Assumptions tab where you source and document your WACC build (beta, risk-free rate, equity risk premium, and the company's capital structure), then a Projections tab with explicit revenue, operating income, and free cash flow schedules running at least five years. Every projected line should link back to a growth rate or margin assumption on the Assumptions tab — no hardcoded projection numbers. Derive D&A and capex sensibly given HD's profile as a mature big-box retailer with $1.389B in cash and $92.282B in total liabilities, but make sure you separate debt from total liabilities in the net debt calculation. Follow standard IB convention: unlevered FCF, mid-year discounting, and clean separation of operating versus non-operating items.\n\nBuild a Valuation tab that calculates implied enterprise value and equity value per share, with a toggle between perpetuity growth and exit multiple terminal value methods. Include a sensitivity table showing implied share price across WACC plus or minus 100bps and terminal growth rate plus or minus 50bps. Finally, pull comparable company multiples — EV/EBITDA and P/E — for at least four or five large-cap hardline and home improvement retailers and put them in a Comps tab.\n\nAll output goes in a single .xlsx workbook with tabs labeled Assumptions, Projections, Valuation, Comps, and Sensitivity. Format currency cells in USD with comma separators and no decimals on dollar figures; percentages to one decimal. The model needs to be presentation-ready with no circular references.",
+  "deliverable": {
+    "deliverable_id": "dcf_model",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The deliverable is provided as a single .xlsx file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named exactly 'Assumptions'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named exactly 'Projections'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named exactly 'Valuation'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named exactly 'Comps'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a tab named exactly 'Sensitivity'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The model identifies the target company as THE HOME DEPOT, INC. or Home Depot (ticker HD) in the Assumptions tab.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Base year revenue is set to $164,683,000,000 ($164.68B) in the Projections tab.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Base year gross profit is set to $54,865,000,000 ($54.87B).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Base year operating income is set to $20,890,000,000 ($20.89B).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Base year net income is set to $14,156,000,000 ($14.156B).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Base year total assets are set to $105,095,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Base year total liabilities are set to $92,282,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Base year stockholders' equity is set to $12,813,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Base year cash and cash equivalents is set to $1,389,000,000 ($1.389B).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Diluted EPS is set to $14.23 and referenced in the equity value per share reconciliation.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Selling, general and administrative expense is set to $30,702,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The WACC build on the Assumptions tab includes a beta input.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The WACC build on the Assumptions tab includes a risk-free rate input.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The WACC build on the Assumptions tab includes an equity risk premium input.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Assumptions tab documents the company's capital structure (equity weight and debt weight).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The calculated WACC on the Assumptions tab equals 0.0441 (4.41%) at cell Assumptions B32.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The terminal growth rate assumption is set to 0.02 (2.0%) at cell Assumptions B34.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The model projects revenue for at least 5 years beyond the base year.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Every projected revenue line item in the Projections tab is linked to a growth rate assumption on the Assumptions tab (no hardcoded revenue values).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Every projected operating expense or margin line item is linked to an assumption on the Assumptions tab (no hardcoded projection values).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The model includes an explicit operating income projection schedule.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The model includes an explicit free cash flow projection schedule.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The model uses unlevered free cash flow (FCFF) as the cash flow metric for valuation.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The model applies a mid-year discounting convention.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Depreciation and amortization is derived or estimated rather than zero or ignored.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Capex assumptions reflect HD's profile as a mature big-box retailer (reasonable reinvestment rate).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The net debt calculation distinguishes debt from total liabilities rather than using total liabilities as debt.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The net debt calculation accounts for cash and cash equivalents of $1,389,000,000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Terminal value calculation includes the perpetuity growth method.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Terminal value calculation includes the exit multiple method.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Valuation tab includes a toggle or switch mechanism to select between perpetuity growth and exit multiple terminal value methods.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Year 5 FCFF is $18,526.6 million at cell DCF F8.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "Implied enterprise value equals $707,465.7 million at cell Valuation B10.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "Implied equity value equals $616,572.7 million at cell Valuation B13.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "Implied equity value per share equals $616.57 at cell Valuation B15.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Valuation tab includes a sanity check reconciliation to diluted EPS of $14.23.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Sensitivity tab shows implied share price under varying WACC assumptions at plus or minus 100 basis points.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Sensitivity tab shows implied share price under varying terminal growth rate assumptions at plus or minus 50 basis points.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Comps tab includes comparable company multiples (EV/EBITDA and P/E) for at least 4 peer retailers in the hardline or home improvement sector.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Comparable companies selected are large-cap, investment-grade hardline or home improvement retailers.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All currency cells in the workbook are formatted in USD with comma separators.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Dollar figures throughout the workbook are displayed with no decimal places.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Percentage values throughout the workbook are displayed to one decimal place.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The model contains no circular references.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Operating income and non-operating items are cleanly separated in the model structure.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The model is presentation-ready with professional formatting suitable for a client pitch deck.",
+      "category": "style",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_d89aa013d92a40e2",
+    "occupation": "financial_analyst",
+    "deliverable_id": "dcf_model",
+    "archetype": "ipo_pricing",
+    "difficulty": "light",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:HD",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "THE HOME DEPOT, INC.",
+        "attrs": {
+          "ticker": "HD",
+          "sector": "retail",
+          "cik": "0000354950"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Marshfield Croft Partners",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Henrik Ådahl",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Marshfield Croft Partners"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Lin Wei-chen",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Marshfield Croft Partners"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-07",
+        "description": "HD filed PX14A6G",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-13",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-16",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 52871000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Revenues:2010-10-31"
+      },
+      {
+        "id": "fact_RevenueFromContractWithCustome",
+        "kind": "money",
+        "value": 164683000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:RevenueFromContractWithCustomerExcludingAssessedTax:2026-02-01"
+      },
+      {
+        "id": "fact_GrossProfit",
+        "kind": "money",
+        "value": 54865000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:GrossProfit:2026-02-01"
+      },
+      {
+        "id": "fact_OperatingIncomeLoss",
+        "kind": "money",
+        "value": 20890000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:OperatingIncomeLoss:2026-02-01"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 14156000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:NetIncomeLoss:2026-02-01"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 105095000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Assets:2026-02-01"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 92282000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:Liabilities:2026-02-01"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 12813000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:StockholdersEquity:2026-02-01"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 1389000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:CashAndCashEquivalentsAtCarryingValue:2026-02-01"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 14.23,
+        "unit": "USD/share",
+        "source": "EDGAR:HD:EarningsPerShareDiluted:2026-02-01"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 30702000000,
+        "unit": "USD",
+        "source": "EDGAR:HD:SellingGeneralAndAdministrativeExpense:2026-02-01"
+      }
+    ],
+    "explicit_requirements": [
+      "Build a fully-linked DCF model in Excel with explicit revenue, operating income, and free cash flow projection schedules for at least 5 years",
+      "Use the fiscal 2026 reported figures (FY ended Feb 2026) as the base year for all projections, with revenue starting from $164.68B",
+      "Source a current WACC using HD's beta, prevailing risk-free rate, and an appropriate equity risk premium; document all assumptions on a separate tab",
+      "Include terminal value calculation using both perpetuity growth and exit multiple methods, with a toggle between the two",
+      "Derive an implied enterprise value and equity value per share, reconciling to the diluted EPS of $14.23 as a sanity check",
+      "Build a sensitivity table showing implied share price under varying WACC (±100bps) and terminal growth rate (±50bps) assumptions",
+      "Pull comparable company multiples (EV/EBITDA, P/E) for at least 4-5 peer retailers and include them in a comps tab",
+      "All output must be in a single .xlsx workbook with clearly labeled tabs: Assumptions, Projections, Valuation, Comps, Sensitivity",
+      "Format all currency cells consistently in USD with proper comma separators and no decimals on dollar figures; percentages to one decimal",
+      "Link every projected line item back to a growth rate or margin assumption — no hardcoded projection values"
+    ],
+    "implicit_requirements": [
+      "Use HD's GAAP-reported operating income of $20.89B and net income of $14.156B as basis, not adjusted figures",
+      "D&A should be derived or estimated from the difference between operating cash flow and net income proxies if not directly available",
+      "Capex assumptions should reflect HD's historical reinvestment rate patterns as a mature big-box retailer",
+      "The model should follow standard IB DCF convention: unlevered FCF, mid-year discounting convention, and clean separation of operating vs. non-operating assets",
+      "Net debt calculation must account for the $1.389B cash position and total liabilities of $92.282B, but should distinguish debt from total liabilities",
+      "Comparable company selection should focus on large-cap, investment-grade hardline and home improvement retailers with similar margin profiles"
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Assumptions",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "DCF Model Assumptions",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Base-Year Financials (TTM, $M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 52871.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": -1994.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 30702.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "R&D",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "D&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 2643.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "CapEx",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 4229.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Cash",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": 1389.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Total Debt",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": 92282.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "Shares Outstanding (M)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": 1000.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "Growth & Margin Assumptions",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A15",
+              "value": "Revenue Growth",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B15",
+              "value": 0.038,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A16",
+              "value": "COGS % of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B16",
+              "value": -0.0377,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A17",
+              "value": "SG&A % of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B17",
+              "value": 0.5807,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A18",
+              "value": "R&D % of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B18",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A19",
+              "value": "D&A % of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B19",
+              "value": 0.05,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A20",
+              "value": "CapEx % of Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B20",
+              "value": 0.08,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A21",
+              "value": "Tax Rate",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B21",
+              "value": 0.21,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A22",
+              "value": "ΔWC % of ΔRevenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B22",
+              "value": 0.02,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A24",
+              "value": "WACC Components",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A25",
+              "value": "Risk-Free Rate",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B25",
+              "value": 0.0435,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A26",
+              "value": "Equity Risk Premium",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B26",
+              "value": 0.055,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A27",
+              "value": "Beta",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B27",
+              "value": 1.13,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A28",
+              "value": "Cost of Equity (Ke)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B28",
+              "value": null,
+              "formula": "=B25+B27*B26",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A29",
+              "value": "Pre-tax Cost of Debt (Kd)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B29",
+              "value": 0.045,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A30",
+              "value": "Weight of Debt (Wd)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B30",
+              "value": 0.878,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A31",
+              "value": "Weight of Equity (We)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B31",
+              "value": null,
+              "formula": "=1-B30",
+              "bold": false,
+              "italic": false,
+              "fill": "subtotal",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A32",
+              "value": "WACC",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B32",
+              "value": null,
+              "formula": "=B31*B28+B30*B29*(1-B21)",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A34",
+              "value": "Terminal Growth Rate",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B34",
+              "value": 0.02,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "input",
+              "number_format": "0.00%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 30.0,
+            "B": 16.0
+          }
+        },
+        {
+          "name": "Income Statement",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Income Statement Projection ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Base (TTM)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Year 1",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Year 2",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Year 3",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "Year 4",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G3",
+              "value": "Year 5",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 52871.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 54880.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": 56965.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": 59130.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": 61377.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G4",
+              "value": 63709.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "(-) COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": -1994.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": -2069.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": -2147.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": -2229.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": -2313.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G5",
+              "value": -2401.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=B4-B5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=C4-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=D4-D5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=E4-E5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=F4-F5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G6",
+              "value": null,
+              "formula": "=G4-G5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "(-) SG&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 30702.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 31868.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 33079.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": 34336.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": 35641.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G7",
+              "value": 36996.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "(-) R&D",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G8",
+              "value": 0.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "(-) D&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 2643.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 2744.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": 2848.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": 2956.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F9",
+              "value": 3068.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G9",
+              "value": 3185.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "EBIT",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": null,
+              "formula": "=B6-B7-B8-B9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": null,
+              "formula": "=C6-C7-C8-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": null,
+              "formula": "=D6-D7-D8-D9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E10",
+              "value": null,
+              "formula": "=E6-E7-E8-E9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F10",
+              "value": null,
+              "formula": "=F6-F7-F8-F9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G10",
+              "value": null,
+              "formula": "=G6-G7-G8-G9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "(-) Taxes",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": null,
+              "formula": "=MAX(B10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C11",
+              "value": null,
+              "formula": "=MAX(C10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D11",
+              "value": null,
+              "formula": "=MAX(D10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E11",
+              "value": null,
+              "formula": "=MAX(E10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F11",
+              "value": null,
+              "formula": "=MAX(F10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G11",
+              "value": null,
+              "formula": "=MAX(G10*Assumptions!$B$21,0)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "NOPAT",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": null,
+              "formula": "=B10-B11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C12",
+              "value": null,
+              "formula": "=C10-C11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D12",
+              "value": null,
+              "formula": "=D10-D11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E12",
+              "value": null,
+              "formula": "=E10-E11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F12",
+              "value": null,
+              "formula": "=F10-F11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "G12",
+              "value": null,
+              "formula": "=G10-G11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0,
+            "F": 14.0,
+            "G": 14.0
+          }
+        },
+        {
+          "name": "DCF",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Unlevered Free Cash Flow ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Year 1",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Year 2",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Year 3",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Year 4",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "Year 5",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "NOPAT",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "='Income Statement'!B12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "='Income Statement'!C12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "='Income Statement'!D12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "='Income Statement'!E12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "='Income Statement'!F12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "(+) D&A",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 2744.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 2848.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 2956.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": 3068.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": 3185.5,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "(-) CapEx",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 4390.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 4557.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": 4730.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": 4910.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": 5096.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "(-) Δ Working Capital",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 40.2,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 41.7,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 43.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": 44.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": 46.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Unlevered FCFF",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=B4+B5-B6-B7",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=C4+C5-C6-C7",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=D4+D5-D6-D7",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=E4+E5-E6-E7",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": null,
+              "formula": "=F4+F5-F6-F7",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Terminal Value",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": null,
+              "formula": "=F8*(1+Assumptions!$B$34)/(Assumptions!$B$32-Assumptions!$B$34)",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0,
+            "F": 14.0
+          }
+        },
+        {
+          "name": "Valuation",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "DCF Valuation ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Year",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "FCFF",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Discount Factor",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "PV of FCFF",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Year 1",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "='DCF'!B8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=1/(1+Assumptions!$B$32)^1",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0000",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4*C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Year 2",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "='DCF'!C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=1/(1+Assumptions!$B$32)^2",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0000",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5*C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Year 3",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "='DCF'!D8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=1/(1+Assumptions!$B$32)^3",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0000",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6*C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Year 4",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "='DCF'!E8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=1/(1+Assumptions!$B$32)^4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0000",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7*C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Year 5",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "='DCF'!F8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=1/(1+Assumptions!$B$32)^5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0000",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8*C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "PV of Terminal Value",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": null,
+              "formula": "='DCF'!B10*C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Enterprise Value",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": null,
+              "formula": "=SUM(D4:D8)+B9",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "(-) Total Debt",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": null,
+              "formula": "=Assumptions!B11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "(+) Cash",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": null,
+              "formula": "=Assumptions!B10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A13",
+              "value": "Equity Value",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B13",
+              "value": null,
+              "formula": "=B10-B11+B12",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "Shares Outstanding (M)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B14",
+              "value": null,
+              "formula": "=Assumptions!B12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A15",
+              "value": "Implied Value Per Share",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B15",
+              "value": null,
+              "formula": "=B13/B14",
+              "bold": true,
+              "italic": false,
+              "fill": "total",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 16.0,
+            "C": 16.0,
+            "D": 16.0
+          }
+        },
+        {
+          "name": "Sensitivity",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Sensitivity: Equity Value Per Share",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "WACC \\ g",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": 0.01,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": 0.015,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": 0.02,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": 0.025,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": 0.03,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": 0.0241,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=IF(B3<$A4,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+B3)/($A4-B3)/((1+$A4)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=IF(B3<$A5,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+B3)/($A5-B3)/((1+$A5)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=IF(B3<$A6,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+B3)/($A6-B3)/((1+$A6)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=IF(B3<$A7,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+B3)/($A7-B3)/((1+$A7)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "=IF(B3<$A8,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+B3)/($A8-B3)/((1+$A8)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": 0.0341,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=IF(C3<$A4,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+C3)/($A4-C3)/((1+$A4)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=IF(C3<$A5,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+C3)/($A5-C3)/((1+$A5)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=IF(C3<$A6,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+C3)/($A6-C3)/((1+$A6)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=IF(C3<$A7,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+C3)/($A7-C3)/((1+$A7)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=IF(C3<$A8,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+C3)/($A8-C3)/((1+$A8)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": 0.0441,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=IF(D3<$A4,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+D3)/($A4-D3)/((1+$A4)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=IF(D3<$A5,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+D3)/($A5-D3)/((1+$A5)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=IF(D3<$A6,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+D3)/($A6-D3)/((1+$A6)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=IF(D3<$A7,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+D3)/($A7-D3)/((1+$A7)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=IF(D3<$A8,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+D3)/($A8-D3)/((1+$A8)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": 0.0541,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=IF(E3<$A4,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+E3)/($A4-E3)/((1+$A4)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=IF(E3<$A5,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+E3)/($A5-E3)/((1+$A5)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=IF(E3<$A6,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+E3)/($A6-E3)/((1+$A6)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=IF(E3<$A7,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+E3)/($A7-E3)/((1+$A7)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": null,
+              "formula": "=IF(E3<$A8,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+E3)/($A8-E3)/((1+$A8)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": 0.0641,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=IF(F3<$A4,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+F3)/($A4-F3)/((1+$A4)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=IF(F3<$A5,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+F3)/($A5-F3)/((1+$A5)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=IF(F3<$A6,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+F3)/($A6-F3)/((1+$A6)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=IF(F3<$A7,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+F3)/($A7-F3)/((1+$A7)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": null,
+              "formula": "=IF(F3<$A8,'Valuation'!$B$13/'Valuation'!$B$14*('DCF'!$F$8*(1+F3)/($A8-F3)/((1+$A8)^5)+SUM('Valuation'!$D$4:$D$8))/'Valuation'!$B$14,\"N/A\")",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "$#,##0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 12.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0,
+            "F": 14.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_HD",
+          "filename": "HD_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for THE HOME DEPOT, INC. (HD)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                52772.6,
+                51713.9,
+                51040.1,
+                49374.6,
+                50488.0
+              ],
+              [
+                "COGS ($M)",
+                35777.7,
+                33963.9,
+                26914.1,
+                27357.7,
+                28899.0
+              ],
+              [
+                "Gross Profit ($M)",
+                24397.7,
+                18324.2,
+                23048.2,
+                19760.7,
+                17734.6
+              ],
+              [
+                "Operating Income ($M)",
+                18186.4,
+                10867.6,
+                17179.9,
+                13967.9,
+                13783.5
+              ],
+              [
+                "Net Income ($M)",
+                7696.9,
+                6599.9,
+                5637.7,
+                6248.1,
+                6996.7
+              ],
+              [
+                "D&A ($M)",
+                3042.7,
+                3604.8,
+                2903.9,
+                2774.5,
+                1860.3
+              ],
+              [
+                "CapEx ($M)",
+                7039.3,
+                5104.3,
+                5646.8,
+                5382.2,
+                6776.4
+              ],
+              [
+                "Shares Outstanding (M)",
+                28.6,
+                28.8,
+                39.7,
+                24.2,
+                42.3
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "WACC",
+          "value": 0.0441,
+          "tolerance": 0.001,
+          "location": "Assumptions B32"
+        },
+        {
+          "description": "Terminal Growth Rate",
+          "value": 0.02,
+          "tolerance": 0.001,
+          "location": "Assumptions B34"
+        },
+        {
+          "description": "Year 5 FCFF",
+          "value": 18526.6,
+          "tolerance": 0.5,
+          "location": "DCF F8"
+        },
+        {
+          "description": "Enterprise Value",
+          "value": 707465.7,
+          "tolerance": 1.0,
+          "location": "Valuation B10"
+        },
+        {
+          "description": "Equity Value",
+          "value": 616572.7,
+          "tolerance": 1.0,
+          "location": "Valuation B13"
+        },
+        {
+          "description": "Value Per Share",
+          "value": 616.57,
+          "tolerance": 0.01,
+          "location": "Valuation B15"
+        }
+      ],
+      "narrative_prompt": "You are an associate analyst at an investment bank. You have built a 5-year unlevered DCF model for THE HOME DEPOT, INC. (HD) based on its latest SEC filings.\n\nThe model includes:\n- Base-year financials from EDGAR XBRL\n- Revenue growth assumption of 3.8% (sector-typical for retail)\n- WACC of 4.41% derived from beta=1.13, Rf=4.35%, ERP=5.50%\n- Terminal growth of 2.00%\n\nWrite a one-page summary memo explaining the key assumptions and valuation conclusion. Be specific with numbers. Do NOT use AI hedging.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1141560297
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_HD",
+      "filename": "HD_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for THE HOME DEPOT, INC. (HD)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            52772.6,
+            51713.9,
+            51040.1,
+            49374.6,
+            50488.0
+          ],
+          [
+            "COGS ($M)",
+            35777.7,
+            33963.9,
+            26914.1,
+            27357.7,
+            28899.0
+          ],
+          [
+            "Gross Profit ($M)",
+            24397.7,
+            18324.2,
+            23048.2,
+            19760.7,
+            17734.6
+          ],
+          [
+            "Operating Income ($M)",
+            18186.4,
+            10867.6,
+            17179.9,
+            13967.9,
+            13783.5
+          ],
+          [
+            "Net Income ($M)",
+            7696.9,
+            6599.9,
+            5637.7,
+            6248.1,
+            6996.7
+          ],
+          [
+            "D&A ($M)",
+            3042.7,
+            3604.8,
+            2903.9,
+            2774.5,
+            1860.3
+          ],
+          [
+            "CapEx ($M)",
+            7039.3,
+            5104.3,
+            5646.8,
+            5382.2,
+            6776.4
+          ],
+          [
+            "Shares Outstanding (M)",
+            28.6,
+            28.8,
+            39.7,
+            24.2,
+            42.3
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:12:49.554289+00:00"
+}

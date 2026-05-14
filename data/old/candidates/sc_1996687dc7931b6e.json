@@ -1,0 +1,1082 @@
+{
+  "candidate_id": "sc_1996687dc7931b6e",
+  "occupation": "financial_analyst",
+  "archetype": "cost_overrun",
+  "difficulty": "hard",
+  "seed_id": "980db83b4a1ccd1b",
+  "prompt": "You are an associate analyst at Marshfield Croft Partners, working under Managing Director Lin Wei-chen in the firm's healthcare advisory group. UnitedHealth Group (UNH, CIK 0000731766) filed its most recent 8-K on May 11, 2026, and Lin has asked you to build a variance analysis workbook that will anchor our cost-overrun narrative for an upcoming client pitchbook. Your focus is UNH's Q1 2026 income statement and the controllable cost drivers pressuring operating margins.\n\nBuild the Excel workbook as follows:\n\n1. Pull Q1 2026 reported figures into a structured data sheet — Revenues of $111.721B, CostOfGoodsAndServicesSold of $12.823B, SellingGeneralAndAdministrativeExpense of $15.39B, OperatingIncomeLoss of $8.99B, and NetIncomeLoss of $6.28B — alongside prior-quarter and prior-year comparables sourced from the attached historical financials file (UNH_historical_financials.xlsx). All monetary values in USD millions, one decimal place.\n\n2. Build a variance calculation sheet with bridge tables that step from prior-period cost levels to current Q1 2026 levels, decomposing cost overruns into volume, price, and mix components where segment disclosures permit. Calculate gross margin variance (Revenues less CostOfGoodsAndServicesSold) and operating margin variance (OperatingIncomeLoss / Revenues), with a clear waterfall bridging the prior period to the current quarter.\n\n3. Express cost overruns as a percentage of Revenues. Flag any line item where the overrun exceeds 200 basis points relative to the trailing four-quarter average — label these as material deviations in red. Green-code favorable variances. Apply healthcare insurance sector-specific classifications, particularly medical loss ratio components, where UNH's segment data allows disaggregation.\n\n4. Link diluted EPS of $6.90/share back to the cost drivers in your variance decomposition. Present revenue growth rate, cost-to-revenue ratio change, and the EPS bridge on a summary dashboard tab formatted for direct pitchbook inclusion — clean enough for a non-technical board audience but with plain-language callout boxes explaining the key takeaways.\n\n5. Include a peer comparison stub tab with placeholder structure referencing sector benchmarks for cost-to-revenue ratios among healthcare insurers, and a notes tab documenting every assumption, data source, and any flagged anomalies (noting that the StockholdersEquity figure of $33.0B dates from June 2015 and should not be interpolated through the current period).\n\n6. Embed live formulas throughout rather than hardcoded values so the model supports scenario sensitivity. Every calculated cell must trace back to either a pinned fact from EDGAR filings or a clearly labeled assumption. Cross-reference trend consistency against UNH's historical filings and call out any one-time items that may be distorting the variance.\n\nThe workbook should be lightweight enough to perform cleanly in Excel 2016. Format for direct inclusion in the client pitchbook without further rework.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The deliverable is provided as a single .xlsx file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains a sheet named 'Actual vs Budget'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook contains a sheet named 'Summary'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains at least one additional sheet for notes or assumptions documentation.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a sheet dedicated to peer comparison stub with placeholder structure.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains a sheet for executive summary or dashboard.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "On the 'Actual vs Budget' sheet, cell B4 contains the value 111721.0 representing Revenues in USD millions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "On the 'Actual vs Budget' sheet, cell B6 contains the value 44688.4 representing Gross Profit in USD millions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes CostOfGoodsAndServicesSold of 12823.0 (USD millions) for Q1 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes SellingGeneralAndAdministrativeExpense of 15390.0 (USD millions) for Q1 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes OperatingIncomeLoss of 8990.0 (USD millions) for Q1 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes NetIncomeLoss of 6280.0 (USD millions) for Q1 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes Assets of 312644.0 (USD millions) from the Q1 2026 filing.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes Liabilities of 207325.0 (USD millions) from the Q1 2026 filing.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes CashAndCashEquivalentsAtCarryingValue of 28001.0 (USD millions) from Q1 2026.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook includes diluted EPS of 6.9 USD per share.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Gross margin variance is calculated as Revenues minus CostOfGoodsAndServicesSold.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Operating margin variance is calculated as OperatingIncomeLoss divided by Revenues.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The variance analysis compares Q1 2026 cost figures against prior-quarter benchmarks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The variance analysis compares Q1 2026 cost figures against prior-year benchmarks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Cost overruns are expressed as a percentage of Revenues.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis attempts to decompose variance into volume, price, and mix components.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Line items where cost overrun exceeds 200 basis points relative to trailing four-quarter average are flagged as material deviations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Material deviations are highlighted in red color coding.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Favorable variances are highlighted in green color coding.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The summary dashboard includes revenue growth rate metric.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The summary dashboard includes cost-to-revenue ratio change metric.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The summary dashboard includes diluted EPS variance linked to cost drivers.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The summary dashboard is formatted for direct pitchbook inclusion with clean layout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Plain-language callout boxes or explanations accompany key metrics in the summary.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The notes tab documents the assumption or anomaly that StockholdersEquity of 33020.0 (USD millions) dates from June 2015.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The notes tab explicitly states the StockholdersEquity figure should not be interpolated through the current period.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The notes tab documents all data sources used in the analysis.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The notes tab documents all assumptions made for missing data or benchmarks.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook cross-references findings against UNH historical SEC EDGAR filings (CIK 0000731766).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis identifies or attempts to identify any one-time items distorting the variance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Formulas are embedded throughout the workbook rather than hardcoded values where calculations are needed.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Every calculated cell traces back to either a pinned fact or a clearly labeled assumption.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All monetary figures are presented in USD millions with one decimal place.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook uses healthcare insurance sector-specific cost classifications where applicable.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes a bridge or waterfall table showing incremental contribution of each cost component.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The peer comparison stub references sector benchmarks for cost-to-revenue ratios among healthcare insurers.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The diluted EPS figure of 6.9 is linked back to cost drivers in the variance decomposition.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook identifies the target company as UnitedHealth Group Incorporated.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook references the ticker UNH for UnitedHealth Group.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The analyst or preparer is identified as Priya Doshi.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The managing director is identified as Lin Wei-chen.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The employer is identified as Marshfield Croft Partners.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook is lightweight enough to open and perform cleanly in Excel 2016.",
+      "category": "format",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_1996687dc7931b6e",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "cost_overrun",
+    "difficulty": "hard",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:UNH",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "UnitedHealth Group Incorporated",
+        "attrs": {
+          "ticker": "UNH",
+          "sector": "healthcare_insurance",
+          "cik": "0000731766"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Marshfield Croft Partners",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Priya Doshi",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Marshfield Croft Partners"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Lin Wei-chen",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Marshfield Croft Partners"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-11",
+        "description": "UNH filed 8-K",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-13",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-22",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 111721000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:Revenues:2026-03-31"
+      },
+      {
+        "id": "fact_CostOfGoodsAndServicesSold",
+        "kind": "money",
+        "value": 12823000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:CostOfGoodsAndServicesSold:2026-03-31"
+      },
+      {
+        "id": "fact_OperatingIncomeLoss",
+        "kind": "money",
+        "value": 8990000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:OperatingIncomeLoss:2026-03-31"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 6280000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:NetIncomeLoss:2026-03-31"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 312644000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:Assets:2026-03-31"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 207325000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:Liabilities:2026-03-31"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 33020000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:StockholdersEquity:2015-06-30"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 28001000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:CashAndCashEquivalentsAtCarryingValue:2026-03-31"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 6.9,
+        "unit": "USD/share",
+        "source": "EDGAR:UNH:EarningsPerShareDiluted:2026-03-31"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 15390000000,
+        "unit": "USD",
+        "source": "EDGAR:UNH:SellingGeneralAndAdministrativeExpense:2026-03-31"
+      }
+    ],
+    "explicit_requirements": [
+      "Produce a variance analysis Excel workbook comparing UNH's Q1 2026 CostOfGoodsAndServicesSold ($12.823B) and SellingGeneralAndAdministrativeExpense ($15.39B) against prior-quarter and prior-year benchmarks to quantify cost overruns as a percentage of Revenues ($111.721B).",
+      "Calculate and present gross margin variance (Revenues minus CostOfGoodsAndServicesSold) and operating margin variance (OperatingIncomeLoss divided by Revenues) with clear bridge from prior period to current period.",
+      "Isolate the impact of cost overruns on OperatingIncomeLoss ($8.99B) by decomposing variance into volume, price, and mix components where data permits.",
+      "Flag any line items where the cost overrun exceeds 200 basis points relative to the trailing four-quarter average, and label these as material deviations.",
+      "Include a summary dashboard tab with key metrics: revenue growth rate, cost-to-revenue ratio change, and diluted EPS variance ($6.9/share) linked to cost drivers.",
+      "Structure the workbook with separate tabs for raw data inputs, variance calculations, and executive summary, with all assumptions documented in a dedicated notes tab.",
+      "Cross-reference findings against UNH's historical SEC EDGAR filings (CIK 0000731766) to validate trend consistency and identify any one-time items distorting the variance.",
+      "Deliver the final workbook by 2026-05-22 end-of-day, formatted for direct inclusion in a client pitchbook without further rework."
+    ],
+    "implicit_requirements": [
+      "Use standard investment banking variance analysis format: waterfall charts or bridge tables showing incremental contribution of each cost component to total overrun.",
+      "All monetary figures must be in USD millions with one decimal place, consistent with UNH's filing conventions.",
+      "Apply healthcare insurance sector-specific cost classifications (e.g., medical loss ratio components) where UNH's segment disclosures permit disaggregation.",
+      "Maintain full audit trail: every calculated cell must trace back to a pinned fact or a clearly labeled assumption.",
+      "Use color coding (red/green) to highlight positive/negative variances per banking presentation standards.",
+      "Embed formulas rather than hardcoded values where possible to allow scenario sensitivity testing.",
+      "Include a peer comparison stub tab referencing sector benchmarks for cost-to-revenue ratios in healthcare insurance, even if populated with placeholder structure."
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 111721.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 110925.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 67032.6,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 66428.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 44688.4,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 40433.8,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 8990.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 9098.1,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 6280.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 5420.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D8)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_UNH",
+          "filename": "UNH_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for UnitedHealth Group Incorporated (UNH)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                90571.9,
+                102346.3,
+                125433.6,
+                139231.0,
+                163965.0
+              ],
+              [
+                "COGS ($M)",
+                46671.8,
+                58786.0,
+                84606.1,
+                77343.8,
+                99094.0
+              ],
+              [
+                "Gross Profit ($M)",
+                41390.8,
+                44571.8,
+                44631.4,
+                65872.1,
+                75311.8
+              ],
+              [
+                "Operating Income ($M)",
+                27387.2,
+                25932.3,
+                26798.6,
+                36052.9,
+                29673.2
+              ],
+              [
+                "Net Income ($M)",
+                22497.9,
+                17931.0,
+                17325.6,
+                21376.1,
+                22741.0
+              ],
+              [
+                "D&A ($M)",
+                6924.0,
+                4543.4,
+                4308.6,
+                11001.4,
+                6194.0
+              ],
+              [
+                "CapEx ($M)",
+                12762.4,
+                12459.4,
+                17900.0,
+                18846.6,
+                19024.1
+              ],
+              [
+                "Shares Outstanding (M)",
+                49.9,
+                30.1,
+                46.6,
+                43.6,
+                32.7
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "111721.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "44688.4",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for UnitedHealth Group Incorporated (UNH) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1002696752
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_UNH",
+      "filename": "UNH_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for UnitedHealth Group Incorporated (UNH)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            90571.9,
+            102346.3,
+            125433.6,
+            139231.0,
+            163965.0
+          ],
+          [
+            "COGS ($M)",
+            46671.8,
+            58786.0,
+            84606.1,
+            77343.8,
+            99094.0
+          ],
+          [
+            "Gross Profit ($M)",
+            41390.8,
+            44571.8,
+            44631.4,
+            65872.1,
+            75311.8
+          ],
+          [
+            "Operating Income ($M)",
+            27387.2,
+            25932.3,
+            26798.6,
+            36052.9,
+            29673.2
+          ],
+          [
+            "Net Income ($M)",
+            22497.9,
+            17931.0,
+            17325.6,
+            21376.1,
+            22741.0
+          ],
+          [
+            "D&A ($M)",
+            6924.0,
+            4543.4,
+            4308.6,
+            11001.4,
+            6194.0
+          ],
+          [
+            "CapEx ($M)",
+            12762.4,
+            12459.4,
+            17900.0,
+            18846.6,
+            19024.1
+          ],
+          [
+            "Shares Outstanding (M)",
+            49.9,
+            30.1,
+            46.6,
+            43.6,
+            32.7
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:35:42.236334+00:00"
+}

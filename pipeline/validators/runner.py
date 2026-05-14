@@ -6,7 +6,10 @@ import logging
 from dataclasses import dataclass, field
 
 from pipeline.scenario.task_candidate import TaskCandidate
+from pipeline.scenario.task_candidate import TaskCandidate
+from pipeline.seeds.base import Seed
 from pipeline.validators import ai_tells, citations, dates, financials
+from pipeline.validators.consistency import validate as consistency_validate
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +28,15 @@ class ValidatorReport:
         return " | ".join(out)
 
 
-def run_all(task: TaskCandidate, *, run_citations: bool = True) -> ValidatorReport:
+def run_all(task: TaskCandidate, seed: Seed | None = None, *, run_citations: bool = True) -> ValidatorReport:
     failures: dict[str, list[str]] = {}
     warnings: dict[str, list[str]] = {}
+
+    # Consistency check (seed-driven pipeline)
+    if seed is not None:
+        crep = consistency_validate(task, seed)
+        if not crep.passed:
+            failures["consistency"] = crep.failures
 
     ait = ai_tells.validate(task)
     if not ait.passed:

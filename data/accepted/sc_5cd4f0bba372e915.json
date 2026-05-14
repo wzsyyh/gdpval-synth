@@ -1,0 +1,985 @@
+{
+  "candidate_id": "sc_5cd4f0bba372e915",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "medium",
+  "seed_id": "5cd4f0bba372e915",
+  "prompt": "You are a senior software engineer on the FastAPI core team. The PR #15280, titled '✨ Add support for @app.vibe()', has been merged. The team lead has asked you to conduct a thorough code review of this PR to ensure it aligns with FastAPI's standards for documentation, code examples, and overall project coherence. Your review should assess the quality of the documentation, the provided code example, and the integration into the existing documentation structure. The goal is to provide constructive feedback that would help maintain the project's high-quality standards for developer experience.\n\nMaterials provided:\n- The full diff of PR #15280, which includes additions to documentation and a new code example file.\n\nTask requirements:\n1. Analyze the PR diff to understand the changes. The PR adds a new documentation page (`docs/en/docs/advanced/vibe.md`), a new code example file (`docs_src/vibe/tutorial001_py310.py`), and updates the site navigation in `docs/en/mkdocs.yml`.\n2. Write a formal code review document. Structure your review with the following sections:\n   - **Summary**: A concise overview of the PR's purpose and scope.\n   - **Technical Assessment**: Evaluate the technical accuracy and completeness of the new `@app.vibe()` feature as presented in the documentation. Discuss the code example provided.\n   - **Documentation Quality**: Assess the clarity, tone, and usefulness of the new `vibe.md` documentation page. Check for consistency with FastAPI's existing documentation style.\n   - **Integration & Build**: Review the changes to `mkdocs.yml` to ensure proper site navigation integration.\n   - **Potential Issues & Recommendations**: Identify any missing elements, inconsistencies, or areas for improvement. Consider aspects like error handling, real-world usage, and alignment with FastAPI's core principles of explicit typing and validation.\n   - **Overall Verdict**: Provide a final recommendation (e.g., Approve, Request Changes, or Needs Discussion) with a brief justification.\n3. Base all your comments strictly on the provided diff. Do not invent or assume information not present in the diff.\n4. Use specific line references and code snippets from the diff when making points.\n\nDeliverable specification:\n- Output a single Markdown file titled 'Code Review - PR #15280 @app.vibe()'.\n- Use the exact section headings listed above.\n- Include code blocks where you quote from the diff.\n- The review should be professional, concise, and actionable.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file titled exactly 'Code Review - PR #15280 @app.vibe()'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Technical Assessment'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Documentation Quality'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Integration & Build'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Potential Issues & Recommendations'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the exact heading '## Overall Verdict'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section identifies the PR number as #15280.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section correctly lists all three changed files: docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, and docs_src/vibe/tutorial001_py310.py.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Assessment section references the example file path docs_src/vibe/tutorial001_py310.py.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Assessment section notes the code example uses typing.Any for annotation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Assessment section identifies that the code example appears incomplete (e.g., missing function body).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Quality section references the documentation file path docs/en/docs/advanced/vibe.md.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Quality section describes the tone as playful or informal with emojis.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Quality section mentions the use of a '/// tip' block.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation Quality section lists at least one of the exaggerated benefit claims (e.g., 'No documentation', 'No serialization', 'No code reviews').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation Quality section references a code include directive or mention of the example file from the documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Integration & Build section references the configuration file path docs/en/mkdocs.yml.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration & Build section correctly states the line added to mkdocs.yml is '- advanced/vibe.md'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Integration & Build section notes the new page is added to the 'Advanced' section of the navigation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Integration & Build section identifies that the file is added after 'advanced/strict-content-type.md'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Potential Issues & Recommendations section identifies the incomplete code example as an issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Potential Issues & Recommendations section identifies the tone mismatch with FastAPI's typical documentation as an issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Potential Issues & Recommendations section mentions the merge date (2026-04-01) as relevant context.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Potential Issues & Recommendations section notes the PR lacks actual implementation code for the @app.vibe() decorator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overall Verdict section provides a clear recommendation (e.g., Approve, Request Changes, or Needs Discussion).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overall Verdict recommendation is 'Request Changes' with justification citing the identified issues.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Overall Verdict justification references FastAPI's core principles of explicit typing and validation as reasons for concern.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review includes at least one direct code snippet or line reference from the diff (e.g., @app.vibe('/vibe/') or hl[8:12]).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review maintains a professional and objective tone throughout, avoiding personal attacks or overly casual language.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown headings (##) for all major sections.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is structured into exactly six sections with the required headings.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Potential Issues section suggests adding a disclaimer about the satirical nature.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review notes that the documentation claims the decorator handles 'any HTTP method' and 'any payload'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review references the section anchor from the documentation like { #how-it-works }.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review identifies that the documentation uses the phrase 'vibe-driven development'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly states the highlight line reference in the documentation is hl[8:12].",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review notes the documentation's use of the phrase 'Embrace modern AI coding practices' or similar.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review identifies the function name in the example is implied but not fully shown in the diff.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Potential Issues section recommends that if the feature is real, it needs implementation, tests, and type stubs.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review notes the contrast between the feature's 'no validation' philosophy and FastAPI's core design.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review correctly identifies the app instance variable name as 'app'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review includes a statement about the potential for user confusion due to the satirical content.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review notes that the decorator is applied with the path '/vibe/'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions that the documentation page is titled 'Vibe Coding'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review states that the documentation is in the 'advanced' directory.",
+      "category": "reference",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_5cd4f0bba372e915",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:fastapi/fastapi#15280",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "15280",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#15280",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, docs_src/vibe/tutorial001_py310.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "docs_src/vibe/tutorial001_py310.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "Any",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "docs/en/docs/advanced/vibe.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "emojis",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "/// tip",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "No documentation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "{* ../../docs_src/vibe/tutorial001_py310.py *}",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "docs/en/mkdocs.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "- advanced/vibe.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "strict-content-type.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "incomplete",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "tone mismatch",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "2026-04-01",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "implementation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "Request Changes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "Summary",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "Technical Assessment",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "Documentation Quality",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "Integration & Build",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "Potential Issues & Recommendations",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "Overall Verdict",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "@app.vibe()",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "hl[8:12]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "{ #how-it-works }",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "explicit, well-typed, and validated APIs",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "15280",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#15280",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, docs_src/vibe/tutorial001_py310.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "docs_src/vibe/tutorial001_py310.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "Any",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "docs/en/docs/advanced/vibe.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "emojis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "/// tip",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "No documentation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "{* ../../docs_src/vibe/tutorial001_py310.py *}",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "docs/en/mkdocs.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "- advanced/vibe.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "strict-content-type.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "incomplete",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "tone mismatch",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "2026-04-01",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "implementation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "Request Changes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "incomplete",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "Summary",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "Technical Assessment",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "Documentation Quality",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "Integration & Build",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "Potential Issues & Recommendations",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "Overall Verdict",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "@app.vibe()",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "hl[8:12]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "{ #how-it-works }",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "explicit, well-typed, and validated APIs",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "State the PR number (#15280) and title",
+            "Describe the primary purpose: adding support for @app.vibe() decorator",
+            "List the files changed: docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, docs_src/vibe/tutorial001_py310.py",
+            "Mention the scope: documentation and code example addition"
+          ],
+          "paragraphs": [
+            "This review covers PR #15280, titled '✨ Add support for @app.vibe()'. The PR introduces documentation and a code example for a new `@app.vibe()` decorator in FastAPI. The changes consist of three files: a new Markdown documentation page (`docs/en/docs/advanced/vibe.md`), a new Python example file (`docs_src/vibe/tutorial001_py310.py`), and a one-line addition to the site navigation configuration (`docs/en/mkdocs.yml`). The PR's scope is limited to adding documentation and an example for the proposed feature."
+          ]
+        },
+        {
+          "heading": "Technical Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Examine the provided code example in docs_src/vibe/tutorial001_py310.py",
+            "Note the use of typing.Any and the @app.vibe decorator",
+            "Discuss the technical claims made in the documentation about the decorator's behavior",
+            "Evaluate the completeness of the example (e.g., missing function body, lack of endpoint path details)"
+          ],
+          "paragraphs": [
+            "The code example is located in `docs_src/vibe/tutorial001_py310.py`. It imports `Any` from `typing` and `FastAPI` from `fastapi`. It creates an app instance with `app = FastAPI()` and uses the `@app.vibe('/vibe/')` decorator on a function. The function itself appears to have no body in the provided diff snippet, as the diff cuts off after showing the decorator line. The documentation claims the decorator handles any HTTP method and any payload, and that the body should be annotated with `Any`. The example aligns with this description but is minimal. A complete example would typically show a function body or at least a `pass` statement. The line reference `hl[8:12]` in the documentation suggests the example is meant to be highlighted, but the diff does not show the full file content."
+          ]
+        },
+        {
+          "heading": "Documentation Quality",
+          "heading_level": 2,
+          "required_content": [
+            "Review the content of docs/en/docs/advanced/vibe.md",
+            "Assess the tone and style (playful, uses emojis)",
+            "Check for consistency with FastAPI's typical documentation (e.g., use of '/// tip' blocks, section anchors)",
+            "Evaluate the listed 'Benefits' for technical accuracy and helpfulness",
+            "Identify any potentially misleading or confusing statements"
+          ],
+          "paragraphs": [
+            "The new documentation page `docs/en/docs/advanced/vibe.md` uses a playful, informal tone with emojis (🤖, 🤷, ✨, 🧘, 😎) and phrases like 'Are you tired of all that data validation...' and 'just vibe'. This is a significant departure from FastAPI's usual professional, instructive tone. The page uses standard FastAPI documentation conventions like section anchors (`{ #how-it-works }`, `{ #vibe-coding }`) and a `/// tip` block. However, the content makes several exaggerated claims for comedic effect, such as listing 'No documentation', 'No serialization', and 'No code reviews' as benefits. While clearly satirical, this could be confusing for new users or those unfamiliar with the context. The page references the code example via include directives."
+          ]
+        },
+        {
+          "heading": "Integration & Build",
+          "heading_level": 2,
+          "required_content": [
+            "Examine the change to docs/en/mkdocs.yml",
+            "Verify the addition of the new page to the 'Advanced' section of the navigation",
+            "Check for proper indentation and placement in the YAML structure",
+            "Confirm the path matches the file location (advanced/vibe.md)"
+          ],
+          "paragraphs": [
+            "The change to `docs/en/mkdocs.yml` adds a single line: `- advanced/vibe.md`. This line is inserted after `advanced/strict-content-type.md` in the 'Advanced' section of the navigation. The indentation is consistent with the surrounding lines, and the path correctly corresponds to the location of the new documentation file. This ensures the new page will appear in the correct location in the built documentation site."
+          ]
+        },
+        {
+          "heading": "Potential Issues & Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Note that the code example appears incomplete (missing function body)",
+            "Highlight the significant tone mismatch with the rest of the FastAPI documentation",
+            "Suggest adding a disclaimer about the satirical nature of the feature",
+            "Point out the lack of implementation details or actual decorator code in the PR",
+            "Recommend considering the impact on the project's professional image",
+            "Suggest that if this is a real feature, it needs proper implementation and testing"
+          ],
+          "paragraphs": [
+            "Several issues arise from this PR. First, the code example file `docs_src/vibe/tutorial001_py310.py` appears to be truncated in the diff; the function definition is incomplete. Second, the documentation's tone is highly informal and satirical, which contrasts sharply with FastAPI's established documentation style. While humorous, it could be misleading if interpreted as a serious feature recommendation. There is no disclaimer clarifying that this is a joke or April Fools' content (the merge date is 2026-04-01). Third, the PR contains only documentation and an example stub; it does not include the actual implementation of the `@app.vibe()` decorator in the FastAPI codebase. If this is intended as a real feature, it would require corresponding code changes, tests, and type stubs. If it's a joke, it should be clearly marked as such to avoid confusion."
+          ]
+        },
+        {
+          "heading": "Overall Verdict",
+          "heading_level": 2,
+          "required_content": [
+            "Provide a clear recommendation: Request Changes",
+            "Justify based on incomplete example, tone inconsistency, and lack of implementation",
+            "State that the PR cannot be accepted in its current form for a serious project"
+          ],
+          "paragraphs": [
+            "**Request Changes**. The PR in its current form raises several concerns that prevent approval. The code example is incomplete, the documentation tone is inconsistent with the rest of the FastAPI project and could be confusing, and most critically, the PR lacks any actual implementation of the advertised `@app.vibe()` decorator. For a project like FastAPI that prides itself on explicit, well-typed, and validated APIs, merging documentation for a feature that contradicts these core principles without clear contextual framing is problematic. The changes should not be merged until these issues are addressed: the example must be complete, the tone must be reconciled with project standards or clearly marked as satirical, and if it's a real feature, the implementation must be included with tests."
+          ]
+        }
+      ],
+      "md_title": "Code Review - PR #15280 @app.vibe()",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The diff of PR #15280 from the fastapi/fastapi repository, showing the changes to files: docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, and docs_src/vibe/tutorial001_py310.py.",
+          "content_blueprint": {
+            "title": "The diff of PR #15280 from the fastapi/fastapi repository, showing the changes to files: docs/en/docs/advanced/vibe",
+            "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The Markdown file title includes the PR number 15280",
+          "value": "15280",
+          "tolerance": null,
+          "location": "Document title 'Code Review - PR #15280 @app.vibe()'"
+        },
+        {
+          "description": "The Summary section mentions the correct PR number",
+          "value": "#15280",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The Summary section lists all three changed files",
+          "value": "docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, docs_src/vibe/tutorial001_py310.py",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The Technical Assessment section references the example file path",
+          "value": "docs_src/vibe/tutorial001_py310.py",
+          "tolerance": null,
+          "location": "Technical Assessment section"
+        },
+        {
+          "description": "The Technical Assessment section notes the use of typing.Any",
+          "value": "Any",
+          "tolerance": null,
+          "location": "Technical Assessment section"
+        },
+        {
+          "description": "The Documentation Quality section references the documentation file path",
+          "value": "docs/en/docs/advanced/vibe.md",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Documentation Quality section identifies the use of emojis and playful tone",
+          "value": "emojis",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Documentation Quality section mentions the use of a '/// tip' block",
+          "value": "/// tip",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Documentation Quality section lists at least one exaggerated benefit claim",
+          "value": "No documentation",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Documentation Quality section references the code include directive",
+          "value": "{* ../../docs_src/vibe/tutorial001_py310.py *}",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Integration & Build section references the mkdocs.yml file path",
+          "value": "docs/en/mkdocs.yml",
+          "tolerance": null,
+          "location": "Integration & Build section"
+        },
+        {
+          "description": "The Integration & Build section states the line added is '- advanced/vibe.md'",
+          "value": "- advanced/vibe.md",
+          "tolerance": null,
+          "location": "Integration & Build section"
+        },
+        {
+          "description": "The Integration & Build section notes the file is added after strict-content-type.md",
+          "value": "strict-content-type.md",
+          "tolerance": null,
+          "location": "Integration & Build section"
+        },
+        {
+          "description": "The Potential Issues section identifies the incomplete example",
+          "value": "incomplete",
+          "tolerance": null,
+          "location": "Potential Issues & Recommendations section"
+        },
+        {
+          "description": "The Potential Issues section mentions the tone mismatch",
+          "value": "tone mismatch",
+          "tolerance": null,
+          "location": "Potential Issues & Recommendations section"
+        },
+        {
+          "description": "The Potential Issues section references the merge date",
+          "value": "2026-04-01",
+          "tolerance": null,
+          "location": "Potential Issues & Recommendations section"
+        },
+        {
+          "description": "The Potential Issues section states the PR lacks implementation code",
+          "value": "implementation",
+          "tolerance": null,
+          "location": "Potential Issues & Recommendations section"
+        },
+        {
+          "description": "The Overall Verdict recommends Request Changes",
+          "value": "Request Changes",
+          "tolerance": null,
+          "location": "Overall Verdict section, first paragraph"
+        },
+        {
+          "description": "The Overall Verdict provides justification citing identified issues",
+          "value": "incomplete",
+          "tolerance": null,
+          "location": "Overall Verdict section"
+        },
+        {
+          "description": "The document uses the exact section heading Summary",
+          "value": "Summary",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The document uses the exact section heading Technical Assessment",
+          "value": "Technical Assessment",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The document uses the exact section heading Documentation Quality",
+          "value": "Documentation Quality",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The document uses the exact section heading Integration & Build",
+          "value": "Integration & Build",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The document uses the exact section heading Potential Issues & Recommendations",
+          "value": "Potential Issues & Recommendations",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The document uses the exact section heading Overall Verdict",
+          "value": "Overall Verdict",
+          "tolerance": null,
+          "location": "Markdown heading level 2"
+        },
+        {
+          "description": "The Potential Issues section notes the decorator is called @app.vibe()",
+          "value": "@app.vibe()",
+          "tolerance": null,
+          "location": "Potential Issues & Recommendations section"
+        },
+        {
+          "description": "The Technical Assessment section notes the highlight line reference",
+          "value": "hl[8:12]",
+          "tolerance": null,
+          "location": "Technical Assessment or Documentation Quality section"
+        },
+        {
+          "description": "The Documentation Quality section references the section anchor",
+          "value": "{ #how-it-works }",
+          "tolerance": null,
+          "location": "Documentation Quality section"
+        },
+        {
+          "description": "The Overall Verdict section mentions FastAPI's core principles",
+          "value": "explicit, well-typed, and validated APIs",
+          "tolerance": null,
+          "location": "Overall Verdict section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1142828907
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The diff of PR #15280 from the fastapi/fastapi repository, showing the changes to files: docs/en/docs/advanced/vibe.md, docs/en/mkdocs.yml, and docs_src/vibe/tutorial001_py310.py.",
+      "content_blueprint": {
+        "title": "The diff of PR #15280 from the fastapi/fastapi repository, showing the changes to files: docs/en/docs/advanced/vibe",
+        "body": "# Seed Material: fastapi/fastapi#15280: ✨ Add support for `@app.vibe()`\nSource: github_issue_pr\nIdentifier: pr:fastapi/fastapi#15280\n\nRepository: fastapi/fastapi\nPR Number: #15280\nPR Title: ✨ Add support for `@app.vibe()`\nMerged At: 2026-04-01T16:16:25Z\nChanged Files: 5\nAdditions: +133, Deletions: -1\n\n## PR Description\n✨ Add support for `@app.vibe()`\n\n## Diff (first 3000 chars)\ndiff --git a/docs/en/docs/advanced/vibe.md b/docs/en/docs/advanced/vibe.md\nnew file mode 100644\nindex 0000000000000..766f3855b7392\n--- /dev/null\n+++ b/docs/en/docs/advanced/vibe.md\n@@ -0,0 +1,44 @@\n+# Vibe Coding { #vibe-coding }\n+\n+Are you tired of all that **data validation**, **documentation**, **serialization**, and all that **boring** stuff?\n+\n+Do you just want to **vibe**? 🎶\n+\n+**FastAPI** now supports a new `@app.vibe()` decorator that embraces **modern AI coding best practices**. 🤖\n+\n+## How It Works { #how-it-works }\n+\n+The `@app.vibe()` decorator is intended to receive **any HTTP method** (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.) and **any payload**.\n+\n+The body should be annotated with `Any`, because the request and the response would be... well... **anything**. 🤷\n+\n+The idea is that you would receive the payload and send it **directly** to an LLM provider, using a `prompt` to tell the LLM what to do, and return the response **as is**. No questions asked.\n+\n+You don't even need to write the body of the function. The `@app.vibe()` decorator does everything for you based on AI vibes:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py hl[8:12] *}\n+\n+## Benefits { #benefits }\n+\n+By using `@app.vibe()`, you get to enjoy:\n+\n+* **Freedom**: No data validation. No schemas. No constraints. Just vibes. ✨\n+* **Flexibility**: The request can be anything. The response can be anything. Who needs types anyway?\n+* **No documentation**: Why document your API when an LLM can figure it out? Auto-generated OpenAPI docs are *so* 2020.\n+* **No serialization**: Just pass the raw, unstructured data around. Serialization is for people who don't trust their LLMs.\n+* **Embrace modern AI coding practices**: Leave everything up to an LLM to decide. The model knows best. Always.\n+* **No code reviews**: There's no code to review. No PRs to approve. No comments to address. Embrace vibe coding fully, replace the theater of approving and merging vibe coded PRs that no one looks at with full proper vibes only.\n+\n+/// tip\n+\n+This is the ultimate **vibe-driven development** experience. You don't need to think about what your API does, just let the LLM handle it. 🧘\n+\n+///\n+\n+## Try It { #try-it }\n+\n+Go ahead, try it:\n+\n+{* ../../docs_src/vibe/tutorial001_py310.py *}\n+\n+...and see what happens. 😎\ndiff --git a/docs/en/mkdocs.yml b/docs/en/mkdocs.yml\nindex 4614194981b69..a84934f44c382 100644\n--- a/docs/en/mkdocs.yml\n+++ b/docs/en/mkdocs.yml\n@@ -197,6 +197,7 @@ nav:\n     - advanced/advanced-python-types.md\n     - advanced/json-base64-bytes.md\n     - advanced/strict-content-type.md\n+    - advanced/vibe.md\n   - fastapi-cli.md\n   - editor-support.md\n   - Deployment:\ndiff --git a/docs_src/vibe/tutorial001_py310.py b/docs_src/vibe/tutorial001_py310.py\nnew file mode 100644\nindex 0000000000000..4ec3d55552353\n--- /dev/null\n+++ b/docs_src/vibe/tutorial001_py310.py\n@@ -0,0 +1,12 @@\n+from typing import Any\n+\n+from fastapi import FastAPI\n+\n+app = FastAPI()\n+\n+\n+@app.vibe(\n+    \"/vibe/\","
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_5cd4f0bba372e915/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_5cd4f0bba372e915/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:43:47.312072+00:00"
+}

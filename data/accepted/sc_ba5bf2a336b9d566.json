@@ -1,0 +1,1100 @@
+{
+  "candidate_id": "sc_ba5bf2a336b9d566",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "medium",
+  "seed_id": "ba5bf2a336b9d566",
+  "prompt": "You are a senior performance engineer on the NumPy core team. The team is reviewing PR #22315, which vectorizes quicksort for 16-bit and 64-bit dtypes using AVX512. This change introduces a new submodule dependency, modifies CI configurations, reorganizes sorting code into separate header files, and adds a meson build option to disable SIMD optimizations. Your manager has asked you to produce a formal code review document that evaluates the PR's technical approach, performance implications, build system changes, and potential risks.\n\nMaterials provided:\n- PR #22315 diff showing changes across 19 files with +390/-941 lines\n- PR description with benchmark results showing 16-bit int speedup of 17x and float64 speedup of ~10x\n- Benchmark table comparing before/after ratios for various dtypes and array patterns\n\nTask requirements:\n1. Analyze the performance claims: verify the benchmark ratios provided in the PR description for key dtypes (int16, int64, float64) and identify which array patterns show the most significant improvements\n2. Evaluate the build system changes: review the addition of the x86-simd-sort submodule, changes to azure-pipelines.yml and azure-steps-windows.yml for submodule fetching, and the new `disable-simd-optimizations` meson option\n3. Assess the code reorganization: examine the renaming from `x86-qsort.dispatch.cpp` to `simd_qsort.dispatch.cpp` and the restructuring of AVX512 code into separate header files\n4. Identify potential risks: consider maintainability of the submodule dependency, cross-platform compatibility, and the impact of the SIMD disable flag\n5. Provide a structured review with clear sections for each analysis area\n\nDeliverable specification:\n- Output as a Markdown file titled 'Code Review - PR #22315 AVX512 Quicksort Vectorization'\n- Include the following sections: Summary, Performance Analysis, Build System Changes, Code Organization, Risk Assessment, Recommendations\n- Use code blocks for specific references to file changes (e.g., `.gitmodules`, `azure-pipelines.yml`)\n- Reference specific benchmark ratios from the PR description (e.g., int16 ordered: 0.48 ratio, float64 random: 0.14 ratio)\n- Keep technical tone appropriate for a senior engineering review",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted document is a Markdown file with the exact title 'Code Review - PR #22315 AVX512 Quicksort Vectorization'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Summary' section that references PR #22315.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section states the primary performance claim of 17x speedup for int16 arrays.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section mentions the approximately 10x speedup for float64 arrays.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the benchmark processor as Tigerlake i7-1165G7.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the scope of changes: 19 changed files with 390 additions and 941 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a 'Performance Analysis' section with specific benchmark ratios.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the int16 ordered array ratio of 0.48.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the int16 reversed array ratio of 0.31.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the float64 sorted_block(1000) ratio of 0.18.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the float64 sorted_block(100) ratio of 0.14.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the float64 worst-case ratio of 0.15.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Performance Analysis section references the int64 random array ratio of 0.15.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Performance Analysis section references the int64 reversed array ratio of 0.65.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a 'Build System Changes' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Build System Changes section mentions the x86-simd-sort submodule repository.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Build System Changes section mentions the submodule path 'numpy/core/src/npysort/x86-simd-sort'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Build System Changes section references the CI display name 'Fetch submodules'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Build System Changes section mentions the meson option 'disable-simd-optimizations'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Build System Changes section mentions the compiler flag '-DNPY_DISABLE_OPTIMIZATION'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a 'Code Organization' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Code Organization section mentions the renaming from 'x86-qsort.dispatch.cpp' to 'simd_qsort.dispatch.cpp'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Code Organization section mentions the addition of 'float16' to the benchmark suite.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Code Organization section references the benchmark file 'benchmarks/benchmarks/bench_function_base.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a 'Risk Assessment' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section discusses submodule maintenance concerns.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section discusses cross-platform compatibility issues.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section mentions the magnitude of code changes (941 deletions, 390 additions).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a 'Recommendations' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section suggests a submodule management strategy.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section suggests expanded test coverage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section mentions documenting SIMD optimization requirements.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the .gitmodules file change in the Build System Changes section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references azure-pipelines.yml in the Build System Changes section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references azure-steps-windows.yml in the Build System Changes section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references numpy/core/meson.build in the Build System Changes section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Performance Analysis section correctly interprets that lower ratios indicate greater performance improvement (e.g., 0.14 ratio means approximately 86% faster).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies AVX512-SKX for 64-bit sorting and AVX512-ICL for 16-bit sorting in the Summary or Performance Analysis.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions Intel as the author of the x86-simd-sort submodule.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section mentions the performance inconsistencies that may arise from disabling SIMD optimizations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section suggests version pinning for the submodule.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses appropriate technical terminology throughout (e.g., 'vectorization', 'SIMD', 'AVX512').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document contains fabricated benchmark ratios not present in the PR description (e.g., inventing ratios for int32 or uint32 that are not in the provided table).",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document omits any of the six required sections: Summary, Performance Analysis, Build System Changes, Code Organization, Risk Assessment, Recommendations.",
+      "category": "completeness",
+      "is_penalty": true
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the 11th Generation processor family for the benchmark results.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the AVX512 code has been reformatted into separate header files.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the benchmark function 'Sort.time_sort' in the Performance Analysis section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly notes that the sorted_block patterns show the most dramatic improvements for int64 arrays.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that the worst-case scenario improved from 94.5ms to 14.2ms.",
+      "category": "data",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_ba5bf2a336b9d566",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:numpy/numpy#22315",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "22315",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "17x",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "10x",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "390",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "941",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "Tigerlake i7-1165G7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "0.48",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "0.31",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "0.18",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "0.14",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "0.15",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "0.65",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "x86-simd-sort",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "numpy/core/src/npysort/x86-simd-sort",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Fetch submodules",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "disable-simd-optimizations",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "-DNPY_DISABLE_OPTIMIZATION",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "simd_qsort.dispatch.cpp",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "x86-qsort.dispatch.cpp",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "float16",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "benchmarks/benchmarks/bench_function_base.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "azure-pipelines.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "azure-steps-windows.yml",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "numpy/core/meson.build",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "Summary",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "Performance Analysis",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Build System Changes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "Code Organization",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "Risk Assessment",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "Recommendations",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "22315",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "17x",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "10x",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "19",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "390",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "941",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "Tigerlake i7-1165G7",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "0.48",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "0.31",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "0.18",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "0.14",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "0.15",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "0.15",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "0.65",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "x86-simd-sort",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "numpy/core/src/npysort/x86-simd-sort",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "Fetch submodules",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "disable-simd-optimizations",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "-DNPY_DISABLE_OPTIMIZATION",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "simd_qsort.dispatch.cpp",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "x86-qsort.dispatch.cpp",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "float16",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "benchmarks/benchmarks/bench_function_base.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "azure-pipelines.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "azure-steps-windows.yml",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "numpy/core/meson.build",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Summary",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "Performance Analysis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "Build System Changes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "Code Organization",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "Risk Assessment",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "Recommendations",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Overview of PR purpose and scope",
+            "Key technical approach (AVX512 vectorization)",
+            "Primary performance claims (17x for int16, 10x for float64)"
+          ],
+          "paragraphs": [
+            "PR #22315 implements AVX512-based vectorized quicksort for 16-bit and 64-bit data types in NumPy's sorting infrastructure. The changes target AVX512-SKX for 64-bit sorting and AVX512-ICL for 16-bit sorting, delivering significant performance improvements for common NumPy operations.",
+            "The primary performance claims indicate a 17x speedup for int16 arrays and approximately 10x improvement for float64 arrays when compared to the standard library sort implementation. These improvements were benchmarked on an 11th Generation Tigerlake i7-1165G7 processor.",
+            "The PR encompasses 19 changed files with 390 additions and 941 deletions, indicating substantial reorganization of the sorting infrastructure alongside the new SIMD optimizations."
+          ]
+        },
+        {
+          "heading": "Performance Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Verification of benchmark ratios for key dtypes",
+            "Analysis of improvement patterns across array distributions",
+            "Specific ratio references from the benchmark table"
+          ],
+          "paragraphs": [
+            "The benchmark results demonstrate consistent improvements across all tested data types and array distributions. For int16 arrays, the ratios show dramatic improvement: ordered arrays improved from 70.6μs to 33.9μs (0.48 ratio), while reversed arrays improved from 113μs to 34.8μs (0.31 ratio).",
+            "Float64 arrays show particularly strong improvements for sorted patterns: sorted_block(1000) improved from 386μs to 70.3μs (0.18 ratio), and sorted_block(100) improved from 518μs to 80.8μs (0.14 ratio). The worst-case scenario shows improvement from 94.5ms to 14.2ms (0.15 ratio).",
+            "Int64 arrays exhibit similar patterns: random arrays improved from 537μs to 80.8μs (0.15 ratio), while reversed arrays improved from 119μs to 77.7μs (0.65 ratio). The sorted_block patterns show the most dramatic improvements, with ratios between 0.15 and 0.25."
+          ]
+        },
+        {
+          "heading": "Build System Changes",
+          "heading_level": 2,
+          "required_content": [
+            "Analysis of x86-simd-sort submodule addition",
+            "CI configuration changes for submodule fetching",
+            "New meson option for disabling SIMD optimizations"
+          ],
+          "paragraphs": [
+            "The PR introduces a new git submodule dependency on `x86-simd-sort` from Intel, added to `.gitmodules` at path `numpy/core/src/npysort/x86-simd-sort`. This adds an external dependency that must be fetched during build processes.",
+            "CI configurations in both `azure-pipelines.yml` and `azure-steps-windows.yml` have been updated to include a `git submodule update --init` step with display name 'Fetch submodules'. This ensures the submodule is properly initialized during continuous integration builds.",
+            "A new meson build option `disable-simd-optimizations` has been added to `numpy/core/meson.build`. When enabled, this adds `-DNPY_DISABLE_OPTIMIZATION` to static library compiler flags and `compile_args: disable_simd_optimizations` to the core dependency declaration, providing a mechanism to disable SIMD optimizations entirely."
+          ]
+        },
+        {
+          "heading": "Code Organization",
+          "heading_level": 2,
+          "required_content": [
+            "File renaming and restructuring",
+            "Header file organization",
+            "Benchmark suite updates"
+          ],
+          "paragraphs": [
+            "The sorting code has been reorganized with significant file movements. The primary dispatch file has been renamed from `x86-qsort.dispatch.cpp` to `simd_qsort.dispatch.cpp` in the source multiarray files list, reflecting the more general SIMD approach rather than x86-specific naming.",
+            "AVX512 sorting code has been extracted into separate header files and placed in a dedicated folder, as mentioned in the PR description. This separation improves code organization and potentially enables better compiler optimizations for the vectorized sorting algorithms.",
+            "The benchmark suite in `benchmarks/benchmarks/bench_function_base.py` has been updated to include `float16` in the list of tested data types, expanding the coverage to include the 16-bit floating point type that benefits from the new AVX512-ICL optimizations."
+          ]
+        },
+        {
+          "heading": "Risk Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Submodule maintenance concerns",
+            "Cross-platform compatibility",
+            "Optimization disable flag implications"
+          ],
+          "paragraphs": [
+            "The addition of the `x86-simd-sort` submodule introduces a maintenance dependency on Intel's repository. Any upstream changes, bug fixes, or compatibility issues will require coordinated updates, and the submodule must be properly managed across development environments and CI systems.",
+            "Cross-platform compatibility is a concern since the AVX512 optimizations are x86-specific. The `disable-simd-optimizations` flag provides an escape hatch for platforms without AVX512 support, but this may create performance inconsistencies across different architectures and compiler configurations.",
+            "The substantial code reorganization (941 deletions, 390 additions) suggests significant refactoring. While the performance gains are impressive, the magnitude of changes increases the risk of introducing subtle regressions in edge cases or less-common usage patterns that may not be fully covered by the existing test suite."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Submodule management strategy",
+            "Testing and validation approach",
+            "Documentation and compatibility guidance"
+          ],
+          "paragraphs": [
+            "Establish a clear policy for updating the x86-simd-sort submodule, including version pinning and compatibility testing procedures. Consider adding integration tests that specifically validate the SIMD sorting implementations against the standard library results.",
+            "Expand the test coverage to include more edge cases for the newly vectorized data types, particularly for int16 and float64 with various array distributions. The benchmark suite should be updated to include float16 performance tracking alongside the existing int16 metrics.",
+            "Document the SIMD optimization requirements and provide clear guidance for users on platforms without AVX512 support. The disable flag should be well-documented with examples of when it might be appropriate to use, and its performance implications should be clearly communicated in release notes."
+          ]
+        }
+      ],
+      "md_title": "Code Review - PR #22315 AVX512 Quicksort Vectorization",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #22315 diff showing all file changes",
+          "content_blueprint": {
+            "title": "PR #22315 diff showing all file changes",
+            "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description with benchmark results and ratios",
+          "content_blueprint": {
+            "title": "PR description with benchmark results and ratios",
+            "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "Benchmark comparison table with before/after times and ratios",
+          "content_blueprint": {
+            "title": "Benchmark comparison table with before/after times and ratios",
+            "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number referenced in document",
+          "value": "22315",
+          "tolerance": null,
+          "location": "Title and Summary section"
+        },
+        {
+          "description": "Int16 speedup claim",
+          "value": "17x",
+          "tolerance": null,
+          "location": "Summary section performance claims"
+        },
+        {
+          "description": "Float64 speedup claim",
+          "value": "10x",
+          "tolerance": null,
+          "location": "Summary section performance claims"
+        },
+        {
+          "description": "Changed files count",
+          "value": "19",
+          "tolerance": null,
+          "location": "Summary section scope description"
+        },
+        {
+          "description": "Additions count",
+          "value": "390",
+          "tolerance": null,
+          "location": "Summary section scope description"
+        },
+        {
+          "description": "Deletions count",
+          "value": "941",
+          "tolerance": null,
+          "location": "Summary section scope description"
+        },
+        {
+          "description": "Benchmark processor mentioned",
+          "value": "Tigerlake i7-1165G7",
+          "tolerance": null,
+          "location": "Summary section performance claims"
+        },
+        {
+          "description": "Int16 ordered array ratio",
+          "value": "0.48",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Int16 reversed array ratio",
+          "value": "0.31",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Float64 sorted_block(1000) ratio",
+          "value": "0.18",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Float64 sorted_block(100) ratio",
+          "value": "0.14",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Float64 worst-case ratio",
+          "value": "0.15",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Int64 random array ratio",
+          "value": "0.15",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Int64 reversed array ratio",
+          "value": "0.65",
+          "tolerance": null,
+          "location": "Performance Analysis section"
+        },
+        {
+          "description": "Submodule repository mentioned",
+          "value": "x86-simd-sort",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Submodule path",
+          "value": "numpy/core/src/npysort/x86-simd-sort",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "CI display name for submodule fetch",
+          "value": "Fetch submodules",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Meson option name",
+          "value": "disable-simd-optimizations",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Compiler flag for SIMD disable",
+          "value": "-DNPY_DISABLE_OPTIMIZATION",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Renamed dispatch file",
+          "value": "simd_qsort.dispatch.cpp",
+          "tolerance": null,
+          "location": "Code Organization section"
+        },
+        {
+          "description": "Original dispatch file name",
+          "value": "x86-qsort.dispatch.cpp",
+          "tolerance": null,
+          "location": "Code Organization section"
+        },
+        {
+          "description": "Added data type to benchmarks",
+          "value": "float16",
+          "tolerance": null,
+          "location": "Code Organization section"
+        },
+        {
+          "description": "Benchmark file modified",
+          "value": "benchmarks/benchmarks/bench_function_base.py",
+          "tolerance": null,
+          "location": "Code Organization section"
+        },
+        {
+          "description": "Azure pipelines file modified",
+          "value": "azure-pipelines.yml",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Azure steps windows file modified",
+          "value": "azure-steps-windows.yml",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Meson build file location",
+          "value": "numpy/core/meson.build",
+          "tolerance": null,
+          "location": "Build System Changes section"
+        },
+        {
+          "description": "Expected section: Summary",
+          "value": "Summary",
+          "tolerance": null,
+          "location": "Document structure"
+        },
+        {
+          "description": "Expected section: Performance Analysis",
+          "value": "Performance Analysis",
+          "tolerance": null,
+          "location": "Document structure"
+        },
+        {
+          "description": "Expected section: Build System Changes",
+          "value": "Build System Changes",
+          "tolerance": null,
+          "location": "Document structure"
+        },
+        {
+          "description": "Expected section: Code Organization",
+          "value": "Code Organization",
+          "tolerance": null,
+          "location": "Document structure"
+        },
+        {
+          "description": "Expected section: Risk Assessment",
+          "value": "Risk Assessment",
+          "tolerance": null,
+          "location": "Document structure"
+        },
+        {
+          "description": "Expected section: Recommendations",
+          "value": "Recommendations",
+          "tolerance": null,
+          "location": "Document structure"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1658752461
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #22315 diff showing all file changes",
+      "content_blueprint": {
+        "title": "PR #22315 diff showing all file changes",
+        "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description with benchmark results and ratios",
+      "content_blueprint": {
+        "title": "PR description with benchmark results and ratios",
+        "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "Benchmark comparison table with before/after times and ratios",
+      "content_blueprint": {
+        "title": "Benchmark comparison table with before/after times and ratios",
+        "body": "# Seed Material: numpy/numpy#22315: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nSource: github_issue_pr\nIdentifier: pr:numpy/numpy#22315\n\nRepository: numpy/numpy\nPR Number: #22315\nPR Title: ENH: Vectorize quicksort for 16-bit and 64-bit dtype using AVX512\nMerged At: 2023-02-15T12:01:17Z\nChanged Files: 19\nAdditions: +390, Deletions: -941\n\n## PR Description\nThis patch adds AVX512 based 64-bit on AVX512-SKX and 16-bit sorting on AVX512-ICL. All the AVX512 sorting code has been reformatted as a separate header files and put in a separate folder. The AVX512 64-bit sorting is nearly 10x faster and AVX512 16-bit sorting is nearly 16x faster when compared to `std::sort`. ~~Still working on running NumPy benchmarks to get exact benchmark numbers~~\r\n\r\n16-bit int sped up by **17x** and float64 by nearly **10x** for random arrays. Benchmarked on a 11th Gen Tigerlake i7-1165G7. \r\n\r\n```\r\n      before           after         ratio\r\n     [41b6ac0e]       [2b384ac6]\r\n     <main>           <avxsort> \r\n-        44.2±1μs       41.8±0.5μs     0.95  bench_function_base.Sort.time_sort('quick', 'float32', ('sorted_block', 100))\r\n-      39.7±0.1μs      37.1±0.02μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 1000))\r\n-        45.7±3μs       42.6±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'float32', ('random',))\r\n-      39.8±0.1μs       37.1±0.4μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('random',))\r\n-     39.1±0.03μs      36.4±0.03μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 100))\r\n-      39.9±0.1μs       37.1±0.2μs     0.93  bench_function_base.Sort.time_sort('quick', 'int32', ('reversed',))\r\n-      39.4±0.2μs       36.3±0.2μs     0.92  bench_function_base.Sort.time_sort('quick', 'int32', ('ordered',))\r\n-     40.6±0.03μs       37.1±0.3μs     0.91  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 100))\r\n-      46.4±0.7μs       41.8±0.4μs     0.90  bench_function_base.Sort.time_sort('quick', 'float32', ('ordered',))\r\n-      40.5±0.4μs       36.4±0.1μs     0.90  bench_function_base.Sort.time_sort('quick', 'int32', ('sorted_block', 10))\r\n-        42.5±1μs      37.5±0.08μs     0.88  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 1000))\r\n-        42.4±1μs       36.8±0.4μs     0.87  bench_function_base.Sort.time_sort('quick', 'uint32', ('ordered',))\r\n-        43.4±3μs       37.4±0.2μs     0.86  bench_function_base.Sort.time_sort('quick', 'uint32', ('sorted_block', 10))\r\n-        44.5±1μs         38.0±1μs     0.85  bench_function_base.Sort.time_sort('quick', 'uint32', ('reversed',))\r\n-        81.7±4μs       67.9±0.2μs     0.83  bench_function_base.Sort.time_sort('quick', 'float64', ('ordered',))\r\n-        45.7±1μs       37.6±0.2μs     0.82  bench_function_base.Sort.time_sort('quick', 'uint32', ('random',))\r\n-       119±0.6μs       77.7±0.2μs     0.65  bench_function_base.Sort.time_sort('quick', 'int64', ('reversed',))\r\n-         136±5μs       67.1±0.3μs     0.49  bench_function_base.Sort.time_sort('quick', 'float64', ('reversed',))\r\n-     70.6±0.03μs      33.9±0.07μs     0.48  bench_function_base.Sort.time_sort('quick', 'int16', ('ordered',))\r\n-         113±1μs       34.8±0.1μs     0.31  bench_function_base.Sort.time_sort('quick', 'int16', ('reversed',))\r\n-         325±9μs      80.9±0.07μs     0.25  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 1000))\r\n-         452±8μs         85.7±4μs     0.19  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 100))\r\n-         386±5μs       70.3±0.6μs     0.18  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 1000))\r\n-         460±5μs         82.0±3μs     0.18  bench_function_base.Sort.time_sort('quick', 'int64', ('sorted_block', 10))\r\n-      94.5±0.5ms       14.2±0.4ms     0.15  bench_function_base.Sort.time_sort_worst\r\n-        537±10μs         80.8±2μs     0.15  bench_function_base.Sort.time_sort('quick', 'int64', ('random',))\r\n-        518±10μs         73.9±3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 100))\r\n-        533±20μs       74.5±0.3μs     0.14  bench_function_base.Sort.time_sort('quick', 'float64', ('sorted_block', 10))\r\n-        70.3±1μs       8.54±0.2μs     0.12  bench_function_base.Sort.time_sort('\n\n## Diff (first 3000 chars)\ndiff --git a/.gitmodules b/.gitmodules\nindex 1ea274daf3b9..d849a3caf5c2 100644\n--- a/.gitmodules\n+++ b/.gitmodules\n@@ -4,3 +4,6 @@\n [submodule \"numpy/core/src/umath/svml\"]\n \tpath = numpy/core/src/umath/svml\n \turl = https://github.com/numpy/SVML.git\n+[submodule \"numpy/core/src/npysort/x86-simd-sort\"]\n+\tpath = numpy/core/src/npysort/x86-simd-sort\n+\turl = https://github.com/intel/x86-simd-sort\ndiff --git a/azure-pipelines.yml b/azure-pipelines.yml\nindex 18b72f49081c..7657ab87f996 100644\n--- a/azure-pipelines.yml\n+++ b/azure-pipelines.yml\n@@ -184,6 +184,9 @@ stages:\n     - script: /bin/bash -c \"! vulture . --min-confidence 100 --exclude doc/,numpy/distutils/ | grep 'unreachable'\"\n       displayName: 'Check for unreachable code paths in Python modules'\n \n+    - script: git submodule update --init\n+      displayName: 'Fetch submodules'\n+\n     # prefer usage of clang over gcc proper\n     # to match likely scenario on many user mac machines\n     - script: python setup.py build -j 4 build_src --verbose-cfg install\ndiff --git a/azure-steps-windows.yml b/azure-steps-windows.yml\nindex 318f4639880d..a147ffd7ab6d 100644\n--- a/azure-steps-windows.yml\n+++ b/azure-steps-windows.yml\n@@ -1,4 +1,6 @@\n steps:\n+- script: git submodule update --init\n+  displayName: 'Fetch submodules'\n - task: UsePythonVersion@0\n   inputs:\n     versionSpec: $(PYTHON_VERSION)\ndiff --git a/benchmarks/benchmarks/bench_function_base.py b/benchmarks/benchmarks/bench_function_base.py\nindex 2e44ff76b6b2..cc37bef3994b 100644\n--- a/benchmarks/benchmarks/bench_function_base.py\n+++ b/benchmarks/benchmarks/bench_function_base.py\n@@ -248,7 +248,7 @@ class Sort(Benchmark):\n         # In NumPy 1.17 and newer, 'merge' can be one of several\n         # stable sorts, it isn't necessarily merge sort.\n         ['quick', 'merge', 'heap'],\n-        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16'],\n+        ['float64', 'int64', 'float32', 'uint32', 'int32', 'int16', 'float16'],\n         [\n             ('random',),\n             ('ordered',),\ndiff --git a/numpy/core/meson.build b/numpy/core/meson.build\nindex 27d7ab851e1d..eea31faace96 100644\n--- a/numpy/core/meson.build\n+++ b/numpy/core/meson.build\n@@ -453,6 +453,11 @@ if cc.get_id() == 'msvc'\n      staticlib_cflags +=  '-d2VolatileMetadata-'\n    endif\n endif\n+# TODO: change to \"feature\" option in meson_options.txt? See\n+# https://mesonbuild.com/Build-options.html#build-options\n+if get_option('disable-simd-optimizations')\n+  staticlib_cflags += '-DNPY_DISABLE_OPTIMIZATION'\n+endif\n \n npy_math_internal_h = custom_target(\n   output: 'npy_math_internal.h',\n@@ -594,7 +599,8 @@ np_core_dep = declare_dependency(\n     '.',\n     'include',\n     'src/common',\n-  ]\n+  ],\n+  compile_args: disable_simd_optimizations\n )\n \n \n@@ -718,7 +724,8 @@ src_multiarray = [\n   'src/multiarray/usertypes.c',\n   'src/multiarray/vdot.c',\n   src_file.process('src/common/npy_sort.h.src'),\n-  'src/npysort/x86-qsort.dispatch.cpp',\n+  'src/npysort/simd_qsort.dispatch.cpp',\n+  'src/npys"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_ba5bf2a336b9d566/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_ba5bf2a336b9d566/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_ba5bf2a336b9d566/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_ba5bf2a336b9d566/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:04:02.055761+00:00"
+}

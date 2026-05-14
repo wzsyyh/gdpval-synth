@@ -1,0 +1,773 @@
+{
+  "candidate_id": "sc_5adc5a5885383956",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "5adc5a5885383956",
+  "prompt": "You are a senior software engineer on the psf/requests core team. The team is preparing to release version 2.26.0, which will incorporate the major dependency change from PR #5797 (Switch LGPL'd chardet for MIT licensed charset_normalizer). Your task is to write a technical design document for this change to serve as the authoritative reference for release notes, internal documentation, and to assist in writing a blog post announcement.\n\nMaterials provided:\n- The full diff for PR #5797, which shows the code changes across 10 files (+119, -27 lines), including changes to .gitignore, HISTORY.md, docs/user/advanced.rst, and requests/__init__.py.\n- The PR description, which outlines the motivation (license ambiguity for downstream projects bundling requests, particularly due to LGPL licensing), the implementation strategy (use charset_normalizer as default for Python3, chardet as fallback if installed, new `[use_chardet_on_py3]` extra), and references to historical discussions.\n\nTask requirements:\n1.  **Overview Section**: Explain the motivation for the change. Reference the specific license concern (LGPL vs. MIT) and the impact on downstream projects that bundle requests, citing the example from the PR description.\n2.  **Implementation Details Section**: Describe the technical changes. Detail the new dependency resolution logic for Python3 vs. Python2, the fallback mechanism if chardet is installed, and the new pip extra `[use_chardet_on_py3]`.\n3.  **User Impact and Migration Section**: Outline how the change affects users. Explain the default behavior for new Python3 installations, how existing users with chardet installed are handled, and how users can explicitly choose chardet via the new extra. Reference the documentation update in docs/user/advanced.rst.\n4.  **Documentation Updates Section**: Summarize the specific documentation changes made in the PR. List the files modified (.gitignore, HISTORY.md, docs/user/advanced.rst) and describe the nature of the changes to each.\n5.  **Testing and Compatibility Section**: Based on the PR description, outline the testing implications. Note that the \"have chardet\" path is still tested for Python2, and mention the author's non-exhaustive tests showing charset_normalizer detects the same encoding in all cases tested.\n\nDeliverable specification:\n- Output a Markdown file titled 'Design Doc - psf/requests#5797 Dependency Change'.\n- Use a clean, professional structure with the sections outlined above.\n- Include specific references to files, extra names, and library names from the provided material.\n- Do not invent new technical details or code not present in the diff or PR description.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file with the title 'Design Doc - psf/requests#5797 Dependency Change'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the heading 'Overview: Motivation for Dependency Change' (or a very close semantic equivalent).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section explains that the LGPL license of the previous dependency ('chardet') creates ambiguity for downstream projects that bundle requests.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the Apache Software Foundation's policy against depending on LGPL-licensed code as a motivating factor.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section references the example of a project similar to docker-compose that bundles dependencies.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the goal is to use the MIT-licensed 'charset_normalizer' to remove license ambiguity.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the heading 'Implementation Details' (or a very close semantic equivalent).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section states that 'charset_normalizer' is the default dependency for Python 3.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section states that 'chardet' remains the mandatory dependency for Python 2.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section explains the fallback mechanism: if 'chardet' is installed, it will be used instead of 'charset_normalizer' on Python 3.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section describes the new pip extra '[use_chardet_on_py3]' for explicitly installing chardet.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the heading 'User Impact and Migration Path' (or a very close semantic equivalent).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The User Impact section explains the default behavior for new Python 3 installations of requests.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The User Impact section explains that existing environments with 'chardet' already installed will continue to use it.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The User Impact section mentions the '[use_chardet_on_py3]' extra as an explicit choice mechanism.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The User Impact section references the updated documentation in 'docs/user/advanced.rst'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the heading 'Documentation and Configuration Updates' (or a very close semantic equivalent).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section lists '.gitignore' as a modified file.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section lists 'HISTORY.md' as a modified file.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section lists 'docs/user/advanced.rst' as a modified file.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section describes the .gitignore additions, specifically mentioning IDE files like IntelliJ/PyCharm (e.g., '.idea', '*.iml').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section describes the HISTORY.md entry as a changelog for the dependency switch.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Documentation section describes the update to 'docs/user/advanced.rst' regarding encoding detection.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section with the heading 'Testing and Compatibility' (or a very close semantic equivalent).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing section notes that the 'have chardet' code path is still tested, as mentioned in the PR description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing section references the author's non-exhaustive tests showing charset_normalizer detected the same encoding in all cases tested.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing section discusses compatibility strategy, such as the multi-layered approach of default, fallback, and opt-in.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the number of changed files in the PR as 10.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the line additions and deletions as +119/-27 (or very close).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the PR number '#5797' at least once.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses a professional, technical tone appropriate for a design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is structured with clear headings and paragraphs.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The document invents technical details or code snippets not present in the provided diff or PR description (e.g., specific function names, logic branches not mentioned).",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -1,
+      "criterion": "The document incorrectly states that 'charset_normalizer' supports Python 2.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section mentions the modification to 'requests/__init__.py' as part of the change.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that the `[use_chardet_on_py3]` extra is documented in HISTORY.md.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The User Impact section clearly explains that the change is designed to be transparent and non-disruptive for most users.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document avoids time pressure language (e.g., 'ASAP', 'urgent', 'deadline').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not use AI hedging language (e.g., 'Please ensure', 'It is important that').",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section effectively synthesizes the licensing problem from the PR description into a coherent technical motivation.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown headings (## for section titles).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the permissive nature of the MIT license compared to LGPL.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing and Compatibility section implicitly addresses potential user concerns about the switch.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document's structure logically flows from motivation to implementation to impact to details to testing.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the source repository as 'psf/requests'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing section mentions the Python 2 path specifically in the context of testing.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Documentation and Configuration Updates section provides specific examples of the .gitignore additions (e.g., '.idea', '*.iml').",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that the PR includes changes to multiple file types (.gitignore, .md, .rst, .py).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The User Impact section references the updated 'Encodings' section in the docs.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is free of major grammatical or typographical errors.",
+      "category": "style",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_5adc5a5885383956",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:psf/requests#5797",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Doc - psf/requests#5797 Dependency Change",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "LGPL",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "MIT",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "docker-compose",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "Apache Software Foundation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "charset_normalizer",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "chardet",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "[use_chardet_on_py3]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "docs/user/advanced.rst",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": ".gitignore",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "HISTORY.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": ".idea",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "#5797",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Doc - psf/requests#5797 Dependency Change",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "LGPL",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "MIT",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "docker-compose",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "Apache Software Foundation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "charset_normalizer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "chardet",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "chardet",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "[use_chardet_on_py3]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "charset_normalizer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "chardet",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "docs/user/advanced.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": ".gitignore",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "HISTORY.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "docs/user/advanced.rst",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": ".idea",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "HISTORY.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "chardet",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "charset_normalizer",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "#5797",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Overview: Motivation for Dependency Change",
+          "heading_level": 2,
+          "required_content": [
+            "Explain LGPL license ambiguity for bundling projects",
+            "Reference Apache Software Foundation restriction on LGPL dependencies",
+            "Cite example of docker-compose bundling scenario",
+            "State goal of moving to MIT-licensed charset_normalizer"
+          ],
+          "paragraphs": [
+            "The primary motivation for switching the default character encoding detection library in the requests package is to resolve license ambiguity for downstream projects. The previous dependency, `chardet`, is licensed under the GNU Lesser General Public License (LGPL). While this license is compatible with requests' own Apache 2.0 license for direct use, it creates significant uncertainty for projects that bundle requests—and by extension, its dependencies—into a single binary or distribution artifact.",
+            "A key example highlighted is the case of projects similar to docker-compose, which bundle their dependencies. Including an LGPL-licensed module like `chardet` makes it unclear whether the resulting artifact must also be released under the LGPL, potentially imposing copyleft obligations that conflict with the project's licensing strategy. This ambiguity is not merely theoretical; the PR description notes that the Apache Software Foundation (ASF) currently does not allow its projects to depend on LGPL-licensed code, a policy that directly impacts any ASF project using requests as a dependency.",
+            "To eliminate this license ambiguity, this change replaces `chardet` with `charset_normalizer` as the default encoding detection library for Python 3. `charset_normalizer` is released under the permissive MIT license, which imposes no such copyleft requirements. This switch ensures that projects bundling requests can do so with complete clarity regarding their licensing obligations, removing a significant barrier to adoption in corporate and foundation environments with strict licensing policies."
+          ]
+        },
+        {
+          "heading": "Implementation Details",
+          "heading_level": 2,
+          "required_content": [
+            "Describe Python3 default to charset_normalizer",
+            "Describe Python2 continued mandatory use of chardet",
+            "Explain fallback mechanism if chardet is installed",
+            "Detail the new '[use_chardet_on_py3]' pip extra"
+          ],
+          "paragraphs": [
+            "The implementation maintains backward compatibility while shifting the default dependency for Python 3 users. The core change is in the dependency resolution logic within `requests/__init__.py`. For Python 3, `charset_normalizer` becomes the mandatory dependency, replacing `chardet`. However, `chardet` is not removed as an option; the code retains an 'escape hatch' where if `chardet` is already installed in the user's environment, it will be used instead of `charset_normalizer`.",
+            "For Python 2, which `charset_normalizer` does not support, `chardet` remains the sole and mandatory dependency. This ensures no disruption for users still on the legacy Python version. The logic can be summarized as: for Python 3, prefer `charset_normalizer` but use `chardet` if it is present; for Python 2, require `chardet`.",
+            "To provide users with a straightforward way to explicitly choose the LGPL-licensed library, a new pip install extra has been added: `[use_chardet_on_py3]`. Installing requests with `pip install \"requests[use_chardet_on_py3]\"` will install `chardet` as a dependency, overriding the default behavior for Python 3. This extra is documented in the updated HISTORY.md file."
+          ]
+        },
+        {
+          "heading": "User Impact and Migration Path",
+          "heading_level": 2,
+          "required_content": [
+            "Explain default behavior for new Python3 installs",
+            "Explain behavior for existing users with chardet installed",
+            "Describe the escape hatch / explicit choice via extra",
+            "Reference updated documentation in docs/user/advanced.rst"
+          ],
+          "paragraphs": [
+            "For most users, this change will be transparent. New Python 3 installations of requests will automatically receive `charset_normalizer` as the encoding detection backend, requiring no action. Existing Python 3 environments where `chardet` is already installed will continue to use `chardet`, as the implementation checks for its presence first. This 'escape hatch' ensures zero disruption for users who have a working setup or who rely on specific `chardet` behaviors.",
+            "Users who explicitly want to use `chardet` on Python 3, for example to resolve a hypothetical compatibility issue with `charset_normalizer`, can do so by installing the `[use_chardet_on_py3]` extra. This is a supported migration path and provides a clear, documented alternative to the default behavior.",
+            "The user-facing documentation for encoding detection has been significantly updated in `docs/user/advanced.rst` to reflect this change. The new text explains the dual-library support, the fallback logic, the licensing distinction, and the use of the optional extra. This ensures that the change in underlying dependency is clearly communicated to advanced users who consult the documentation."
+          ]
+        },
+        {
+          "heading": "Documentation and Configuration Updates",
+          "heading_level": 2,
+          "required_content": [
+            "List modified files from the diff",
+            "Describe .gitignore additions for IDE files",
+            "Describe HISTORY.md changelog entry",
+            "Describe docs/user/advanced.rst update"
+          ],
+          "paragraphs": [
+            "The pull request includes updates to several project files to support, document, and facilitate the dependency switch. These changes are part of the complete deliverable for this feature.",
+            "First, the `.gitignore` file was expanded to include common IDE and environment file patterns, specifically adding entries for IntelliJ/PyCharm (`.idea`, `*.iml`) and `.python-version`. This is a housekeeping improvement to keep repository noise low for developers using those tools.",
+            "Second, the `HISTORY.md` changelog file received a new entry under the 'dev' section. It documents the dependency switch, explains the rationale (license ambiguity), describes the fallback behavior for existing `chardet` installations, and specifies the name of the new pip extra: `[use_chardet_on_py3]`. This entry serves as the formal record for the release notes.",
+            "Third, the core documentation in `docs/user/advanced.rst` under the 'Encodings' section was revised. The previous text only mentioned `chardet`. The new text explains that `charset_normalizer` (MIT-licensed) or `chardet` (LGPL-licensed) will be used, details the default preference for `charset_normalizer` on Python 3, notes that `chardet` is still mandatory for Python 2, and describes the `[use_chardet_on_py3]` extra for explicit control."
+          ]
+        },
+        {
+          "heading": "Testing and Compatibility",
+          "heading_level": 2,
+          "required_content": [
+            "Note Python2 chardet path remains tested",
+            "Reference author's non-exhaustive tests for charset_normalizer",
+            "Implicitly address potential compatibility concerns"
+          ],
+          "paragraphs": [
+            "The change was designed with test coverage and compatibility in mind. According to the PR description, the existing code path for environments where `chardet` is installed—the \"have chardet\" path—is still exercised in the test suite. This is crucial for ensuring that the fallback mechanism on Python 3 and the mandatory path on Python 2 continue to function correctly after the dependency change.",
+            "The author of the PR conducted non-exhaustive tests comparing the output of `charset_normalizer` and `chardet`. In every case tested, `charset_normalizer` detected the same encoding as `chardet`. While not a formal guarantee of 100% behavioral parity, this testing provides confidence that for the vast majority of real-world use cases, the switch should be seamless and not introduce regressions in response encoding detection.",
+            "The compatibility strategy is therefore multi-layered: it defaults to the new, license-clean library for new setups, gracefully falls back to the old library for existing setups to avoid breaking changes, and provides an explicit opt-in mechanism for users who need it. This approach minimizes risk while achieving the primary licensing objective."
+          ]
+        }
+      ],
+      "md_title": "Design Doc - psf/requests#5797 Dependency Change",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "The document title is correct",
+          "value": "Design Doc - psf/requests#5797 Dependency Change",
+          "tolerance": null,
+          "location": "Document title"
+        },
+        {
+          "description": "Mentions LGPL license concern for chardet",
+          "value": "LGPL",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Mentions MIT license for charset_normalizer",
+          "value": "MIT",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "References bundling scenario example (docker-compose)",
+          "value": "docker-compose",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Notes ASF restriction on LGPL dependencies",
+          "value": "Apache Software Foundation",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "States charset_normalizer is the new default for Python3",
+          "value": "charset_normalizer",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "States chardet remains mandatory for Python2",
+          "value": "chardet",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Describes fallback if chardet is installed on Python3",
+          "value": "chardet",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Mentions the new pip extra for Python3",
+          "value": "[use_chardet_on_py3]",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Explains behavior for new Python3 installations",
+          "value": "charset_normalizer",
+          "tolerance": null,
+          "location": "User Impact and Migration Path section"
+        },
+        {
+          "description": "Explains behavior for existing environments with chardet installed",
+          "value": "chardet",
+          "tolerance": null,
+          "location": "User Impact and Migration Path section"
+        },
+        {
+          "description": "References updated documentation in docs/user/advanced.rst",
+          "value": "docs/user/advanced.rst",
+          "tolerance": null,
+          "location": "User Impact and Migration Path section"
+        },
+        {
+          "description": "Lists .gitignore as a modified file",
+          "value": ".gitignore",
+          "tolerance": null,
+          "location": "Documentation and Configuration Updates section"
+        },
+        {
+          "description": "Lists HISTORY.md as a modified file",
+          "value": "HISTORY.md",
+          "tolerance": null,
+          "location": "Documentation and Configuration Updates section"
+        },
+        {
+          "description": "Lists docs/user/advanced.rst as a modified file",
+          "value": "docs/user/advanced.rst",
+          "tolerance": null,
+          "location": "Documentation and Configuration Updates section"
+        },
+        {
+          "description": "Describes .gitignore additions for IDE files",
+          "value": ".idea",
+          "tolerance": null,
+          "location": "Documentation and Configuration Updates section"
+        },
+        {
+          "description": "Notes HISTORY.md contains changelog entry for dependency switch",
+          "value": "HISTORY.md",
+          "tolerance": null,
+          "location": "Documentation and Configuration Updates section"
+        },
+        {
+          "description": "Notes Python2 chardet path remains tested",
+          "value": "chardet",
+          "tolerance": null,
+          "location": "Testing and Compatibility section"
+        },
+        {
+          "description": "References author's non-exhaustive tests for charset_normalizer",
+          "value": "charset_normalizer",
+          "tolerance": null,
+          "location": "Testing and Compatibility section"
+        },
+        {
+          "description": "Mentions the PR number correctly",
+          "value": "#5797",
+          "tolerance": null,
+          "location": "Throughout document"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1693137543
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_5adc5a5885383956/design_doc.md",
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T19:08:52.839411+00:00"
+}

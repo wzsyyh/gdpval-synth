@@ -1,0 +1,845 @@
+{
+  "candidate_id": "sc_c437edd65fbd998c",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "medium",
+  "seed_id": "c437edd65fbd998c",
+  "prompt": "You are a senior software engineer on the Elasticsearch platform team. The engineering leadership has merged PR #30539, which changes the default number of primary shards from five to one. While this change addresses a common oversharding problem, it has introduced significant test instability across the codebase. Your team lead has asked you to perform a targeted code review to assess the risk and identify any potential issues with the test modifications.\n\nMaterials provided:\n- The diff of PR #30539 from the elastic/elasticsearch repository, which includes changes to 43 files with 232 additions and 157 deletions. Key areas of modification include build scripts, REST test frameworks, and numerous test classes.\n- The PR description, which outlines the motivation for the change (to reduce oversharding), the strategy for handling different user scenarios (index templates, split API), and the approach for maintaining test coverage (randomizing to two shards in REST tests, adding a 'default_shards' feature skip).\n\nYour task is to produce a formal code review document focusing on the changes made to the test infrastructure. Your review must:\n1. Analyze the implementation of the 'default_shards' feature skip mechanism in `buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy` and its implications for documentation tests.\n2. Examine the changes to numeric assertions in `client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java`, specifically the updated expected values for variance, skewness, and kurtosis in the `testSearchWithMatrixStats` method. Explain why these specific floating-point values needed adjustment due to the shard count change.\n3. Identify and evaluate the strategy used to maintain coverage for multi-shard scenarios as described in the PR (the global index template that randomly sets the default to two shards). Discuss the trade-offs of this approach.\n4. Propose any follow-up actions or monitoring needed to ensure the stability of the test suite post-merge.\n\nYour deliverable must be a Markdown document titled 'Code Review - PR #30539 Test Impact Analysis'. Structure it with the following sections: Summary, Infrastructure Changes Analysis, Assertion Adjustment Analysis, Multi-Shard Coverage Strategy, and Recommended Follow-Up Actions. Use code blocks to reference specific diff hunks.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file titled 'Code Review - PR #30539 Test Impact Analysis'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review contains a 'Summary' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review contains an 'Infrastructure Changes Analysis' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review contains an 'Assertion Adjustment Analysis' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review contains a 'Multi-Shard Coverage Strategy' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review contains a 'Recommended Follow-Up Actions' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section states the primary purpose of the PR is to change the default shard count from 5 to 1.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section notes the scope of changes (43 files, 232 additions, 157 deletions).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Infrastructure Changes Analysis section identifies the change in RestTestsFromSnippetsTask.groovy.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Infrastructure Changes Analysis section explains that the 'default_shards' feature skip is added to the list of skip features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Infrastructure Changes Analysis section explains the purpose of the 'default_shards' feature skip: to allow tests to skip the random template that sets shards to 2.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Infrastructure Changes Analysis section states that documentation tests will always run with the default number of shards (one).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Assertion Adjustment Analysis section identifies the test method testSearchWithMatrixStats in SearchIT.java.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Assertion Adjustment Analysis section lists the changed expected variance value for 'num' (from 1830 to 1830.0000000000002).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Assertion Adjustment Analysis section lists the changed expected skewness value for 'num' (from 0.09340198804973046 to 0.09340198804973039).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Assertion Adjustment Analysis section lists the changed expected kurtosis value for 'num2' (from 1.3517561983471074 to 1.3517561983471071).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Assertion Adjustment Analysis section provides a technical explanation for why these values changed (different shard allocation affecting floating-point precision in aggregation calculations).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Multi-Shard Coverage Strategy section describes the strategy from the PR: randomizing default shard count to 2 in REST tests via a global index template.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Multi-Shard Coverage Strategy section explains the purpose: to maintain coverage for multi-shard issues.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Multi-Shard Coverage Strategy section discusses the trade-off: increased test variability vs. potential for flakiness.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommended Follow-Up Actions section suggests monitoring for increased test flakiness related to shard count.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommended Follow-Up Actions section recommends verifying the stability of numeric assertion adjustments.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommended Follow-Up Actions section proposes documenting the 'default_shards' feature skip.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review uses a code block to reference the change in RestTestsFromSnippetsTask.groovy.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review uses a code block to reference the changes in SearchIT.java.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the PR number 30539.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the repository elastic/elasticsearch.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the date the PR was merged (May 14, 2018).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly interprets that the 'default_shards' feature skip is applied to all docs tests to avoid complications in writing documentation.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly states that the numeric tolerance in the test checks is 0d.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies that the PR description mentions the split API as an alternative to reindexing for non-time-based indices.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies the purpose of randomizing shards to 2 as covering issues with multiple shards.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies that the random shard count is applied via a global index template.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review's technical tone is professional and appropriate for a senior engineering review.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review's Recommended Follow-Up Actions are actionable and specific.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly explains the trade-off of the multi-shard coverage strategy (non-determinism vs. coverage).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies that the assertion changes are due to changes in data distribution across shards affecting floating-point precision.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review references the file path buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy correctly.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review references the file path client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java correctly.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review lists the three changed floating-point values (variance, skewness, kurtosis).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review states that the PR is part of addressing a common problem of oversharding.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review's structure follows the requested sections: Summary, Infrastructure Changes Analysis, Assertion Adjustment Analysis, Multi-Shard Coverage Strategy, Recommended Follow-Up Actions.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review mentions that for users with time-based indices, different defaults can be managed with index templates (from PR description).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review mentions that for users with non-time-based indices, the split API can be used instead of reindexing (from PR description).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review's Multi-Shard Coverage Strategy section notes that the randomization happens 'rarely' as per the PR description.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review uses a professional and technical writing style without spelling or grammatical errors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The review contains any fabricated file names, function names, or PR numbers not present in the provided material.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_c437edd65fbd998c",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:elastic/elasticsearch#30539",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "30539",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "May 14, 2018",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "232",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "157",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "default_shards",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "testSearchWithMatrixStats",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "1830",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "1830.0000000000002",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "0.09340198804973046",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "0.09340198804973039",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "1.3517561983471074",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "1.3517561983471071",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "to ensure that we still have coverage for issues that could arise from multiple shards",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "global index template",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "to avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 30539,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "May 14, 2018",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 43,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 232,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 157,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 5,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 1,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "default_shards",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "testSearchWithMatrixStats",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 1830,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 1830.0000000000002,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 0.09340198804973046,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 0.09340198804973039,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": 1.3517561983471074,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 1.3517561983471071,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "to ensure that we still have coverage for issues that could arise from multiple shards",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": 2,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "global index template",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "to avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "money",
+        "value": 0,
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "State the primary purpose of PR #30539 (changing default shard count from 5 to 1)",
+            "Note the scope of changes (43 files, 232 additions, 157 deletions)",
+            "Summarize the key risk area being reviewed (test infrastructure modifications)"
+          ],
+          "paragraphs": [
+            "This review analyzes the test infrastructure changes introduced by PR #30539 in the elastic/elasticsearch repository. The PR, merged on May 14, 2018, changes the default number of primary shards from five to one to mitigate common oversharding issues. While the core change is straightforward, it necessitated modifications across 43 files with 232 additions and 157 deletions, primarily to adjust test expectations and maintain coverage.",
+            "The primary risk lies in the modifications to the test framework and individual test assertions. The PR introduces a 'default_shards' feature skip to manage randomized shard counts in REST tests, which has direct implications for documentation tests and may affect test determinism. Additionally, changes to floating-point assertions in integration tests, such as those in SearchIT.java, require careful validation to ensure they are accurate and not masking deeper issues.",
+            "This review will focus on three key areas: the implementation of the feature skip in the documentation build task, the necessity and accuracy of adjusted numeric assertions, and the overall strategy for maintaining multi-shard test coverage. The goal is to assess whether the test changes adequately support the new default without introducing flakiness or reducing coverage."
+          ]
+        },
+        {
+          "heading": "Infrastructure Changes Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Examine the change in RestTestsFromSnippetsTask.groovy adding 'default_shards' to the skip features list",
+            "Explain the purpose of the 'default_shards' feature skip based on the PR description",
+            "Discuss the impact on documentation tests (they will always run with default shards = 1)"
+          ],
+          "paragraphs": [
+            "The core infrastructure change for test management is found in `buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy`. The diff adds the string `default_shards` to the list of features that documentation tests will skip. This is a single-line addition within a block that defines skip conditions for generated REST tests.",
+            "According to the PR description, the 'default_shards' feature skip is part of a system to randomly set the default shard count to two in REST tests via a global index template. This randomization is intended to 'ensure that we still have coverage for issues that could arise from multiple shards.' However, some tests that check the cluster state for templates would fail if this random template were present.",
+            "The consequence of applying this skip to all documentation tests is that they 'will always run with the default number of shards (one).' This avoids complications in writing documentation examples, but it means documentation snippets are never validated against a multi-shard configuration. This is an acceptable trade-off for documentation clarity but reduces a small portion of integration coverage for the docs."
+          ]
+        },
+        {
+          "heading": "Assertion Adjustment Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Identify the specific test method affected: testSearchWithMatrixStats in SearchIT.java",
+            "List the changed expected values: variance from 1830 to 1830.0000000000002, skewness from 0.09340198804973046 to 0.09340198804973039, kurtosis from 1.3517561983471074 to 1.3517561983471071",
+            "Explain the likely cause: changes in data distribution due to different shard allocation affecting floating-point precision in aggregation calculations"
+          ],
+          "paragraphs": [
+            "The file `client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java` contains several adjusted assertions within the `testSearchWithMatrixStats` method. These are not minor textual fixes but changes to the expected numerical results of the `MatrixStats` aggregation for the field `num`.",
+            "The specific expected value changes are: the variance changes from `1830d` to `1830.0000000000002`, the skewness changes from `0.09340198804973046` to `0.09340198804973039`, and the kurtosis for the field `num2` changes from `1.3517561983471074` to `1.3517561983471071`. The test's tolerance for these checks is set to `0d`, requiring exact floating-point equality.",
+            "These adjustments are likely necessary due to the change in shard count altering the physical distribution of documents across shards. Matrix statistics are computed per shard and then combined. A different number of shards (e.g., the test environment may now use 1 shard instead of 5) changes the intermediate floating-point calculations, leading to minute differences in the final aggregated results. The PR correctly identifies and updates these assertions to reflect the new default."
+          ]
+        },
+        {
+          "heading": "Multi-Shard Coverage Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Describe the strategy from the PR: randomizing default shard count to 2 in REST tests via a global index template",
+            "Explain the purpose: to maintain coverage for multi-shard issues",
+            "Discuss the trade-off: increased test matrix variability vs. potential for flakiness"
+          ],
+          "paragraphs": [
+            "The PR description outlines a deliberate strategy to mitigate the loss of multi-shard testing coverage. Instead of simply defaulting to one shard everywhere, the team introduces a mechanism to 'randomize (rarely) the default number of shards in REST tests to two.' This is implemented via a global index template applied during test setup.",
+            "The primary purpose of this randomization is to ensure the test suite continues to catch bugs that are specific to scenarios with multiple shards, such as cross-shard aggregation errors, search routing issues, or rebalancing logic. This is a proactive approach to maintain quality in the face of a default configuration change.",
+            "However, this strategy introduces a trade-off. On the positive side, it extends coverage without requiring each test to be explicitly run in both single and multi-shard modes. On the negative side, it introduces non-determinism into the test environment. A test that fails only when the random template sets shards to two could be perceived as flaky. The 'default_shards' feature skip is a necessary mechanism to allow specific tests (like template-inspecting tests and docs) to opt out of this randomization for stability."
+          ]
+        },
+        {
+          "heading": "Recommended Follow-Up Actions",
+          "heading_level": 2,
+          "required_content": [
+            "Suggest monitoring for increased test flakiness related to shard count",
+            "Recommend verifying that the numeric assertion adjustments are stable across runs",
+            "Propose documenting the 'default_shards' feature skip for future test development"
+          ],
+          "paragraphs": [
+            "To ensure the stability of the test suite post-merge, the following follow-up actions are recommended. First, the CI dashboard should be monitored specifically for flakiness in tests that were not updated by this PR but are sensitive to shard count, particularly those involving aggregations, scroll searches, or point-in-time recovery.",
+            "Second, the specific floating-point assertion changes in `SearchIT.java` and similar files should be validated over multiple runs to ensure they are stable and not subject to further non-determinism. The tolerance of `0d` is very strict; if other aggregation tests exhibit similar issues, it may be worth considering a small epsilon tolerance for floating-point comparisons in the future.",
+            "Third, the 'default_shards' feature skip should be clearly documented in the test contribution guidelines. Developers adding new REST tests need to understand when and why to use it to avoid inadvertently creating tests that fail under the randomized shard count or that unnecessarily bypass coverage."
+          ]
+        }
+      ],
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "The diff for PR #30539 from elastic/elasticsearch, showing changes across 43 files, with focus on test infrastructure files like RestTestsFromSnippetsTask.groovy and SearchIT.java.",
+          "content_blueprint": {
+            "title": "The diff for PR #30539 from elastic/elasticsearch, showing changes across 43 files, with focus on test infrastructure files like RestTestsFromSnippetsTask",
+            "body": "# Seed Material: elastic/elasticsearch#30539: Default to one shard\nSource: github_issue_pr\nIdentifier: pr:elastic/elasticsearch#30539\n\nRepository: elastic/elasticsearch\nPR Number: #30539\nPR Title: Default to one shard\nMerged At: 2018-05-14T16:22:36Z\nChanged Files: 43\nAdditions: +232, Deletions: -157\n\n## PR Description\nThis commit changes the default out-of-the-box configuration for the number of shards from five to one. We think this will help address a common problem of oversharding. For users with time-based indices that need a different default, this can be managed with index templates. For users with non-time-based indices that find they need to re-shard with the split API in place they no longer need to resort only to reindexing.\r\n\r\nSince this has the impact of changing the default number of shards used in REST tests, we want to ensure that we still have coverage for issues that could arise from multiple shards. As such, we randomize (rarely) the default number of shards in REST tests to two. This is managed via a global index template. However, some tests check the templates that are in the cluster state during the test. Since this template is randomly  there, we need a way for tests to skip adding the template used to set  the number of shards to two. For this we add the default_shards feature skip. To avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards we apply the default_shards feature skip to all docs tests. That is, these tests will always run with the default number of shards (one).\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\nindex 15a4f21b17543..adacc1863c595 100644\n--- a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n+++ b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n@@ -225,6 +225,7 @@ public class RestTestsFromSnippetsTask extends SnippetsTask {\n                  * warning every time. */\n                 current.println(\"  - skip:\")\n                 current.println(\"      features: \")\n+                current.println(\"        - default_shards\")\n                 current.println(\"        - stash_in_key\")\n                 current.println(\"        - stash_in_path\")\n                 current.println(\"        - stash_path_replace\")\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\nindex 9828041332b32..549b4ce0a85c5 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n@@ -312,14 +312,14 @@ public void testSearchWithMatrixStats() throws IOException {\n         MatrixStats matrixStats = searchResponse.getAggregations().get(\"agg1\");\n         assertEquals(5, matrixStats.getFieldCount(\"num\"));\n         assertEquals(56d, matrixStats.getMean(\"num\"), 0d);\n-        assertEquals(1830d, matrixStats.getVariance(\"num\"), 0d);\n-        assertEquals(0.09340198804973046, matrixStats.getSkewness(\"num\"), 0d);\n+        assertEquals(1830.0000000000002, matrixStats.getVariance(\"num\"), 0d);\n+        assertEquals(0.09340198804973039, matrixStats.getSkewness(\"num\"), 0d);\n         assertEquals(1.2741646510794589, matrixStats.getKurtosis(\"num\"), 0d);\n         assertEquals(5, matrixStats.getFieldCount(\"num2\"));\n         assertEquals(29d, matrixStats.getMean(\"num2\"), 0d);\n         assertEquals(330d, matrixStats.getVariance(\"num2\"), 0d);\n         assertEquals(-0.13568039346585542, matrixStats.getSkewness(\"num2\"), 1.0e-16);\n-        assertEquals(1.3517561983471074, matrixStats.getKurtosis(\"num2\"), 0d);\n+        assertEquals(1.3517561983471071, matrixStats.getKurtosis(\"num2\"), 0d);\n         assertEquals(-767.5, matrixStats.getCovariance(\"num\", \"num2\"), 0d);\n         assertEquals(-0.9876336291667923, matrixStats.getCorrelation(\"num\", \"num2\"), 0d);\n     }\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\nindex 4400d05a9f820..6fdc60fcb3394 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDoc"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "The pull request description for elastic/elasticsearch#30539, titled 'Default to one shard', detailing the motivation, implementation strategy for test coverage, and the addition of the 'default_shards' feature skip.",
+          "content_blueprint": {
+            "title": "The pull request description for elastic/elasticsearch#30539, titled 'Default to one shard', detailing the motivation, implementation strategy for test coverage, and the addition of the 'default_shards' feature skip",
+            "body": "# Seed Material: elastic/elasticsearch#30539: Default to one shard\nSource: github_issue_pr\nIdentifier: pr:elastic/elasticsearch#30539\n\nRepository: elastic/elasticsearch\nPR Number: #30539\nPR Title: Default to one shard\nMerged At: 2018-05-14T16:22:36Z\nChanged Files: 43\nAdditions: +232, Deletions: -157\n\n## PR Description\nThis commit changes the default out-of-the-box configuration for the number of shards from five to one. We think this will help address a common problem of oversharding. For users with time-based indices that need a different default, this can be managed with index templates. For users with non-time-based indices that find they need to re-shard with the split API in place they no longer need to resort only to reindexing.\r\n\r\nSince this has the impact of changing the default number of shards used in REST tests, we want to ensure that we still have coverage for issues that could arise from multiple shards. As such, we randomize (rarely) the default number of shards in REST tests to two. This is managed via a global index template. However, some tests check the templates that are in the cluster state during the test. Since this template is randomly  there, we need a way for tests to skip adding the template used to set  the number of shards to two. For this we add the default_shards feature skip. To avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards we apply the default_shards feature skip to all docs tests. That is, these tests will always run with the default number of shards (one).\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\nindex 15a4f21b17543..adacc1863c595 100644\n--- a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n+++ b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n@@ -225,6 +225,7 @@ public class RestTestsFromSnippetsTask extends SnippetsTask {\n                  * warning every time. */\n                 current.println(\"  - skip:\")\n                 current.println(\"      features: \")\n+                current.println(\"        - default_shards\")\n                 current.println(\"        - stash_in_key\")\n                 current.println(\"        - stash_in_path\")\n                 current.println(\"        - stash_path_replace\")\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\nindex 9828041332b32..549b4ce0a85c5 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n@@ -312,14 +312,14 @@ public void testSearchWithMatrixStats() throws IOException {\n         MatrixStats matrixStats = searchResponse.getAggregations().get(\"agg1\");\n         assertEquals(5, matrixStats.getFieldCount(\"num\"));\n         assertEquals(56d, matrixStats.getMean(\"num\"), 0d);\n-        assertEquals(1830d, matrixStats.getVariance(\"num\"), 0d);\n-        assertEquals(0.09340198804973046, matrixStats.getSkewness(\"num\"), 0d);\n+        assertEquals(1830.0000000000002, matrixStats.getVariance(\"num\"), 0d);\n+        assertEquals(0.09340198804973039, matrixStats.getSkewness(\"num\"), 0d);\n         assertEquals(1.2741646510794589, matrixStats.getKurtosis(\"num\"), 0d);\n         assertEquals(5, matrixStats.getFieldCount(\"num2\"));\n         assertEquals(29d, matrixStats.getMean(\"num2\"), 0d);\n         assertEquals(330d, matrixStats.getVariance(\"num2\"), 0d);\n         assertEquals(-0.13568039346585542, matrixStats.getSkewness(\"num2\"), 1.0e-16);\n-        assertEquals(1.3517561983471074, matrixStats.getKurtosis(\"num2\"), 0d);\n+        assertEquals(1.3517561983471071, matrixStats.getKurtosis(\"num2\"), 0d);\n         assertEquals(-767.5, matrixStats.getCovariance(\"num\", \"num2\"), 0d);\n         assertEquals(-0.9876336291667923, matrixStats.getCorrelation(\"num\", \"num2\"), 0d);\n     }\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\nindex 4400d05a9f820..6fdc60fcb3394 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDoc"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number referenced in the review",
+          "value": 30539,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Date the PR was merged",
+          "value": "May 14, 2018",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Total number of changed files in the PR",
+          "value": 43,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Total number of additions in the PR",
+          "value": 232,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Total number of deletions in the PR",
+          "value": 157,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The previous default number of shards",
+          "value": 5,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The new default number of shards introduced by the PR",
+          "value": 1,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "File path for the build script change",
+          "value": "buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy",
+          "tolerance": null,
+          "location": "Infrastructure Changes Analysis section"
+        },
+        {
+          "description": "Feature skip string added to the build script",
+          "value": "default_shards",
+          "tolerance": null,
+          "location": "Infrastructure Changes Analysis section"
+        },
+        {
+          "description": "Test file where assertions were adjusted",
+          "value": "client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java",
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "Test method containing the adjusted assertions",
+          "value": "testSearchWithMatrixStats",
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "Original expected variance value for 'num'",
+          "value": 1830,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "New expected variance value for 'num'",
+          "value": 1830.0000000000002,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "Original expected skewness value for 'num'",
+          "value": 0.09340198804973046,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "New expected skewness value for 'num'",
+          "value": 0.09340198804973039,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "Original expected kurtosis value for 'num2'",
+          "value": 1.3517561983471074,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "New expected kurtosis value for 'num2'",
+          "value": 1.3517561983471071,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        },
+        {
+          "description": "Purpose of randomizing default shards to two in REST tests",
+          "value": "to ensure that we still have coverage for issues that could arise from multiple shards",
+          "tolerance": null,
+          "location": "Multi-Shard Coverage Strategy section"
+        },
+        {
+          "description": "Randomized default shard count for REST tests",
+          "value": 2,
+          "tolerance": null,
+          "location": "Multi-Shard Coverage Strategy section"
+        },
+        {
+          "description": "Mechanism used to apply the random shard count",
+          "value": "global index template",
+          "tolerance": null,
+          "location": "Multi-Shard Coverage Strategy section"
+        },
+        {
+          "description": "Reason for applying 'default_shards' skip to docs tests",
+          "value": "to avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards",
+          "tolerance": null,
+          "location": "Infrastructure Changes Analysis section"
+        },
+        {
+          "description": "Tolerance used in the numeric assertion checks",
+          "value": 0,
+          "tolerance": null,
+          "location": "Assertion Adjustment Analysis section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1276335035
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "The diff for PR #30539 from elastic/elasticsearch, showing changes across 43 files, with focus on test infrastructure files like RestTestsFromSnippetsTask.groovy and SearchIT.java.",
+      "content_blueprint": {
+        "title": "The diff for PR #30539 from elastic/elasticsearch, showing changes across 43 files, with focus on test infrastructure files like RestTestsFromSnippetsTask",
+        "body": "# Seed Material: elastic/elasticsearch#30539: Default to one shard\nSource: github_issue_pr\nIdentifier: pr:elastic/elasticsearch#30539\n\nRepository: elastic/elasticsearch\nPR Number: #30539\nPR Title: Default to one shard\nMerged At: 2018-05-14T16:22:36Z\nChanged Files: 43\nAdditions: +232, Deletions: -157\n\n## PR Description\nThis commit changes the default out-of-the-box configuration for the number of shards from five to one. We think this will help address a common problem of oversharding. For users with time-based indices that need a different default, this can be managed with index templates. For users with non-time-based indices that find they need to re-shard with the split API in place they no longer need to resort only to reindexing.\r\n\r\nSince this has the impact of changing the default number of shards used in REST tests, we want to ensure that we still have coverage for issues that could arise from multiple shards. As such, we randomize (rarely) the default number of shards in REST tests to two. This is managed via a global index template. However, some tests check the templates that are in the cluster state during the test. Since this template is randomly  there, we need a way for tests to skip adding the template used to set  the number of shards to two. For this we add the default_shards feature skip. To avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards we apply the default_shards feature skip to all docs tests. That is, these tests will always run with the default number of shards (one).\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\nindex 15a4f21b17543..adacc1863c595 100644\n--- a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n+++ b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n@@ -225,6 +225,7 @@ public class RestTestsFromSnippetsTask extends SnippetsTask {\n                  * warning every time. */\n                 current.println(\"  - skip:\")\n                 current.println(\"      features: \")\n+                current.println(\"        - default_shards\")\n                 current.println(\"        - stash_in_key\")\n                 current.println(\"        - stash_in_path\")\n                 current.println(\"        - stash_path_replace\")\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\nindex 9828041332b32..549b4ce0a85c5 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n@@ -312,14 +312,14 @@ public void testSearchWithMatrixStats() throws IOException {\n         MatrixStats matrixStats = searchResponse.getAggregations().get(\"agg1\");\n         assertEquals(5, matrixStats.getFieldCount(\"num\"));\n         assertEquals(56d, matrixStats.getMean(\"num\"), 0d);\n-        assertEquals(1830d, matrixStats.getVariance(\"num\"), 0d);\n-        assertEquals(0.09340198804973046, matrixStats.getSkewness(\"num\"), 0d);\n+        assertEquals(1830.0000000000002, matrixStats.getVariance(\"num\"), 0d);\n+        assertEquals(0.09340198804973039, matrixStats.getSkewness(\"num\"), 0d);\n         assertEquals(1.2741646510794589, matrixStats.getKurtosis(\"num\"), 0d);\n         assertEquals(5, matrixStats.getFieldCount(\"num2\"));\n         assertEquals(29d, matrixStats.getMean(\"num2\"), 0d);\n         assertEquals(330d, matrixStats.getVariance(\"num2\"), 0d);\n         assertEquals(-0.13568039346585542, matrixStats.getSkewness(\"num2\"), 1.0e-16);\n-        assertEquals(1.3517561983471074, matrixStats.getKurtosis(\"num2\"), 0d);\n+        assertEquals(1.3517561983471071, matrixStats.getKurtosis(\"num2\"), 0d);\n         assertEquals(-767.5, matrixStats.getCovariance(\"num\", \"num2\"), 0d);\n         assertEquals(-0.9876336291667923, matrixStats.getCorrelation(\"num\", \"num2\"), 0d);\n     }\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\nindex 4400d05a9f820..6fdc60fcb3394 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDoc"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "The pull request description for elastic/elasticsearch#30539, titled 'Default to one shard', detailing the motivation, implementation strategy for test coverage, and the addition of the 'default_shards' feature skip.",
+      "content_blueprint": {
+        "title": "The pull request description for elastic/elasticsearch#30539, titled 'Default to one shard', detailing the motivation, implementation strategy for test coverage, and the addition of the 'default_shards' feature skip",
+        "body": "# Seed Material: elastic/elasticsearch#30539: Default to one shard\nSource: github_issue_pr\nIdentifier: pr:elastic/elasticsearch#30539\n\nRepository: elastic/elasticsearch\nPR Number: #30539\nPR Title: Default to one shard\nMerged At: 2018-05-14T16:22:36Z\nChanged Files: 43\nAdditions: +232, Deletions: -157\n\n## PR Description\nThis commit changes the default out-of-the-box configuration for the number of shards from five to one. We think this will help address a common problem of oversharding. For users with time-based indices that need a different default, this can be managed with index templates. For users with non-time-based indices that find they need to re-shard with the split API in place they no longer need to resort only to reindexing.\r\n\r\nSince this has the impact of changing the default number of shards used in REST tests, we want to ensure that we still have coverage for issues that could arise from multiple shards. As such, we randomize (rarely) the default number of shards in REST tests to two. This is managed via a global index template. However, some tests check the templates that are in the cluster state during the test. Since this template is randomly  there, we need a way for tests to skip adding the template used to set  the number of shards to two. For this we add the default_shards feature skip. To avoid having to write our docs in a complicated way because sometimes they might be behind one shard, and sometimes they might be behind two shards we apply the default_shards feature skip to all docs tests. That is, these tests will always run with the default number of shards (one).\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\nindex 15a4f21b17543..adacc1863c595 100644\n--- a/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n+++ b/buildSrc/src/main/groovy/org/elasticsearch/gradle/doc/RestTestsFromSnippetsTask.groovy\n@@ -225,6 +225,7 @@ public class RestTestsFromSnippetsTask extends SnippetsTask {\n                  * warning every time. */\n                 current.println(\"  - skip:\")\n                 current.println(\"      features: \")\n+                current.println(\"        - default_shards\")\n                 current.println(\"        - stash_in_key\")\n                 current.println(\"        - stash_in_path\")\n                 current.println(\"        - stash_path_replace\")\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\nindex 9828041332b32..549b4ce0a85c5 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/SearchIT.java\n@@ -312,14 +312,14 @@ public void testSearchWithMatrixStats() throws IOException {\n         MatrixStats matrixStats = searchResponse.getAggregations().get(\"agg1\");\n         assertEquals(5, matrixStats.getFieldCount(\"num\"));\n         assertEquals(56d, matrixStats.getMean(\"num\"), 0d);\n-        assertEquals(1830d, matrixStats.getVariance(\"num\"), 0d);\n-        assertEquals(0.09340198804973046, matrixStats.getSkewness(\"num\"), 0d);\n+        assertEquals(1830.0000000000002, matrixStats.getVariance(\"num\"), 0d);\n+        assertEquals(0.09340198804973039, matrixStats.getSkewness(\"num\"), 0d);\n         assertEquals(1.2741646510794589, matrixStats.getKurtosis(\"num\"), 0d);\n         assertEquals(5, matrixStats.getFieldCount(\"num2\"));\n         assertEquals(29d, matrixStats.getMean(\"num2\"), 0d);\n         assertEquals(330d, matrixStats.getVariance(\"num2\"), 0d);\n         assertEquals(-0.13568039346585542, matrixStats.getSkewness(\"num2\"), 1.0e-16);\n-        assertEquals(1.3517561983471074, matrixStats.getKurtosis(\"num2\"), 0d);\n+        assertEquals(1.3517561983471071, matrixStats.getKurtosis(\"num2\"), 0d);\n         assertEquals(-767.5, matrixStats.getCovariance(\"num\", \"num2\"), 0d);\n         assertEquals(-0.9876336291667923, matrixStats.getCorrelation(\"num\", \"num2\"), 0d);\n     }\ndiff --git a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\nindex 4400d05a9f820..6fdc60fcb3394 100644\n--- a/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDocumentationIT.java\n+++ b/client/rest-high-level/src/test/java/org/elasticsearch/client/documentation/SearchDoc"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_c437edd65fbd998c/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_c437edd65fbd998c/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_c437edd65fbd998c/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:20:14.833075+00:00"
+}

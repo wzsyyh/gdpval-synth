@@ -1,0 +1,545 @@
+{
+  "candidate_id": "sc_6d5a85bfff832e3d",
+  "occupation": "software_engineer",
+  "archetype": "deploy_failure",
+  "difficulty": "medium",
+  "seed_id": "5fbba8f1bbb7df4d",
+  "prompt": "You are a software engineer at Brookspring Software. Your manager, Aurora Lindqvist, has asked you to author an incident postmortem for a recent deploy failure. The failure was traced back to a change in our internal HTTP client library that introduced automatic retry logic, a pattern inspired by the upstream `psf/requests` documentation addition in PR #6258.\n\nWrite the postmortem document. Structure it with the following standard sections: Summary, Timeline of Events (from deployment trigger through resolution), Root Cause Analysis, Impact Assessment (detailing affected services, user impact, and SLA breaches), Contributing Factors, and a Remediation & Action Items table. The tone must be blameless, focusing on systemic and process causes.\n\nThe originating change, authored by former teammate Mateusz Kruk, configured a `urllib3.util.Retry` object with a specific `status_forcelist` and `backoff_factor` and mounted it onto our application's `Session` via an `HTTPAdapter`. Your analysis must technically detail how this configuration, when applied to our service mesh's health check endpoints, caused a cascade of connection timeouts during a regional failover test. Reference upstream PR psf/requests#6258 for traceability.\n\nInclude a precise timeline using UTC timestamps. For action items, distinguish between immediate mitigations applied during the incident and permanent fixes to prevent recurrence, assigning owners and target completion dates to each. The document should be polished for senior leadership review.",
+  "deliverable": {
+    "deliverable_id": "incident_postmortem",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document identifies the upstream repository as psf/requests.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the specific upstream PR number as 6258.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the affected upstream file as docs/user/advanced.rst.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the former teammate who authored the change as Mateusz Kruk.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the engineering manager who assigned the task as Aurora Lindqvist.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document states the upstream PR was merged on 2023-07-03.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the internal deadline of 2026-05-12.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the use of urllib3.util.Retry in the retry configuration.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the status_forcelist containing codes 502, 503, and 504.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the backoff_factor of 0.1 from the upstream example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Summary or Executive Summary.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Timeline or Timeline of Events.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Root Cause or Root Cause Analysis.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Impact or Impact Assessment.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Contributing Factors.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a standard postmortem section titled Lessons Learned.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a section or table for Action Items or Remediation Actions.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document describes how the retry configuration was mounted onto a Session object via an HTTPAdapter.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that the deploy failure occurred when the retry pattern was applied to health check endpoints.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document describes a cascade of connection timeouts during a regional failover test.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document provides a technically specific root cause explanation traceable from the configuration change to the failure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The timeline section includes at least three distinct UTC-timestamped events such as deployment trigger, detection, mitigation, and resolution.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The action items table or list distinguishes between immediate mitigations applied during the incident and permanent fixes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each action item includes an assigned owner.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each action item includes a target completion date.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Impact section identifies specific services or user groups affected by the failure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the originating PR number 6258 for traceability when describing the change.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document is written in a blameless tone, focusing on systemic and process causes rather than individual fault.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document is concise enough that the Summary and Impact sections are self-contained for a skimming reader.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document uses UTC timestamps consistently throughout the timeline.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is delivered in markdown format.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes the company name Brookspring Software.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the upstream PR title Add an Example for automatic retries to the Advanced Usage docs or a close paraphrase.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The root cause analysis explains why retrying health check endpoints is problematic, for example masking failures or preventing proper failover detection.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the HTTP status codes 502, 503, 504 that triggered retries.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains how the backoff_factor interacts with retry delays and why this contributed to the cascading failure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the allowed_methods configuration from the upstream example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the SLA breaches or user-facing impact duration resulting from the incident.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the urllib3.util.Retry documentation link or class for traceability.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Contributing Factors section identifies at least two systemic factors such as lack of staging tests or inadequate monitoring.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the Transport Adapters section of the Advanced Usage docs as context.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Lessons Learned section provides actionable insights rather than vague platitudes.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the total=3 retry count from the upstream example.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains how the HTTPAdapter was mounted on the https:// prefix.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a brief description of what the upstream PR changed as a documentation addition.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document distinguishes between the upstream documentation PR psf/requests#6258 and the internal implementation that caused the failure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a link or reference to the upstream PR URL or diff.",
+      "category": "reference",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_6d5a85bfff832e3d",
+    "occupation": "software_engineer",
+    "deliverable_id": "incident_postmortem",
+    "archetype": "deploy_failure",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:psf/requests#6258",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "psf/requests",
+        "attrs": {
+          "pr_number": 6258,
+          "pr_title": "Add an Example for automatic retries to the Advanced Usage docs"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Brookspring Software",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Mateusz Kruk",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Aurora Lindqvist",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2023-07-03",
+        "description": "Reference PR psf/requests#6258 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-10",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-12",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "psf/requests",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 6258,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "Add an Example for automatic retries to the Advanced Usage docs",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "While Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters), so I thought it would be useful to have a simple Example of this capability.\r\n\r\nI took a stab at such an addition, and tried to follow the style of the rest of the docs pretty closely.\r\n\r\nLinking over to the [`urllib3.util.Retry` docs](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry) seems like it should reinforce the fact that Requests isn't the owner of that code and that library should be consulted with questions about that class (rather than Requests' support of it).\r\n\r\nI'm curious if maintainers have any feedback about the content or code example. Specifically I was curious whether you have any opinions as to the appropriate standard for the `Retry` import. While `urllib3.util.Retry` is where the class lives and what the `urllib3` docs reference, `from urllib3 import Retry` also works, and in some StackOverflow posts I've seen people use `from requests.adapters import Retry`. I felt that last one would telegraph an ownership by Requests that would be undesirable, but I'm wondering if anyone is particularly picky about the best practice for that import.\r\n\r\nAlso, let me know if this is non-trivial enough to add a HISTORY entry for.",
+        "unit": null,
+        "source": "github:psf/requests#6258"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/docs/user/advanced.rst b/docs/user/advanced.rst\nindex c664a83d30..055c88a956 100644\n--- a/docs/user/advanced.rst\n+++ b/docs/user/advanced.rst\n@@ -1026,8 +1026,30 @@ library to use SSLv3::\n                 num_pools=connections, maxsize=maxsize,\n                 block=block, ssl_version=ssl.PROTOCOL_SSLv3)\n \n+Example: Automatic Retries\n+^^^^^^^^^^^^^^^^^^^^^^^^^^\n+\n+By default, Requests does not retry failed connections. However, it is possible\n+to implement automatic retries with a powerful array of features, including\n+backoff, within a Requests :class:`Session <requests.Session>` using the\n+`urllib3.util.Retry`_ class::\n+\n+    from urllib3.util import Retry\n+    from requests import Session\n+    from requests.adapters import HTTPAdapter\n+\n+    s = Session()\n+    retries = Retry(\n+        total=3,\n+        backoff_factor=0.1,\n+        status_forcelist=[502, 503, 504],\n+        allowed_methods={'POST'},\n+    )\n+    s.mount('https://', HTTPAdapter(max_retries=retries))\n+\n .. _`described here`: https://kenreitz.org/essays/2012/06/14/the-future-of-python-http\n .. _`urllib3`: https://github.com/urllib3/urllib3\n+.. _`urllib3.util.Retry`: https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry\n \n .. _blocking-or-nonblocking:\n \n",
+        "unit": null,
+        "source": "github:psf/requests#6258.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Write an incident postmortem document covering a deploy failure tied to changes inspired by or related to upstream PR psf/requests#6258.",
+      "Structure the postmortem with standard sections: Summary, Impact, Root Cause, Timeline, Contributing Factors, Lessons Learned, and Action Items.",
+      "Include a precise timeline of events from the deployment trigger through detection, mitigation, and resolution.",
+      "Identify the root cause of the deploy failure with enough technical specificity that an engineer unfamiliar with the incident could follow the chain of events.",
+      "Document the blast radius: which services, users, or SLAs were affected and for how long.",
+      "List concrete, assigned action items with owners and target dates to prevent recurrence.",
+      "Keep the tone blameless — focus on systemic causes, not individual fault.",
+      "Reference the specific code or configuration change (retries/adapter config analogous to the upstream diff) that contributed to the failure.",
+      "Deliver the final document by 2026-05-12."
+    ],
+    "implicit_requirements": [
+      "Follow the company's internal postmortem template format (if one exists) or the widely-used industry template from Google SRE / PagerDuty.",
+      "Distinguish between immediate mitigations and permanent fixes in the action items.",
+      "Use UTC timestamps consistently throughout the timeline.",
+      "Attach or link to relevant logs, dashboards, or monitoring screenshots as supporting evidence.",
+      "Keep the document concise — senior leadership may skim it, so the summary and impact sections must be self-contained.",
+      "Cross-reference the upstream PR number (psf/requests#6258) when describing the originating change for traceability."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "What happened, impact, and root cause"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "On May 26, 2023, an incident was identified where the lack of clear, accessible documentation for implementing automatic retries in the `requests` library led to significant user confusion and misuse of the `HTTPAdapter` interface. The core issue was that while the `HTTPAdapter` class supports a `max_retries` parameter, this critical configuration was only documented in the API reference (`docs/api/`) and not in the practical, user-facing guide for advanced usage (`docs/user/advanced.rst`). This omission forced users to rely on scattered references and external searches, resulting in incorrect implementations, unexpected runtime behavior, and a preventable support burden on maintainers.",
+            "The impact was two-fold. Directly, users encountered unhandled exceptions and failed requests in production environments because they were unaware of the built-in retry mechanism or implemented it incorrectly. Indirectly, it generated recurring community support requests and external blog posts attempting to solve a problem with a straightforward, library-native solution. This degraded the user experience for a core advanced use case and created unnecessary friction for developers integrating `requests` into resilient, production-grade applications.",
+            "The root cause was a documentation gap. The transport adapter section of the advanced usage guide described how to configure an adapter but failed to explicitly demonstrate the primary use case of automatic retries. This allowed the common pattern—setting `HTTPAdapter(max_retries=3)`—to remain \"buried\" in the API docs. The oversight stemmed from an incomplete translation of the adapter's full capabilities into practical, scenario-based documentation, leaving a critical piece of advanced functionality discoverable only by those who already knew where to look."
+          ]
+        },
+        {
+          "heading": "Timeline",
+          "heading_level": 2,
+          "required_content": [
+            "Minute-by-minute incident timeline"
+          ],
+          "paragraphs": [
+            "**Timeline**",
+            "At 09:14 UTC, PR #6258, titled \"Add an Example for automatic retries to the Advanced Usage docs,\" was opened by an external contributor. The change exclusively modified `docs/user/advanced.rst`, aiming to improve discoverability of a common pattern for configuring automatic retries using `urllib3` with the `HTTPAdapter`. The initial submission included a concise code example placed within the existing \"Transport Adapters\" section.",
+            "The PR was assigned for review at 09:47 UTC. At 10:32 UTC, a maintainer requested a minor clarification regarding the scope of the example, specifically to note that the shown retry configuration would not retry POST requests by default, a critical nuance for safety. The contributor acknowledged and committed the clarifying sentence at 11:05 UTC. The updated documentation was reviewed for technical accuracy and style, and the PR was approved at 14:22 UTC. It was subsequently merged into the `main` branch at 14:35 UTC without further incident.",
+            "The merged documentation was automatically published by the ReadTheDocs service. At 08:05 UTC the following day, a user opened a new issue reporting that the retry example, while functional, lacked context on how to handle specific retry scenarios (e.g., retrying on connection timeouts versus HTTP status codes). This post-merge report indicated that while the core example was correct, its placement and surrounding text in `advanced.rst` did not fully bridge the conceptual gap for users unfamiliar with the `urllib3.util.retry.Retry` object's capabilities. The incident was not a bug in the `requests` library code but a deficiency in the newly added documentation example's completeness and guidance."
+          ]
+        },
+        {
+          "heading": "Root Cause Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "5 Whys or equivalent RCA methodology"
+          ],
+          "paragraphs": [
+            "**Root Cause Analysis: Documentation Gap for Automatic Retry Pattern**",
+            "The root cause of this issue was a documentation gap in the `psf/requests` library regarding a critical and common advanced use case: implementing automatic retries with `urllib3.Retry`. While the functionality existed and was accessible via the `HTTPAdapter`, its practical application was not explicitly demonstrated in the primary user-facing documentation. This led to significant user friction, as evidenced by recurring community questions and the need for the fix in PR #6258, which added a dedicated example to `docs/user/advanced.rst`.",
+            "Applying the 5 Whys methodology: 1) **Why** did users struggle to implement retries? Because the Advanced Usage docs lacked a clear example in the Transport Adapters section. 2) **Why** was there no example? The existing documentation, while technically correct, focused on API reference over practical implementation patterns for common scenarios. 3) **Why** did the documentation prioritize API reference? The project's documentation strategy historically centered on covering \"what\" the library provides, not necessarily \"how\" users should apply it for ubiquitous use cases. 4) **Why** wasn't this common use case prioritized in documentation? There was no formal process to systematically identify and document the most frequent user implementation patterns from community support channels. 5) **Why** was there no such process? The incident highlights a gap in the documentation lifecycle: a lack of a feedback loop between support/forum discussions and documentation improvements.",
+            "The systemic root cause is the absence of a defined process to convert implicit, community-held knowledge about best practices into explicit, discoverable documentation. This allowed a high-impact, low-friction improvement (a documentation example) to remain unaddressed until a contributor submitted the PR. The fix in PR #6258 directly addresses the immediate cause but does not resolve the underlying process gap. Future mitigation requires establishing a method to audit support channels for recurring questions and triage them as candidates for documentation updates."
+          ]
+        },
+        {
+          "heading": "Impact Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Users affected, data lost, revenue impact"
+          ],
+          "paragraphs": [
+            "**Impact Assessment**",
+            "The incident impacted users of the `requests` library who required automatic retry functionality for HTTP requests. This is a substantial and critical subset of the user base, particularly developers building robust applications, API clients, or operating in environments with unreliable network conditions. The lack of clear, prominent documentation in the standard advanced usage guide meant that developers could not easily discover or correctly implement the `urllib3` retry mechanism via the `HTTPAdapter`. This directly affected the reliability and resilience of applications built with `requests`, potentially leading to avoidable failures in production systems due to transient errors.",
+            "No user data was lost as a direct result of this documentation deficiency. The core library functionality for handling retries via `HTTPAdapter` remained intact and operational for users who discovered it through alternative means, such as the library's API reference or external searches. The incident was a documentation and discoverability issue, not a runtime or data corruption failure. Therefore, the scope of impact was limited to development efficiency and application reliability, not data integrity.",
+            "The revenue impact is indirect but measurable through the lens of engineering productivity and system reliability. Development teams that require robust HTTP clients incur overhead researching and validating implementation patterns when official documentation is insufficient. For businesses building services atop `requests`, unhandled network failures due to misconfigured or absent retries can lead to service degradation, customer dissatisfaction, and potential loss of transactions. While not a direct revenue event for the open-source project itself, the incident introduced avoidable risk and cost to all commercial entities and projects dependent on the library's advanced features. Mitigating this required community contribution (PR #6258) to close the knowledge gap and align the documentation with a ubiquitous advanced use case."
+          ]
+        },
+        {
+          "heading": "Remediation Actions",
+          "heading_level": 2,
+          "required_content": [
+            "Immediate fixes and long-term improvements"
+          ],
+          "paragraphs": [
+            "**Remediation Actions**",
+            "The immediate fix for this documentation gap is the direct integration of the proposed content from PR #6258 into the `Transport Adapters` section of `docs/user/advanced.rst`. This involves adding a clear, executable example that demonstrates how to configure a `requests.Session` with a custom `HTTPAdapter` from `urllib3.util.retry` to handle automatic retries for common HTTP status codes. This change is low-risk and high-value, providing users with a solution to a fundamental operational need that was previously underserved in the primary user guide.",
+            "For long-term improvement, we will enhance the discoverability of critical adapter configuration patterns. While the `HTTPAdapter` API reference in `docs/api.rst` is thorough, its utility is diminished if users cannot connect it to common use cases. We will add a dedicated cross-reference in the advanced usage documentation, explicitly linking the `Transport Adapters` section to the API details for `HTTPAdapter` and `urllib3.util.retry.Retry`. This creates a clearer pathway from problem to solution and API details.",
+            "Finally, we will institutionalize a periodic review of the \"Advanced Usage\" documentation against the issue tracker and community forums (like Stack Overflow) to identify other high-frequency use cases that lack clear examples. This proactive measure will ensure the documentation evolves with the real-world needs of the user base, preventing similar oversights for common but non-trivial configuration tasks."
+          ]
+        },
+        {
+          "heading": "Lessons Learned",
+          "heading_level": 2,
+          "required_content": [
+            "What went well, what could be better"
+          ],
+          "paragraphs": [
+            "**Lessons Learned**",
+            "The documentation enhancement in PR #6258 provided several valuable insights into our contribution and review processes. What went well was the identification of a genuine, high-value user need. The PR correctly recognized that while `HTTPAdapter` and `urllib3`'s retry mechanisms are powerful, they are not discoverable for many developers. By creating a focused example within the `Transport Adapters` section of the Advanced Usage guide, the contribution directly addresses a common real-world pattern—automatic retries on transient failures—that is fundamental to building resilient applications. This aligns perfectly with the project's goal of making HTTP for Humans, where advanced use cases are still approachable through clear documentation. The change was appropriately scoped to a single file (`docs/user/advanced.rst`), making it a self-contained and reviewable unit.",
+            "Areas for improvement center on the contributor and reviewer experience for documentation changes. The PR’s initial description, while helpful, could have more explicitly linked to existing issues or community discussions about retries to better frame the problem's context. Furthermore, this case highlights an opportunity to improve our labeling and triage for documentation-only PRs to expedite review from maintainers with appropriate context. While the core technical implementation was sound, the post-merge discussion revealed a desire for even more depth—such as a note on configuring `status_forcelist` or differentiating between retries on connection errors versus specific HTTP status codes. We should consider creating a more comprehensive \"Advanced Patterns\" or \"Recipes\" section to house such examples, preventing the main documentation from becoming overly lengthy while still capturing these critical use cases."
+          ]
+        }
+      ],
+      "md_title": "Incident Postmortem: psf/requests#6258",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "psf/requests",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "6258",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "docs/user/advanced.rst",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Brookspring Software. Your manager Aurora Lindqvist has asked you to write a professional incident postmortem for the open-source project psf/requests.\n\nThe reference PR is #6258: Add an Example for automatic retries to the Advanced Usage docs\n\nKey technical context:\n- Files changed: docs/user/advanced.rst\n- PR description excerpt: While Requests doesn't automatically retry failures, this is an extremely common advanced use case in real world applications.\r\n\r\nAlthough there's a mention of this capability in the [`HTTPAdapter` API docs](https://requests.readthedocs.io/en/latest/api/#requests.adapters.HTTPAdapter), it's a bit buried and not very specific.\r\n\r\nThe ubiquity of the use case fits perfectly in the [Transport Adapters section of the Advanced Usage docs](https://requests.readthedocs.io/en/latest/user/advanced/#trans\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 189606186
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:02:47.832270+00:00"
+}

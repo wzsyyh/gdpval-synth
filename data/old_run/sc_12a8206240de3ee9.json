@@ -1,0 +1,2486 @@
+{
+  "candidate_id": "sc_12a8206240de3ee9",
+  "occupation": "financial_analyst",
+  "archetype": "variance_analysis",
+  "difficulty": "medium",
+  "seed_id": "12a8206240de3ee9",
+  "prompt": "You are a Senior Financial Analyst on the Industrials Equity Research team covering Caterpillar Inc (CAT). The portfolio manager for the large-cap industrial fund has requested a detailed quarterly variance analysis of CAT's Q1 2026 performance against its FY 2025 run-rate and prior quarter results. The analysis will be used to support an upcoming investment committee discussion on whether to increase the fund's position in CAT.\n\nMaterials provided:\n- The attached XBRL financial data extract for Caterpillar Inc (ticker: CAT, CIK: 0000018230) containing quarterly and annual financial metrics including revenue, operating income, EPS, R&D expense, SG&A expense, assets, liabilities, and cash positions for Q1 2026, Q3 2025, Q2 2025, and FY 2025.\n\nTask requirements:\n\n1. Build a variance analysis workbook in Excel with four sheets:\n   a. 'Inputs' sheet - all raw financial figures from the provided XBRL data, organized by metric and period.\n   b. 'Variance Analysis' sheet - calculated variances between Q1 2026 and FY 2025 quarterly average (FY 2025 / 4), and between Q1 2026 and Q3 2025.\n   c. 'Margins and Ratios' sheet - key profitability and efficiency ratios for Q1 2026 and Q3 2025.\n   d. 'Summary' sheet - a concise executive summary.\n\n2. On the 'Variance Analysis' sheet, calculate for Revenue, Operating Income, R&D Expense, SG&A Expense, Total Assets, Total Liabilities, and Cash:\n   - Q1 2026 value (cell reference to Inputs sheet)\n   - FY 2025 quarterly average = FY 2025 value / 4\n   - Q3 2025 value (cell reference to Inputs sheet)\n   - Dollar variance vs FY25 Avg: Q1 2026 minus FY 2025 quarterly average\n   - Percentage variance vs FY25 Avg: (Q1 2026 minus FY 2025 quarterly average) / FY 2025 quarterly average\n   - Dollar variance vs Q3: Q1 2026 minus Q3 2025\n   - Percentage variance vs Q3: (Q1 2026 minus Q3 2025) / Q3 2025\n\n3. On the 'Margins and Ratios' sheet, calculate for both Q1 2026 and Q3 2025:\n   - Operating Margin = Operating Income / Revenue\n   - R&D Intensity = R&D Expense / Revenue\n   - SG&A Intensity = SG&A Expense / Revenue\n   - Leverage Ratio = Total Liabilities / Total Assets\n   - Cash as % of Assets = Cash / Total Assets\n\n4. On the 'Summary' sheet, write an executive summary (5-8 sentences) covering: the most notable positive variance, the most notable negative variance, margin trends, and a brief recommendation.\n\n5. Format all monetary values consistently. Format percentages to one decimal place. Bold all header rows.\n\nDeliverable: A single Excel workbook titled 'CAT_Q1_2026_Variance_Analysis.xlsx'.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted file is an Excel workbook named 'CAT_Q1_2026_Variance_Analysis.xlsx'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook contains exactly four sheets named 'Inputs', 'Variance Analysis', 'Margins and Ratios', and 'Summary'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the ticker 'CAT' in cell B2.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the CIK '0000018230' in cell B3.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the sector 'industrials' in cell B4.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet header row includes columns for Q1 2026, FY 2025, Q3 2025, and Q2 2025.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B7 contains the Q1 2026 Revenue value of exactly 17415000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C7 contains the FY 2025 Revenue value of exactly 67589000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D7 contains the Q3 2025 Revenue value of exactly 48456000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B8 contains the Q1 2026 Operating Income value of exactly 3085000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C8 contains the FY 2025 Operating Income value of exactly 11151000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D8 contains the Q3 2025 Operating Income value of exactly 8491000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B9 contains the Q1 2026 R&D Expense value of exactly 537000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C9 contains the FY 2025 R&D Expense value of exactly 2148000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D9 contains the Q3 2025 R&D Expense value of exactly 555000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B10 contains the Q1 2026 SG&A Expense value of exactly 1816000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C10 contains the FY 2025 SG&A Expense value of exactly 6985000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D10 contains the Q3 2025 SG&A Expense value of exactly 1822000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B11 contains the Q1 2026 Total Assets value of exactly 95550000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C11 contains the FY 2025 Total Assets value of exactly 98585000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D11 contains the Q3 2025 Total Assets value of exactly 93722000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B12 contains the Q1 2026 Total Liabilities value of exactly 76890000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C12 contains the FY 2025 Total Liabilities value of exactly 77267000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D12 contains the Q3 2025 Total Liabilities value of exactly 73063000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell B13 contains the Q1 2026 Cash value of exactly 4072000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell C13 contains the FY 2025 Cash value of exactly 9980000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Inputs sheet cell D13 contains the Q3 2025 Cash value of exactly 7538000000.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell B14 contains Q1 2026 EPS Diluted of 5.47.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet cell C14 contains FY 2025 EPS Diluted of 18.81.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis sheet has a header row with columns for Metric, Q1 2026, FY25 Quarterly Avg, $ Var vs Avg, % Var vs Avg, Q3 2025, $ Var vs Q3, % Var vs Q3.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis cell B4 uses the formula =Inputs!B7 to reference Q1 2026 Revenue.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis cell C4 uses the formula =Inputs!C7/4 to calculate FY25 quarterly average Revenue.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis cell D4 uses the formula =B4-C4 to calculate dollar variance vs average.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis cell E4 uses the formula =D4/C4 to calculate percentage variance vs average.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Variance Analysis sheet includes rows for all seven required metrics: Revenue, Operating Income, R&D Expense, SG&A Expense, Total Assets, Total Liabilities, and Cash.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell B4 formula calculates Operating Margin as Inputs!B8/Inputs!B7 for Q1 2026.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell C4 formula calculates Operating Margin as Inputs!D8/Inputs!D7 for Q3 2025.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell B5 formula calculates R&D Intensity as Inputs!B9/Inputs!B7.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell B6 formula calculates SG&A Intensity as Inputs!B10/Inputs!B7.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell B7 formula calculates Leverage Ratio as Inputs!B12/Inputs!B11.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet cell B8 formula calculates Cash % of Assets as Inputs!B13/Inputs!B11.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Margins and Ratios sheet includes all five required ratios: Operating Margin, R&D Intensity, SG&A Intensity, Leverage Ratio, and Cash % of Assets.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary sheet contains an executive summary of 5-8 sentences in a single cell.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary references a positive revenue variance relative to FY25 quarterly average.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary references the cash decline as a notable negative variance.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary discusses operating margin trends between Q1 2026 and Q3 2025.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary includes a brief recommendation on position sizing.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Variance Analysis sheet percentage columns (E and H) are formatted as percentages.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the E14 value of 8.82 for Q2 2025 EPS Diluted.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the E8 value of 5439000000 for Q2 2025 Operating Income.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Inputs sheet contains the E9 value of 1031000000 for Q2 2025 R&D Expense.",
+      "category": "data",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_12a8206240de3ee9",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "variance_analysis",
+    "difficulty": "medium",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:CAT",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "17415000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "67589000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "48456000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "3085000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "11151000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "8491000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "537000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "2148000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "555000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "1816000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "6985000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "1822000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "95550000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "98585000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "93722000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "76890000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "77267000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "73063000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "4072000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "9980000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "7538000000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "5.47",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "18.81",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "4.88",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "=Inputs!B7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "=Inputs!C7/4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "=B4-C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "=D4/C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "=Inputs!B8/Inputs!B7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "=Inputs!B9/Inputs!B7",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "=Inputs!B12/Inputs!B11",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "=Inputs!B13/Inputs!B11",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "CAT",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "0000018230",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "industrials",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 17415000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "money",
+        "value": 67589000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 48456000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 3085000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 11151000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 8491000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 537000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "money",
+        "value": 2148000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "money",
+        "value": 555000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 1816000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 6985000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 1822000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 95550000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 98585000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 93722000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": 76890000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 77267000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "money",
+        "value": 73063000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": 4072000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "money",
+        "value": 9980000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "money",
+        "value": 7538000000,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "money",
+        "value": 5.47,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "money",
+        "value": 18.81,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "money",
+        "value": 4.88,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "=Inputs!B7",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "=Inputs!C7/4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "=B4-C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "=D4/C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "=Inputs!B8/Inputs!B7",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "=Inputs!B9/Inputs!B7",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "=Inputs!B12/Inputs!B11",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "=Inputs!B13/Inputs!B11",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "CAT",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "0000018230",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "industrials",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "money",
+        "value": 7,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "money",
+        "value": 5,
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Inputs",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Caterpillar Inc (CAT) - Raw Financial Data",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A2",
+              "value": "Ticker",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B2",
+              "value": "CAT",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "CIK",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "0000018230",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Sector",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "industrials",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": "FY 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": "Q2 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 17415000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 67589000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 48456000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 3085000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 11151000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": 8491000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": 5439000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "R&D Expense",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 537000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 2148000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": 555000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": 1031000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "SG&A Expense",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": 1816000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": 6985000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": 1822000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E10",
+              "value": 3287000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Total Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": 95550000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C11",
+              "value": 98585000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D11",
+              "value": 93722000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "Total Liabilities",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": 76890000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C12",
+              "value": 77267000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D12",
+              "value": 73063000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E12",
+              "value": 71662000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A13",
+              "value": "Cash and Equivalents",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B13",
+              "value": 4072000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "C13",
+              "value": 9980000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "D13",
+              "value": 7538000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "E13",
+              "value": 5442000000,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0",
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "EPS Diluted",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B14",
+              "value": 5.47,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C14",
+              "value": 18.81,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D14",
+              "value": 4.88,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E14",
+              "value": 8.82,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 30.0,
+            "B": 16.0,
+            "C": 16.0,
+            "D": 16.0,
+            "E": 16.0
+          }
+        },
+        {
+          "name": "Variance Analysis",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Q1 2026 Variance Analysis",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "FY25 Qtr Avg",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "$ Var vs Avg",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "% Var vs Avg",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G3",
+              "value": "$ Var vs Q3",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H3",
+              "value": "% Var vs Q3",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=Inputs!B7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=Inputs!C7/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "=Inputs!D7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G4",
+              "value": null,
+              "formula": "=B4-F4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H4",
+              "value": null,
+              "formula": "=G4/F4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=Inputs!B8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=Inputs!C8/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=Inputs!D8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G5",
+              "value": null,
+              "formula": "=B5-F5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H5",
+              "value": null,
+              "formula": "=G5/F5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "R&D Expense",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=Inputs!B9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=Inputs!C9/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=Inputs!D9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G6",
+              "value": null,
+              "formula": "=B6-F6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H6",
+              "value": null,
+              "formula": "=G6/F6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "SG&A Expense",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=Inputs!B10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=Inputs!C10/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": null,
+              "formula": "=Inputs!D10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G7",
+              "value": null,
+              "formula": "=B7-F7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H7",
+              "value": null,
+              "formula": "=G7/F7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Total Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=Inputs!B11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=Inputs!C11/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": null,
+              "formula": "=Inputs!D11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G8",
+              "value": null,
+              "formula": "=B8-F8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H8",
+              "value": null,
+              "formula": "=G8/F8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Total Liabilities",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": null,
+              "formula": "=Inputs!B12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": null,
+              "formula": "=Inputs!C12/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F9",
+              "value": null,
+              "formula": "=Inputs!D12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G9",
+              "value": null,
+              "formula": "=B9-F9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H9",
+              "value": null,
+              "formula": "=G9/F9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Cash and Equivalents",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": null,
+              "formula": "=Inputs!B13",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": null,
+              "formula": "=Inputs!C13/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": null,
+              "formula": "=B10-C10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E10",
+              "value": null,
+              "formula": "=D10/C10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "F10",
+              "value": null,
+              "formula": "=Inputs!D13",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G10",
+              "value": null,
+              "formula": "=B10-F10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H10",
+              "value": null,
+              "formula": "=G10/F10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 30.0,
+            "B": 16.0,
+            "C": 16.0,
+            "D": 16.0,
+            "E": 16.0,
+            "F": 16.0,
+            "G": 16.0,
+            "H": 16.0
+          }
+        },
+        {
+          "name": "Margins and Ratios",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Profitability and Efficiency Ratios",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Operating Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=Inputs!B8/Inputs!B7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": null,
+              "formula": "=Inputs!D8/Inputs!D7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "R&D Intensity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=Inputs!B9/Inputs!B7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": null,
+              "formula": "=Inputs!D9/Inputs!D7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "SG&A Intensity",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=Inputs!B10/Inputs!B7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": null,
+              "formula": "=Inputs!D10/Inputs!D7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Leverage Ratio",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=Inputs!B12/Inputs!B11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": null,
+              "formula": "=Inputs!D12/Inputs!D11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Cash % of Assets",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": null,
+              "formula": "=Inputs!B13/Inputs!B11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": null,
+              "formula": "=Inputs!D13/Inputs!D11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 30.0,
+            "B": 16.0,
+            "C": 16.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Executive Summary: CAT Q1 2026 Variance Analysis",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Q1 2026 revenue of $17.4B came in above the FY 2025 quarterly run-rate of $16.9B, representing a positive variance of $0.5B or 2.9%. However, revenue declined 34.5% from Q3 2025 levels of $48.5B, reflecting normal quarterly seasonality. Operating income of $3.1B exceeded the FY 2025 quarterly average by $0.3B, though it fell 63.7% versus Q3 2025's $8.5B. Cash and equivalents declined sharply from $9.98B at FY 2025 year-end to $4.07B in Q1 2026, a notable negative variance of $5.9B or 59.2%. Operating margin held steady at 17.7% in Q1 2026 versus 17.5% in Q3 2025, suggesting resilient profitability. The leverage ratio increased slightly from 78.1% to 80.5%, indicating modest balance sheet pressure. R&D intensity rose from 1.1% to 3.1% quarter-over-quarter, reflecting continued investment in innovation. Based on this analysis, the data supports maintaining the current position but warrants caution on liquidity before increasing exposure.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 100.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "XBRL financial data extract for Caterpillar Inc (ticker: CAT, CIK: 0000018230) containing quarterly and annual financial metrics for Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods.",
+          "content_blueprint": {
+            "title": "XBRL financial data extract for Caterpillar Inc (ticker: CAT, CIK: 0000018230) containing quarterly and annual financial metrics for Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods",
+            "body": "# Seed Material: CATERPILLAR INC (CAT)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CAT\n\nCompany: CATERPILLAR INC\nTicker: CAT\nCIK: 0000018230\nSector: industrials\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 17,415,000,000\n  FY 2025: 67,589,000,000\n  None None: 67,589,000,000\n  None None: 19,133,000,000\n  Q3 2025: 48,456,000,000\n\n### CostOfGoodsAndServicesSold\n  FY 2025: 49,000,000\n  Q1 2025: 27,000,000\n  FY 2024: 33,000,000\n  FY 2025: 33,000,000\n  Q1 2025: 6,000,000\n\n### GrossProfit\n  FY 2020: 2,786,000,000\n  FY 2020: 2,309,000,000\n  FY 2020: 2,197,000,000\n  FY 2020: 2,648,000,000\n  FY 2020: 3,269,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 3,085,000,000\n  FY 2025: 11,151,000,000\n  Q3 2025: 8,491,000,000\n  Q3 2025: 3,052,000,000\n  Q2 2025: 5,439,000,000\n\n### NetIncomeLoss\n  None None: 8,884,000,000\n  None None: 10,792,000,000\n  None None: 10,335,000,000\n  None None: 6,705,000,000\n  None None: 6,489,000,000\n\n### Assets\n  Q1 2026: 95,550,000,000\n  FY 2025: 98,585,000,000\n  None None: 98,585,000,000\n  Q1 2026: 98,585,000,000\n  Q3 2025: 93,722,000,000\n\n### Liabilities\n  Q1 2026: 76,890,000,000\n  FY 2025: 77,267,000,000\n  Q1 2026: 77,267,000,000\n  Q3 2025: 73,063,000,000\n  Q2 2025: 71,662,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 4,072,000,000\n  FY 2025: 9,980,000,000\n  Q1 2026: 9,980,000,000\n  Q3 2025: 7,538,000,000\n  Q2 2025: 5,442,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 5.47\n  FY 2025: 18.81\n  Q3 2025: 13.69\n  Q3 2025: 4.88\n  Q2 2025: 8.82\n\n### ResearchAndDevelopmentExpense\n  Q1 2026: 537,000,000\n  FY 2025: 2,148,000,000\n  Q3 2025: 1,586,000,000\n  Q3 2025: 555,000,000\n  Q2 2025: 1,031,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,816,000,000\n  FY 2025: 6,985,000,000\n  Q3 2025: 5,109,000,000\n  Q3 2025: 1,822,000,000\n  Q2 2025: 3,287,000,000\n\n## Recent Filings\n  4 — 2026-05-12\n  4 — 2026-05-12\n  4 — 2026-05-12\n  4 — 2026-05-12\n  144 — 2026-05-11"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Inputs sheet cell B7 contains Q1 2026 Revenue of 17415000000",
+          "value": 17415000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B7"
+        },
+        {
+          "description": "Inputs sheet cell C7 contains FY 2025 Revenue of 67589000000",
+          "value": 67589000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C7"
+        },
+        {
+          "description": "Inputs sheet cell D7 contains Q3 2025 Revenue of 48456000000",
+          "value": 48456000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D7"
+        },
+        {
+          "description": "Inputs sheet cell B8 contains Q1 2026 Operating Income of 3085000000",
+          "value": 3085000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B8"
+        },
+        {
+          "description": "Inputs sheet cell C8 contains FY 2025 Operating Income of 11151000000",
+          "value": 11151000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C8"
+        },
+        {
+          "description": "Inputs sheet cell D8 contains Q3 2025 Operating Income of 8491000000",
+          "value": 8491000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D8"
+        },
+        {
+          "description": "Inputs sheet cell B9 contains Q1 2026 R&D Expense of 537000000",
+          "value": 537000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B9"
+        },
+        {
+          "description": "Inputs sheet cell C9 contains FY 2025 R&D Expense of 2148000000",
+          "value": 2148000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C9"
+        },
+        {
+          "description": "Inputs sheet cell D9 contains Q3 2025 R&D Expense of 555000000",
+          "value": 555000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D9"
+        },
+        {
+          "description": "Inputs sheet cell B10 contains Q1 2026 SG&A Expense of 1816000000",
+          "value": 1816000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B10"
+        },
+        {
+          "description": "Inputs sheet cell C10 contains FY 2025 SG&A Expense of 6985000000",
+          "value": 6985000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C10"
+        },
+        {
+          "description": "Inputs sheet cell D10 contains Q3 2025 SG&A Expense of 1822000000",
+          "value": 1822000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D10"
+        },
+        {
+          "description": "Inputs sheet cell B11 contains Q1 2026 Total Assets of 95550000000",
+          "value": 95550000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B11"
+        },
+        {
+          "description": "Inputs sheet cell C11 contains FY 2025 Total Assets of 98585000000",
+          "value": 98585000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C11"
+        },
+        {
+          "description": "Inputs sheet cell D11 contains Q3 2025 Total Assets of 93722000000",
+          "value": 93722000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D11"
+        },
+        {
+          "description": "Inputs sheet cell B12 contains Q1 2026 Total Liabilities of 76890000000",
+          "value": 76890000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B12"
+        },
+        {
+          "description": "Inputs sheet cell C12 contains FY 2025 Total Liabilities of 77267000000",
+          "value": 77267000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C12"
+        },
+        {
+          "description": "Inputs sheet cell D12 contains Q3 2025 Total Liabilities of 73063000000",
+          "value": 73063000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D12"
+        },
+        {
+          "description": "Inputs sheet cell B13 contains Q1 2026 Cash and Equivalents of 4072000000",
+          "value": 4072000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell B13"
+        },
+        {
+          "description": "Inputs sheet cell C13 contains FY 2025 Cash and Equivalents of 9980000000",
+          "value": 9980000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell C13"
+        },
+        {
+          "description": "Inputs sheet cell D13 contains Q3 2025 Cash and Equivalents of 7538000000",
+          "value": 7538000000,
+          "tolerance": null,
+          "location": "Inputs sheet cell D13"
+        },
+        {
+          "description": "Inputs sheet cell B14 contains Q1 2026 EPS Diluted of 5.47",
+          "value": 5.47,
+          "tolerance": null,
+          "location": "Inputs sheet cell B14"
+        },
+        {
+          "description": "Inputs sheet cell C14 contains FY 2025 EPS Diluted of 18.81",
+          "value": 18.81,
+          "tolerance": null,
+          "location": "Inputs sheet cell C14"
+        },
+        {
+          "description": "Inputs sheet cell D14 contains Q3 2025 EPS Diluted of 4.88",
+          "value": 4.88,
+          "tolerance": null,
+          "location": "Inputs sheet cell D14"
+        },
+        {
+          "description": "Variance Analysis cell B4 references Inputs!B7 for Q1 2026 Revenue",
+          "value": "=Inputs!B7",
+          "tolerance": null,
+          "location": "Variance Analysis sheet cell B4"
+        },
+        {
+          "description": "Variance Analysis cell C4 calculates FY25 quarterly average as Inputs!C7/4",
+          "value": "=Inputs!C7/4",
+          "tolerance": null,
+          "location": "Variance Analysis sheet cell C4"
+        },
+        {
+          "description": "Variance Analysis cell D4 calculates dollar variance as B4-C4",
+          "value": "=B4-C4",
+          "tolerance": null,
+          "location": "Variance Analysis sheet cell D4"
+        },
+        {
+          "description": "Variance Analysis cell E4 calculates percentage variance as D4/C4",
+          "value": "=D4/C4",
+          "tolerance": null,
+          "location": "Variance Analysis sheet cell E4"
+        },
+        {
+          "description": "Margins sheet cell B4 calculates Operating Margin as Inputs!B8/Inputs!B7",
+          "value": "=Inputs!B8/Inputs!B7",
+          "tolerance": null,
+          "location": "Margins and Ratios sheet cell B4"
+        },
+        {
+          "description": "Margins sheet cell B5 calculates R&D Intensity as Inputs!B9/Inputs!B7",
+          "value": "=Inputs!B9/Inputs!B7",
+          "tolerance": null,
+          "location": "Margins and Ratios sheet cell B5"
+        },
+        {
+          "description": "Margins sheet cell B7 calculates Leverage Ratio as Inputs!B12/Inputs!B11",
+          "value": "=Inputs!B12/Inputs!B11",
+          "tolerance": null,
+          "location": "Margins and Ratios sheet cell B7"
+        },
+        {
+          "description": "Margins sheet cell B8 calculates Cash % of Assets as Inputs!B13/Inputs!B11",
+          "value": "=Inputs!B13/Inputs!B11",
+          "tolerance": null,
+          "location": "Margins and Ratios sheet cell B8"
+        },
+        {
+          "description": "Ticker in Inputs sheet cell B2 is CAT",
+          "value": "CAT",
+          "tolerance": null,
+          "location": "Inputs sheet cell B2"
+        },
+        {
+          "description": "CIK in Inputs sheet cell B3 is 0000018230",
+          "value": "0000018230",
+          "tolerance": null,
+          "location": "Inputs sheet cell B3"
+        },
+        {
+          "description": "Sector in Inputs sheet cell B4 is industrials",
+          "value": "industrials",
+          "tolerance": null,
+          "location": "Inputs sheet cell B4"
+        },
+        {
+          "description": "Variance Analysis includes 7 metric rows: Revenue through Cash",
+          "value": 7,
+          "tolerance": null,
+          "location": "Variance Analysis sheet rows 4-10"
+        },
+        {
+          "description": "Margins sheet includes 5 ratio rows: Operating Margin through Cash % of Assets",
+          "value": 5,
+          "tolerance": null,
+          "location": "Margins and Ratios sheet rows 4-8"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 436505422
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "XBRL financial data extract for Caterpillar Inc (ticker: CAT, CIK: 0000018230) containing quarterly and annual financial metrics for Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods.",
+      "content_blueprint": {
+        "title": "XBRL financial data extract for Caterpillar Inc (ticker: CAT, CIK: 0000018230) containing quarterly and annual financial metrics for Q1 2026, Q3 2025, Q2 2025, and FY 2025 periods",
+        "body": "# Seed Material: CATERPILLAR INC (CAT)\nSource: sec_edgar_xbrl\nIdentifier: ticker:CAT\n\nCompany: CATERPILLAR INC\nTicker: CAT\nCIK: 0000018230\nSector: industrials\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 17,415,000,000\n  FY 2025: 67,589,000,000\n  None None: 67,589,000,000\n  None None: 19,133,000,000\n  Q3 2025: 48,456,000,000\n\n### CostOfGoodsAndServicesSold\n  FY 2025: 49,000,000\n  Q1 2025: 27,000,000\n  FY 2024: 33,000,000\n  FY 2025: 33,000,000\n  Q1 2025: 6,000,000\n\n### GrossProfit\n  FY 2020: 2,786,000,000\n  FY 2020: 2,309,000,000\n  FY 2020: 2,197,000,000\n  FY 2020: 2,648,000,000\n  FY 2020: 3,269,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 3,085,000,000\n  FY 2025: 11,151,000,000\n  Q3 2025: 8,491,000,000\n  Q3 2025: 3,052,000,000\n  Q2 2025: 5,439,000,000\n\n### NetIncomeLoss\n  None None: 8,884,000,000\n  None None: 10,792,000,000\n  None None: 10,335,000,000\n  None None: 6,705,000,000\n  None None: 6,489,000,000\n\n### Assets\n  Q1 2026: 95,550,000,000\n  FY 2025: 98,585,000,000\n  None None: 98,585,000,000\n  Q1 2026: 98,585,000,000\n  Q3 2025: 93,722,000,000\n\n### Liabilities\n  Q1 2026: 76,890,000,000\n  FY 2025: 77,267,000,000\n  Q1 2026: 77,267,000,000\n  Q3 2025: 73,063,000,000\n  Q2 2025: 71,662,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 4,072,000,000\n  FY 2025: 9,980,000,000\n  Q1 2026: 9,980,000,000\n  Q3 2025: 7,538,000,000\n  Q2 2025: 5,442,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 5.47\n  FY 2025: 18.81\n  Q3 2025: 13.69\n  Q3 2025: 4.88\n  Q2 2025: 8.82\n\n### ResearchAndDevelopmentExpense\n  Q1 2026: 537,000,000\n  FY 2025: 2,148,000,000\n  Q3 2025: 1,586,000,000\n  Q3 2025: 555,000,000\n  Q2 2025: 1,031,000,000\n\n### SellingGeneralAndAdministrativeExpense\n  Q1 2026: 1,816,000,000\n  FY 2025: 6,985,000,000\n  Q3 2025: 5,109,000,000\n  Q3 2025: 1,822,000,000\n  Q2 2025: 3,287,000,000\n\n## Recent Filings\n  4 — 2026-05-12\n  4 — 2026-05-12\n  4 — 2026-05-12\n  4 — 2026-05-12\n  144 — 2026-05-11"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_12a8206240de3ee9/variance_analysis.xlsx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_12a8206240de3ee9/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:36:04.827462+00:00"
+}

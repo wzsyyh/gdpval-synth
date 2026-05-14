@@ -1,0 +1,802 @@
+{
+  "candidate_id": "sc_1c7f86b7ac66cf7b",
+  "occupation": "software_engineer",
+  "archetype": "code_review",
+  "difficulty": "medium",
+  "seed_id": "1c7f86b7ac66cf7b",
+  "prompt": "You are a senior machine learning engineer on the Hugging Face Transformers library team. The team is reviewing PR #24891, which adds support for the Llama 2 model architecture. Your staff engineer has asked you to produce a comprehensive code review document to evaluate the PR's readiness for merge. The review should assess the completeness of the model integration, adherence to the library's architectural patterns, and the quality of the documentation updates.\n\nMaterials provided:\n- PR #24891 diff and description for the Llama 2 model addition\n\nTask requirements:\n1. Analyze the PR's scope by examining the list of changed files (20 files) and the volume of changes (+538 additions, -55 deletions) to determine if the PR is appropriately sized and focused.\n2. Evaluate the model's naming and registration by checking if 'Llama2' is properly added to the library's model list in `README.md` and if the model documentation URL follows the established pattern (https://huggingface.co/docs/transformers/model_doc/llama2).\n3. Assess the consistency of the model's author attribution in `README.md`, comparing the structure of the Llama 2 entry to adjacent entries like LLaMA.\n4. Review the technical implementation by hypothesizing what files are typically required for a new model integration (configuration, modeling, tokenizer, tests, documentation) and assess if the +538/-55 line count suggests a comprehensive addition.\n5. Identify any potential risks or omissions based on the limited diff preview, such as whether the paper citation URL appears incomplete or malformed.\n6. Provide a final recommendation (Approve, Request Changes, or Comment) with specific, actionable feedback for each finding.\n\nDeliverable specification:\n- Output a Markdown file titled 'Code Review - Llama2 Model Addition (PR #24891)'.\n- Structure the review with the following sections: Summary, Scope Analysis, Naming & Registration, Author Attribution Consistency, Technical Implementation Assessment, Risk Analysis, and Recommendation.\n- Use bullet points for findings within each section.\n- Include specific references to the PR number, file names, line counts, and the README diff content from the provided materials.",
+  "deliverable": {
+    "deliverable_id": "code_review",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted document is a Markdown file with the title 'Code Review - Llama2 Model Addition (PR #24891)'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Summary' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Scope Analysis' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Naming & Registration' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an 'Author Attribution Consistency' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Technical Implementation Assessment' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Risk Analysis' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Recommendation' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section correctly identifies PR #24891 and its title '[`Llama2`] Add support for Llama 2'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section mentions the merge date of 2023-07-18.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope Analysis section states the PR modifies 20 files.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope Analysis section cites the addition of 538 lines and deletion of 55 lines.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope Analysis provides a reasonable assessment of the scope being appropriate for a model addition.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Naming & Registration section confirms 'Llama2' is added to README.md.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Naming & Registration section references the documentation URL pattern '/model_doc/llama2'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Naming & Registration section notes the alphabetical placement after the LLaMA entry.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Author Attribution Consistency section compares the Llama 2 entry to the adjacent LLaMA entry.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Author Attribution Consistency section identifies the malformed paper citation URL with '/XXX'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Author Attribution Consistency section provides a reasonable analysis of the author list length.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Implementation Assessment section hypothesizes typical files for a new model (configuration, modeling, tokenizer, tests).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Assessment section relates the 20-file count to implementation scope.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Implementation Assessment infers completeness from the +538/-55 line changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Analysis section identifies the malformed citation URL as a primary risk.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Analysis section discusses potential missing components due to incomplete diff.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Analysis section notes the minimal PR description as a limitation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendation section provides a final verdict of 'Request Changes'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendation section includes actionable feedback to fix the paper citation URL.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section includes actionable feedback to verify all model components.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendation section includes actionable feedback to enhance the PR description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses bullet points for findings within sections (where visible in the answer).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the file 'README.md' as the location of the model list addition.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the FAIR team of Meta AI as the source.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document compares the citation formats between LLaMA (arXiv link) and Llama 2 (Meta AI research page).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies the author Hugo Touvron as appearing in both the LLaMA and Llama 2 author lists.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document provides a professional and structured analysis.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document maintains a neutral and objective tone throughout.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to mention the PR number 24891 anywhere in the review.",
+      "category": "reference",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to identify the malformed citation URL as an issue.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_1c7f86b7ac66cf7b",
+    "occupation": "software_engineer",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:huggingface/transformers#24891",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Code Review - Llama2 Model Addition (PR #24891)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "24891",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "[`Llama2`] Add support for Llama 2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "2023-07-18",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "538",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "Llama2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "/model_doc/llama2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "LLaMA",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "/XXX",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "Request Changes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "Summary",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "Scope Analysis",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "Naming & Registration",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "Author Attribution Consistency",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Technical Implementation Assessment",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "Risk Analysis",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "Recommendation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "2302.13971",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "The FAIR team of Meta AI",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "Hugo Touvron",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Code Review - Llama2 Model Addition (PR #24891)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "24891",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "[`Llama2`] Add support for Llama 2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "2023-07-18",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 20,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 538,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 55,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "Llama2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "/model_doc/llama2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "LLaMA",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "/XXX",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "Request Changes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "Summary",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "Scope Analysis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Naming & Registration",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "Author Attribution Consistency",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "Technical Implementation Assessment",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "Risk Analysis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "Recommendation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "2302.13971",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "The FAIR team of Meta AI",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "Hugo Touvron",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "State the PR number and title",
+            "Summarize the purpose: adding Llama 2 model support",
+            "Mention the merge date (2023-07-18) as context"
+          ],
+          "paragraphs": [
+            "This review evaluates PR #24891, titled '[`Llama2`] Add support for Llama 2'. The PR was merged on 2023-07-18 and introduces support for the Llama 2 model architecture into the Hugging Face Transformers library. The change set consists of 20 modified files with a total of +538 additions and -55 deletions."
+          ]
+        },
+        {
+          "heading": "Scope Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Analyze the 20-file change count",
+            "Comment on the +538/-55 line changes",
+            "Assess if the scope is appropriate for a model addition"
+          ],
+          "paragraphs": [
+            "The PR modifies 20 files, which is consistent with a comprehensive model integration that typically touches the model's configuration, modeling code, tokenizer, documentation, and registration points. The addition of 538 lines and deletion of 55 lines suggests a substantial but focused contribution, likely involving new code rather than extensive refactoring of existing modules. This scope appears appropriate for a model addition of this nature."
+          ]
+        },
+        {
+          "heading": "Naming & Registration",
+          "heading_level": 2,
+          "required_content": [
+            "Verify the model name 'Llama2' in README.md",
+            "Check the documentation URL pattern",
+            "Confirm proper placement in the model list"
+          ],
+          "paragraphs": [
+            "The PR correctly adds 'Llama2' to the model list in `README.md` under the entry: `**[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)**`. The documentation URL follows the standard pattern used by other models (e.g., `/model_doc/llama` for LLaMA). The entry is placed in alphabetical order after the LLaMA entry, which is consistent with the library's listing convention."
+          ]
+        },
+        {
+          "heading": "Author Attribution Consistency",
+          "heading_level": 2,
+          "required_content": [
+            "Compare the Llama 2 entry structure to LLaMA",
+            "Examine the citation format and author list",
+            "Note any inconsistencies"
+          ],
+          "paragraphs": [
+            "The Llama 2 entry includes a detailed author list that is significantly longer than the adjacent LLaMA entry. While the LLaMA entry credits 'The FAIR team of Meta AI' and cites a specific arXiv paper (2302.13971), the Llama 2 entry references a Meta AI research page. The formatting is consistent in using bold for the model name and linking to the documentation. However, the paper citation URL provided (https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) contains '/XXX' which appears to be a placeholder or incomplete path, raising concerns about its validity."
+          ]
+        },
+        {
+          "heading": "Technical Implementation Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Discuss typical files for a new model",
+            "Relate file count to implementation scope",
+            "Infer completeness from line changes"
+          ],
+          "paragraphs": [
+            "For a new model like Llama 2, the expected changes would typically span configuration classes (e.g., Llama2Config), modeling code (Llama2Model, Llama2ForCausalLM), tokenizer files, test files, and documentation updates. The 20 files modified suggest that most of these components are addressed. The +538 additions indicate that substantial new code has been written, while the -55 deletions likely correspond to minor adjustments or updates to existing registration points. Without the full diff, we can infer that the implementation is likely comprehensive."
+          ]
+        },
+        {
+          "heading": "Risk Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "Identify the malformed citation URL",
+            "Discuss potential missing components",
+            "Note any other red flags from the diff preview"
+          ],
+          "paragraphs": [
+            "The primary risk identified is the malformed paper citation URL in the README entry, which includes '/XXX' and may not resolve to the actual paper. This could mislead users seeking the original research. Additionally, without access to the full diff, there is a risk that critical components such as proper model registration, tokenization tests, or compatibility checks may be incomplete. The PR description is minimal, providing only a brief statement, which limits the reviewer's understanding of the changes' technical depth."
+          ]
+        },
+        {
+          "heading": "Recommendation",
+          "heading_level": 2,
+          "required_content": [
+            "Provide a final verdict",
+            "List specific actionable feedback",
+            "Address the citation URL issue"
+          ],
+          "paragraphs": [
+            "Based on the available information, this review recommends 'Request Changes' to address the identified issue. The actionable feedback is as follows:\n\n- Fix the paper citation URL: Update the link in `README.md` to point to the correct, complete URL for the Llama 2 paper, removing the '/XXX' placeholder.\n- Verify all model components: Ensure that configuration, modeling, tokenizer, and test files are present and functional as expected for a new model.\n- Enhance PR description: Provide a more detailed description of the changes, including a summary of the new model's features and any known limitations.\n\nOnce these items are addressed, the PR would be suitable for merge."
+          ]
+        }
+      ],
+      "md_title": "Code Review - Llama2 Model Addition (PR #24891)",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #24891 diff and description for the Llama 2 model addition",
+          "content_blueprint": {
+            "title": "PR #24891 diff and description for the Llama 2 model addition",
+            "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "The document title is set to 'Code Review - Llama2 Model Addition (PR #24891)'.",
+          "value": "Code Review - Llama2 Model Addition (PR #24891)",
+          "tolerance": null,
+          "location": "Markdown file title"
+        },
+        {
+          "description": "The PR number referenced is 24891.",
+          "value": "24891",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The PR title quoted is '[`Llama2`] Add support for Llama 2'.",
+          "value": "[`Llama2`] Add support for Llama 2",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The merge date mentioned is 2023-07-18.",
+          "value": "2023-07-18",
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "The number of changed files is 20.",
+          "value": 20,
+          "tolerance": null,
+          "location": "Scope Analysis section"
+        },
+        {
+          "description": "The number of additions is 538.",
+          "value": 538,
+          "tolerance": null,
+          "location": "Scope Analysis section"
+        },
+        {
+          "description": "The number of deletions is 55.",
+          "value": 55,
+          "tolerance": null,
+          "location": "Scope Analysis section"
+        },
+        {
+          "description": "The model name 'Llama2' is mentioned as being added to README.md.",
+          "value": "Llama2",
+          "tolerance": null,
+          "location": "Naming & Registration section"
+        },
+        {
+          "description": "The documentation URL referenced follows the pattern '/model_doc/llama2'.",
+          "value": "/model_doc/llama2",
+          "tolerance": null,
+          "location": "Naming & Registration section"
+        },
+        {
+          "description": "The adjacent model LLaMA is mentioned for comparison.",
+          "value": "LLaMA",
+          "tolerance": null,
+          "location": "Author Attribution Consistency section"
+        },
+        {
+          "description": "The citation URL with '/XXX' is identified as malformed.",
+          "value": "/XXX",
+          "tolerance": null,
+          "location": "Risk Analysis section and Recommendation section"
+        },
+        {
+          "description": "The final recommendation is 'Request Changes'.",
+          "value": "Request Changes",
+          "tolerance": null,
+          "location": "Recommendation section"
+        },
+        {
+          "description": "The review includes a 'Summary' section.",
+          "value": "Summary",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes a 'Scope Analysis' section.",
+          "value": "Scope Analysis",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes a 'Naming & Registration' section.",
+          "value": "Naming & Registration",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes an 'Author Attribution Consistency' section.",
+          "value": "Author Attribution Consistency",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes a 'Technical Implementation Assessment' section.",
+          "value": "Technical Implementation Assessment",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes a 'Risk Analysis' section.",
+          "value": "Risk Analysis",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The review includes a 'Recommendation' section.",
+          "value": "Recommendation",
+          "tolerance": null,
+          "location": "Markdown document structure"
+        },
+        {
+          "description": "The LLaMA arXiv paper number 2302.13971 is referenced.",
+          "value": "2302.13971",
+          "tolerance": null,
+          "location": "Author Attribution Consistency section"
+        },
+        {
+          "description": "The FAIR team of Meta AI is mentioned as the source.",
+          "value": "The FAIR team of Meta AI",
+          "tolerance": null,
+          "location": "Naming & Registration section or Author Attribution Consistency section"
+        },
+        {
+          "description": "The author Hugo Touvron appears in the Llama 2 author list.",
+          "value": "Hugo Touvron",
+          "tolerance": null,
+          "location": "Author Attribution Consistency section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 2046818952
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #24891 diff and description for the Llama 2 model addition",
+      "content_blueprint": {
+        "title": "PR #24891 diff and description for the Llama 2 model addition",
+        "body": "# Seed Material: huggingface/transformers#24891: [`Llama2`]  Add support for Llama 2\nSource: github_issue_pr\nIdentifier: pr:huggingface/transformers#24891\n\nRepository: huggingface/transformers\nPR Number: #24891\nPR Title: [`Llama2`]  Add support for Llama 2\nMerged At: 2023-07-18T19:18:32Z\nChanged Files: 20\nAdditions: +538, Deletions: -55\n\n## PR Description\n# What does this PR do?\r\nAdd Support for Llama2 ! 🔥 🔥 \n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex e4ebcef09344..b24df9e24928 100644\n--- a/README.md\n+++ b/README.md\n@@ -386,6 +386,7 @@ Current number of checkpoints: ![](https://img.shields.io/endpoint?url=https://h\n 1. **[LeViT](https://huggingface.co/docs/transformers/model_doc/levit)** (from Meta AI) released with the paper [LeViT: A Vision Transformer in ConvNet's Clothing for Faster Inference](https://arxiv.org/abs/2104.01136) by Ben Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin, Hervé Jégou, Matthijs Douze.\n 1. **[LiLT](https://huggingface.co/docs/transformers/model_doc/lilt)** (from South China University of Technology) released with the paper [LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding](https://arxiv.org/abs/2202.13669) by Jiapeng Wang, Lianwen Jin, Kai Ding.\n 1. **[LLaMA](https://huggingface.co/docs/transformers/model_doc/llama)** (from The FAIR team of Meta AI) released with the paper [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971) by Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample.\n+1. **[Llama2](https://huggingface.co/docs/transformers/model_doc/llama2)** (from The FAIR team of Meta AI) released with the paper [Llama2: Open Foundation and Fine-Tuned Chat Models](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/XXX) by Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton Ferrer, Moya Chen, Guillem Cucurull, David Esiobu, Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller, Cynthia Gao, Vedanuj Goswami, Naman Goyal, Anthony Hartshorn, Saghar Hosseini, Rui Hou, Hakan Inan, Marcin Kardas, Viktor Kerkez Madian Khabsa, Isabel Kloumann, Artem Korenev, Punit Singh Koura, Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, Diana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushka rMishra, Igor Molybog, Yixin Nie, Andrew Poulton, Jeremy Reizenstein, Rashi Rungta, Kalyan Saladi, Alan Schelten, Ruan Silva, Eric Michael Smith, Ranjan Subramanian, Xiaoqing EllenTan, Binh Tang, Ross Taylor, Adina Williams, Jian Xiang Kuan, Puxin Xu, Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic, Sergey Edunov, Thomas Scialom.\n 1. **[Longformer](https://huggingface.co/docs/transformers/model_doc/longformer)** (from AllenAI) released with the paper [Longformer: The Long-Document Transformer](https://arxiv.org/abs/2004.05150) by Iz Beltagy, Matthew E. Peters, Arman Cohan.\n 1. **[LongT5](https://huggingface.co/docs/transformers/model_doc/longt5)** (from Google AI) released with the paper [LongT5: Effic"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_1c7f86b7ac66cf7b/code_review.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_1c7f86b7ac66cf7b/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:42:32.226407+00:00"
+}

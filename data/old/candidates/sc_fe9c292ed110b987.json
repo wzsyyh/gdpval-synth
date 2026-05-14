@@ -1,0 +1,575 @@
+{
+  "candidate_id": "sc_fe9c292ed110b987",
+  "occupation": "software_engineer",
+  "archetype": "outage_rca",
+  "difficulty": "hard",
+  "seed_id": "a149f3d810c39943",
+  "prompt": "You are a senior software engineer on the platform infrastructure team at Brookspring Software. Mira Fontaine, your engineering manager, has asked you to write an incident postmortem for a production outage that occurred after redis/redis#14048 (\"LOLWUT for Redis 8.\") was integrated into our internal Redis 8 deployment. Dani Olarte, who originally championed the back-port, is no longer on the team, so you're reconstructing what happened from git history and incident logs.\n\nThe upstream PR (merged 2025-05-26) added the TAPE MARK I computer poetry generation command to Redis's LOLWUT feature. The key code change was the addition of `lolwut8.o` to the `REDIS_SERVER_OBJ` list in `src/Makefile` and a new function declaration in `src/lolwut.c`. This back-port caused a service disruption in our environment.\n\nWrite a complete incident postmortem in Markdown covering the following:\n\n1. **Executive Summary** — One-paragraph overview of the incident: what happened, when, how long it lasted, and the severity level (use Brookspring's standard severity classification).\n\n2. **Timeline** — Document the incident from first detection through resolution using UTC timestamps. Include when the back-port PR was merged upstream, when it was integrated into Brookspring's fork, when the issue was detected, and when service was restored.\n\n3. **Root Cause Analysis** — Identify the specific change (addition of `lolwut8.o` to the build object list in `src/Makefile`) as the triggering change. Explain technically how this affected the build or runtime behavior. Reference the upstream PR number (14048) and title accurately. Do not fabricate details beyond what's in the PR metadata — the PR implements Nanni Balestrini's TAPE MARK I algorithm for computer-generated poetry, selects verses from three literary sources, and was intended for back-port to Redis 8.\n\n4. **Impact Assessment** — Describe which Brookspring services were affected, the duration of degraded state, and any data loss or consistency issues. Keep internal deployment specifics abstract (no internal hostnames or URLs).\n\n5. **Contributing Factors** — List at least three factors beyond the PR itself that contributed to the outage. Consider insufficient integration testing, missing build pipeline validation, gaps in the back-port review process, and the bus-factor risk introduced by Dani Olarte's departure from the team.\n\n6. **Remediation Actions** — Propose concrete, measurable action items with owner names and target completion dates. Each item should be specific enough to be verifiable — vague items like \"improve testing\" are not acceptable.\n\n7. **Lessons Learned** — Distinguish between systemic issues (process/tooling gaps that affect the broader org) and one-off oversights specific to this incident.\n\nFollow standard postmortem structure and blameless language throughout. The audience includes engineering leadership and on-call SREs. Define acronyms on first use for readers unfamiliar with Redis internals.",
+  "deliverable": {
+    "deliverable_id": "incident_postmortem",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document identifies the upstream repository as redis/redis.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the upstream PR number as 14048.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the upstream PR title as \"LOLWUT for Redis 8.\"",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the first affected file as src/Makefile.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the second affected file as src/lolwut.c.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the specific code change as the addition of lolwut8.o to the REDIS_SERVER_OBJ list in src/Makefile.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the function declaration added in src/lolwut.c as void lolwut8Command(client *c).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly states the upstream PR was merged on 2025-05-26.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Mira Fontaine as the engineering manager who assigned the task.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Dani Olarte as a former teammate who championed the back-port.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the internal deadline as 2026-05-19.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies the task assignment date as 2026-05-11.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is provided as a single Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an Executive Summary section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Timeline section with UTC timestamps.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Root Cause Analysis section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains an Impact Assessment section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Contributing Factors section listing at least three factors.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Remediation Actions section with concrete, measurable action items.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Lessons Learned section distinguishing systemic issues from one-off oversights.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Executive Summary identifies a severity level using Brookspring's standard severity classification.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Executive Summary states the duration of the outage.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Timeline section includes at least four distinct timestamped events in UTC.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Timeline includes the upstream PR merge date (2025-05-26).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Timeline includes when the back-port was integrated into Brookspring's fork.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Timeline includes when the issue was first detected.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Timeline includes when service was restored.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause Analysis explains technically how the addition of lolwut8.o affected the build or runtime behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis references that the PR implements Nanni Balestrini's TAPE MARK I algorithm.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause Analysis mentions that the algorithm selects verses from three literary sources.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause Analysis correctly identifies at least one of the three literary sources: Diary of Hiroshima by Michihito Hachiya, The Mystery of the Elevator by Paul Goldwin, or Tao Te Ching by Lao Tse.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment describes which Brookspring services were affected without exposing proprietary hostnames or internal URLs.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment states the duration of degraded state.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Impact Assessment addresses any data loss or consistency issues.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Contributing Factors section lists at least three distinct factors beyond the PR itself.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "At least one contributing factor addresses insufficient integration testing.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "At least one contributing factor addresses the bus-factor risk related to Dani Olarte's departure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each Remediation Action item includes an owner name and a target completion date.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Each Remediation Action item is specific and measurable (not vague like 'improve testing').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses neutral, blameless language consistent with postmortem culture.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Technical acronyms (e.g., SRE, RCA) are defined on first use.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document avoids attributing blame to specific individuals by name.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "All dates in the document are internally consistent with each other and with the canonical state.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "All entity names (redis/redis, Brookspring Software, Dani Olarte, Mira Fontaine) are spelled correctly and consistently.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not fabricate PR metadata beyond what is provided in the canonical state.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Lessons Learned section distinguishes at least one systemic issue from at least one one-off oversight.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document plausibly links the back-port review gap to the team's knowledge bus factor.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document references the PR body excerpt's mention that the commit should be back-ported to Redis 8.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly notes the upstream PR was merged before the assignment date of 2026-05-11.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": -1,
+      "criterion": "The document fabricates details about the PR implementation that are not present in the canonical state (e.g., incorrect literary sources, wrong PR title).",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_fe9c292ed110b987",
+    "occupation": "software_engineer",
+    "deliverable_id": "incident_postmortem",
+    "archetype": "outage_rca",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:redis/redis#14048",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "redis/redis",
+        "attrs": {
+          "pr_number": 14048,
+          "pr_title": "LOLWUT for Redis 8."
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Brookspring Software",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Dani Olarte",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Mira Fontaine",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-05-26",
+        "description": "Reference PR redis/redis#14048 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-11",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-19",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "redis/redis",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 14048,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "LOLWUT for Redis 8.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n",
+        "unit": null,
+        "source": "github:redis/redis#14048"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut",
+        "unit": null,
+        "source": "github:redis/redis#14048.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Write a root cause analysis (RCA) document covering the outage triggered by the integration of redis/redis#14048 into Brookspring Software's Redis 8 deployment.",
+      "Identify the specific code change (addition of lolwut8.o to REDIS_SERVER_OBJ in src/Makefile) as the triggering change and explain how it affected the build or runtime.",
+      "Document the incident timeline from first detection through resolution, with timestamps in UTC.",
+      "Describe the customer impact: which services were affected, duration of degraded state, and any data loss or consistency issues.",
+      "List at least three contributing factors beyond the PR itself (e.g., insufficient integration testing, missing build pipeline checks, gap in code review for back-ports).",
+      "Propose concrete, measurable action items to prevent recurrence, each with an owner and target completion date.",
+      "Include a \"Lessons Learned\" section that distinguishes between systemic issues and one-off oversights.",
+      "Format the postmortem using Brookspring Software's standard internal incident postmortem template (severity field, incident commander, detection method, recovery steps).",
+      "Reference the upstream PR metadata (pr_number=14048, pr_title, pr_body_excerpt) accurately without fabricating details not present in the canonical state.",
+      "Ensure the document is internally consistent: all dates, entity names, and technical details must align with the pinned facts provided."
+    ],
+    "implicit_requirements": [
+      "Follow the standard postmortem structure common in SRE practice: Summary, Impact, Root Cause, Contributing Factors, Recovery, Action Items, Lessons Learned.",
+      "Use neutral, blameless language consistent with postmortem culture — focus on systems, not individuals.",
+      "The audience includes engineering leadership and on-call SREs who need to understand both the technical failure and the process gap.",
+      "Action items must be SMART (Specific, Measurable, Assignable, Realistic, Time-bound) — vague items like 'improve testing' are not acceptable.",
+      "Link back-port approval processes to the fact that Dani Olarte is no longer on the team, highlighting bus-factor risk.",
+      "Technical jargon should be accessible to a staff engineer unfamiliar with Redis internals; define acronyms on first use."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "What happened, impact, and root cause"
+          ],
+          "paragraphs": [
+            "The Redis continuous integration (CI) pipeline experienced build failures on specific platforms, including Alpine Linux (musl libc) and certain ARM architectures, following the merge of Pull Request #14048. This PR introduced the `LOLWUT 8` command, which implements a poetry generation algorithm in `src/lolwut8.c`. The immediate impact was the blocking of automated release builds and the inability for contributors on affected systems to compile Redis from the main branch. The failure was traced to linkage errors for undefined symbols within the new `lolwut8.c` module.",
+            "Root cause analysis identified two interrelated issues in the code changes. First, functions within `src/lolwut8.c` were declared but not defined with the `static` keyword, making their visibility external. These functions depended on constants (`LOLWUT8_POETRY_...`) defined in the same file. However, due to platform-specific build configuration differences and how the object files were linked, the linker could not resolve these symbols on some toolchains. Second, the conditional compilation guard in `src/Makefile` for including `lolwut8.o` in the build was overly restrictive, failing to account for all necessary compilation environments and thus omitting the object file in certain valid build scenarios.",
+            "The core problem was an incomplete integration of a new source file that assumed universal build-time behavior. The missing `static` qualifier exposed an internal design flaw, while the Makefile condition created an environment where the required object file was not compiled but its functions were still referenced from `src/lolwut.c`. A fix was required to properly encapsulate the internal functions and ensure the build system consistently included the new module across all supported platforms."
+          ]
+        },
+        {
+          "heading": "Timeline",
+          "heading_level": 2,
+          "required_content": [
+            "Minute-by-minute incident timeline"
+          ],
+          "paragraphs": [
+            "**Timeline**",
+            "At 09:15 UTC on November 27, the pull request #14048 (\"Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\") was merged into the `redis:unstable` branch. The CI pipeline immediately triggered across all supported platforms. The first failure was reported at 09:23 UTC from the `alpine` build target, a minimal environment based on `musl` libc. The error log from `make` showed a linker failure: `ld: src/lolwut8.o: relocation R_X86_64_PC32 against symbol 'stime' can not be used when making a shared object; recompile with -fPIC`. The `stime` symbol referenced was from the standard C library, used in `src/lolwut8.c` for seeding the random number generator.",
+            "Initial investigation by the on-call engineer commenced at 09:31 UTC. The failure was isolated to the `static-lib` build variant on Alpine. Analysis confirmed that `src/lolwut8.c` did indeed call `stime()`, but the build system's `--exclude-libs` flag in `src/Makefile`, which instructs the linker to hide symbols from static libraries, was unexpectedly also hiding essential `libc` symbols on `musl`-based systems. This is a known divergence in behavior between `glibc` and `musl` linkers. The `redis-server` executable was linked statically with `libc`, but the new `stime` call created a hidden, unavailable reference.",
+            "A fix was implemented and committed at 10:15 UTC. The solution involved modifying `src/Makefile` to conditionally apply the `--exclude-libs` flag only for non-`musl` builds, specifically adding a check `ifneq ($(uname_S),Linux-musl)`. This change preserved the desired static linking behavior on `glibc` distributions while allowing Alpine Linux builds to proceed without symbol exclusion conflicts. The revised CI pipeline passed all targets by 10:50 UTC, and the incident was resolved. The root cause was an incompatibility between a newly introduced standard library function and a platform-specific linker flag."
+          ]
+        },
+        {
+          "heading": "Root Cause Analysis",
+          "heading_level": 2,
+          "required_content": [
+            "5 Whys or equivalent RCA methodology"
+          ],
+          "paragraphs": [
+            "The root cause analysis for the compilation failure introduced by PR #14048 reveals a systemic gap in build configuration validation. The failure manifested as a linker error (`undefined reference to 'lolwut8Command'`) exclusively in release build modes, while debug and default builds succeeded. Applying the 5 Whys methodology clarifies the chain of causation.",
+            "**Why 1:** Why did the build fail? The linker could not resolve the symbol for the `LOLWUT 8` command because the object file containing `lolwut8.c` was not linked into the final `redis-server` binary. **Why 2:** Why was the object file not linked? The object file `lolwut8.o` was correctly compiled but was missing from the final dependency list of the `redis-server` target in the build script. **Why 3:** Why was it missing from the dependency list? The `src/Makefile` uses different source lists (`REDIS_SERVER_OBJ` and `REDIS_SERVER_RELEASE_OBJ`) for debug and release builds. The PR author added `lolwut8.c` to the standard object list but inadvertently omitted it from the release-specific list. **Why 4:** Why was this omission not caught before merge? The standard CI pipeline primarily validates debug builds. The release build configuration, which uses stricter optimizations and a different object list, was not automatically tested for this change. **Why 5:** Why was the CI pipeline not covering this configuration? There is an implicit assumption that adding a source file to the primary list is sufficient, and no explicit validation step existed to ensure parity between the debug and release object lists.",
+            "Therefore, the **root cause** is an insufficiently guarded build configuration combined with a CI pipeline that did not test the critical release build path for this change. The immediate fix was correcting `src/Makefile` to register `lolwut8.o` in the `REDIS_SERVER_RELEASE_OBJ` list. The deeper, actionable fix involves adding a CI job that compiles in release mode for PRs modifying build files or core source directories, preventing such configuration drift."
+          ]
+        },
+        {
+          "heading": "Impact Assessment",
+          "heading_level": 2,
+          "required_content": [
+            "Users affected, data lost, revenue impact"
+          ],
+          "paragraphs": [
+            "**Impact Assessment**",
+            "The release of LOLWUT 8, as implemented in PR #14048, constitutes a non-breaking, additive feature enhancement to the Redis server. Its primary impact is on the end-user experience and engagement with the `LOLWUT` command. The change affects all users of future Redis 8 builds who utilize this command for visual inspection, debugging, or simple amusement. The modification to `src/Makefile` (to include `lolwut8.c`) and the core `src/lolwut.c` dispatcher ensures seamless integration without altering existing command behavior or system stability. The impact is therefore confined to enriching the interactive and cultural layer of the Redis offering, introducing a historically significant algorithm to its global user base of developers and enthusiasts.",
+            "This change resulted in zero data loss, corruption, or unavailability. The `LOLWUT` command is a read-only operation that generates visual output directly to the client connection. It does not interact with, modify, or depend on any user data stored in Redis keys. The introduction of `src/lolwut8.c` follows the established pattern for versioned LOLWUT implementations, and its execution is sandboxed within the command's context, posing no risk to persistent data integrity or service continuity.",
+            "There is no direct, measurable revenue impact from this pull request. As an open-source, community-driven feature, it does not introduce commercial licensing, paid tiers, or new API metrics. Its value is indirect and strategic: by incorporating a novel piece of digital art history, it strengthens Redis's brand as an innovative and culturally aware technology platform. This can enhance user satisfaction, developer loyalty, and community engagement, which are intangible but critical factors supporting long-term project vitality and the commercial ecosystem built upon it."
+          ]
+        },
+        {
+          "heading": "Remediation Actions",
+          "heading_level": 2,
+          "required_content": [
+            "Immediate fixes and long-term improvements"
+          ],
+          "paragraphs": [
+            "**Remediation Actions**",
+            "Immediate fixes will focus on stabilizing the build and runtime behavior of the LOLWUT 8 module. The primary task is to correct the build system configuration in `src/Makefile`. The new `lolwut8.c` source file must be explicitly added to the `REDIS_SERVER_OBJ` list to ensure it is compiled and linked without manual intervention. Concurrently, the compile-time guard in `src/lolwut.c` must be updated to include the `lolwut8` object file, preventing a runtime crash if the module is omitted. These two changes to the Makefile are non-negotiable for operational stability and will be prioritized for immediate merging.",
+            "A second immediate fix addresses runtime robustness. The implementation in `src/lolwut8.c` must be hardened against failure conditions in the poetry generation algorithm. This includes adding comprehensive error-checking for memory allocation within the poem matrix construction and inserting NULL checks before any operation on the returned `sds` string in `lolwut8Command`. Furthermore, the file handling for the poem seed data must be wrapped in proper error reporting, replacing silent failures with clear logging to `redisLog()` with `REDIS_WARNING` level. This ensures that any issue with the core algorithm is surfaced immediately rather than causing undefined behavior or a silent process crash.",
+            "Long-term improvements will center on enhancing our development and review processes for complex algorithmic features. First, we will formalize a checklist for PRs that modify core build files or introduce new C source files. This checklist will mandate verification of build system integration across supported platforms and a review of all compilation flags and guards. Second, we will implement a dedicated integration test for the `LOLWUT` command suite, executing each variant (`LOLWUT 5`, `LOLWUT 8`, etc.) and validating not only successful command output but also basic invariants, such as ensuring the output is a non-empty bulk string. Finally, we will update the contributor documentation for the Redis module system to include a clear section on the required steps for adding a new built-in command module, using this incident as a case study to prevent similar oversights in future contributions."
+          ]
+        },
+        {
+          "heading": "Lessons Learned",
+          "heading_level": 2,
+          "required_content": [
+            "What went well, what could be better"
+          ],
+          "paragraphs": [
+            "**Lessons Learned**",
+            "The implementation of LOLWUT 8 for PR #14048 demonstrated several effective practices while also revealing areas where our architectural patterns could be refined for future iterations. The decision to isolate the core algorithmic logic in a new file, `src/lolwut8.c`, and integrate it via a clean function call from `src/lolwut.c` was successful. This modularity allowed the creative and complex TAPE MARK I poetry generation code to be developed and tested independently, minimizing the risk of destabilizing the core LOLWUT command dispatcher. The changes to `src/Makefile` were straightforward, correctly including the new object file, which ensured a clean build process from the outset.",
+            "A key area for improvement lies in the coupling between the version-dispatching logic in `src/lolwut.c` and the addition of new versions. The current implementation requires a modification to the central `lolwutCommand` function to handle version \"8\" specifically. While functional for a single addition, this pattern does not scale well. Each future LOLWUT version will necessitate touching this shared file again, creating a maintenance burden and increasing the risk of merge conflicts. A more sustainable approach would be to refactor the dispatcher to use a registration or command table pattern, where new versions are self-contained modules that register their handler function and version string.",
+            "Future work should focus on establishing a formalized interface for LOLWUT command handlers. The `src/lolwut8.c` file effectively defines its own internal API (e.g., functions for matrix and canvas manipulation), but the integration point with the Redis command system remains ad-hoc. By defining a standard `void lolwut_version_8(client *c)` or similar callback signature and having `src/lolwut.c` manage an array of such callbacks indexed by version, we can transform LOLWUT from a monolithic feature into a plugin-like system. This would allow for easier contribution, testing, and removal of individual versions without affecting the core command structure, aligning the codebase more closely with the project's long-term maintainability goals."
+          ]
+        }
+      ],
+      "md_title": "Incident Postmortem: redis/redis#14048",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "redis/redis",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "14048",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "src/Makefile",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "src/lolwut.c",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 3",
+          "value": "src/lolwut8.c",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Brookspring Software. Your manager Mira Fontaine has asked you to write a professional incident postmortem for the open-source project redis/redis.\n\nThe reference PR is #14048: LOLWUT for Redis 8.\n\nKey technical context:\n- Files changed: src/Makefile, src/lolwut.c, src/lolwut8.c\n- PR description excerpt: # Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Bales\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 102970941
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:24:59.461544+00:00"
+}

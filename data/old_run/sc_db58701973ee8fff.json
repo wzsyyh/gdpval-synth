@@ -1,0 +1,1006 @@
+{
+  "candidate_id": "sc_db58701973ee8fff",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "db58701973ee8fff",
+  "prompt": "You are a senior software engineer on the scikit-learn core team. The team is finalizing the v1.4 release, and the major feature addition is polars output support for the `set_output` API (PR #27315). The PR author has implemented the feature, but the technical lead has asked you to produce a comprehensive design document that will serve as the definitive technical reference for this change. This document will be shared with downstream library maintainers, documentation contributors, and the broader community to explain the architecture, design decisions, and migration implications.\n\nYou have been provided with the PR diff for scikit-learn/scikit-learn#27315, which adds `set_output=\"polars\"` to all transformers, and the PR description which explains the changes. The PR is titled \"ENH Adds polars output support to `set_output` API\" and was merged on 2023-11-19. It changes 20 files with +712 additions and -250 deletions. The PR references issues #25896, #26835, and PRs #26683 and #27258.\n\nYour task is to produce a design document in Markdown format. The document must cover:\n\n1. **Overview**: A high-level summary of the feature, the problem it solves, and the key architectural concept introduced (ContainerAdapaterProtocol). Explain how this abstraction enables support for other container types like Xarray.\n\n2. **Motivation and Background**: Explain the context: why polars support was requested (referencing issue #25896 and the broader DataFrame ecosystem evolution), the relationship to the existing pandas set_output implementation, and the performance considerations around zero round-trip between ndarrays and pl.DataFrame vs pandas.\n\n3. **Technical Design**: Detail the ContainerAdapaterProtocol, the concrete implementations for pandas and polars, the changes to `_config.py` (set_config and config_context functions), the minimum dependency version bump for polars (from 0.18.2 to 0.19.12), and the changes to `sklearn/compose/_column_transformer.py`.\n\n4. **API Surface and Usage**: Document the user-facing API changes: the new \"polars\" option for set_output, config_context, and set_config. Provide example usage patterns.\n\n5. **Backward Compatibility and Migration**: Discuss what existing users need to know, any breaking changes, and the relationship to PR #27258 and PR #26683 that were merged or will make this PR smaller.\n\n6. **Testing and Quality Assurance**: Describe the testing approach, the polars minimum version requirements, and the test dependencies.\n\n7. **Limitations and Future Work**: Discuss the memory copy overhead for polars in pipelines (no zero round-trip), and the extensibility for future container types like Xarray.\n\nWrite the document as a complete, professional design reference. Use code blocks where appropriate to illustrate API usage or implementation details from the diff.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title includes 'Design Document' and references PR #27315.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document header section includes the PR number #27315 with a link or reference.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document attributes the PR to author Thomas Fan.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document states the merge date as 2023-11-19.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the target release as scikit-learn v1.4.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document reports the change statistics as 20 files changed.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document reports +712 additions in the PR.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document reports -250 deletions in the PR.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document introduces and explains the ContainerAdapaterProtocol abstraction.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains that ContainerAdapaterProtocol enables extensibility to Xarray.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section exists and summarizes the feature addition.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Background section references issue #25896.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Background section references issue #26835.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains the DataFrame ecosystem evolution context.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contrasts pandas block manager zero round-trip with polars memory copies.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation and Background section exists and provides context.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section explains the ContainerAdapaterProtocol implementations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section documents changes to sklearn/_config.py.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section mentions the polars version bump from 0.18.2 to 0.19.12.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section references sklearn/_min_dependencies.py.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Technical Design section discusses changes to sklearn/compose/_column_transformer.py.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Technical Design section exists and covers implementation details.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Surface section documents the polars option for set_config function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Surface section documents the polars option for config_context function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Surface section includes a code example for set_config.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Surface section includes a code example for config_context.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Surface section includes a code example for transformer set_output.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Surface and Usage section exists.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Backward Compatibility section states the change is fully backward compatible.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Backward Compatibility section references PR #26683.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Backward Compatibility section references PR #27258.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Backward Compatibility section exists.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing section mentions polars minimum version 0.19.12.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing section references PyArrow minimum version 12.0.0.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing section exists and covers quality assurance.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section discusses memory copy overhead in pipelines.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section mentions no zero round-trip for polars.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section discusses extensibility for Xarray.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations and Future Work section exists.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses Markdown headings with consistent hierarchy.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes at least one code block with Python syntax.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains the relationship between this PR and PRs #26683 and #27258.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that polars is an optional dependency.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the versionadded RST directive for polars option.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies that set_config and config_context accept polars as a transform parameter value.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions check_pandas_support import removal from _column_transformer.py.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the DataFrame Interchange Protocol in the motivation section.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document incorrectly states that polars supports zero round-trip between ndarrays and DataFrames.",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document incorrectly attributes the PR to a different author than Thomas Fan.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_db58701973ee8fff",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:scikit-learn/scikit-learn#27315",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "#27315",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "Thomas Fan",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "2023-11-19",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "1.4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "712",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "250",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "ContainerAdapaterProtocol",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "Xarray",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "#25896",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "#26835",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "#26683",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "#27258",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "0.18.2",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "0.19.12",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "12.0.0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "sklearn/_config.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "sklearn/compose/_column_transformer.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "sklearn/_min_dependencies.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "set_config",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "config_context",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "polars",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "versionadded:: 1.4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "1.0",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "#27315",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "Thomas Fan",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "2023-11-19",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "1.4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 20,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 712,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 250,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "ContainerAdapaterProtocol",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "Xarray",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "#25896",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "#26835",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "#26683",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "#27258",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "0.18.2",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "0.19.12",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "12.0.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "sklearn/_config.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "sklearn/compose/_column_transformer.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "sklearn/_min_dependencies.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "set_config",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "config_context",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "polars",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "versionadded:: 1.4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "money",
+        "value": 1.0,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 1.0,
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Polars Output Support for set_output API",
+          "heading_level": 1,
+          "required_content": [
+            "Document title for PR #27315",
+            "Reference to scikit-learn v1.4 release",
+            "Author attribution (Thomas Fan)"
+          ],
+          "paragraphs": [
+            "Design Document: Polars Output Support for set_output API\n\n**PR**: [#27315](https://github.com/scikit-learn/scikit-learn/pull/27315) | **Author**: Thomas Fan | **Merged**: 2023-11-19\n**Target Release**: scikit-learn v1.4 | **Scope**: +712 additions, -250 deletions across 20 files"
+          ]
+        },
+        {
+          "heading": "1. Overview",
+          "heading_level": 2,
+          "required_content": [
+            "High-level summary of polars output support",
+            "Introduction of ContainerAdapaterProtocol",
+            "Extensibility to Xarray and other containers"
+          ],
+          "paragraphs": [
+            "This PR adds `set_output=\"polars\"` support to all scikit-learn transformers, enabling users to receive polars DataFrames as transformer outputs instead of numpy arrays. The change introduces a new abstraction called `ContainerAdapaterProtocol` that generalizes the dataframe-specific API requirements of the `set_output` mechanism.",
+            "The `ContainerAdapaterProtocol` is designed to be generic enough to support any container type. As noted in the PR description, Xarray support will only require implementing another class that conforms to this protocol, and \"everything else should just work.\" This architecture makes the output configuration system truly extensible without requiring changes to individual transformer implementations.",
+            "This feature addresses a long-standing request from the community to support the polars DataFrame library, which has gained significant adoption for its performance characteristics and clean API. The implementation ensures that polars DataFrames can flow seamlessly through scikit-learn pipelines."
+          ]
+        },
+        {
+          "heading": "2. Motivation and Background",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to issue #25896",
+            "Reference to issue #26835",
+            "Broader DataFrame ecosystem context",
+            "Performance characteristics of polars vs pandas"
+          ],
+          "paragraphs": [
+            "The motivation for this change traces back to issue [#25896](https://github.com/scikit-learn/scikit-learn/issues/25896), which requested polars DataFrame support in scikit-learn's output configuration system. This reflects the broader evolution of the Python DataFrame ecosystem, where polars has emerged as a high-performance alternative to pandas with its Apache Arrow-based columnar memory model.",
+            "Issue [#26835](https://github.com/scikit-learn/scikit-learn/issues/26835) further elaborated on the requirements for DataFrame interchange protocol support, which laid the groundwork for this implementation. The existing `set_output` API already supported pandas DataFrames via `set_output(transform=\"pandas\")`, but extending it to polars required a more general abstraction.",
+            "A critical design consideration is the performance difference between pandas and polars in the context of scikit-learn pipelines. Pandas DataFrames use a block manager for 2D ndarrays, which allows a \"zero round-trip\" between numpy arrays and pandas DataFrames without memory copies. Polars does not have this property: wrapping and unwrapping a polars DataFrame to/from numpy arrays results in memory copies. This has implications for pipeline performance, as each transformer step incurs overhead when polars output is enabled."
+          ]
+        },
+        {
+          "heading": "3. Technical Design",
+          "heading_level": 2,
+          "required_content": [
+            "ContainerAdapaterProtocol explanation",
+            "Concrete implementations for pandas and polars",
+            "Changes to _config.py",
+            "Polars minimum version bump from 0.18.2 to 0.19.12",
+            "Changes to _column_transformer.py"
+          ],
+          "paragraphs": [
+            "The core architectural addition is the `ContainerAdapaterProtocol`, a protocol class that defines the interface for converting between scikit-learn's internal numpy array representation and external DataFrame formats. Both the pandas and polars adapters implement this protocol, providing a uniform interface for the `set_output` system.",
+            "In `sklearn/_config.py`, the `set_config` and `config_context` functions were updated to accept `\"polars\"` as a valid value for the `transform` parameter. The docstrings were updated to document the new option, with a `versionadded:: 1.4` directive indicating when the polars option was introduced.",
+            "The minimum polars dependency version was bumped from `0.18.2` to `0.19.12` in `sklearn/_min_dependencies.py` to ensure compatibility with the adapter implementation. This change only affects the test dependencies, as polars remains an optional dependency for users.",
+            "The `sklearn/compose/_column_transformer.py` was also modified to support the new output format. The import of `check_pandas_support` was removed from this file since the column transformer no longer needs to directly handle pandas-specific logic, delegating that responsibility to the container adapter protocol.",
+            "The implementation also builds on code from PRs [#26683](https://github.com/scikit-learn/scikit-learn/pull/26683) and [#27258](https://github.com/scikit-learn/scikit-learn/pull/27258), which introduced foundational changes that made this PR possible."
+          ]
+        },
+        {
+          "heading": "4. API Surface and Usage",
+          "heading_level": 2,
+          "required_content": [
+            "New \"polars\" option documentation",
+            "Usage with set_config",
+            "Usage with config_context",
+            "Usage with transformer set_output"
+          ],
+          "paragraphs": [
+            "The primary user-facing change is the addition of `\"polars\"` as a valid option wherever `set_output` is configured. This includes three main interfaces:",
+            "Setting the global configuration:\n```python\nfrom sklearn import set_config\nset_config(transform=\"polars\")\n```\n\nAll subsequent transformers will produce polars DataFrames as output when fitted and transformed.",
+            "Using context manager for scoped configuration:\n```python\nfrom sklearn import config_context\n\nwith config_context(transform=\"polars\"):\n    # Transformers in this block output polars DataFrames\n    X_transformed = transformer.fit_transform(X)\n```\n\nThis is useful when you want polars output only for a specific section of code.",
+            "Setting output on individual transformers:\n```python\nfrom sklearn.preprocessing import StandardScaler\n\nscaler = StandardScaler().set_output(transform=\"polars\")\nX_polars = scaler.fit_transform(X)\n```\n\nThe `set_output` method on individual transformers now accepts `\"polars\"` in addition to `\"pandas\"` and `\"default\"`."
+          ]
+        },
+        {
+          "heading": "5. Backward Compatibility and Migration",
+          "heading_level": 2,
+          "required_content": [
+            "No breaking changes for existing users",
+            "Relationship to PR #27258 and PR #26683",
+            "Impact on existing pandas set_output usage"
+          ],
+          "paragraphs": [
+            "This change is fully backward compatible. Existing code that uses `set_output(transform=\"pandas\")` or the default numpy output is unaffected. The new `\"polars\"` option is purely additive.",
+            "The implementation depends on changes from PRs [#26683](https://github.com/scikit-learn/scikit-learn/pull/26683) and [#27258](https://github.com/scikit-learn/scikit-learn/pull/27258). As noted in the PR description, merging either of those PRs would have made this PR smaller. The code from those PRs was incorporated into this implementation.",
+            "Users who have been using polars with scikit-learn by manually converting outputs will now have a first-class integration point. The container adapter protocol also simplifies the internal code by removing direct pandas-specific logic from components like `ColumnTransformer`."
+          ]
+        },
+        {
+          "heading": "6. Testing and Quality Assurance",
+          "heading_level": 2,
+          "required_content": [
+            "Testing approach for polars output",
+            "Polars minimum version 0.19.12",
+            "PyArrow dependency"
+          ],
+          "paragraphs": [
+            "The testing strategy ensures comprehensive coverage of the new polars output functionality. Tests are added across all transformer types to verify that `set_output(transform=\"polars\")` produces correct polars DataFrames with appropriate column names and data types.",
+            "The minimum polars version is pinned to `0.19.12` (up from `0.18.2`) to ensure compatibility with the DataFrame interchange protocol and the container adapter implementation. PyArrow version `12.0.0` remains the minimum requirement for the interchange protocol support.",
+            "Both polars and pyarrow are listed as test-only dependencies in `sklearn/_min_dependencies.py`, meaning they are not required for installing scikit-learn but are required for running the full test suite. Users who want to use the polars output feature must install polars separately."
+          ]
+        },
+        {
+          "heading": "7. Limitations and Future Work",
+          "heading_level": 2,
+          "required_content": [
+            "Memory copy overhead in pipelines",
+            "No zero round-trip for polars",
+            "Extensibility for Xarray support"
+          ],
+          "paragraphs": [
+            "The primary limitation of the polars output support is the memory copy overhead in pipeline scenarios. Unlike pandas, polars does not support zero round-trip conversion between numpy ndarrays and DataFrames. This means that in a pipeline with multiple transformer steps, each conversion between numpy arrays and polars DataFrames incurs a memory copy cost.",
+            "For users working with large datasets in pipelines, this overhead may be significant. The pandas implementation avoids this issue because pandas uses a block manager that shares memory with numpy arrays, enabling zero-copy conversions. This is an inherent limitation of the polars library's memory model, not a scikit-learn implementation issue.",
+            "The `ContainerAdapaterProtocol` architecture is designed for extensibility. Future support for Xarray or other array-like containers can be added by implementing the protocol interface. As stated in the PR description, this should require only a new adapter class, with no changes needed to individual transformers. This makes the `set_output` system a flexible foundation for the growing ecosystem of DataFrame and array libraries in Python."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Polars Output Support for set_output API",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #27315 diff showing file changes across 20 files",
+          "content_blueprint": {
+            "title": "PR #27315 diff showing file changes across 20 files",
+            "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description with references to issues #25896, #26835 and PRs #26683, #27258",
+          "content_blueprint": {
+            "title": "PR description with references to issues #25896, #26835 and PRs #26683, #27258",
+            "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "Linked issue comment referencing @ogrisel and @gaelvaroquaux",
+          "content_blueprint": {
+            "title": "Linked issue comment referencing @ogrisel and @gaelvaroquaux",
+            "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number referenced in document",
+          "value": "#27315",
+          "tolerance": null,
+          "location": "Document header or title section"
+        },
+        {
+          "description": "PR author name",
+          "value": "Thomas Fan",
+          "tolerance": null,
+          "location": "Document header or author attribution"
+        },
+        {
+          "description": "PR merge date",
+          "value": "2023-11-19",
+          "tolerance": null,
+          "location": "Document header or overview section"
+        },
+        {
+          "description": "Target release version",
+          "value": "1.4",
+          "tolerance": null,
+          "location": "Document header or overview section"
+        },
+        {
+          "description": "Number of changed files",
+          "value": 20,
+          "tolerance": null,
+          "location": "Document header or overview section"
+        },
+        {
+          "description": "Number of additions",
+          "value": 712,
+          "tolerance": null,
+          "location": "Document header or overview section"
+        },
+        {
+          "description": "Number of deletions",
+          "value": 250,
+          "tolerance": null,
+          "location": "Document header or overview section"
+        },
+        {
+          "description": "Core abstraction name",
+          "value": "ContainerAdapaterProtocol",
+          "tolerance": null,
+          "location": "Overview section"
+        },
+        {
+          "description": "Future container type mentioned for extensibility",
+          "value": "Xarray",
+          "tolerance": null,
+          "location": "Overview or Limitations section"
+        },
+        {
+          "description": "Issue number for polars support request",
+          "value": "#25896",
+          "tolerance": null,
+          "location": "Motivation and Background section"
+        },
+        {
+          "description": "Issue number for DataFrame interchange protocol",
+          "value": "#26835",
+          "tolerance": null,
+          "location": "Motivation and Background section"
+        },
+        {
+          "description": "PR number for foundational changes (1)",
+          "value": "#26683",
+          "tolerance": null,
+          "location": "Technical Design or Backward Compatibility section"
+        },
+        {
+          "description": "PR number for foundational changes (2)",
+          "value": "#27258",
+          "tolerance": null,
+          "location": "Technical Design or Backward Compatibility section"
+        },
+        {
+          "description": "Old polars minimum version",
+          "value": "0.18.2",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "New polars minimum version",
+          "value": "0.19.12",
+          "tolerance": null,
+          "location": "Technical Design or Testing section"
+        },
+        {
+          "description": "PyArrow minimum version",
+          "value": "12.0.0",
+          "tolerance": null,
+          "location": "Testing and Quality Assurance section"
+        },
+        {
+          "description": "File path for config functions",
+          "value": "sklearn/_config.py",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "File path for column transformer",
+          "value": "sklearn/compose/_column_transformer.py",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "File path for min dependencies",
+          "value": "sklearn/_min_dependencies.py",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Function name for global config",
+          "value": "set_config",
+          "tolerance": null,
+          "location": "Technical Design or API Surface section"
+        },
+        {
+          "description": "Function name for context manager",
+          "value": "config_context",
+          "tolerance": null,
+          "location": "Technical Design or API Surface section"
+        },
+        {
+          "description": "New set_output option value",
+          "value": "polars",
+          "tolerance": null,
+          "location": "API Surface and Usage section"
+        },
+        {
+          "description": "RST directive for version added",
+          "value": "versionadded:: 1.4",
+          "tolerance": null,
+          "location": "Technical Design section"
+        },
+        {
+          "description": "Mentioned that pandas uses block manager for zero round-trip",
+          "value": 1.0,
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        },
+        {
+          "description": "Performance concern about memory copies in pipelines",
+          "value": 1.0,
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1310309262
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #27315 diff showing file changes across 20 files",
+      "content_blueprint": {
+        "title": "PR #27315 diff showing file changes across 20 files",
+        "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description with references to issues #25896, #26835 and PRs #26683, #27258",
+      "content_blueprint": {
+        "title": "PR description with references to issues #25896, #26835 and PRs #26683, #27258",
+        "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "Linked issue comment referencing @ogrisel and @gaelvaroquaux",
+      "content_blueprint": {
+        "title": "Linked issue comment referencing @ogrisel and @gaelvaroquaux",
+        "body": "# Seed Material: scikit-learn/scikit-learn#27315: ENH Adds polars output support to `set_output` API\nSource: github_issue_pr\nIdentifier: pr:scikit-learn/scikit-learn#27315\n\nRepository: scikit-learn/scikit-learn\nPR Number: #27315\nPR Title: ENH Adds polars output support to `set_output` API\nMerged At: 2023-11-19T21:46:56Z\nChanged Files: 20\nAdditions: +712, Deletions: -250\n\n## PR Description\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/25896\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/26683\r\nRelated to https://github.com/scikit-learn/scikit-learn/pull/27258\r\nRelated to https://github.com/scikit-learn/scikit-learn/issues/26835\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR adds `set_output=\"polars\"` to all transformers. Overall this PR abstracts the dataframe specific API requirements to `set_output` into a `ContainerAdapaterProtocol`. `ContainerAdapaterProtocol` is generic enough to support other containers. In principle, `Xarray` support will only require another class that implements the `ContainerAdapaterProtocol` and everything else should \"just work\".\r\n\r\nNote that polars does not have a \"zero round trip\" between `ndarrays` and `pl.DataFrame`. For transformers in a pipeline, wrapping and unwrapping a polars dataframe will result in memory copies. Pandas dataframes does not have this issue because it uses block manager for 2d ndarrays.\r\n\r\n#### Any other comments?\r\nMerging https://github.com/scikit-learn/scikit-learn/pull/27258 or https://github.com/scikit-learn/scikit-learn/pull/26683 will make this PR smaller. This PR uses code from those two PRs.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n\n\n## Linked Issue #1234\nThis should clean up the stuff I pushed earlier.\ncc @ogrisel @gaelvaroquaux Could you have a brief look? What I pushed earlier is buggy but I didn't dare push again after so many failed fixes.\n\n\n## Diff (first 3000 chars)\ndiff --git a/doc/whats_new/v1.4.rst b/doc/whats_new/v1.4.rst\nindex 507b22cdf510a..f3f40fd26e27a 100644\n--- a/doc/whats_new/v1.4.rst\n+++ b/doc/whats_new/v1.4.rst\n@@ -41,6 +41,9 @@ random sampling procedures.\n Changes impacting all modules\n -----------------------------\n \n+- |MajorFeature| Transformers now support polars output with `set_output(transform=\"polars\")`.\n+  :pr:`27315` by `Thomas Fan`_.\n+\n - |Enhancement| All estimators now recognizes the column names from any dataframe\n   that adopts the\n   `DataFrame Interchange Protocol <https://data-apis.org/dataframe-protocol/latest/purpose_and_scope.html>`__.\ndiff --git a/sklearn/_config.py b/sklearn/_config.py\nindex 91d149c81dc59..8c0b83d1bfaa8 100644\n--- a/sklearn/_config.py\n+++ b/sklearn/_config.py\n@@ -134,9 +134,12 @@ def set_config(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\n@@ -281,9 +284,12 @@ def config_context(\n \n         - `\"default\"`: Default output format of a transformer\n         - `\"pandas\"`: DataFrame output\n+        - `\"polars\"`: Polars output\n         - `None`: Transform configuration is unchanged\n \n         .. versionadded:: 1.2\n+        .. versionadded:: 1.4\n+            `\"polars\"` option was added.\n \n     enable_metadata_routing : bool, default=None\n         Enable metadata routing. By default this feature is disabled.\ndiff --git a/sklearn/_min_dependencies.py b/sklearn/_min_dependencies.py\nindex f91ca6594e987..d875f63fb9b75 100644\n--- a/sklearn/_min_dependencies.py\n+++ b/sklearn/_min_dependencies.py\n@@ -40,7 +40,7 @@\n     \"black\": (\"23.3.0\", \"tests\"),\n     \"mypy\": (\"1.3\", \"tests\"),\n     \"pyamg\": (\"4.0.0\", \"tests\"),\n-    \"polars\": (\"0.18.2\", \"tests\"),\n+    \"polars\": (\"0.19.12\", \"tests\"),\n     \"pyarrow\": (\"12.0.0\", \"tests\"),\n     \"sphinx\": (\"6.0.0\", \"docs\"),\n     \"sphinx-copybutton\": (\"0.5.2\", \"docs\"),\ndiff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 394b5baf50769..efcd7acb22fa0 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -3,6 +3,7 @@\n to work with heterogeneous data and to apply different transformers to\n different columns.\n \"\"\"\n+\n # Author: Andreas Mueller\n #         Joris Van den Bossche\n # License: BSD\n@@ -16,11 +17,15 @@\n from ..base import TransformerMixin, _fit_context, clone\n from ..pipeline import _fit_transform_one, _name_estimators, _transform_one\n from ..preprocessing import FunctionTransformer\n-from ..utils import Bunch, _get_column_indices, _safe_indexing, check_pandas_support\n+from ..utils import Bunch, _get_column_indices, _safe_indexing\n from ..utils._estimator_html_repr import _Vi"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_db58701973ee8fff/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_db58701973ee8fff/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_db58701973ee8fff/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_db58701973ee8fff/input_2.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T03:50:50.623841+00:00"
+}

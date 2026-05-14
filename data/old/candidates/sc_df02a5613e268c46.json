@@ -1,0 +1,589 @@
+{
+  "candidate_id": "sc_df02a5613e268c46",
+  "occupation": "software_engineer",
+  "archetype": "perf_refactor",
+  "difficulty": "light",
+  "seed_id": "aa4f08e853e8f509",
+  "prompt": "You are a senior software engineer on the platform tooling team at Driftwood Systems. Your engineering manager Mira Fontaine has asked you to produce a design doc evaluating how the upstream Node.js change in PR #56350 (\"module: unflag --experimental-strip-types\") affects our internal TypeScript compilation workflows and performance profiles.\n\nThe PR, merged into nodejs/node on 2024-12-26, enables `--experimental-strip-types` by default so Node.js can execute TypeScript files without additional configuration. The PR body notes it as a semver minor change with no open issues at merge time. The diff removes the explicit flag from `benchmark/ts/strip-typescript.js`, shifts documentation from an opt-in `--experimental-strip-types` section to an opt-out `--no-experimental-strip-types` flag, and updates `--input-type` behavior accordingly.\n\nHere's what the doc needs to cover:\n\n- **Performance analysis** of the default-enabled type stripping, referencing the benchmark methodology from `benchmark/ts/strip-typescript.js` (the PR changed its flags array and uses the `n: [1e4]` iteration scale). We need to understand whether removing the flag-passing overhead meaningfully affects startup or execution time in our toolchain.\n- **Workflow impact assessment** — how does the removal of the explicit flag change our existing compilation scripts, CI pipelines, and developer ergonomics? What breaks, what simplifies?\n- **Compatibility risks** tied to the supported syntax limitations documented at https://nodejs.org/api/typescript.html#type-stripping. Note the stability classification (1.1 - Active development) from the PR docs.\n- **`--input-type` behavior changes** — the PR updated how `\"-typescript\"` input-type values interact with the flag. Document what this means for our eval and STDIN usage patterns.\n- **The `--no-experimental-strip-types` escape hatch** for teams or services that need to opt out temporarily.\n- **Phased rollout plan** for adopting the unflagged type-stripping in our internal toolchain, addressing the semver minor classification from the PR body.\n\nStructure the doc with the following sections: Executive Summary, Background, Goals, Non-Goals, Proposed Design, Alternatives Considered, Risks & Mitigations, and Rollout Plan. Note that the PR was merged over a year ago — caveat any assumptions about current state (the PR body said \"no open issues\" at the time but the landscape may have shifted). Also flag where we may have tribal knowledge gaps, as Rin Sato had context on this feature from their time on the team.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document identifies the repository as nodejs/node.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR number as 56350.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR title as 'module: unflag --experimental-strip-types'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the affected benchmark file as benchmark/ts/strip-typescript.js.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the affected documentation file as doc/api/cli.md.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the benchmark iteration count as n: [1e4].",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR merge date as 2024-12-26.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the PR as a semver minor change.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the stability classification as 1.1 - Active development.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the supported syntax limitations URL as https://nodejs.org/api/typescript.html#type-stripping.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Driftwood Systems as the employer or internal organization.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Mira Fontaine as the engineering manager who assigned the task.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies Rin Sato as a former teammate with tribal knowledge context.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the internal deadline as 2026-05-11.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the assignment date as 2026-05-09.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes an Executive Summary section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Background section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Goals section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Non-Goals section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Proposed Design section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes an Alternatives Considered section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Risks & Mitigations section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Rollout Plan section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses performance implications of enabling --experimental-strip-types by default.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses how removal of the explicit flag affects existing TypeScript compilation workflows.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes benchmark methodology referencing the changes in benchmark/ts/strip-typescript.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document proposes a phased rollout plan for adopting the unflagged TypeScript type-stripping.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies compatibility risks with the supported syntax limitations.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document assesses impact on existing --input-type behavior as documented in the CLI changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document documents the --no-experimental-strip-types escape hatch for teams needing to opt out.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is provided as a single markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the PR body excerpt noting 'no open issues' at merge time.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the Fixes link https://github.com/nodejs/typescript/issues/17 from the PR body.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes the diff removes --experimental-strip-types from the flags array in benchmark/ts/strip-typescript.js.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the --disable-warning=ExperimentalWarning flag from the benchmark changes.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses how the removal of the explicit flag affects CI pipelines.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses developer ergonomics impacts from the unflagging.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document addresses the semver minor classification in the migration strategy.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document caveats assumptions about current state given the PR was merged over a year ago.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document flags tribal knowledge gaps related to Rin Sato's departure.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses a professional tone appropriate for an internal design document.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses clear headings and subheadings to organize content.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes citations or links to the upstream PR and documentation.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses startup or execution time performance implications of removing flag-passing overhead.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the --entry-url documentation changes from the PR diff.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes that TypeScript input-type values were previously only available with --experimental-strip-types.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document identifies at least one alternative approach to adopting the unflagged type-stripping.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is structured with appropriate length and depth for a two-day turnaround design doc.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document discusses the impact of --experimental-vm-modules no longer implying --experimental-strip-types.",
+      "category": "content",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_df02a5613e268c46",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "perf_refactor",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:nodejs/node#56350",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "nodejs/node",
+        "attrs": {
+          "pr_number": 56350,
+          "pr_title": "module: unflag --experimental-strip-types"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Driftwood Systems",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Rin Sato",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Mira Fontaine",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2024-12-26",
+        "description": "Reference PR nodejs/node#56350 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-09",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-11",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "nodejs/node",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 56350,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "module: unflag --experimental-strip-types",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "It's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/typescript.html#type-stripping\nThis feature is experimental and is subject to change.",
+        "unit": null,
+        "source": "github:nodejs/node#56350"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/benchmark/ts/strip-typescript.js b/benchmark/ts/strip-typescript.js\nindex 7a7155c568b613..29c81f5a750bae 100644\n--- a/benchmark/ts/strip-typescript.js\n+++ b/benchmark/ts/strip-typescript.js\n@@ -12,7 +12,7 @@ const bench = common.createBenchmark(main, {\n   filepath: [ts, js],\n   n: [1e4],\n }, {\n-  flags: ['--experimental-strip-types', '--disable-warning=ExperimentalWarning'],\n+  flags: ['--disable-warning=ExperimentalWarning'],\n });\n \n async function main({ n, filepath }) {\ndiff --git a/doc/api/cli.md b/doc/api/cli.md\nindex 3e61b248b94fd9..87eda0deb66b46 100644\n--- a/doc/api/cli.md\n+++ b/doc/api/cli.md\n@@ -780,7 +780,7 @@ Any query parameter or hash in the URL will be accessible via [`import.meta.url`\n \n ```bash\n node --entry-url 'file:///path/to/file.js?queryparams=work#and-hashes-too'\n-node --entry-url --experimental-strip-types 'file.ts?query#hash'\n+node --entry-url 'file.ts?query#hash'\n node --entry-url 'data:text/javascript,console.log(\"Hello\")'\n ```\n \n@@ -880,8 +880,8 @@ On Windows, using `cmd.exe` a single quote will not work correctly because it\n only recognizes double `\"` for quoting. In Powershell or Git bash, both `'`\n and `\"` are usable.\n \n-It is possible to run code containing inline types by passing\n-[`--experimental-strip-types`][].\n+It is possible to run code containing inline types unless the\n+[`--no-experimental-strip-types`][] flag is provided.\n \n ### `--experimental-addon-modules`\n \n@@ -1008,17 +1008,6 @@ added:\n \n Use this flag to enable [ShadowRealm][] support.\n \n-### `--experimental-strip-types`\n-\n-<!-- YAML\n-added: v22.6.0\n--->\n-\n-> Stability: 1.1 - Active development\n-\n-Enable experimental type-stripping for TypeScript files.\n-For more information, see the [TypeScript type-stripping][] documentation.\n-\n ### `--experimental-test-coverage`\n \n <!-- YAML\n@@ -1059,7 +1048,7 @@ added: v22.7.0\n > Stability: 1.1 - Active development\n \n Enables the transformation of TypeScript-only syntax into JavaScript code.\n-Implies `--experimental-strip-types` and `--enable-source-maps`.\n+Implies `--enable-source-maps`.\n \n ### `--experimental-vm-modules`\n \n@@ -1370,10 +1359,10 @@ added: v12.0.0\n \n This configures Node.js to interpret `--eval` or `STDIN` input as CommonJS or\n as an ES module. Valid values are `\"commonjs\"`, `\"module\"`, `\"module-typescript\"` and `\"commonjs-typescript\"`.\n-The `\"-typescript\"` values are available only in combination with the flag `--experimental-strip-types`.\n+The `\"-typescript\"` values are not available with the flag `--no-experimental-strip-types`.\n The default is `\"commonjs\"`.\n \n-If `--experimental-strip-types` is enabled and `--input-type` is not provided,\n+If `--input-type` is not provided,\n Node.js will try to detect the syntax with the following steps:\n \n 1. Run the input as CommonJS.\n@@ -1663,6 +1652,21 @@ changes:\n \n Disable the experimental [`node:sqlite`][] module.\n \n+### `--no-experimental-strip-types`\n+\n+<!-- YAML\n+added: v22.6.0\n+changes:\n+  - version: REPLACEME\n+    pr-url: https://github",
+        "unit": null,
+        "source": "github:nodejs/node#56350.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Write a design doc analyzing the performance implications of enabling --experimental-strip-types by default as done in nodejs/node#56350",
+      "Document how the removal of the explicit flag affects Driftwood Systems' existing TypeScript compilation workflows",
+      "Include benchmark methodology referencing the benchmark/ts/strip-typescript.js changes from the PR diff",
+      "Propose a phased rollout plan for adopting the unflagged TypeScript type-stripping in our internal toolchain",
+      "Identify compatibility risks with the supported syntax limitations documented at https://nodejs.org/api/typescript.html#type-stripping",
+      "Assess impact on existing --input-type behavior as documented in the CLI changes from the PR",
+      "Document the --no-experimental-strip-types escape hatch for teams that need to opt out"
+    ],
+    "implicit_requirements": [
+      "Design doc must follow Driftwood Systems' internal RFC/design doc template format",
+      "Benchmark data should reference the n: [1e4] iteration scale from the PR's benchmark changes",
+      "Stability classification (1.1 - Active development) from the PR documentation must be noted in risk assessment",
+      "The semver minor classification mentioned in the PR body should be addressed in the migration strategy"
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Executive Summary",
+          "heading_level": 2,
+          "required_content": [
+            "One-paragraph summary of the proposal"
+          ],
+          "paragraphs": [
+            "**Executive Summary**",
+            "This document details the design and implementation for enabling TypeScript file execution by default in Node.js without requiring explicit flags. The core change, implemented in PR #56350, unflags the existing `--experimental-strip-types` functionality, making it a default, non-experimental capability. This evolution simplifies the developer experience by allowing direct execution of `.ts` files via the `node` command, provided the TypeScript syntax used aligns with the documented limitations (e.g., no enums, namespaces, or decorators). The change is proposed as a semver minor update to the Node.js runtime.",
+            "The primary objective of this proposal is to promote the type-stripping feature from an opt-in experiment to a stable, supported mode of operation. This will catch a broader range of potential bugs through wider adoption and real-world usage ahead of a potential future semver major release. The change modifies Node.js's default behavior, so it includes updates to core documentation and benchmarking suites to reflect the new status. The PR addresses an outstanding issue from the nodejs/typescript repository (issue #17), signaling a maturity milestone for this TypeScript support pathway.",
+            "The scope of this change is intentionally focused. Implementation touches two key files within the `nodejs/node` repository: `benchmark/ts/strip-typescript.js` and `doc/api/cli.md`. The benchmark script is updated to ensure performance metrics are collected under the new default condition, validating that no regressions are introduced. The CLI documentation is revised to remove the \"experimental\" designation, accurately describing the flag's now-default behavior and its supported syntax limitations. This design doc will elaborate on the rationale, backward compatibility considerations, and specific code changes required to execute this transition safely."
+          ]
+        },
+        {
+          "heading": "Background",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to nodejs/node PR #56350",
+            "Context for why this change is needed"
+          ],
+          "paragraphs": [
+            "**Background**",
+            "The primary change under consideration stems from nodejs/node PR #56350, which proposes to unflag the `--experimental-strip-types` feature, enabling it by default. Currently, this capability is behind an explicit command-line flag. This design doc outlines the rationale and implications of transitioning this experimental feature into a default, stable behavior within the Node.js runtime.",
+            "The motivation for this change is to improve the out-of-the-box developer experience for TypeScript users and to leverage broader adoption to surface potential bugs. The TypeScript stripping feature, while functional, has been in an experimental state. The PR asserts that with no open issues against the feature, the time is appropriate to enable it by default to gather more real-world usage data and catch edge cases before a potential future semver-major release. This move acknowledges the growing prevalence of TypeScript in the ecosystem and aims to reduce configuration friction for developers.",
+            "The implementation of this change is localized. The `benchmark/ts/strip-typescript.js` file has been updated to reflect the new default behavior in performance testing. Concurrently, `doc/api/cli.md` requires documentation updates to indicate that `--experimental-strip-types` is now enabled by default, ensuring users are aware of the runtime's capabilities without needing to set the flag manually."
+          ]
+        },
+        {
+          "heading": "Goals",
+          "heading_level": 2,
+          "required_content": [
+            "2-4 concrete, measurable goals"
+          ],
+          "paragraphs": [
+            "**Goals**",
+            "The primary goal of PR #56350 in the `nodejs/node` repository is to enhance the developer experience by promoting TypeScript type-stripping from an experimental opt-in feature to a default behavior. This change is foundational for improving Node.js's out-of-the-box support for TypeScript, reducing configuration overhead for developers. The specific, measurable objectives for this initiative are as follows:",
+            "First, to modify the default runtime behavior so that the `--experimental-strip-types` flag is enabled unconditionally. This is a concrete change to the Node.js startup logic, directly measured by the removal of the flag's requirement for TypeScript file execution. Success is binary: the flag is enabled by default, and TypeScript files execute without additional configuration.",
+            "Second, to validate and establish a performance baseline for this new default behavior. The addition of the benchmark file `benchmark/ts/strip-typescript.js` provides the instrument to measure execution overhead. The goal is to confirm that enabling the feature does not introduce performance regressions against this benchmark, ensuring the new default is efficient.",
+            "Third, to update all official documentation to reflect the new status and detail the supported syntax limitations. This involves comprehensively reviewing and modifying `doc/api/cli.md` to remove the \"experimental\" labeling and to ensure all known constraints are clearly communicated. The measurable outcome is a complete and accurate documentation set that aligns with the new default behavior.",
+            "Finally, to address the underlying community issue (nodejs/typescript#17) and align with TSC expectations. The PR explicitly aims to \"catch some more bugs\" by increasing usage and scrutiny. A key goal is to demonstrate stability sufficient for the TSC to approve this as a semver-minor change, thereby advancing the TypeScript integration roadmap."
+          ]
+        },
+        {
+          "heading": "Non-Goals",
+          "heading_level": 2,
+          "required_content": [
+            "Explicitly out-of-scope items"
+          ],
+          "paragraphs": [
+            "**Non-Goals**",
+            "This design explicitly excludes several related areas to maintain a focused scope and manage expectations. First, unflagging `--experimental-strip-types` does not remove its experimental status. The feature remains subject to change, and runtime errors arising from TypeScript syntax limitations documented in `doc/api/cli.md` will not be considered release-blocking regressions. The goal is to gather broader usage data, not to declare the feature stable. A future proposal for stability will require a separate, rigorous review.",
+            "Second, this change does not aim to introduce a full TypeScript compiler, type checker, or transpiler into Node.js core. The project's scope is strictly limited to *stripping* type annotations, as implemented and benchmarked in `benchmark/ts/strip-typescript.js`. Support for advanced TypeScript-specific syntax features that require code transformation (e.g., `enum`, decorators, `namespace`) is out of scope. Users requiring such features must continue to use external build tools to generate valid JavaScript before execution.",
+            "Finally, this initiative will not guarantee compatibility or optimized behavior with third-party tooling, bundlers, or alternative runtimes. While enabling the feature by default may improve discovery, it does not commit the project to resolving ecosystem tooling conflicts. Adjustments in tools like TypeScript-aware linters or editors are the responsibility of their respective maintainers. The Node.js core team will focus on the execution semantics as defined by the module system and the strip-types loader."
+          ]
+        },
+        {
+          "heading": "Proposed Design",
+          "heading_level": 2,
+          "required_content": [
+            "Must reference affected files: benchmark/ts/strip-typescript.js, doc/api/cli.md",
+            "Technical approach with justification"
+          ],
+          "paragraphs": [
+            "**Proposed Design**",
+            "The core of this change is a single, high-impact modification: removing the experimental status of the TypeScript type-stripping feature. In the PR #56350 for the `nodejs/node` repository, this is achieved by altering the default state of the `--experimental-strip-types` flag. Instead of requiring users to explicitly opt-in with a flag, Node.js will now enable TypeScript execution by default. This aligns with the project's goal to provide seamless TypeScript support out of the box, reducing initial configuration overhead for users. The technical justification is straightforward: as noted in the PR, there are currently no open blocking issues, indicating the feature has reached a stable state suitable for broader adoption and real-world stress testing by the community.",
+            "The change must be precisely reflected in two key areas of the codebase. First, the documentation in `doc/api/cli.md` must be updated to reflect that `--experimental-strip-types` is now enabled by default. The description of the flag should be revised to clarify that its use is now the default behavior, while noting any remaining limitations. Second, the benchmark file `benchmark/ts/strip-typescript.js` must be verified or adjusted to ensure it accurately measures the performance of this newly default behavior. This file is critical for establishing performance baselines and detecting regressions in the core TypeScript stripping logic that all users will now rely upon.",
+            "The justification for this design is rooted in maturation and confidence. Enabling the feature by default is a semver-minor change, signaling it is a non-breaking addition to Node.js's capabilities. This approach maximizes the potential for catching latent issues through widespread usage while maintaining backward compatibility for existing JavaScript projects. The documentation and benchmark changes ensure the feature's integration is transparent, well-documented, and performance-monitored, fulfilling the project's standards for core functionality."
+          ]
+        },
+        {
+          "heading": "Alternatives Considered",
+          "heading_level": 2,
+          "required_content": [
+            "At least 2 alternatives with tradeoff analysis"
+          ],
+          "paragraphs": [
+            "**Alternatives Considered**",
+            "The primary alternative to enabling `--experimental-strip-types` by default (as implemented in PR #56350) was to maintain the flag's opt-in status indefinitely. This approach would have preserved complete backward compatibility, as no existing startup behavior or scripting expectations would be altered. However, it fundamentally undermines the goal of providing seamless TypeScript execution out-of-the-box, requiring every new project or script author to discover and configure the flag. This creates friction for adoption and positions TypeScript support as a secondary, \"experimental\" concern rather than a core, integrated feature, which conflicts with the project's direction.",
+            "A second alternative involved a more invasive, lazy-loading architecture where the TypeScript stripping logic (and its dependencies) would only be loaded and initialized upon the first encounter of a `.ts` file during module resolution. The primary tradeoff here concerns startup performance and predictability. While this could theoretically optimize for pure JavaScript workloads by avoiding any upfront cost, it introduces inconsistent startup latency. The first `.ts` import or execution would incur a significant, unpredictable delay as the transpiler is loaded and initialized, which is detrimental to developer experience and complicates performance profiling. The decision to unflag by default, as validated in the benchmark file `benchmark/ts/strip-typescript.js`, prioritizes consistent and measurable startup overhead over the marginal benefit of a zero-cost baseline for non-TypeScript users.",
+            "Finally, a third alternative was to ship a dedicated, standalone executable (e.g., `node-ts`) or a CLI wrapper that bundles the necessary TypeScript processing configuration. This would have completely isolated the experimental feature, avoiding any impact on the core `node` binary. The tradeoff is a fragmented tooling experience and added maintenance burden. It would force ecosystem tooling to handle two different entry points, complicate documentation, and create a separate distribution channel. The chosen approach—integrating the functionality into the main runtime and documenting it as a default behavior in `doc/api/cli.md`—provides a unified, discoverable experience that aligns with how developers expect Node.js capabilities to work."
+          ]
+        },
+        {
+          "heading": "Risks & Mitigations",
+          "heading_level": 2,
+          "required_content": [
+            "Specific risks and how to address them"
+          ],
+          "paragraphs": [
+            "The primary risk in enabling `--experimental-strip-types` by default (PR #56350) is a potential breaking change for users whose scripts unintentionally rely on the flag’s previous disabled state. While the feature is considered stable, flipping this default alters the fundamental input handling of the Node.js executable. Any user or toolchain that invokes `node` with `.ts` files in an environment where the flag was not previously used will now experience different behavior. The mitigation is clear communication via the updated documentation in **doc/api/cli.md**, which must explicitly state this change in default behavior and link to the documented syntax limitations. This ensures users can anticipate and adapt to the new default.",
+            "A secondary risk involves performance regression for all users, even those not using TypeScript, if the detection and stripping logic introduces overhead for `.js` files. The existing benchmark suite, specifically **benchmark/ts/strip-typescript.js**, must be utilized to measure and track performance before and after this change. If any regression is detected in the baseline `.js` module load path, it must be resolved before this change can land. The mitigation is the existing performance benchmark infrastructure, which provides a clear means to gate the change on performance neutrality.",
+            "A final consideration is user confusion stemming from the documented limitations of the type-stripping feature. Users may expect full TypeScript compilation support when they first use a `.ts` file. The mitigation is to ensure the release notes and the updated **doc/api/cli.md** prominently feature a link to the limitations section. This sets correct expectations and directs users to the appropriate documentation for supported syntax, reducing frustration and misfiled issues."
+          ]
+        },
+        {
+          "heading": "Rollout Plan",
+          "heading_level": 2,
+          "required_content": [
+            "Phased deployment strategy"
+          ],
+          "paragraphs": [
+            "The rollout plan for PR #56350, which enables `--experimental-strip-types` by default, will follow a phased deployment strategy to ensure stability and backward compatibility across the Node.js ecosystem. The primary goal is to validate the feature's readiness under real-world conditions before removing the experimental flag designation. All changes will be confined to the `nodejs/node` repository.",
+            "**Phase 1: Benchmark and Documentation Validation.** The initial merge will focus on updating the two affected files: `benchmark/ts/strip-typescript.js` and `doc/api/cli.md`. The benchmark file will be executed within our CI performance tracking suite to establish stable baseline metrics for TypeScript stripping overhead, confirming no regressions in performance-critical areas. Concurrently, the documentation update in `doc/api/cli.md` will be merged to ensure all official guidance accurately reflects the new default behavior and its documented limitations before any users encounter the change in a release.",
+            "**Phase 2: Canary Runtime and Ecosystem Monitoring.** After the merge, the change will enter the main branch and be included in subsequent \"Current\" releases. This phase focuses on runtime validation. We will actively monitor issue trackers, including the referenced `nodejs/typescript` repository issue #17, for reports of unexpected behavior, edge cases, or breaking changes in dependent toolchains. This period acts as a controlled canary test, leveraging the broader open-source user base to surface any issues that were not caught in the pre-merge test suite.",
+            "**Phase 3: Stable Release and Potential Unflagging.** Assuming Phase 2 monitoring shows no critical issues, the feature will propagate into the next LTS (Long-Term Support) release line. Success metrics will be defined as a sustained period with no open, high-severity bugs directly attributable to the default-enabled stripping behavior. Upon meeting these criteria, a subsequent PR can be considered to formally remove the `experimental-` prefix from the flag, completing its graduation to a stable feature. This phased approach minimizes risk while systematically advancing the feature's lifecycle."
+          ]
+        }
+      ],
+      "md_title": "Design Doc: nodejs/node#56350",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "nodejs/node",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "56350",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "benchmark/ts/strip-typescript.js",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "doc/api/cli.md",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Driftwood Systems. Your manager Mira Fontaine has asked you to write a professional design doc for the open-source project nodejs/node.\n\nThe reference PR is #56350: module: unflag --experimental-strip-types\n\nKey technical context:\n- Files changed: benchmark/ts/strip-typescript.js, doc/api/cli.md\n- PR description excerpt: It's time to enable it by default to catch some more bugs, currently there are no open issues.\r\nI think it's a semver minor change.\r\n\r\nFixes: https://github.com/nodejs/typescript/issues/17\r\n\r\n@nodejs/tsc for visibility\n\nNotable change section:\n\nThis change enables the flag `--experimental-strip-types` by default.\nNode.js will be able to execute TypeScript files without additional configuration. Note that there are some limitations in the supported syntax documented at https://nodejs.org/api/type\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 3268882909
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T12:29:47.183806+00:00"
+}

@@ -1,0 +1,969 @@
+{
+  "candidate_id": "sc_16587d390a0726c7",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "light",
+  "seed_id": "16587d390a0726c7",
+  "prompt": "You are a senior technical writer on the encode/httpx documentation team. The lead maintainer has merged PR #464, which introduces autodoc support using the mkautodoc extension. The existing API documentation page (docs/api.md) has been significantly refactored: hand-written parameter lists for top-level functions (get, options, head, post, put, patch, delete, request, build_request) and the Client class were replaced with autodoc directives (e.g., `::: httpx.request :docstring:`), and the entire Client section was removed.\n\nYour manager has asked you to write a short design document that captures the decisions made in this PR and outlines remaining work. This document will be shared with contributors who were not involved in the PR so they can understand the new autodoc pipeline and pick up follow-up tasks.\n\n**Materials provided:**\n- The PR description from encode/httpx#464 (merged 2019-10-30), which lists resolved items and remaining to-do items.\n- The diff for docs/api.md showing the before-and-after of the API reference page.\n\n**Task requirements:**\n1. Write a design document in Markdown with the following sections:\n   - **Overview**: Summarize what PR #464 accomplished, referencing the mkautodoc extension and the specific file changed (docs/api.md).\n   - **Current State**: Describe what the API docs page now contains after the merge — enumerate the functions that use autodoc directives (list each one by name) and note what was removed (the Client class section and hand-written parameter lists).\n   - **Resolved Issues**: List each item from the PR description that was marked as resolved (strikethrough text). For each, include the original problem and note that it is resolved.\n   - **Open Issues**: List each remaining to-do item from the PR description (not resolved). For each, describe the problem and any constraints or notes the PR author included.\n   - **Recommendations**: Based on the open issues, propose a prioritized order for tackling them and briefly justify the priority.\n2. Every factual claim must come directly from the PR description or the diff. Do not invent function names, file paths, or technical details.\n3. Use Markdown heading levels consistent with the section structure above (## for top-level sections).\n4. The document should be titled 'Design Document: Autodoc Support for httpx'.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The document title is exactly 'Design Document: Autodoc Support for httpx'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references PR #464 by number.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section mentions the mkautodoc extension by name.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section identifies docs/api.md as the file changed by the PR.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states the PR was merged on 2019-10-30.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.request as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.get as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.options as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.head as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.post as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.put as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.patch as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.delete as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section lists httpx.build_request as using an autodoc directive.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Current State section notes that the Client class section was removed from docs/api.md.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section mentions that hand-written parameter lists were removed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section identifies the nested code blocks problem as resolved.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section mentions the pymdownx.superfences extension in relation to the nested code blocks problem.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section identifies class rendering as a resolved issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section identifies the dd element styling hack as a resolved issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section states that all resolved items are marked with strikethrough in the PR description.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section identifies instance attribute documentation as an open issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section mentions that instance attributes can only be identified by parsing __init__.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section identifies the async method marker as an open issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section notes that async methods are not yet being rendered.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section identifies the typing information pop-up feature as an open issue.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section describes the typing pop-up as a 'nice-to-have-later' feature.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section proposes a prioritized order for the three open issues.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section justifies each priority with reasoning based on the PR material.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses ## heading level for each major section (Overview, Current State, Resolved Issues, Open Issues, Recommendations).",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is written in Markdown format.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section includes exactly three resolved items.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section includes at least three open items (two to-dos and one nice-to-have).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section explicitly ranks instance attributes as the highest priority.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section explicitly ranks async method marker as the second priority.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section explicitly ranks typing pop-ups as the lowest priority.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations section mentions HTTP/2 and connection pooling as context for the async priority.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Each section heading (## level) contains substantive content (at least one full paragraph or bullet list).",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document lists exactly nine functions in the Current State section that use autodoc directives.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Resolved Issues section mentions mkdocs-material as the intended styling solution.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Recommendations section provides a distinct justification for each of the three priority levels.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not introduce any function names, file paths, or technical details not present in the PR description or diff.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Open Issues section distinguishes between active to-dos and the future enhancement (typing pop-ups).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Current State section includes the autodoc directive syntax (::: httpx.request :docstring:) for at least one function.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section states that the PR is a 'first pass' at autodoc support, referencing the PR title.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document invents function names, file paths, or technical details not found in the PR description or diff (e.g., mentions httpx.Client as still present in docs/api.md after the merge).",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_16587d390a0726c7",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "light",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:encode/httpx#464",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: Autodoc Support for httpx",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "#464",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "mkautodoc",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "docs/api.md",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "2019-10-30",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "httpx.request",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "httpx.get",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "httpx.options",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "httpx.head",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "httpx.post",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "httpx.put",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "httpx.patch",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "httpx.delete",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "httpx.build_request",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "Client class section",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "Nested code blocks in docstrings",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "pymdownx.superfences",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "Rendering documentation for classes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "resolved",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "Rendering docs for instance attributes on classes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "__init__",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "async",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "typing information",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "nice-to-have-later",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "Rendering docs for instance attributes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "Ensure async methods get an \"async\" marker",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Typing information as pop-ups",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "HTTP/2 and connection pooling",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: Autodoc Support for httpx",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "#464",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "mkautodoc",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "docs/api.md",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "2019-10-30",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "httpx.request",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "httpx.get",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "httpx.options",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "httpx.head",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "httpx.post",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "httpx.put",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "httpx.patch",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "httpx.delete",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "httpx.build_request",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "Client class section",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "Nested code blocks in docstrings",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "pymdownx.superfences",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "Rendering documentation for classes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "dd",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "resolved",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "Rendering docs for instance attributes on classes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "__init__",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "async",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "typing information",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "nice-to-have-later",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "Rendering docs for instance attributes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Ensure async methods get an \"async\" marker",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "Typing information as pop-ups",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "HTTP/2 and connection pooling",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: Autodoc Support for httpx",
+          "heading_level": 1,
+          "required_content": [
+            "Title matches exactly"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "References PR #464",
+            "Mentions mkautodoc extension",
+            "Mentions docs/api.md as the changed file"
+          ],
+          "paragraphs": [
+            "PR #464, titled \"First pass at autodoc support,\" was merged into the encode/httpx repository on 2019-10-30. This pull request introduces automatic documentation generation for the httpx library using the mkautodoc extension, which is designed for use with mkdocs. The primary change is a refactoring of the API reference page (docs/api.md) to replace hand-written function signatures and parameter lists with autodoc directives that pull documentation directly from source code docstrings.",
+            "The goal of this change is to keep the API documentation in sync with the codebase, reducing the maintenance burden of manually updating parameter lists as the library evolves. This PR serves as a demonstration of the autodoc approach using the httpx.request function and other top-level convenience functions."
+          ]
+        },
+        {
+          "heading": "Current State",
+          "heading_level": 2,
+          "required_content": [
+            "Lists functions with autodoc directives",
+            "Notes removal of Client class section",
+            "Notes removal of hand-written parameter lists"
+          ],
+          "paragraphs": [
+            "After the merge of PR #464, the docs/api.md file has been substantially simplified. The previous version contained hand-written bullet-point lists of parameters for each top-level HTTP method function and the Client class. These have been replaced with autodoc directives.",
+            "The following top-level functions now use autodoc directives to render their docstrings:",
+            "- httpx.request (`::: httpx.request :docstring:`)",
+            "- httpx.get (`::: httpx.get :docstring:`)",
+            "- httpx.options (`::: httpx.options :docstring:`)",
+            "- httpx.head (`::: httpx.head :docstring:`)",
+            "- httpx.post (`::: httpx.post :docstring:`)",
+            "- httpx.put (`::: httpx.put :docstring:`)",
+            "- httpx.patch (`::: httpx.patch :docstring:`)",
+            "- httpx.delete (`::: httpx.delete :docstring:`)",
+            "- httpx.build_request (`::: httpx.build_request :docstring:`)",
+            "The Client class section, which previously contained a description, a usage example, and detailed method signatures (including .get, .options, .head, .post, .put, .patch, .delete, .request), has been entirely removed from the page. All hand-written parameter lists for the top-level functions have also been removed and replaced by the autodoc directives."
+          ]
+        },
+        {
+          "heading": "Resolved Issues",
+          "heading_level": 2,
+          "required_content": [
+            "Lists all resolved items from PR description",
+            "Each item includes original problem and resolution status"
+          ],
+          "paragraphs": [
+            "The PR description identifies several issues that were resolved as part of this work. Each is described below:",
+            "1. **Nested code blocks in docstrings**: The original problem was that nested code blocks in docstrings were not rendering correctly. The author attempted installing the pymdownx.superfences extension, which did not resolve the issue at the time of the initial report. This issue has since been resolved.",
+            "2. **Rendering documentation for classes**: The initial autodoc implementation only supported functions. Rendering documentation for classes, which is more complicated, was identified as needed. This has been resolved, with limited support now available.",
+            "3. **Using a dd element for styling**: The author initially used a `dd` HTML element as a styling hack to get an indented block for the docstring display. This was noted as not ideal, with a recommendation to use a div with an appropriate class and rely on mkdocs-material styling. This has been resolved.",
+            "All three items above are marked as resolved in the PR description with strikethrough text."
+          ]
+        },
+        {
+          "heading": "Open Issues",
+          "heading_level": 2,
+          "required_content": [
+            "Lists all unresolved items from PR description",
+            "Each item describes the problem and any constraints noted"
+          ],
+          "paragraphs": [
+            "The PR description identifies two remaining to-do items that have not been resolved:",
+            "1. **Rendering docs for instance attributes on classes**: The author notes that documenting instance attributes is more awkward than methods and properties because the only way to identify instance attributes is by parsing (grepping) the code in the `__init__` method. No solution is provided in this PR.",
+            "2. **Ensure async methods get an \"async\" marker**: The author notes that async methods are not yet being rendered in this PR, so the issue is not currently visible. However, when async methods are eventually rendered, they should be marked with an \"async\" label to distinguish them from synchronous methods.",
+            "3. **Keep typing information out of the main display**: The author expresses a desire to keep type annotations out of the primary docstring display, but instead have contextual typing information appear as pop-ups or tooltips against parameters. This is described as a \"nice-to-have-later\" feature and is not addressed in this PR.",
+            "There are three open issues in total: two are active to-dos and one is a future enhancement."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Proposes prioritized order for open issues",
+            "Provides brief justification for each priority"
+          ],
+          "paragraphs": [
+            "Based on the open issues listed above, the following prioritized order is recommended for follow-up work:",
+            "1. **Rendering docs for instance attributes**: This should be the highest priority because it directly affects the completeness of class documentation. Without instance attribute documentation, users of classes like Client will not see important configuration attributes (e.g., .params, .headers, .cookies that were previously listed). The technical challenge of parsing `__init__` to identify attributes is non-trivial but is essential for full autodoc coverage.",
+            "2. **Ensure async methods get an \"async\" marker**: This should be second priority because async methods are a core part of httpx's API (the library supports HTTP/2 and connection pooling for long-lived connections). When async method rendering is added, the marker is necessary for users to understand the synchronous vs. asynchronous API. Implementing this proactively ensures the documentation is correct when async methods are documented.",
+            "3. **Typing information as pop-ups**: This should be lowest priority as it is explicitly described as a \"nice-to-have-later\" feature. While it would improve the reading experience by reducing clutter in the main docstring display, it is an enhancement rather than a correctness or completeness issue. It depends on the mkdocs-material theme or custom JavaScript and can be deferred."
+          ]
+        }
+      ],
+      "md_title": "Design Document: Autodoc Support for httpx",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Document title is exactly 'Design Document: Autodoc Support for httpx'",
+          "value": "Design Document: Autodoc Support for httpx",
+          "tolerance": null,
+          "location": "Title (H1 heading)"
+        },
+        {
+          "description": "Overview section references PR #464",
+          "value": "#464",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section mentions mkautodoc extension",
+          "value": "mkautodoc",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview section references the changed file docs/api.md",
+          "value": "docs/api.md",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Overview mentions merge date 2019-10-30",
+          "value": "2019-10-30",
+          "tolerance": null,
+          "location": "Overview section, first paragraph"
+        },
+        {
+          "description": "Current State lists httpx.request as having an autodoc directive",
+          "value": "httpx.request",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.get as having an autodoc directive",
+          "value": "httpx.get",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.options as having an autodoc directive",
+          "value": "httpx.options",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.head as having an autodoc directive",
+          "value": "httpx.head",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.post as having an autodoc directive",
+          "value": "httpx.post",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.put as having an autodoc directive",
+          "value": "httpx.put",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.patch as having an autodoc directive",
+          "value": "httpx.patch",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.delete as having an autodoc directive",
+          "value": "httpx.delete",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State lists httpx.build_request as having an autodoc directive",
+          "value": "httpx.build_request",
+          "tolerance": null,
+          "location": "Current State section"
+        },
+        {
+          "description": "Current State notes that the Client class section was removed",
+          "value": "Client class section",
+          "tolerance": null,
+          "location": "Current State section, last paragraph"
+        },
+        {
+          "description": "Resolved Issues mentions nested code blocks problem",
+          "value": "Nested code blocks in docstrings",
+          "tolerance": null,
+          "location": "Resolved Issues section"
+        },
+        {
+          "description": "Resolved Issues mentions pymdownx.superfences extension",
+          "value": "pymdownx.superfences",
+          "tolerance": null,
+          "location": "Resolved Issues section"
+        },
+        {
+          "description": "Resolved Issues mentions rendering docs for classes",
+          "value": "Rendering documentation for classes",
+          "tolerance": null,
+          "location": "Resolved Issues section"
+        },
+        {
+          "description": "Resolved Issues mentions dd element styling hack",
+          "value": "dd",
+          "tolerance": null,
+          "location": "Resolved Issues section"
+        },
+        {
+          "description": "Resolved Issues notes all three items are marked resolved with strikethrough",
+          "value": "resolved",
+          "tolerance": null,
+          "location": "Resolved Issues section"
+        },
+        {
+          "description": "Open Issues lists instance attributes on classes",
+          "value": "Rendering docs for instance attributes on classes",
+          "tolerance": null,
+          "location": "Open Issues section"
+        },
+        {
+          "description": "Open Issues mentions __init__ method parsing for instance attributes",
+          "value": "__init__",
+          "tolerance": null,
+          "location": "Open Issues section"
+        },
+        {
+          "description": "Open Issues lists async method marker issue",
+          "value": "async",
+          "tolerance": null,
+          "location": "Open Issues section"
+        },
+        {
+          "description": "Open Issues lists typing information as pop-ups feature",
+          "value": "typing information",
+          "tolerance": null,
+          "location": "Open Issues section"
+        },
+        {
+          "description": "Open Issues notes typing is described as a nice-to-have-later",
+          "value": "nice-to-have-later",
+          "tolerance": null,
+          "location": "Open Issues section"
+        },
+        {
+          "description": "Recommendations prioritizes instance attributes as highest priority",
+          "value": "Rendering docs for instance attributes",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Recommendations prioritizes async method marker as second priority",
+          "value": "Ensure async methods get an \"async\" marker",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Recommendations prioritizes typing pop-ups as lowest priority",
+          "value": "Typing information as pop-ups",
+          "tolerance": null,
+          "location": "Recommendations section"
+        },
+        {
+          "description": "Recommendations mentions HTTP/2 and connection pooling as context for async priority",
+          "value": "HTTP/2 and connection pooling",
+          "tolerance": null,
+          "location": "Recommendations section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1811068530
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_16587d390a0726c7/design_doc.md",
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T18:25:27.509863+00:00"
+}

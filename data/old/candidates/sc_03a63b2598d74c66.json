@@ -1,0 +1,1117 @@
+{
+  "candidate_id": "sc_03a63b2598d74c66",
+  "occupation": "financial_analyst",
+  "archetype": "budget_vs_actual",
+  "difficulty": "hard",
+  "seed_id": "3f3121657aadd8e7",
+  "prompt": "You are an associate analyst at Marshfield Croft Partners covering the healthcare sector. Johnson & Johnson filed its Q1 2026 10-Q on May 4, and Managing Director Lin Wei-chen has asked you to build a budget-vs-actual variance analysis ahead of the internal portfolio review meeting.\n\nPull all actual Q1 2026 figures directly from the EDGAR filing — specifically RevenueFromContractWithCustomerExcludingAssessedTax ($24,062M), CostOfGoodsAndServicesSold ($8,106M), GrossProfit ($15,956M), NetIncomeLoss ($5,235M), and SellingGeneralAndAdministrativeExpense ($6,034M). For the budget baseline, construct a consensus proxy from sell-side estimates available as of the filing date and document your sourcing methodology. If exact consensus figures aren't available, note the approximation approach in a sourcing notes section.\n\nThe deliverable is an Excel workbook with two tabs. The first tab (\"Actual vs Budget\") should follow standard sell-side template structure: line items in rows, with columns for actual, budget, absolute variance ($), percentage variance (%), favorable/unfavorable classification from an earnings perspective, and commentary. All monetary figures in millions USD, one decimal place. Flag any variance exceeding ±5% as material and provide a narrative explanation for each. Include a column tying every actual figure back to its EDGAR source (filing date, XBRL tag). Use our standard color scheme — blue font for inputs, black for formulas, red for variances. The second tab (\"Summary\") should serve as a dashboard with the three most significant variances highlighted and brief driver commentary.\n\nBeyond the line-item analysis, Lin wants you to address operating leverage by walking through how the revenue variance flows down through COGS and SG&A to the operating income line. Note that the pinned OperatingIncomeLoss figure ($5,827M) is from the 2015-03-29 filing period, not Q1 2026 — flag this period mismatch explicitly rather than blending it in. Similarly, the R&D expense fact on file ($109M, XBRL tag from 2025-12-28) is a fiscal year-end figure, not a quarterly amount for Q1 2026; call out that discrepancy clearly. For directional trend context, note that total Revenues were $56,077M as reported under the historical XBRL tag in 2014, but this is a different revenue concept (Revenues vs. RevenueFromContractWithCustomerExcludingAssessedTax) — reconcile and flag this so downstream readers aren't misled. The attached JNJ_historical_financials.xlsx provides five-year historical financials you can reference for trend commentary.\n\nSet print areas, include headers/footers with our confidentiality notice, and protect the workbook except for designated input cells.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "Deliverable is provided as a single Excel (.xlsx) file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Workbook contains exactly two sheets named 'Actual vs Budget' and 'Summary'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Actual vs Budget' sheet contains columns for line items, actual figures, budget figures, absolute variance ($), percentage variance (%), favorable/unfavorable classification, commentary, and EDGAR source references.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "All monetary figures on the 'Actual vs Budget' sheet are presented in millions USD with one decimal place.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook uses blue font for input cells, black font for formula cells, and red font for variance cells on the 'Actual vs Budget' sheet.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook has print areas set for both sheets.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Headers or footers on both sheets include a confidentiality notice (e.g., 'Confidential - Marshfield Croft Partners').",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook is protected with designated input cells unlocked for editing.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Summary' sheet highlights the three most significant variances with brief driver commentary.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "RevenueFromContractWithCustomerExcludingAssessedTax actual figure is reported as $24,062.0M, sourced from EDGAR XBRL tag filed on 2026-03-29.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "CostOfGoodsAndServicesSold actual figure is reported as $8,106.0M, sourced from EDGAR XBRL tag filed on 2026-03-29.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "GrossProfit actual figure is reported as $15,956.0M, located on the 'Actual vs Budget' sheet at cell B6.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "NetIncomeLoss actual figure is reported as $5,235.0M, sourced from EDGAR XBRL tag filed on 2026-03-29.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "SellingGeneralAndAdministrativeExpense actual figure is reported as $6,034.0M, sourced from EDGAR XBRL tag filed on 2026-03-29.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook includes a sourcing notes section or column explaining the methodology for constructing the budget/consensus baseline.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variance calculations are formulas that compute actual minus budget for both dollar and percentage variances.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Variances exceeding ±5% are flagged as material (e.g., with conditional formatting or a flag column).",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Narrative explanations are provided in the commentary column for each material variance (±5%).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Each variance is classified as favorable or unfavorable from an earnings perspective in a dedicated column.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The analysis addresses operating leverage by walking through how revenue variance flows through COGS and SG&A to impact operating income.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook explicitly flags that the OperatingIncomeLoss figure of $5,827.0M is from the 2015-03-29 filing period, not Q1 2026.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook explicitly flags that the ResearchAndDevelopmentExpense figure of $109.0M is from the 2025-12-28 fiscal year-end, not a Q1 2026 quarterly figure.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The workbook notes that historical Revenues of $56,077.0M (from 2014-09-28) uses a different XBRL tag (Revenues) than the Q1 2026 actuals (RevenueFromContractWithCustomerExcludingAssessedTax) and flags this for readers.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Year-over-year trend commentary references the historical Revenues figure of $56,077.0M from 2014-09-28 for directional context.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook references the attached JNJ_historical_financials.xlsx for five-year historical trend commentary.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Revenue actual figure $24,062.0M is located on the 'Actual vs Budget' sheet at cell B4.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "Each actual line item includes an EDGAR source reference with filing date and XBRL tag name.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The EDGAR source reference for RevenueFromContractWithCustomerExcludingAssessedTax cites the XBRL tag and filing date 2026-03-29.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The EDGAR source reference for CostOfGoodsAndServicesSold cites the XBRL tag and filing date 2026-03-29.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The EDGAR source reference for GrossProfit cites the XBRL tag and filing date 2026-03-29.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The EDGAR source reference for NetIncomeLoss cites the XBRL tag and filing date 2026-03-29.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The EDGAR source reference for SellingGeneralAndAdministrativeExpense cites the XBRL tag and filing date 2026-03-29.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The OperatingIncomeLoss figure cited in the workbook is $5,827.0M.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The ResearchAndDevelopmentExpense figure cited in the workbook is $109.0M.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The historical Revenues figure cited for trend commentary is $56,077.0M.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis correctly identifies Johnson & Johnson by ticker JNJ and CIK 0000200406.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis correctly identifies the analyst as Priya Doshi of Marshfield Croft Partners.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis correctly identifies the managing director as Lin Wei-chen.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The deliverable is produced by the deadline of 2026-05-19.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook uses the 'Actual vs Budget' sheet for the primary line-item variance table.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Summary' sheet functions as a dashboard highlighting key variances.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The variance analysis includes all five required GAAP line items: RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, GrossProfit, NetIncomeLoss, SellingGeneralAndAdministrativeExpense.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis uses GAAP line items as reported in the 10-Q, not non-GAAP adjusted figures.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The budget baseline methodology is documented, noting whether it reflects sell-side consensus estimates available as of May 4, 2026 or an approximation.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The variance analysis follows standard sell-side template conventions with columns for actual, budget, variance ($), variance (%), and commentary.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The narrative explanation for material variances identifies plausible drivers (e.g., pricing, volume, cost inflation, mix shift).",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The executive summary on the 'Summary' sheet is concise and limited to approximately one page equivalent of content.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook correctly calculates GrossProfit as RevenueFromContractWithCustomerExcludingAssessedTax minus CostOfGoodsAndServicesSold ($24,062.0M - $8,106.0M = $15,956.0M).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook identifies the filing date for the Q1 2026 10-Q as 2026-05-04.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook identifies the sector for Johnson & Johnson as healthcare.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The workbook references the assignment date of 2026-05-08 and the deadline of 2026-05-19 for context.",
+      "category": "reference",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_03a63b2598d74c66",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "budget_vs_actual",
+    "difficulty": "hard",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:JNJ",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "target_company",
+        "kind": "company",
+        "name": "Johnson & Johnson",
+        "attrs": {
+          "ticker": "JNJ",
+          "sector": "healthcare",
+          "cik": "0000200406"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Marshfield Croft Partners",
+        "attrs": {}
+      },
+      {
+        "id": "analyst",
+        "kind": "person",
+        "name": "Priya Doshi",
+        "attrs": {
+          "role": "associate analyst",
+          "employer": "Marshfield Croft Partners"
+        }
+      },
+      {
+        "id": "senior",
+        "kind": "person",
+        "name": "Lin Wei-chen",
+        "attrs": {
+          "role": "managing director",
+          "employer": "Marshfield Croft Partners"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "latest_filing",
+        "date": "2026-05-04",
+        "description": "JNJ filed 4",
+        "entities": [
+          "target_company"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-08",
+        "description": "Senior analyst assigned the work",
+        "entities": [
+          "analyst",
+          "senior"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-19",
+        "description": "Deadline for deliverable",
+        "entities": [
+          "analyst"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact_Revenues",
+        "kind": "money",
+        "value": 56077000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:Revenues:2014-09-28"
+      },
+      {
+        "id": "fact_RevenueFromContractWithCustome",
+        "kind": "money",
+        "value": 24062000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:RevenueFromContractWithCustomerExcludingAssessedTax:2026-03-29"
+      },
+      {
+        "id": "fact_CostOfGoodsAndServicesSold",
+        "kind": "money",
+        "value": 8106000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:CostOfGoodsAndServicesSold:2026-03-29"
+      },
+      {
+        "id": "fact_GrossProfit",
+        "kind": "money",
+        "value": 15956000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:GrossProfit:2026-03-29"
+      },
+      {
+        "id": "fact_OperatingIncomeLoss",
+        "kind": "money",
+        "value": 5827000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:OperatingIncomeLoss:2015-03-29"
+      },
+      {
+        "id": "fact_NetIncomeLoss",
+        "kind": "money",
+        "value": 5235000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:NetIncomeLoss:2026-03-29"
+      },
+      {
+        "id": "fact_Assets",
+        "kind": "money",
+        "value": 200894000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:Assets:2026-03-29"
+      },
+      {
+        "id": "fact_Liabilities",
+        "kind": "money",
+        "value": 119708000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:Liabilities:2026-03-29"
+      },
+      {
+        "id": "fact_StockholdersEquity",
+        "kind": "money",
+        "value": 81186000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:StockholdersEquity:2026-03-29"
+      },
+      {
+        "id": "fact_CashAndCashEquivalentsAtCarryi",
+        "kind": "money",
+        "value": 21688000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:CashAndCashEquivalentsAtCarryingValue:2026-03-29"
+      },
+      {
+        "id": "fact_EarningsPerShareDiluted",
+        "kind": "string",
+        "value": 2.14,
+        "unit": "USD/share",
+        "source": "EDGAR:JNJ:EarningsPerShareDiluted:2026-03-29"
+      },
+      {
+        "id": "fact_ResearchAndDevelopmentExpense",
+        "kind": "money",
+        "value": 109000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:ResearchAndDevelopmentExpense:2025-12-28"
+      },
+      {
+        "id": "fact_SellingGeneralAndAdministrativ",
+        "kind": "money",
+        "value": 6034000000,
+        "unit": "USD",
+        "source": "EDGAR:JNJ:SellingGeneralAndAdministrativeExpense:2026-03-29"
+      }
+    ],
+    "explicit_requirements": [
+      "Compare Q1 2026 actual reported figures (RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, GrossProfit, NetIncomeLoss, SellingGeneralAndAdministrativeExpense) against a constructed or sourced budget/consensus baseline",
+      "Calculate both absolute dollar and percentage variances for each line item",
+      "Flag all variances exceeding ±5% as material and require narrative explanation",
+      "Present the analysis in a structured Excel workbook with separate tabs for raw data, variance calculations, and a summary dashboard",
+      "Include a brief executive summary memo (one page) highlighting the three most significant variances and their likely drivers",
+      "Ensure all monetary figures are in millions USD with consistent rounding and one decimal place",
+      "Tie all actual figures back to their specific EDGAR source references (filing date, XBRL tag, and section)",
+      "Include a column classifying each variance as favorable or unfavorable from an earnings perspective",
+      "Address the implied operating leverage by linking revenue variance to operating income variance",
+      "Provide year-over-year context where the pinned historical fact (Revenues: $56,077M from 2014-09-28) allows for a directional trend commentary"
+    ],
+    "implicit_requirements": [
+      "Use GAAP line items as reported in the 10-Q, not non-GAAP adjusted figures, unless explicitly noted",
+      "Budget baseline should reflect sell-side consensus estimates available as of the filing date (May 4, 2026); cite the source or methodology if constructing a proxy",
+      "Variance analysis format should follow standard sell-side template conventions: actual, budget, variance ($), variance (%), commentary columns",
+      "Operating income variance analysis must reconcile through COGS, SG&A, and R&D expense lines even if the pinned OperatingIncomeLoss fact is from a different period (2015)",
+      "The R&D expense fact pinned is from 2025-12-28 (fiscal year-end), not Q1 2026; flag this period mismatch explicitly rather than blending it into the Q1 analysis",
+      "Financial models and deliverables at Marshfield Croft Partners follow a standard color scheme: blue font for inputs, black for formulas, red for variances",
+      "All Excel workbooks must have print area set, headers/footers with confidentiality notice, and be protected except for designated input cells"
+    ],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Actual vs Budget",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Variance Analysis: Actual vs Budget",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Line Item",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Actual ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Budget ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Variance ($M)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Variance (%)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 56077.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 56763.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "COGS",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 40121.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 39231.9,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Gross Profit",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 15956.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 17545.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Operating Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 5827.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 4954.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Net Income",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 5235.0,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 5926.3,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.0%",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 20.0,
+            "B": 14.0,
+            "C": 14.0,
+            "D": 14.0,
+            "E": 14.0
+          }
+        },
+        {
+          "name": "Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Key Variances",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "header",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Primary driver of revenue variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Volume / price mix",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Primary driver of margin variance",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": "Input cost inflation vs pricing power",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Largest $ variance line item",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=MAX('Actual vs Budget'!D4:D8)",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 35.0,
+            "B": 30.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "raw_financials_JNJ",
+          "filename": "JNJ_historical_financials.xlsx",
+          "format": "xlsx",
+          "description": "Five-year historical financial summary for Johnson & Johnson (JNJ)",
+          "content_blueprint": {
+            "sheet_name": "Historical Financials",
+            "columns": [
+              "Metric",
+              "FY2021",
+              "FY2022",
+              "FY2023",
+              "FY2024",
+              "FY2025"
+            ],
+            "rows": [
+              [
+                "Revenue ($M)",
+                49757.5,
+                47495.5,
+                53545.4,
+                62449.0,
+                63454.1
+              ],
+              [
+                "COGS ($M)",
+                34505.4,
+                28848.9,
+                26826.8,
+                33049.4,
+                43417.2
+              ],
+              [
+                "Gross Profit ($M)",
+                19525.0,
+                17914.7,
+                19739.3,
+                25566.7,
+                24999.0
+              ],
+              [
+                "Operating Income ($M)",
+                8548.7,
+                13731.9,
+                14782.8,
+                15147.6,
+                20758.4
+              ],
+              [
+                "Net Income ($M)",
+                5584.4,
+                9615.1,
+                5474.7,
+                13878.9,
+                9968.8
+              ],
+              [
+                "D&A ($M)",
+                3684.0,
+                3260.3,
+                2973.6,
+                2638.3,
+                2619.2
+              ],
+              [
+                "CapEx ($M)",
+                7354.7,
+                4578.3,
+                7652.8,
+                6395.1,
+                8993.8
+              ],
+              [
+                "Shares Outstanding (M)",
+                25.2,
+                23.3,
+                36.1,
+                45.1,
+                45.6
+              ]
+            ]
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Revenue",
+          "value": "56077.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B4"
+        },
+        {
+          "description": "Gross Profit",
+          "value": "15956.0",
+          "tolerance": null,
+          "location": "Actual vs Budget B6"
+        }
+      ],
+      "narrative_prompt": "Build a variance analysis workbook for Johnson & Johnson (JNJ) comparing actuals to budget and prior period.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 744699368
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "raw_financials_JNJ",
+      "filename": "JNJ_historical_financials.xlsx",
+      "format": "xlsx",
+      "description": "Five-year historical financial summary for Johnson & Johnson (JNJ)",
+      "content_blueprint": {
+        "sheet_name": "Historical Financials",
+        "columns": [
+          "Metric",
+          "FY2021",
+          "FY2022",
+          "FY2023",
+          "FY2024",
+          "FY2025"
+        ],
+        "rows": [
+          [
+            "Revenue ($M)",
+            49757.5,
+            47495.5,
+            53545.4,
+            62449.0,
+            63454.1
+          ],
+          [
+            "COGS ($M)",
+            34505.4,
+            28848.9,
+            26826.8,
+            33049.4,
+            43417.2
+          ],
+          [
+            "Gross Profit ($M)",
+            19525.0,
+            17914.7,
+            19739.3,
+            25566.7,
+            24999.0
+          ],
+          [
+            "Operating Income ($M)",
+            8548.7,
+            13731.9,
+            14782.8,
+            15147.6,
+            20758.4
+          ],
+          [
+            "Net Income ($M)",
+            5584.4,
+            9615.1,
+            5474.7,
+            13878.9,
+            9968.8
+          ],
+          [
+            "D&A ($M)",
+            3684.0,
+            3260.3,
+            2973.6,
+            2638.3,
+            2619.2
+          ],
+          [
+            "CapEx ($M)",
+            7354.7,
+            4578.3,
+            7652.8,
+            6395.1,
+            8993.8
+          ],
+          [
+            "Shares Outstanding (M)",
+            25.2,
+            23.3,
+            36.1,
+            45.1,
+            45.6
+          ]
+        ]
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T10:59:25.695876+00:00"
+}

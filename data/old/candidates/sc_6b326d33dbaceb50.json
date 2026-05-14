@@ -1,0 +1,564 @@
+{
+  "candidate_id": "sc_6b326d33dbaceb50",
+  "occupation": "software_engineer",
+  "archetype": "regression",
+  "difficulty": "medium",
+  "seed_id": "4f8805491acab161",
+  "prompt": "You are a senior software engineer at Solstice Networks working on the team's internal Next.js-based platform. Esteban Ruiz pulled you into a regression investigation this morning — our application builds are silently shipping middleware with the wrong runtime after we rebased onto a recent upstream PR that added Node.js runtime support for middleware.\n\nThe regression traces to the change in `get-page-static-info.ts` from upstream PR #75624 (merged 2025-02-04). See the attached bug report for reproduction steps. The core issue is in how `resolvedRuntime` was simplified: the old logic gated runtime resolution on whether edge runtime was actually being used or whether `getServerSideProps`/`getStaticProps` existed, and the new logic just passes through whatever `config.runtime` says unconditionally. That breaks cases where the runtime is undefined or `'nodejs'` but the page isn't actually middleware or a server component — it now gets an incorrect runtime assignment.\n\nI need you to produce a markdown document covering:\n\n- **Problem Statement** — What exactly broke and how it manifests. Reference the specific lines changed in `packages/next/src/build/analysis/get-page-static-info.ts`.\n- **Root Cause** — Explain the regression in the `resolvedRuntime` logic. Walk through both the old and new code paths and why the simplified version loses necessary guards.\n- **Proposed Fix** — A minimal, focused code patch that restores correct runtime resolution for non-edge, non-serverless cases without reverting the upstream change. It needs to handle `config.runtime` being undefined or `'nodejs'` when middleware isn't using edge runtime, and it must remain backward-compatible with the `experimental.nodeMiddleware` flag introduced alongside this feature. One atomic change, no unrelated refactors.\n- **Testing Strategy** — Include a unit test that covers the specific regression (middleware with `runtime: 'nodejs'` but no edge features). Describe how you'd verify existing middleware behavior stays intact when `experimental.nodeMiddleware` is disabled.\n\nAlso document any breaking changes or migration steps for downstream users of our internal fork in the PR description, and reference upstream PR #75624 so reviewers have context.",
+  "deliverable": {
+    "deliverable_id": "bug_fix_pr",
+    "primary_format": "repo_tarball",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "Deliverable is provided as a single PDF file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title or first paragraph identifies the repository as vercel/next.js.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document title or first paragraph references upstream PR number 75624.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Problem Statement section correctly identifies the affected file as packages/next/src/build/analysis/get-page-static-info.ts.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Problem Statement section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Root Cause section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Proposed Fix section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a Testing Strategy section.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the specific line change from the diff excerpt: removal of the conditional logic around `isEdgeRuntime`, `getServerSideProps`, and `getStaticProps`.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Problem Statement describes the regression: the simplified `resolvedRuntime` logic in `get-page-static-info.ts` no longer guards against incorrect runtime assignment for non-edge, non-serverless cases.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section explains the old code path: `resolvedRuntime` was assigned `config.runtime ?? config.config?.runtime` only if `isEdgeRuntime(...)` was true or `getServerSideProps`/`getStaticProps` existed.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section explains the new code path: `resolvedRuntime` is now unconditionally set to `config.runtime ?? config.config?.runtime`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Root Cause explains that the regression causes pages with `config.runtime` undefined or 'nodejs' but without edge features or serverless functions to receive an incorrect runtime assignment.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix section contains a code patch or pseudocode that restores the conditional logic to guard `resolvedRuntime` assignment.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The proposed fix handles the case where `config.runtime` is undefined.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The proposed fix handles the case where `config.runtime` is 'nodejs' when middleware is not using edge runtime.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The proposed fix is described as backward-compatible with the `experimental.nodeMiddleware` flag.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The proposed fix is described as minimal and focused (one atomic change, no unrelated refactors).",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the affected file `packages/next/src/build/entries.ts` in relation to the upstream change or the fix.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy includes a unit test case that covers the regression scenario: middleware with `runtime: 'nodejs'` but no edge features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy describes verifying that existing middleware behavior remains intact when `experimental.nodeMiddleware` is disabled.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the upstream PR discussions #71727 and/or #46722 as mentioned in the PR body excerpt.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The PR description or document references upstream PR #75624 explicitly by number.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains the regression clearly for reviewers who may not have context.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes relevant file paths in the description for reviewer context.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix section includes the specific file path `packages/next/src/build/analysis/get-page-static-info.ts` with line number references.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document follows TypeScript coding conventions in any code snippets.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is organized with clear headings for each of the four required sections.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Problem Statement describes how the regression manifests (e.g., middleware builds ship with wrong runtime).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Root Cause section walks through both old and new code paths and explains why the simplified version loses necessary guards.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `resolvedRuntime` variable by name.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `isEdgeRuntime` function from the old code path.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions `getServerSideProps` and/or `getStaticProps` in the context of the old conditional logic.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy mentions test patterns from the upstream PR's test additions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `experimental.nodeMiddleware` config flag.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document notes any breaking changes or migration steps for downstream users of the internal fork.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the deadline of May 18, 2026 or the urgency of the fix.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is written in a professional tone appropriate for a senior engineer's PR description.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes line numbers from the diff excerpt (e.g., lines 614-619 in get-page-static-info.ts).",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Proposed Fix ensures the fix passes the existing test suite for middleware runtime resolution.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Testing Strategy includes a specific test description for middleware with `runtime: 'nodejs'` but no edge features.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains the change in `runDependingOnPageType` function in entries.ts where middleware now checks for `params.pageRuntime === 'nodejs'`.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the `Log.warn` message about `experimental.nodeMiddleware` being required.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the `config.experimental.nodeMiddleware` configuration check.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is free of typos and grammatical errors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes the x-ref links from the PR body: https://github.com/vercel/next.js/discussions/71727 and/or https://github.com/vercel/next.js/discussions/46722.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document specifies the PR was merged on 2025-02-04.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Proposed Fix code patch correctly addresses the regression by restoring the conditional guard while maintaining compatibility with the new nodeMiddleware feature.",
+      "category": "accuracy",
+      "is_penalty": false
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_6b326d33dbaceb50",
+    "occupation": "software_engineer",
+    "deliverable_id": "bug_fix_pr",
+    "archetype": "regression",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:vercel/next.js#75624",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "oss_project",
+        "kind": "repo",
+        "name": "vercel/next.js",
+        "attrs": {
+          "pr_number": 75624,
+          "pr_title": "Add nodejs runtime support for middleware"
+        }
+      },
+      {
+        "id": "employer",
+        "kind": "company",
+        "name": "Solstice Networks",
+        "attrs": {}
+      },
+      {
+        "id": "teammate",
+        "kind": "person",
+        "name": "Saskia van Hout",
+        "attrs": {
+          "role": "former teammate"
+        }
+      },
+      {
+        "id": "manager",
+        "kind": "person",
+        "name": "Esteban Ruiz",
+        "attrs": {
+          "role": "engineering manager"
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "id": "reference_pr_merged",
+        "date": "2025-02-04",
+        "description": "Reference PR vercel/next.js#75624 merged upstream",
+        "entities": [
+          "oss_project"
+        ]
+      },
+      {
+        "id": "assignment",
+        "date": "2026-05-13",
+        "description": "Manager assigned the task",
+        "entities": [
+          "manager"
+        ]
+      },
+      {
+        "id": "deadline",
+        "date": "2026-05-18",
+        "description": "Internal deadline",
+        "entities": [
+          "manager"
+        ]
+      }
+    ],
+    "facts": [
+      {
+        "id": "repo_name",
+        "kind": "string",
+        "value": "vercel/next.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_number",
+        "kind": "count",
+        "value": 75624,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_title",
+        "kind": "string",
+        "value": "Add nodejs runtime support for middleware",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "pr_body_excerpt",
+        "kind": "string",
+        "value": "This allows setting `runtime: 'nodejs'` in middleware, which removes the constraint of only using edge runtime APIs for middleware. This doesn't change the signature of middleware and it still receives `(req: NextRequest, event: NextFetchEvent) => Response`. \r\n\r\nx-ref: https://github.com/vercel/next.js/discussions/71727\r\nx-ref: https://github.com/vercel/next.js/discussions/46722",
+        "unit": null,
+        "source": "github:vercel/next.js#75624"
+      },
+      {
+        "id": "diff_excerpt",
+        "kind": "string",
+        "value": "diff --git a/packages/next/src/build/analysis/get-page-static-info.ts b/packages/next/src/build/analysis/get-page-static-info.ts\nindex 084da67283a1..8b269ceecf24 100644\n--- a/packages/next/src/build/analysis/get-page-static-info.ts\n+++ b/packages/next/src/build/analysis/get-page-static-info.ts\n@@ -614,12 +614,7 @@ export async function getPagesPageStaticInfo({\n   const config = parsePagesSegmentConfig(exportedConfig, route)\n   const isAnAPIRoute = isAPIRoute(route)\n \n-  const resolvedRuntime =\n-    isEdgeRuntime(config.runtime ?? config.config?.runtime) ||\n-    getServerSideProps ||\n-    getStaticProps\n-      ? config.runtime ?? config.config?.runtime\n-      : undefined\n+  const resolvedRuntime = config.runtime ?? config.config?.runtime\n \n   if (resolvedRuntime === SERVER_RUNTIME.experimentalEdge) {\n     warnAboutExperimentalEdge(isAnAPIRoute ? page! : null)\ndiff --git a/packages/next/src/build/entries.ts b/packages/next/src/build/entries.ts\nindex 00dd62b4134c..7cd1348305cf 100644\n--- a/packages/next/src/build/entries.ts\n+++ b/packages/next/src/build/entries.ts\n@@ -9,6 +9,7 @@ import type {\n   MiddlewareMatcher,\n   PageStaticInfo,\n } from './analysis/get-page-static-info'\n+import * as Log from './output/log'\n import type { LoadedEnvFiles } from '@next/env'\n import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'\n \n@@ -517,9 +518,15 @@ export function runDependingOnPageType<T>(params: {\n   }\n \n   if (isMiddlewareFile(params.page)) {\n-    params.onEdgeServer()\n-    return\n+    if (params.pageRuntime === 'nodejs') {\n+      params.onServer()\n+      return\n+    } else {\n+      params.onEdgeServer()\n+      return\n+    }\n   }\n+\n   if (isAPIRoute(params.page)) {\n     if (isEdgeRuntime(params.pageRuntime)) {\n       params.onEdgeServer()\n@@ -650,6 +657,20 @@ export async function createEntrypoints(\n \n       const isInstrumentation =\n         isInstrumentationHookFile(page) && pagesType === PAGE_TYPES.ROOT\n+\n+      let pageRuntime = staticInfo?.runtime\n+\n+      if (\n+        isMiddlewareFile(page) &&\n+        !config.experimental.nodeMiddleware &&\n+        pageRuntime === 'nodejs'\n+      ) {\n+        Log.warn(\n+          'nodejs runtime support for middleware requires experimental.nodeMiddleware be enabled in your next.config'\n+        )\n+        pageRuntime = 'edge'\n+      }\n+\n       runDependingOnPageType({\n         page,\n         pageRuntime: staticInfo.runtime,\n@@ -692,6 +713,20 @@ export async function createEntrypoints(\n                 isEdgeServer: false,\n                 isDev: false,\n               })\n+          } else if (isMiddlewareFile(page)) {\n+            server[serverBundlePath] = getEdgeServerEntry({\n+              ...params,\n+              rootDir,\n+              absolutePagePath: absolutePagePath,\n+              bundlePath: clientBundlePath,\n+              isDev: false,\n+              isServerComponent,\n+              page,\n+              middleware: staticInfo?.middleware,\n+              pagesType,\n+              prefe",
+        "unit": null,
+        "source": "github:vercel/next.js#75624.diff"
+      }
+    ],
+    "explicit_requirements": [
+      "Identify the exact bug introduced by PR #75624 in the `get-page-static-info.ts` file's `resolvedRuntime` logic.",
+      "Propose a minimal, focused code fix that restores correct runtime resolution for non-edge, non-serverless cases without reverting the upstream change entirely.",
+      "The fix must handle the case where `config.runtime` is undefined or 'nodejs' when middleware is not using edge runtime.",
+      "Ensure the fix passes the existing test suite for middleware runtime resolution.",
+      "Provide a PR description that references upstream PR #75624 and explains the regression clearly.",
+      "Include a unit test that specifically covers the regression scenario (middleware with `runtime: 'nodejs'` but no edge features).",
+      "Document any breaking changes or migration steps required for downstream users of this internal fork.",
+      "Verify the fix does not break existing middleware behavior when `experimental.nodeMiddleware` is disabled."
+    ],
+    "implicit_requirements": [
+      "Follow the project's existing code style (TypeScript, ESLint config).",
+      "PR must be atomic: one logical change, no unrelated refactors.",
+      "Include relevant file paths and line numbers in the PR description for reviewer context.",
+      "Test cases should mirror the patterns used in the upstream PR's test additions.",
+      "If the fix involves a change in public API behavior, update the relevant documentation in the same PR."
+    ],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Problem Statement",
+          "heading_level": 2,
+          "required_content": [
+            "Clear description of the bug"
+          ],
+          "paragraphs": [
+            "**Problem Statement**",
+            "Next.js middleware is currently constrained to execute exclusively within the Edge Runtime environment. This architectural decision, while beneficial for performance in many edge-computing scenarios, introduces a significant limitation for developers whose middleware logic requires access to Node.js-specific APIs, modules, or server-side resources. The runtime is implicitly enforced and cannot be overridden, preventing the use of common Node.js built-in modules (e.g., `fs`, `crypto` with certain algorithms) and popular npm packages that depend on the Node.js runtime.",
+            "This constraint forces developers into a binary and often inefficient architectural choice. They must either forgo essential functionality within their middleware—such as advanced cryptography, filesystem access for configuration, or complex authentication flows requiring specific libraries—or they must relocate that logic to other server-side components like API routes, losing the advantage of early, unified request interception. This undermines middleware's intended role as a flexible, catch-all layer for request augmentation and validation.",
+            "The bug is the absence of a supported mechanism to specify the middleware runtime. A developer setting `export const runtime = 'nodejs'` in their `middleware.ts` file encounters a build error, as the validation logic in the build pipeline explicitly rejects any runtime value other than `'edge'` or the default (`'edge'`). This restriction is documented as a known limitation, but it represents a gap in Next.js's developer experience and flexibility. The fix involves updating the build-time analysis and entry generation logic to recognize and correctly handle the `'nodejs'` runtime for middleware, aligning it with the runtime configuration options available for page and API route handlers."
+          ]
+        },
+        {
+          "heading": "Root Cause",
+          "heading_level": 2,
+          "required_content": [
+            "Technical explanation of why the bug occurred"
+          ],
+          "paragraphs": [
+            "The root cause of this limitation stems from two interconnected constraints within Next.js's build and runtime systems that explicitly enforce Edge-only execution for middleware.",
+            "First, during the build analysis phase, the static information extraction in `packages/next/src/build/analysis/get-page-static-info.ts` contains validation logic that categorically rejects any middleware file specifying a `runtime` other than `'edge'`. This validation is a design decision from when middleware was first introduced, tightly coupling it with the Edge runtime environment to ensure access to the specific subset of APIs and global objects required for request intercepting at the network edge. Any attempt to set `runtime: 'nodejs'` in a middleware file's configuration results in a build error, preventing further compilation.",
+            "Second, the runtime entry creation logic in `packages/next/src/build/entries.ts` is architected under the same foundational assumption. When generating the entry point for middleware, the code path unconditionally uses the Edge runtime module graph and configuration. The `getEdgeRuntimeEntry` function (or equivalent logic) is called without evaluating the `runtime` field from the middleware's static info, as the field's valid values were previously constrained. This results in the bundler and runtime always preparing middleware for the Edge environment, regardless of user intent.",
+            "Therefore, the bug is a direct consequence of these two coordinated restrictions. The system lacks a pathway to (1) accept `nodejs` as a valid runtime declaration during analysis, and (2) subsequently invoke the standard Node.js runtime entry generation path for middleware during the build. Unlocking Node.js runtime support requires modifying both validation logic and the conditional branching in entry creation to allow middleware to traverse the same execution pipeline as other Node.js-based server components, such as API routes."
+          ]
+        },
+        {
+          "heading": "Proposed Fix",
+          "heading_level": 2,
+          "required_content": [
+            "Code change description"
+          ],
+          "paragraphs": [
+            "The proposed fix modifies the Next.js build pipeline to allow middleware to be executed under the Node.js runtime when explicitly configured. Currently, the build system unconditionally assigns the edge runtime to middleware entries, which restricts developers to only using edge-compatible APIs. The solution involves updating two key files to respect a user-specified `runtime` export from the middleware file.",
+            "In `packages/next/src/build/analysis/get-page-static-info.ts`, the `getPageStaticInfo` function is enhanced. The logic that detects and validates the `runtime` export from a page or layout file is extended to also process middleware files. This ensures that when a middleware file exports `export const runtime = 'nodejs'`, this value is correctly captured in the static info analysis, rather than being ignored or causing an error. The middleware file is now treated with the same runtime detection logic as other route handlers.",
+            "The primary change occurs in `packages/next/src/build/entries.ts`, specifically within the `getMiddlewareInfo` and middleware entry generation logic. The middleware entry builder currently hardcodes the edge runtime. The fix updates this to conditionally select the runtime based on the value extracted in the previous step. If the static info analysis found `runtime: 'nodejs'` for the middleware, the builder will create a Node.js-compatible entry point using the `node-web-streams` adapter and the standard request/response signature. Otherwise, it falls back to the existing edge runtime entry. This allows the webpack bundler to apply the correct transforms and polyfills for the target runtime.",
+            "Together, these changes enable developers to opt into using Node.js-specific modules and APIs within their middleware function by simply adding the runtime configuration, without altering the middleware's function signature `(req: NextRequest, event: NextFetchEvent) => Response`. This provides greater flexibility while maintaining backward compatibility with existing edge-only middleware."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Unit tests, integration tests, edge cases"
+          ],
+          "paragraphs": [
+            "**Testing Strategy**",
+            "The verification strategy for this change centers on a layered approach, ensuring correctness at the unit, integration, and edge-case levels. The core logic resides in `packages/next/src/build/analysis/get-page-static-info.ts` and `packages/next/src/build/entries.ts`. Unit tests must be updated or added to directly validate the new runtime branching within these modules. Specifically, tests for `getNodeBuiltinLoader` should assert it returns `'nodejs'` when a middleware's runtime configuration is set to `'nodejs'`, and `'edge'` otherwise. Similarly, the `getMiddlewareInfo` function’s output should be tested to confirm it propagates the `'nodejs'` runtime correctly when parsing a valid `middleware.ts` file containing the configuration. Mocking of the file system and `next.config.js` is necessary to isolate these functions.",
+            "Integration tests are critical to confirm the end-to-end behavior. A new test suite should deploy a minimal Next.js application with a middleware configured with `runtime: 'nodejs'`. This test must verify that: 1) the middleware executes successfully and can utilize Node.js APIs (e.g., `crypto`, `fs`), 2) the standard Next.js response object and `NextRequest`/`NextFetchEvent` parameters function as expected, and 3) the build output correctly bundles the middleware for the Node.js runtime. These tests should run in the CI pipeline against both the current Next.js canary and latest stable to ensure no regressions.",
+            "Edge cases require particular attention to ensure robustness. Tests must cover scenarios such as: middleware importing a Node.js module that is also available in the edge runtime (e.g., `crypto`), ensuring no conflicts arise. Another key case is middleware using the `'nodejs'` runtime while other application routes explicitly use `edge`. The build process must correctly handle this hybrid configuration. Finally, error-handling tests are needed; for instance, the build should fail with a clear error if a user attempts to set `runtime: 'nodejs'` while using an API or module that is strictly incompatible with Node.js in the Vercel runtime environment."
+          ]
+        }
+      ],
+      "md_title": "Bug Fix Pr: vercel/next.js#75624",
+      "input_attachments": [
+        {
+          "attachment_id": "bug_report",
+          "filename": "issue_description.md",
+          "format": "md",
+          "description": "The bug report and reproduction steps",
+          "content_blueprint": {
+            "title": "Bug Report: Issue affecting vercel/next.js",
+            "repro_steps": [
+              "1. Install latest version from main branch",
+              "2. Run the reproduction script with the provided test case",
+              "3. Observe the error in the output"
+            ],
+            "expected_behavior": "The operation should complete without errors.",
+            "actual_behavior": "A TypeError or unexpected exception is raised."
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Repository name",
+          "value": "vercel/next.js",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "PR number",
+          "value": "75624",
+          "tolerance": null,
+          "location": "Document title or first paragraph"
+        },
+        {
+          "description": "Affected file 1",
+          "value": "packages/next/src/build/analysis/get-page-static-info.ts",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        },
+        {
+          "description": "Affected file 2",
+          "value": "packages/next/src/build/entries.ts",
+          "tolerance": null,
+          "location": "Proposed Design or Files Changed section"
+        }
+      ],
+      "narrative_prompt": "You are a senior software engineer at Solstice Networks. Your manager Esteban Ruiz has asked you to write a professional bug fix pr for the open-source project vercel/next.js.\n\nThe reference PR is #75624: Add nodejs runtime support for middleware\n\nKey technical context:\n- Files changed: packages/next/src/build/analysis/get-page-static-info.ts, packages/next/src/build/entries.ts\n- PR description excerpt: This allows setting `runtime: 'nodejs'` in middleware, which removes the constraint of only using edge runtime APIs for middleware. This doesn't change the signature of middleware and it still receives `(req: NextRequest, event: NextFetchEvent) => Response`. \r\n\r\nx-ref: https://github.com/vercel/next.js/discussions/71727\r\nx-ref: https://github.com/vercel/next.js/discussions/46722\n\nWrite in a clear, professional technical tone. Reference specific files and code patterns. Do NOT use AI hedging language. Be specific and actionable.",
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 644259004
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "bug_report",
+      "filename": "issue_description.md",
+      "format": "md",
+      "description": "The bug report and reproduction steps",
+      "content_blueprint": {
+        "title": "Bug Report: Issue affecting vercel/next.js",
+        "repro_steps": [
+          "1. Install latest version from main branch",
+          "2. Run the reproduction script with the provided test case",
+          "3. Observe the error in the output"
+        ],
+        "expected_behavior": "The operation should complete without errors.",
+        "actual_behavior": "A TypeError or unexpected exception is raised."
+      }
+    }
+  ],
+  "gold_deliverable_path": null,
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T11:21:12.944983+00:00"
+}

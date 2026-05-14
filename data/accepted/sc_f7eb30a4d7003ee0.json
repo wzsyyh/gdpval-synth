@@ -1,0 +1,970 @@
+{
+  "candidate_id": "sc_f7eb30a4d7003ee0",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "medium",
+  "seed_id": "f7eb30a4d7003ee0",
+  "prompt": "You are a senior engineer on the Django Core team. The team has just merged PR #14843, which adds async-compatible interfaces to Django's QuerySet. You've been asked to produce a technical design document that will serve as the architectural reference for this feature, to be shared with the broader Django contributor community.\n\n**Materials provided:**\n- The full PR diff for django/django#14843 (\"Fixed #33646 -- Added async-compatible interface to QuerySet\")\n- The PR description detailing the async methods added, the async iterator approach on BaseIterable, and the alist() utility function\n- The issue tracker reference: Django ticket #33646\n\n**Task requirements:**\n1. Write a design document in Markdown format that covers the following sections:\n   - **Overview**: Summarize the problem being solved (lack of async ORM support in Django), reference issue #33646, and state the high-level approach taken in PR #14843.\n   - **Motivation**: Explain why async QuerySet support matters for Django developers, with at least two concrete use cases (e.g., async views, integration with async web frameworks).\n   - **Architecture**: Describe the key design decisions:\n     - The async interface pattern: all methods that don't return a QuerySet get an `a`-prefixed async counterpart (e.g., `acount`, `aget`, `acreate`, `aexists`, etc.). List at least 10 of these methods by name.\n     - The BaseIterable approach: explain `_async_generator()` and `__aiter__()` on BaseIterable, including the chunked sync-to-async bridge using `sync_to_async` and `islice` with `chunk_size`.\n     - The QuerySet-level `__aiter__()` override that calls `_async_fetch_all()` and yields from `_result_cache`.\n     - The `aiterator()` method on QuerySet, including its `chunk_size=2000` default and the `prefetch_related` check.\n     - The `alist()` utility function for async iterables.\n   - **Implementation Details**: Reference specific file paths (e.g., `django/db/models/query.py`), imports (e.g., `from asgiref.sync import sync_to_async`), and the approach to wrapping sync methods with `sync_to_async`.\n   - **Limitations and Future Work**: Discuss known limitations mentioned in the PR (e.g., performance penalty due to sync barrier crossings, the need for custom `__aiter__()` methods on Iterable subclasses, and the compiler needing async support in `results_iter`).\n   - **Testing Strategy**: Describe how the async methods should be tested, noting that the PR includes tests and documentation updates.\n\n2. The document must be structured with clear Markdown headings (H1 for title, H2 for sections).\n3. Use code blocks where referencing specific method signatures or implementations from the diff.\n4. Do not invent features, methods, or design decisions not present in the PR material.\n5. The tone should be technical and precise, suitable for senior Django contributors.\n\n**Deliverable:**\nA single Markdown file titled 'Design Doc - Async QuerySet Interface'. The file should be self-contained and cover all sections listed above with sufficient detail to serve as an architectural reference.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document has a top-level heading (H1) with the title 'Design Doc - Async QuerySet Interface'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Overview'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Motivation'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Architecture'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Implementation Details'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Limitations and Future Work'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an H2 heading named 'Testing Strategy'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references Django issue #33646.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Overview section references PR #14843.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document mentions the import statement 'from asgiref.sync import sync_to_async'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document mentions the file path 'django/db/models/query.py'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section lists at least 10 async methods by name from the PR (e.g., aiterator, aaggregate, acount, aget, acreate, abulk_create, abulk_update, aget_or_create, aupdate_or_create, adelete, aexists).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section describes the BaseIterable _async_generator() method and its chunked iteration approach.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section explains the QuerySet-level __aiter__() override using _async_fetch_all() and _result_cache.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section describes the aiterator() method with chunk_size=2000 default.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section mentions that aiterator() raises NotSupportedError for prefetch_related lookups.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture section mentions the alist() utility function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section explains the chunked sync-to-async bridge using sync_to_async and islice with chunk_size.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document explains that __aiter__ on BaseIterable is synchronous and returns an async generator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Details section mentions the use of islice from itertools.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Details section describes the pattern of wrapping sync methods with sync_to_async.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section mentions the performance penalty from sync-to-async barrier crossings.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section mentions the need for custom __aiter__() methods on Iterable subclasses.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section mentions that compiler results_iter needs async support.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Limitations section mentions that prefetch_related is not supported with aiterator.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Limitations section mentions transaction handling as remaining work.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions that the PR includes tests.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy section mentions documentation updates.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation section provides at least two concrete use cases for async QuerySet support.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section includes an example async view pattern with await and aget or async for.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Architecture section explains the 'a' prefix naming convention for async methods.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses code blocks for at least two method signatures or code snippets.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The tone of the document is technical and precise, suitable for senior Django contributors.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'aiterator' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'acount' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'aget' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'acreate' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'aexists' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'adelete' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'abulk_create' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'abulk_update' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'aget_or_create' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Architecture section includes the method 'aupdate_or_create' in the list of async methods.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document invents async methods not present in the PR material (e.g., afilter, aexclude, aselect_related, aprefetch_related).",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The document claims aiterator() supports prefetch_related() without mentioning its incompatibility.",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_f7eb30a4d7003ee0",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "medium",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:django/django#14843",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "14843",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "33646",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "django/db/models/query.py",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "from asgiref.sync import sync_to_async",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "aiterator",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "aaggregate",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "acount",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "aget",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "acreate",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "abulk_create",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "abulk_update",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "aget_or_create",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "aupdate_or_create",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "adelete",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "aexists",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "_async_generator",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "__aiter__",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "2000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "prefetch_related",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "NotSupportedError",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "alist",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "islice",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "_async_fetch_all",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "_result_cache",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "performance penalty",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "results_iter",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Iterable subclass",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "transactions",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "14843",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "33646",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "django/db/models/query.py",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "from asgiref.sync import sync_to_async",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "aiterator",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "aaggregate",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "acount",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "aget",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "acreate",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "abulk_create",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "abulk_update",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "aget_or_create",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "aupdate_or_create",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "adelete",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "aexists",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "_async_generator",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "__aiter__",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "2000",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "prefetch_related",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "NotSupportedError",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "alist",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "islice",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "_async_fetch_all",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "_result_cache",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "performance penalty",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "results_iter",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Iterable subclass",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "transactions",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Doc - Async QuerySet Interface",
+          "heading_level": 1,
+          "required_content": [
+            "Title of the design document"
+          ],
+          "paragraphs": [
+            "Design Doc - Async QuerySet Interface"
+          ]
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Problem statement: lack of async ORM support in Django",
+            "Reference to Django issue #33646",
+            "Reference to PR #14843",
+            "High-level approach: async-compatible interface added to QuerySet"
+          ],
+          "paragraphs": [
+            "Django's ORM has historically been synchronous, which limits developers building applications with async-capable frameworks like ASGI. This design document describes the architectural approach taken in PR #14843 to add async-compatible interfaces to Django's QuerySet class, addressing the long-standing need for async database operations. The work originates from Django ticket #33646, which requested native async support for query execution.",
+            "The implementation introduces async counterparts for all QuerySet methods that do not themselves return a QuerySet. These methods use an 'a' prefix convention (e.g., `acount`, `aget`) and wrap the underlying synchronous logic using `asgiref.sync.sync_to_async`. Additionally, async iteration support is added at both the BaseIterable and QuerySet levels, enabling `async for` loops over query results. A utility function `alist()` is also provided for asynchronously collecting iterables into lists."
+          ]
+        },
+        {
+          "heading": "Motivation",
+          "heading_level": 2,
+          "required_content": [
+            "Why async QuerySet support matters",
+            "At least two concrete use cases"
+          ],
+          "paragraphs": [
+            "As Django evolves to support asynchronous patterns through ASGI and async views, the ORM has remained a significant bottleneck. Developers using `async def` views must currently wrap every database call in `sync_to_async` or use `database_sync_to_async`, adding boilerplate and obscuring intent. Native async QuerySet support eliminates this friction and enables more natural, readable async code.",
+            "Two primary use cases drive this work: (1) Async views that perform database queries directly, such as `async def myview(request)` using `await TestModel.objects.aget(name='Andrew')` or `async for row in TestModel.objects.filter(good=True)` without manual sync wrappers. (2) Integration with async web frameworks and middleware that expect non-blocking database access, enabling better concurrency in high-throughput ASGI applications."
+          ]
+        },
+        {
+          "heading": "Architecture",
+          "heading_level": 2,
+          "required_content": [
+            "Async interface pattern with a-prefix methods",
+            "List of at least 10 async methods by name",
+            "BaseIterable _async_generator and __aiter__ approach",
+            "Chunked sync-to-async bridge using sync_to_async and islice",
+            "QuerySet-level __aiter__ override with _async_fetch_all and _result_cache",
+            "aiterator method with chunk_size=2000 default and prefetch_related check",
+            "alist utility function"
+          ],
+          "paragraphs": [
+            "The design introduces async support through three complementary mechanisms: a-prefix async method wrappers, async iteration on BaseIterable, and a QuerySet-level async iterator override.",
+            "The a-prefix pattern provides async versions of all methods that do not return a QuerySet. The following methods are included: `aiterator`, `aaggregate`, `acount`, `aget`, `acreate`, `abulk_create`, `abulk_update`, `aget_or_create`, `aupdate_or_create`, `aearliest`, `alatest`, `afirst`, `alast`, `ain_bulk`, `aupdate`, `adelete`, `aexists`, `acontains`, `aexplain`. Most are thin wrappers around the synchronous version using `sync_to_async`, though some include performance optimizations.",
+            "For async iteration, `BaseIterable` gains a `_async_generator()` method and a `__aiter__()` method. The `_async_generator` creates the synchronous generator via `self.__iter__()` and then repeatedly calls it in chunks using `sync_to_async(next_slice)` where `next_slice` uses `islice(gen, self.chunk_size)`. This bridges the sync-async boundary by fetching chunks of results asynchronously while the generator remains synchronous internally. The `__aiter__()` method returns `self._async_generator()`.",
+            "At the QuerySet level, `__aiter__()` is overridden to provide a more efficient path. It defines an inner async generator that calls `await self._async_fetch_all()` and then yields from `self._result_cache`. This avoids the per-chunk sync overhead for QuerySets that support full materialization.",
+            "The `aiterator()` method on QuerySet provides an explicit asynchronous iterator with a default `chunk_size=2000`. It includes a guard that raises `NotSupportedError` if `prefetch_related` lookups are present, as prefetching is not yet supported with async iteration. It also validates that `chunk_size > 0`.",
+            "Finally, a new `alist()` utility function is added for converting async iterables into lists asynchronously, addressing the common pattern of needing to collect async iteration results."
+          ]
+        },
+        {
+          "heading": "Implementation Details",
+          "heading_level": 2,
+          "required_content": [
+            "Reference to file path django/db/models/query.py",
+            "Import of sync_to_async from asgiref.sync",
+            "Approach to wrapping sync methods",
+            "Use of islice from itertools"
+          ],
+          "paragraphs": [
+            "The primary implementation resides in `django/db/models/query.py`. The file imports `sync_to_async` from `asgiref.sync` to handle the sync-to-async conversion of database operations. It also imports `islice` from `itertools` for chunked iteration in the async generator.",
+            "The async methods on QuerySet typically follow a pattern of calling the synchronous version within a `sync_to_async` wrapper. For example, `acount()` would wrap the synchronous `count()` method. Some methods like `aiterator()` have custom async implementations that manage cursor-based iteration asynchronously.",
+            "The BaseIterable `_async_generator()` method demonstrates the chunked bridge approach: it creates the sync generator, then in a loop fetches chunks via `sync_to_async(next_slice)(sync_generator)` where `next_slice` returns `list(islice(gen, self.chunk_size))`. It yields items from each chunk and breaks when a chunk is smaller than `self.chunk_size`, indicating exhaustion.",
+            "The `__aiter__()` on BaseIterable is a synchronous method that returns an asynchronous generator, as `__aiter__` must be synchronous per Python's async iteration protocol. This pattern is documented in the code comments explaining the design constraints."
+          ]
+        },
+        {
+          "heading": "Limitations and Future Work",
+          "heading_level": 2,
+          "required_content": [
+            "Performance penalty from sync barrier crossings",
+            "Need for custom __aiter__ methods on Iterable subclasses",
+            "Compiler results_iter needing async support",
+            "Prefetch_related not supported with aiterator"
+          ],
+          "paragraphs": [
+            "The current implementation has several known limitations. The BaseIterable async generator incurs a performance penalty on large result sets due to the cost of crossing the sync-to-async barrier for each chunk. The code comments note that custom `__aiter__()` methods should be added to each Iterable subclass to mitigate this, but this requires work in the Compiler first.",
+            "Specifically, the compiler's `results_iter` needs to be taught async capabilities to enable more efficient async iteration without per-chunk sync overhead. Until then, the generic BaseIterable approach provides a working but suboptimal solution.",
+            "The `aiterator()` method explicitly does not support `prefetch_related()`, raising `NotSupportedError` if used. This is because prefetching logic has not yet been adapted for async execution. Future work should enable async-aware prefetching.",
+            "Transaction handling is noted as remaining work in the PR description, with a plan to address it in another pass. Tests and documentation were completed as part of the PR, but broader integration testing with async views and ASGI applications is ongoing."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "PR includes tests and documentation",
+            "How async methods should be tested"
+          ],
+          "paragraphs": [
+            "The PR includes comprehensive tests for all new async methods. Testing should verify that each a-prefix method produces the same result as its synchronous counterpart, that async iteration yields the same objects as sync iteration, and that error conditions (like negative chunk_size in aiterator) raise appropriate exceptions.",
+            "The tests should also cover the async generator on BaseIterable to ensure correct chunked behavior, especially at boundaries where result sets are smaller than or exactly equal to the chunk size. Integration tests with async views demonstrate the end-to-end functionality.",
+            "Documentation updates were included to guide developers on using the new async interfaces, covering method signatures, usage examples, and known limitations. The testing approach ensures backward compatibility, as all synchronous interfaces remain unchanged."
+          ]
+        }
+      ],
+      "md_title": "Design Doc - Async QuerySet Interface",
+      "input_attachments": [],
+      "expected_values": [
+        {
+          "description": "Document title references the exact PR number",
+          "value": "14843",
+          "tolerance": null,
+          "location": "Overview section, reference to PR #14843"
+        },
+        {
+          "description": "Document references the Django issue number",
+          "value": "33646",
+          "tolerance": null,
+          "location": "Overview section, reference to Django ticket #33646"
+        },
+        {
+          "description": "Primary implementation file path is mentioned",
+          "value": "django/db/models/query.py",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "Import statement for sync_to_async is referenced",
+          "value": "from asgiref.sync import sync_to_async",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "The list of async methods includes aiterator",
+          "value": "aiterator",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes aaggregate",
+          "value": "aaggregate",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes acount",
+          "value": "acount",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes aget",
+          "value": "aget",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes acreate",
+          "value": "acreate",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes abulk_create",
+          "value": "abulk_create",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes abulk_update",
+          "value": "abulk_update",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes aget_or_create",
+          "value": "aget_or_create",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes aupdate_or_create",
+          "value": "aupdate_or_create",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes adelete",
+          "value": "adelete",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The list of async methods includes aexists",
+          "value": "aexists",
+          "tolerance": null,
+          "location": "Architecture section, list of async methods"
+        },
+        {
+          "description": "The document describes the BaseIterable _async_generator method",
+          "value": "_async_generator",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document describes the __aiter__ method on BaseIterable",
+          "value": "__aiter__",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions chunk_size in context of aiterator default",
+          "value": "2000",
+          "tolerance": null,
+          "location": "Architecture section, aiterator description"
+        },
+        {
+          "description": "The document mentions prefetch_related check in aiterator",
+          "value": "prefetch_related",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions NotSupportedError raised by aiterator",
+          "value": "NotSupportedError",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions alist utility function",
+          "value": "alist",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions islice from itertools",
+          "value": "islice",
+          "tolerance": null,
+          "location": "Implementation Details section"
+        },
+        {
+          "description": "The document mentions _async_fetch_all in QuerySet __aiter__",
+          "value": "_async_fetch_all",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions _result_cache in QuerySet __aiter__",
+          "value": "_result_cache",
+          "tolerance": null,
+          "location": "Architecture section"
+        },
+        {
+          "description": "The document mentions performance penalty in Limitations section",
+          "value": "performance penalty",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        },
+        {
+          "description": "The document mentions compiler results_iter in Limitations section",
+          "value": "results_iter",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        },
+        {
+          "description": "The document mentions custom __aiter__ methods on Iterable subclasses",
+          "value": "Iterable subclass",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        },
+        {
+          "description": "The document mentions transaction handling as remaining work",
+          "value": "transactions",
+          "tolerance": null,
+          "location": "Limitations and Future Work section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 670711690
+  },
+  "input_attachment_specs": [],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_f7eb30a4d7003ee0/design_doc.md",
+  "input_attachment_paths": [],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T05:10:13.255528+00:00"
+}

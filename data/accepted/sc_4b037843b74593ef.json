@@ -1,0 +1,851 @@
+{
+  "candidate_id": "sc_4b037843b74593ef",
+  "occupation": "software_engineer",
+  "archetype": "design_doc",
+  "difficulty": "hard",
+  "seed_id": "4b037843b74593ef",
+  "prompt": "You are a senior software engineer on the Kubernetes CLI team. The team is planning to add a new `--address` flag to the `kubectl port-forward` command, allowing users to specify the local address(es) on which port-forwarding binds. This is a long-requested feature (GitHub issues #36152 and #29678) that will enable port-forward to work in environments like Docker containers or remote VMs where localhost is not appropriate. The proposed design is captured in issue #43962. Your task is to produce a detailed design document for this feature implementation.\n\nYou are provided with the pull request diff for PR #46517 and the linked issue #43962 proposal. The diff shows the actual implementation changes across four files.\n\nYour deliverable must be a Markdown design document that covers:\n1. **Overview**: Summarize the feature, its motivation, and the issues it resolves.\n2. **Design Goals & Constraints**: List the key design goals and any backward-compatibility constraints.\n3. **API Changes**: Detail the new `--address` flag, its type, default value, and usage examples.\n4. **Implementation Plan**: Describe the required changes to `PortForwardOptions`, the `NewCmdPortForward` function, the `defaultPortForwarder.ForwardPorts` method, and the new `NewOnAddresses` function in the client-go portforward package.\n5. **Backward Compatibility**: Explain how existing behavior (listening on localhost) is preserved.\n6. **Testing Strategy**: Outline unit and integration tests needed.\n7. **References**: Link to the relevant GitHub issues and PR.\n\nUse code snippets from the diff where appropriate. Ensure the document is suitable for review by the Kubernetes SIG-CLI community.",
+  "deliverable": {
+    "deliverable_id": "design_doc",
+    "primary_format": "markdown",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 2,
+      "criterion": "The submitted document is a Markdown file with the title 'Design Document: kubectl port-forward --address flag'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an Overview section that summarizes the feature motivation.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section mentions that the current implementation hardcodes binding to localhost.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section lists GitHub issue #43962 as the proposal source.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section lists GitHub issue #36152 as a resolved issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Overview section lists GitHub issue #29678 as a resolved issue.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Design Goals & Constraints section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Goals section states that the default value must be 'localhost' for backward compatibility.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Goals section mentions that the flag accepts a comma-separated list of addresses.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes an API Changes section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section identifies the new field name as 'Address' in the PortForwardOptions struct.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section states the type of the new Address field is []string.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Changes section specifies the default value of the --address flag as []string{\"localhost\"}.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Changes section includes the usage example with --address 0.0.0.0.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The API Changes section includes the usage example with --address localhost,10.19.21.23.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes an Implementation Plan section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Plan mentions the change to the Use string in NewCmdPortForward.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Plan correctly identifies the new function as 'NewOnAddresses' in the client-go portforward package.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Plan states that the existing 'New' function will be refactored to call 'NewOnAddresses'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Plan mentions the change to the ForwardPorts method in defaultPortForwarder.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Plan includes the code snippet showing the call to NewOnAddresses in ForwardPorts.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Backward Compatibility section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Backward Compatibility section explains that the default --address value preserves localhost behavior.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Backward Compatibility section states that the existing 'New' function API is preserved.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a Testing Strategy section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy mentions unit tests for the NewOnAddresses function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy mentions unit tests for flag parsing.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy mentions integration tests for various address formats.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Testing Strategy mentions negative test cases for invalid addresses.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a References section with links to GitHub issues and PR.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section links to issue #43962.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section links to issue #36152.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section links to issue #29678.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The References section links to PR #46517.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The API Changes section references the file path 'pkg/kubectl/cmd/portforward/portforward.go'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Plan references the file path 'staging/src/k8s.io/client-go/tools/portforward/portforward.go'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the release note phrase 'allows selecting non-localhost addresses to listen on with port-forward'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that addresses can be IPv4, IPv6, or localhost.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions that listening on localhost results in binding to 127.0.0.1 and ::1.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains at least one code snippet from the diff.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is well-structured with clear headings for each required section.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses technical but accessible language suitable for SIG-CLI community review.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document is missing a required section (Overview, Design Goals, API Changes, Implementation Plan, Backward Compatibility, Testing Strategy, or References).",
+      "category": "completeness",
+      "is_penalty": true
+    },
+    {
+      "score": -1,
+      "criterion": "The document incorrectly names the new function (e.g., 'NewOnAddress' instead of 'NewOnAddresses').",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -1,
+      "criterion": "The document incorrectly states the default value of the --address flag (e.g., '127.0.0.1' instead of 'localhost').",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_4b037843b74593ef",
+    "occupation": "software_engineer",
+    "deliverable_id": "design_doc",
+    "archetype": "design_doc",
+    "difficulty": "hard",
+    "seed": {
+      "source": "github",
+      "identifier": "pr:kubernetes/kubernetes#46517",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "Design Document: kubectl port-forward --address flag",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "46517",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "43962",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "36152",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "29678",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "Address",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "[]string",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "[]string{\"localhost\"}",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "NewOnAddresses",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "[options]",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "pkg/kubectl/cmd/portforward/portforward.go",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "staging/src/k8s.io/client-go/tools/portforward/portforward.go",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "kubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "kubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "ForwardPorts",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "127.0.0.1 and ::1",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "Addresses to listen on (comma separated)",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "allows selecting non-localhost addresses to listen on with port-forward",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "string",
+        "value": "Design Document: kubectl port-forward --address flag",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "string",
+        "value": "46517",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "string",
+        "value": "43962",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "string",
+        "value": "36152",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "string",
+        "value": "29678",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "string",
+        "value": "Address",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "string",
+        "value": "[]string",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "string",
+        "value": "[]string{\"localhost\"}",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "string",
+        "value": "NewOnAddresses",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "string",
+        "value": "[options]",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "string",
+        "value": "pkg/kubectl/cmd/portforward/portforward.go",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "string",
+        "value": "staging/src/k8s.io/client-go/tools/portforward/portforward.go",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "string",
+        "value": "kubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "string",
+        "value": "kubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "string",
+        "value": "ForwardPorts",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "string",
+        "value": "127.0.0.1 and ::1",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "string",
+        "value": "Addresses to listen on (comma separated)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "string",
+        "value": "NewOnAddresses",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "string",
+        "value": "allows selecting non-localhost addresses to listen on with port-forward",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "string",
+        "value": "43962",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "markdown",
+      "sheets": null,
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": [
+        {
+          "heading": "Design Document: kubectl port-forward --address flag",
+          "heading_level": 1,
+          "required_content": [
+            "Title of the design document"
+          ],
+          "paragraphs": [
+            "Design Document: kubectl port-forward --address flag"
+          ]
+        },
+        {
+          "heading": "Overview",
+          "heading_level": 2,
+          "required_content": [
+            "Summary of the feature",
+            "Motivation and problem statement",
+            "List of issues resolved"
+          ],
+          "paragraphs": [
+            "This design document outlines the implementation of a new `--address` flag for the `kubectl port-forward` command. The feature allows users to specify the local address(es) on which the port-forwarding listener binds, enabling the command to be used in non-localhost environments such as Docker containers or remote machines.",
+            "The current implementation of `kubectl port-forward` hardcodes binding to `127.0.0.1` and `::1` (localhost). This limitation prevents its use in scenarios where the user needs to expose forwarded ports to other interfaces, which is a common requirement in containerized development environments and when accessing pods from different network segments.",
+            "This change resolves issues #36152 and #29678, which requested the ability to bind to addresses other than localhost. It implements the proposal described in issue #43962."
+          ]
+        },
+        {
+          "heading": "Design Goals & Constraints",
+          "heading_level": 2,
+          "required_content": [
+            "Key design goals",
+            "Backward compatibility constraint",
+            "Flag naming and default value"
+          ],
+          "paragraphs": [
+            "The primary design goals are: (1) Allow binding to one or more specific IPv4/IPv6 addresses or the symbolic name `localhost`; (2) Preserve full backward compatibility by defaulting to `localhost`; (3) Maintain the existing behavior when no `--address` flag is provided.",
+            "The implementation must be backward compatible. The default value of the new flag must be `localhost` to ensure that existing workflows and scripts that depend on port-forward binding only to localhost continue to function without change.",
+            "The flag will be named `--address` (with `-a` as an optional shorthand, though not explicitly shown in the diff). It will accept a comma-separated list of addresses, enabling multiple listeners if needed."
+          ]
+        },
+        {
+          "heading": "API Changes",
+          "heading_level": 2,
+          "required_content": [
+            "New flag definition with type and default",
+            "Usage examples from the diff",
+            "Change to PortForwardOptions struct"
+          ],
+          "paragraphs": [
+            "The `PortForwardOptions` struct in `pkg/kubectl/cmd/portforward/portforward.go` will be extended with a new `Address` field of type `[]string`. This field will store the list of addresses provided via the `--address` flag.",
+            "The new flag is defined in the `NewCmdPortForward` function with the following call: `cmd.Flags().StringSliceVar(&opts.Address, \"address\", []string{\"localhost\"}, \"Addresses to listen on (comma separated)\")`. The default value is `[]string{\"localhost\"}`, ensuring backward compatibility.",
+            "The usage examples will be updated to include two new entries: listening on all addresses with `--address 0.0.0.0` and listening on multiple addresses (localhost and a specific IP) with `--address localhost,10.19.21.23`."
+          ]
+        },
+        {
+          "heading": "Implementation Plan",
+          "heading_level": 2,
+          "required_content": [
+            "Changes to NewCmdPortForward usage string",
+            "Changes to defaultPortForwarder.ForwardPorts method",
+            "New NewOnAddresses function in client-go",
+            "Refactoring of New function"
+          ],
+          "paragraphs": [
+            "The `Use` string in the `NewCmdPortForward` function will be updated from `\"port-forward TYPE/NAME [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\"` to `\"port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\"` to indicate that options are now available.",
+            "The `ForwardPorts` method in the `defaultPortForwarder` will be modified to call the new `NewOnAddresses` function instead of `New`. The call will pass the `opts.Address` slice as an additional argument: `fw, err := portforward.NewOnAddresses(dialer, opts.Address, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)`.",
+            "A new function `NewOnAddresses` will be introduced in the client-go portforward package (`staging/src/k8s.io/client-go/tools/portforward/portforward.go`). This function will accept a slice of addresses and handle the logic of creating listeners on each specified address. The existing `New` function will be refactored to become a wrapper that calls `NewOnAddresses` with a default address of `\"localhost\"`, preserving the old API for any external consumers."
+          ]
+        },
+        {
+          "heading": "Backward Compatibility",
+          "heading_level": 2,
+          "required_content": [
+            "Explanation of default behavior",
+            "Impact on existing users and scripts"
+          ],
+          "paragraphs": [
+            "Backward compatibility is maintained because the `--address` flag defaults to `[]string{\"localhost\"}`. When a user runs `kubectl port-forward` without specifying the `--address` flag, the behavior is identical to the previous implementation: listening on both `127.0.0.1` and `::1`.",
+            "The existing `New` function in the portforward package is preserved as a public API. It is refactored to call `NewOnAddresses` with the default address, so any existing code that directly uses the `New` function will continue to work without modification.",
+            "Scripts and automation that rely on the command's interface will not break because no existing flags are removed or altered. The new flag is purely additive."
+          ]
+        },
+        {
+          "heading": "Testing Strategy",
+          "heading_level": 2,
+          "required_content": [
+            "Unit tests for NewOnAddresses",
+            "Unit tests for flag parsing",
+            "Integration tests for various address formats",
+            "Negative test cases"
+          ],
+          "paragraphs": [
+            "Unit tests should be added for the `NewOnAddresses` function to verify it correctly handles various address formats: a single IPv4 address, a single IPv6 address, the string `localhost`, multiple addresses, and empty or nil slices. Tests should also verify that invalid addresses (e.g., non-existent interfaces) are handled gracefully.",
+            "Unit tests in the `kubectl/cmd/portforward` package should verify that the `--address` flag is parsed correctly into the `Address` field of `PortForwardOptions`, including default value, single address, and multiple comma-separated addresses.",
+            "Integration tests should be created to validate the end-to-end functionality. These tests should verify that port-forwarding works correctly when binding to `0.0.0.0`, a specific loopback address, and multiple addresses simultaneously. Negative test cases should include attempting to bind to an address that is not available on the system.",
+            "Existing tests for the `New` function should be updated to confirm they still pass after the refactoring, ensuring no regression in backward compatibility."
+          ]
+        },
+        {
+          "heading": "References",
+          "heading_level": 2,
+          "required_content": [
+            "Links to GitHub issues and PR"
+          ],
+          "paragraphs": [
+            "This design implements the proposal from GitHub issue #43962: https://github.com/kubernetes/kubernetes/issues/43962",
+            "It resolves the long-standing feature requests in issues #36152 and #29678.",
+            "The corresponding implementation pull request is PR #46517: https://github.com/kubernetes/kubernetes/pull/46517"
+          ]
+        }
+      ],
+      "md_title": "Design Document: kubectl port-forward --address flag",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #46517 diff for kubernetes/kubernetes repository",
+          "content_blueprint": {
+            "title": "PR #46517 diff for kubernetes/kubernetes repository",
+            "body": "# Seed Material: kubernetes/kubernetes#46517: port-forward listen on address\nSource: github_issue_pr\nIdentifier: pr:kubernetes/kubernetes#46517\n\nRepository: kubernetes/kubernetes\nPR Number: #46517\nPR Title: port-forward listen on address\nMerged At: 2018-10-09T19:38:56Z\nChanged Files: 4\nAdditions: +170, Deletions: -43\n\n## PR Description\n**What this PR does / why we need it**:\r\n\r\nImplements #43962 proposal. Adds `--address` flag to port-forward command that allows listening on addresses other then localhost, so that port-forward can ie. be opened to consumers other then residing in local host like running in docker or different machine/vm\r\n\r\n**Which issue this PR fixes**: \r\n\r\nfixes #43962, fixes #36152, fixes #29678\r\n\r\n**Release note**:\r\n```\r\nallows selecting non-localhost addresses to listen on with port-forward\r\n```\n\n## Linked Issue #43962\nImplementing this proposal that will solve issues raised in https://github.com/kubernetes/kubernetes/issues/36152 and https://github.com/kubernetes/kubernetes/issues/29678. In short: allow binding on addresses other then currently supported `127.0.0.1` and `::1`\r\n\r\nThe idea is to implement a new method `NewOnAddress` in pkg/client/unversioned/portforward/portforward.go that will add an address parameter, and refactor `New` as a wrapper on the `NewOnAddress` pointing to \"localhost\" address.\r\n\r\nThe `NewOnAddress` would work as `New` did previously (that is calling `listenOnPortAndAddress`) with a difference of setting the new PortForwarder private variable `address` that can take string representations of IPv4, IPv6, \"localhost\" or nil. Then `listenOnPort` will be changed in a way that if IPv4 or IPv6 is provided in `PortForwarder.address`, the address given wil be the only one used (if it is a valid one). If value \"localhost\" or nil is passed, it will behave exactly as it does now - listening on `127.0.0.1` and `[::1]`.\r\n\r\npkg/kubectl/cmd/portforward.go will be modified to call `NewOnAddress` method instead of `New` with new option address provided by `-a` or `--address` flag on `kubectl port-forward` command and passed via a new string variable `Address` in updated PortForwardOptions type.\n\n## Diff (first 3000 chars)\ndiff --git a/pkg/kubectl/cmd/portforward/portforward.go b/pkg/kubectl/cmd/portforward/portforward.go\nindex 3cc08ed1e3a55..236293e1b5a1c 100644\n--- a/pkg/kubectl/cmd/portforward/portforward.go\n+++ b/pkg/kubectl/cmd/portforward/portforward.go\n@@ -50,6 +50,7 @@ type PortForwardOptions struct {\n \tRESTClient    *restclient.RESTClient\n \tConfig        *restclient.Config\n \tPodClient     corev1client.PodsGetter\n+\tAddress       []string\n \tPorts         []string\n \tPortForwarder portForwarder\n \tStopChannel   chan struct{}\n@@ -79,6 +80,12 @@ var (\n \t\t# Listen on port 8888 locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod 8888:5000\n \n+\t\t# Listen on port 8888 on all addresses, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000\n+\n+\t\t# Listen on port 8888 on localhost and selected IP, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000\n+\n \t\t# Listen on a random port locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod :5000`))\n )\n@@ -95,7 +102,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmd := &cobra.Command{\n-\t\tUse:                   \"port-forward TYPE/NAME [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n+\t\tUse:                   \"port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n \t\tDisableFlagsInUseLine: true,\n \t\tShort:                 i18n.T(\"Forward one or more local ports to a pod\"),\n \t\tLong:                  portforwardLong,\n@@ -113,6 +120,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmdutil.AddPodRunningTimeoutFlag(cmd, defaultPodPortForwardWaitTimeout)\n+\tcmd.Flags().StringSliceVar(&opts.Address, \"address\", []string{\"localhost\"}, \"Addresses to listen on (comma separated)\")\n \t// TODO support UID\n \treturn cmd\n }\n@@ -131,7 +139,7 @@ func (f *defaultPortForwarder) ForwardPorts(method string, url *url.URL, opts Po\n \t\treturn err\n \t}\n \tdialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, method, url)\n-\tfw, err := portforward.New(dialer, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n+\tfw, err := portforward.NewOnAddresses(dialer, opts.Address, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n \tif err != nil {\n \t\treturn err\n \t}\ndiff --git a/staging/src/k8s.io/client-go/tools/portforward/portforward.go b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\nindex bc6f43d7d15f2..0e9b369a98317 100644\n--- a/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n+++ b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n@@ -39,8 +39,9 @@ const PortForwardProtocolV1Name = \"portforward.k8s.io\"\n // PortForwarder knows how to listen for local connections and forward them to\n // a remote pod via an upgraded HTTP request.\n type PortForwarder struct {\n-\tports    []ForwardedPort\n-\tstopChan <-chan struct{"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "Issue #43962 proposal text",
+          "content_blueprint": {
+            "title": "Issue #43962 proposal text",
+            "body": "# Seed Material: kubernetes/kubernetes#46517: port-forward listen on address\nSource: github_issue_pr\nIdentifier: pr:kubernetes/kubernetes#46517\n\nRepository: kubernetes/kubernetes\nPR Number: #46517\nPR Title: port-forward listen on address\nMerged At: 2018-10-09T19:38:56Z\nChanged Files: 4\nAdditions: +170, Deletions: -43\n\n## PR Description\n**What this PR does / why we need it**:\r\n\r\nImplements #43962 proposal. Adds `--address` flag to port-forward command that allows listening on addresses other then localhost, so that port-forward can ie. be opened to consumers other then residing in local host like running in docker or different machine/vm\r\n\r\n**Which issue this PR fixes**: \r\n\r\nfixes #43962, fixes #36152, fixes #29678\r\n\r\n**Release note**:\r\n```\r\nallows selecting non-localhost addresses to listen on with port-forward\r\n```\n\n## Linked Issue #43962\nImplementing this proposal that will solve issues raised in https://github.com/kubernetes/kubernetes/issues/36152 and https://github.com/kubernetes/kubernetes/issues/29678. In short: allow binding on addresses other then currently supported `127.0.0.1` and `::1`\r\n\r\nThe idea is to implement a new method `NewOnAddress` in pkg/client/unversioned/portforward/portforward.go that will add an address parameter, and refactor `New` as a wrapper on the `NewOnAddress` pointing to \"localhost\" address.\r\n\r\nThe `NewOnAddress` would work as `New` did previously (that is calling `listenOnPortAndAddress`) with a difference of setting the new PortForwarder private variable `address` that can take string representations of IPv4, IPv6, \"localhost\" or nil. Then `listenOnPort` will be changed in a way that if IPv4 or IPv6 is provided in `PortForwarder.address`, the address given wil be the only one used (if it is a valid one). If value \"localhost\" or nil is passed, it will behave exactly as it does now - listening on `127.0.0.1` and `[::1]`.\r\n\r\npkg/kubectl/cmd/portforward.go will be modified to call `NewOnAddress` method instead of `New` with new option address provided by `-a` or `--address` flag on `kubectl port-forward` command and passed via a new string variable `Address` in updated PortForwardOptions type.\n\n## Diff (first 3000 chars)\ndiff --git a/pkg/kubectl/cmd/portforward/portforward.go b/pkg/kubectl/cmd/portforward/portforward.go\nindex 3cc08ed1e3a55..236293e1b5a1c 100644\n--- a/pkg/kubectl/cmd/portforward/portforward.go\n+++ b/pkg/kubectl/cmd/portforward/portforward.go\n@@ -50,6 +50,7 @@ type PortForwardOptions struct {\n \tRESTClient    *restclient.RESTClient\n \tConfig        *restclient.Config\n \tPodClient     corev1client.PodsGetter\n+\tAddress       []string\n \tPorts         []string\n \tPortForwarder portForwarder\n \tStopChannel   chan struct{}\n@@ -79,6 +80,12 @@ var (\n \t\t# Listen on port 8888 locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod 8888:5000\n \n+\t\t# Listen on port 8888 on all addresses, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000\n+\n+\t\t# Listen on port 8888 on localhost and selected IP, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000\n+\n \t\t# Listen on a random port locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod :5000`))\n )\n@@ -95,7 +102,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmd := &cobra.Command{\n-\t\tUse:                   \"port-forward TYPE/NAME [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n+\t\tUse:                   \"port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n \t\tDisableFlagsInUseLine: true,\n \t\tShort:                 i18n.T(\"Forward one or more local ports to a pod\"),\n \t\tLong:                  portforwardLong,\n@@ -113,6 +120,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmdutil.AddPodRunningTimeoutFlag(cmd, defaultPodPortForwardWaitTimeout)\n+\tcmd.Flags().StringSliceVar(&opts.Address, \"address\", []string{\"localhost\"}, \"Addresses to listen on (comma separated)\")\n \t// TODO support UID\n \treturn cmd\n }\n@@ -131,7 +139,7 @@ func (f *defaultPortForwarder) ForwardPorts(method string, url *url.URL, opts Po\n \t\treturn err\n \t}\n \tdialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, method, url)\n-\tfw, err := portforward.New(dialer, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n+\tfw, err := portforward.NewOnAddresses(dialer, opts.Address, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n \tif err != nil {\n \t\treturn err\n \t}\ndiff --git a/staging/src/k8s.io/client-go/tools/portforward/portforward.go b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\nindex bc6f43d7d15f2..0e9b369a98317 100644\n--- a/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n+++ b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n@@ -39,8 +39,9 @@ const PortForwardProtocolV1Name = \"portforward.k8s.io\"\n // PortForwarder knows how to listen for local connections and forward them to\n // a remote pod via an upgraded HTTP request.\n type PortForwarder struct {\n-\tports    []ForwardedPort\n-\tstopChan <-chan struct{"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Document title",
+          "value": "Design Document: kubectl port-forward --address flag",
+          "tolerance": null,
+          "location": "Markdown document title or first heading"
+        },
+        {
+          "description": "PR number referenced",
+          "value": "46517",
+          "tolerance": null,
+          "location": "References section"
+        },
+        {
+          "description": "Issue number for proposal",
+          "value": "43962",
+          "tolerance": null,
+          "location": "References section or Overview"
+        },
+        {
+          "description": "Issue number resolved (first)",
+          "value": "36152",
+          "tolerance": null,
+          "location": "Overview or References section"
+        },
+        {
+          "description": "Issue number resolved (second)",
+          "value": "29678",
+          "tolerance": null,
+          "location": "Overview or References section"
+        },
+        {
+          "description": "New field name in PortForwardOptions",
+          "value": "Address",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "Type of the new Address field",
+          "value": "[]string",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "Default value of --address flag",
+          "value": "[]string{\"localhost\"}",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "New function name in client-go portforward package",
+          "value": "NewOnAddresses",
+          "tolerance": null,
+          "location": "Implementation Plan section"
+        },
+        {
+          "description": "Updated Use string fragment",
+          "value": "[options]",
+          "tolerance": null,
+          "location": "Implementation Plan section"
+        },
+        {
+          "description": "File path for PortForwardOptions struct",
+          "value": "pkg/kubectl/cmd/portforward/portforward.go",
+          "tolerance": null,
+          "location": "API Changes or Implementation Plan section"
+        },
+        {
+          "description": "File path for client-go portforward package",
+          "value": "staging/src/k8s.io/client-go/tools/portforward/portforward.go",
+          "tolerance": null,
+          "location": "Implementation Plan section"
+        },
+        {
+          "description": "Example command with --address 0.0.0.0",
+          "value": "kubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000",
+          "tolerance": null,
+          "location": "API Changes section or usage examples"
+        },
+        {
+          "description": "Example command with multiple addresses",
+          "value": "kubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000",
+          "tolerance": null,
+          "location": "API Changes section or usage examples"
+        },
+        {
+          "description": "Method name in defaultPortForwarder that calls NewOnAddresses",
+          "value": "ForwardPorts",
+          "tolerance": null,
+          "location": "Implementation Plan section"
+        },
+        {
+          "description": "Mention of localhost binding addresses",
+          "value": "127.0.0.1 and ::1",
+          "tolerance": null,
+          "location": "Overview or Backward Compatibility section"
+        },
+        {
+          "description": "Flag description string",
+          "value": "Addresses to listen on (comma separated)",
+          "tolerance": null,
+          "location": "API Changes section"
+        },
+        {
+          "description": "Test strategy mentions unit tests for NewOnAddresses",
+          "value": "NewOnAddresses",
+          "tolerance": null,
+          "location": "Testing Strategy section"
+        },
+        {
+          "description": "Release note summary",
+          "value": "allows selecting non-localhost addresses to listen on with port-forward",
+          "tolerance": null,
+          "location": "Overview or References section"
+        },
+        {
+          "description": "Proposal issue number",
+          "value": "43962",
+          "tolerance": null,
+          "location": "References section"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1269491423
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #46517 diff for kubernetes/kubernetes repository",
+      "content_blueprint": {
+        "title": "PR #46517 diff for kubernetes/kubernetes repository",
+        "body": "# Seed Material: kubernetes/kubernetes#46517: port-forward listen on address\nSource: github_issue_pr\nIdentifier: pr:kubernetes/kubernetes#46517\n\nRepository: kubernetes/kubernetes\nPR Number: #46517\nPR Title: port-forward listen on address\nMerged At: 2018-10-09T19:38:56Z\nChanged Files: 4\nAdditions: +170, Deletions: -43\n\n## PR Description\n**What this PR does / why we need it**:\r\n\r\nImplements #43962 proposal. Adds `--address` flag to port-forward command that allows listening on addresses other then localhost, so that port-forward can ie. be opened to consumers other then residing in local host like running in docker or different machine/vm\r\n\r\n**Which issue this PR fixes**: \r\n\r\nfixes #43962, fixes #36152, fixes #29678\r\n\r\n**Release note**:\r\n```\r\nallows selecting non-localhost addresses to listen on with port-forward\r\n```\n\n## Linked Issue #43962\nImplementing this proposal that will solve issues raised in https://github.com/kubernetes/kubernetes/issues/36152 and https://github.com/kubernetes/kubernetes/issues/29678. In short: allow binding on addresses other then currently supported `127.0.0.1` and `::1`\r\n\r\nThe idea is to implement a new method `NewOnAddress` in pkg/client/unversioned/portforward/portforward.go that will add an address parameter, and refactor `New` as a wrapper on the `NewOnAddress` pointing to \"localhost\" address.\r\n\r\nThe `NewOnAddress` would work as `New` did previously (that is calling `listenOnPortAndAddress`) with a difference of setting the new PortForwarder private variable `address` that can take string representations of IPv4, IPv6, \"localhost\" or nil. Then `listenOnPort` will be changed in a way that if IPv4 or IPv6 is provided in `PortForwarder.address`, the address given wil be the only one used (if it is a valid one). If value \"localhost\" or nil is passed, it will behave exactly as it does now - listening on `127.0.0.1` and `[::1]`.\r\n\r\npkg/kubectl/cmd/portforward.go will be modified to call `NewOnAddress` method instead of `New` with new option address provided by `-a` or `--address` flag on `kubectl port-forward` command and passed via a new string variable `Address` in updated PortForwardOptions type.\n\n## Diff (first 3000 chars)\ndiff --git a/pkg/kubectl/cmd/portforward/portforward.go b/pkg/kubectl/cmd/portforward/portforward.go\nindex 3cc08ed1e3a55..236293e1b5a1c 100644\n--- a/pkg/kubectl/cmd/portforward/portforward.go\n+++ b/pkg/kubectl/cmd/portforward/portforward.go\n@@ -50,6 +50,7 @@ type PortForwardOptions struct {\n \tRESTClient    *restclient.RESTClient\n \tConfig        *restclient.Config\n \tPodClient     corev1client.PodsGetter\n+\tAddress       []string\n \tPorts         []string\n \tPortForwarder portForwarder\n \tStopChannel   chan struct{}\n@@ -79,6 +80,12 @@ var (\n \t\t# Listen on port 8888 locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod 8888:5000\n \n+\t\t# Listen on port 8888 on all addresses, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000\n+\n+\t\t# Listen on port 8888 on localhost and selected IP, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000\n+\n \t\t# Listen on a random port locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod :5000`))\n )\n@@ -95,7 +102,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmd := &cobra.Command{\n-\t\tUse:                   \"port-forward TYPE/NAME [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n+\t\tUse:                   \"port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n \t\tDisableFlagsInUseLine: true,\n \t\tShort:                 i18n.T(\"Forward one or more local ports to a pod\"),\n \t\tLong:                  portforwardLong,\n@@ -113,6 +120,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmdutil.AddPodRunningTimeoutFlag(cmd, defaultPodPortForwardWaitTimeout)\n+\tcmd.Flags().StringSliceVar(&opts.Address, \"address\", []string{\"localhost\"}, \"Addresses to listen on (comma separated)\")\n \t// TODO support UID\n \treturn cmd\n }\n@@ -131,7 +139,7 @@ func (f *defaultPortForwarder) ForwardPorts(method string, url *url.URL, opts Po\n \t\treturn err\n \t}\n \tdialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, method, url)\n-\tfw, err := portforward.New(dialer, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n+\tfw, err := portforward.NewOnAddresses(dialer, opts.Address, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n \tif err != nil {\n \t\treturn err\n \t}\ndiff --git a/staging/src/k8s.io/client-go/tools/portforward/portforward.go b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\nindex bc6f43d7d15f2..0e9b369a98317 100644\n--- a/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n+++ b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n@@ -39,8 +39,9 @@ const PortForwardProtocolV1Name = \"portforward.k8s.io\"\n // PortForwarder knows how to listen for local connections and forward them to\n // a remote pod via an upgraded HTTP request.\n type PortForwarder struct {\n-\tports    []ForwardedPort\n-\tstopChan <-chan struct{"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "Issue #43962 proposal text",
+      "content_blueprint": {
+        "title": "Issue #43962 proposal text",
+        "body": "# Seed Material: kubernetes/kubernetes#46517: port-forward listen on address\nSource: github_issue_pr\nIdentifier: pr:kubernetes/kubernetes#46517\n\nRepository: kubernetes/kubernetes\nPR Number: #46517\nPR Title: port-forward listen on address\nMerged At: 2018-10-09T19:38:56Z\nChanged Files: 4\nAdditions: +170, Deletions: -43\n\n## PR Description\n**What this PR does / why we need it**:\r\n\r\nImplements #43962 proposal. Adds `--address` flag to port-forward command that allows listening on addresses other then localhost, so that port-forward can ie. be opened to consumers other then residing in local host like running in docker or different machine/vm\r\n\r\n**Which issue this PR fixes**: \r\n\r\nfixes #43962, fixes #36152, fixes #29678\r\n\r\n**Release note**:\r\n```\r\nallows selecting non-localhost addresses to listen on with port-forward\r\n```\n\n## Linked Issue #43962\nImplementing this proposal that will solve issues raised in https://github.com/kubernetes/kubernetes/issues/36152 and https://github.com/kubernetes/kubernetes/issues/29678. In short: allow binding on addresses other then currently supported `127.0.0.1` and `::1`\r\n\r\nThe idea is to implement a new method `NewOnAddress` in pkg/client/unversioned/portforward/portforward.go that will add an address parameter, and refactor `New` as a wrapper on the `NewOnAddress` pointing to \"localhost\" address.\r\n\r\nThe `NewOnAddress` would work as `New` did previously (that is calling `listenOnPortAndAddress`) with a difference of setting the new PortForwarder private variable `address` that can take string representations of IPv4, IPv6, \"localhost\" or nil. Then `listenOnPort` will be changed in a way that if IPv4 or IPv6 is provided in `PortForwarder.address`, the address given wil be the only one used (if it is a valid one). If value \"localhost\" or nil is passed, it will behave exactly as it does now - listening on `127.0.0.1` and `[::1]`.\r\n\r\npkg/kubectl/cmd/portforward.go will be modified to call `NewOnAddress` method instead of `New` with new option address provided by `-a` or `--address` flag on `kubectl port-forward` command and passed via a new string variable `Address` in updated PortForwardOptions type.\n\n## Diff (first 3000 chars)\ndiff --git a/pkg/kubectl/cmd/portforward/portforward.go b/pkg/kubectl/cmd/portforward/portforward.go\nindex 3cc08ed1e3a55..236293e1b5a1c 100644\n--- a/pkg/kubectl/cmd/portforward/portforward.go\n+++ b/pkg/kubectl/cmd/portforward/portforward.go\n@@ -50,6 +50,7 @@ type PortForwardOptions struct {\n \tRESTClient    *restclient.RESTClient\n \tConfig        *restclient.Config\n \tPodClient     corev1client.PodsGetter\n+\tAddress       []string\n \tPorts         []string\n \tPortForwarder portForwarder\n \tStopChannel   chan struct{}\n@@ -79,6 +80,12 @@ var (\n \t\t# Listen on port 8888 locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod 8888:5000\n \n+\t\t# Listen on port 8888 on all addresses, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address 0.0.0.0 pod/mypod 8888:5000\n+\n+\t\t# Listen on port 8888 on localhost and selected IP, forwarding to 5000 in the pod\n+\t\tkubectl port-forward --address localhost,10.19.21.23 pod/mypod 8888:5000\n+\n \t\t# Listen on a random port locally, forwarding to 5000 in the pod\n \t\tkubectl port-forward pod/mypod :5000`))\n )\n@@ -95,7 +102,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmd := &cobra.Command{\n-\t\tUse:                   \"port-forward TYPE/NAME [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n+\t\tUse:                   \"port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]\",\n \t\tDisableFlagsInUseLine: true,\n \t\tShort:                 i18n.T(\"Forward one or more local ports to a pod\"),\n \t\tLong:                  portforwardLong,\n@@ -113,6 +120,7 @@ func NewCmdPortForward(f cmdutil.Factory, streams genericclioptions.IOStreams) *\n \t\t},\n \t}\n \tcmdutil.AddPodRunningTimeoutFlag(cmd, defaultPodPortForwardWaitTimeout)\n+\tcmd.Flags().StringSliceVar(&opts.Address, \"address\", []string{\"localhost\"}, \"Addresses to listen on (comma separated)\")\n \t// TODO support UID\n \treturn cmd\n }\n@@ -131,7 +139,7 @@ func (f *defaultPortForwarder) ForwardPorts(method string, url *url.URL, opts Po\n \t\treturn err\n \t}\n \tdialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, method, url)\n-\tfw, err := portforward.New(dialer, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n+\tfw, err := portforward.NewOnAddresses(dialer, opts.Address, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.Out, f.ErrOut)\n \tif err != nil {\n \t\treturn err\n \t}\ndiff --git a/staging/src/k8s.io/client-go/tools/portforward/portforward.go b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\nindex bc6f43d7d15f2..0e9b369a98317 100644\n--- a/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n+++ b/staging/src/k8s.io/client-go/tools/portforward/portforward.go\n@@ -39,8 +39,9 @@ const PortForwardProtocolV1Name = \"portforward.k8s.io\"\n // PortForwarder knows how to listen for local connections and forward them to\n // a remote pod via an upgraded HTTP request.\n type PortForwarder struct {\n-\tports    []ForwardedPort\n-\tstopChan <-chan struct{"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_4b037843b74593ef/design_doc.md",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_4b037843b74593ef/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_4b037843b74593ef/input_1.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-14T04:55:30.452079+00:00"
+}

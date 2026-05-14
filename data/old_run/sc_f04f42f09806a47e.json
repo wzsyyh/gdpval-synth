@@ -1,0 +1,2311 @@
+{
+  "candidate_id": "sc_f04f42f09806a47e",
+  "occupation": "financial_analyst",
+  "archetype": "variance_analysis",
+  "difficulty": "light",
+  "seed_id": "f04f42f09806a47e",
+  "prompt": "You are a senior financial analyst on Uber Technologies' FP&A team. The VP of Finance has asked you to prepare a quarterly variance analysis comparing Q1 2026 results against the prior quarter (Q3 2025) and full-year FY 2025 averages. This analysis will be presented at the upcoming earnings review meeting and needs to clearly highlight where Uber is tracking versus its annual trajectory.\n\nMaterials provided: The attached XBRL financial data extract for Uber Technologies, Inc. (UBER, CIK 0001543151) containing quarterly and annual financial metrics from sec_edgar_xbrl.\n\nTask requirements:\n1. Create an Excel workbook with three tabs: (a) 'Q1 2026 Variance' — a detailed variance table comparing Q1 2026 actuals against Q3 2025 quarterly values and FY 2025 quarterly averages (FY 2025 ÷ 4); (b) 'Trend Summary' — a table showing Q1 2026, Q3 2025, and FY 2025 full-year values for each metric side by side; (c) 'Key Metrics' — calculated ratios including Q1 2026 operating margin, Q1 2026 net income margin, Q1 2026 ROE (annualized), and Q1 2026 asset-to-liability ratio.\n2. For the Q1 2026 Variance tab, calculate for each metric: (i) Q1 2026 value, (ii) Q3 2025 value, (iii) Q1 vs Q3 dollar variance, (iv) Q1 vs Q3 percentage variance, (v) FY 2025 quarterly average, (vi) Q1 vs FY annual average dollar variance, (vii) Q1 vs FY annual average percentage variance.\n3. Include the following metrics: Revenue, Operating Income, Net Income, Total Assets, Total Liabilities, Stockholders' Equity, Cash and Cash Equivalents, Diluted EPS, and R&D Expense.\n4. All dollar amounts in billions (e.g., 13.203), EPS in dollars, margins and ratios as percentages. Format with two decimal places for percentages and three decimal places for dollar amounts.\n5. Highlight (bold) any variance cells where the absolute percentage variance exceeds 15% in the Q1 vs Q3 and Q1 vs FY Avg columns.\n\nDeliverable: An Excel workbook (.xlsx) with the three tabs described above. Use clear headers, consistent formatting, and include a brief note row at the bottom of the Q1 2026 Variance tab stating the data source.",
+  "deliverable": {
+    "deliverable_id": "variance_analysis",
+    "primary_format": "xlsx",
+    "expected_size": null
+  },
+  "rubric": [
+    {
+      "score": 1,
+      "criterion": "The submitted file is an Excel workbook (.xlsx) with three tabs.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The first tab is named 'Q1 2026 Variance'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The second tab is named 'Trend Summary'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The third tab is named 'Key Metrics'.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Q1 2026 Variance' tab has a bold title in cell A1 reading 'Uber Technologies, Inc. — Q1 2026 Quarterly Variance Analysis'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The header row (row 3) of the Q1 2026 Variance tab includes columns A through H with labels: Metric, Q1 2026, Q3 2025, Q1 vs Q3 $ Var, Q1 vs Q3 % Var, FY25 Qtr Avg, Q1 vs FY Avg $ Var, Q1 vs FY Avg % Var.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Q1 2026 Variance tab includes all nine required metrics: Revenue, Operating Income, Net Income, Total Assets, Total Liabilities, Stockholders Equity, Cash and Cash Equiv, Diluted EPS, and R&D Expense.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Revenue row in the variance tab has Q1 2026 value of 13.203 in cell B4 and Q3 2025 value of 13.467 in cell C4.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Operating Income row has Q1 2026 value of 1.923 in cell B5 and Q3 2025 value of 1.113 in cell C5.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Net Income row has Q1 2026 value of 0.263 in cell B6 and Q3 2025 value of 6.626 in cell C6.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Total Assets row has Q1 2026 value of 59.885 in cell B7 and Q3 2025 value of 63.344 in cell C7.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Total Liabilities row has Q1 2026 value of 34.073 in cell B8 and Q3 2025 value of 34.189 in cell C8.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Stockholders Equity row has Q1 2026 value of 24.751 in cell B9 and Q3 2025 value of 28.134 in cell C9.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Cash and Cash Equiv row has Q1 2026 value of 5.558 in cell B10 and Q3 2025 value of 8.432 in cell C10.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Diluted EPS row has Q1 2026 value of 0.13 in cell B11 and Q3 2025 value of 3.11 in cell C11.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The R&D Expense row has Q1 2026 value of 0.951 in cell B12 and Q3 2025 value of 0.862 in cell C12.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Column D contains a formula calculating dollar variance as Q1 2026 minus Q3 2025 (e.g., =B4-C4 in cell D4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Column E contains a formula calculating percentage variance as dollar variance divided by Q3 2025 (e.g., =D4/C4 in cell E4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Column F calculates the FY 2025 quarterly average by dividing the FY 2025 full-year value by 4 (e.g., =52.017/4 in cell F4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Column G calculates Q1 vs FY average dollar variance as Q1 2026 minus FY quarterly average (e.g., =B4-F4 in cell G4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Column H calculates Q1 vs FY average percentage variance as dollar variance divided by FY quarterly average (e.g., =G4/F4 in cell H4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Trend Summary tab contains all nine metrics with three columns of values: Q1 2026, Q3 2025, and FY 2025.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "FY 2025 Revenue in Trend Summary tab cell D4 is 52.017.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Operating Income in Trend Summary tab cell D5 is 5.565.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Net Income in Trend Summary tab cell D6 is 10.053.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Total Assets in Trend Summary tab cell D7 is 61.802.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Total Liabilities in Trend Summary tab cell D8 is 33.719.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Stockholders Equity in Trend Summary tab cell D9 is 27.041.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Cash and Cash Equiv in Trend Summary tab cell D10 is 7.105.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 Diluted EPS in Trend Summary tab cell D11 is 4.73.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "FY 2025 R&D Expense in Trend Summary tab cell D12 is 3.402.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Key Metrics tab calculates Operating Margin as Operating Income divided by Revenue (formula =1.923/13.203 in cell B4).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Key Metrics tab calculates Net Income Margin as Net Income divided by Revenue (formula =0.263/13.203 in cell B5).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Key Metrics tab calculates annualized ROE as (Q1 2026 Net Income times 4) divided by Q1 2026 Stockholders Equity (formula =(0.263*4)/24.751 in cell B6).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Key Metrics tab calculates Asset-to-Liability Ratio as Total Assets divided by Total Liabilities (formula =59.885/34.073 in cell B7).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Key Metrics tab displays Operating Margin and Net Income Margin in percentage format with two decimal places.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Key Metrics tab displays ROE (Annualized) in percentage format.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Key Metrics tab displays Asset-to-Liability Ratio in decimal format with two decimal places.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "Dollar amounts in the variance and trend tabs are formatted with three decimal places.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Q1 2026 Variance tab includes a data source note in cell A14 referencing Uber Technologies, Inc. (UBER) XBRL data from sec_edgar_xbrl.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Q1 2026 Variance tab title row is bolded.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Trend Summary tab has a bold title in cell A1.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Key Metrics tab has a bold title in cell A1.",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "Q3 2025 Net Income of 6.626 is used correctly (not 9.757 or other historical values) in the variance tab.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Q1 2026 Variance tab uses FY 2025 quarterly values (not Q3 2025 values) in column F for the FY average comparison.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The workbook uses incorrect FY 2025 values that do not match the source data (Revenue not 52.017, Operating Income not 5.565, Net Income not 10.053).",
+      "category": "data",
+      "is_penalty": true
+    },
+    {
+      "score": -2,
+      "criterion": "The ROE calculation in Key Metrics does not annualize Q1 Net Income (i.e., does not multiply by 4 before dividing by equity).",
+      "category": "accuracy",
+      "is_penalty": true
+    }
+  ],
+  "canonical": {
+    "scenario_id": "sc_f04f42f09806a47e",
+    "occupation": "financial_analyst",
+    "deliverable_id": "variance_analysis",
+    "archetype": "variance_analysis",
+    "difficulty": "light",
+    "seed": {
+      "source": "sec_edgar_xbrl",
+      "identifier": "ticker:UBER",
+      "local_path": null
+    },
+    "entities": [
+      {
+        "id": "ev_0",
+        "kind": "person",
+        "name": "13.203",
+        "attrs": {}
+      },
+      {
+        "id": "ev_1",
+        "kind": "person",
+        "name": "13.467",
+        "attrs": {}
+      },
+      {
+        "id": "ev_2",
+        "kind": "person",
+        "name": "1.923",
+        "attrs": {}
+      },
+      {
+        "id": "ev_3",
+        "kind": "person",
+        "name": "1.113",
+        "attrs": {}
+      },
+      {
+        "id": "ev_4",
+        "kind": "person",
+        "name": "0.263",
+        "attrs": {}
+      },
+      {
+        "id": "ev_5",
+        "kind": "person",
+        "name": "6.626",
+        "attrs": {}
+      },
+      {
+        "id": "ev_6",
+        "kind": "person",
+        "name": "59.885",
+        "attrs": {}
+      },
+      {
+        "id": "ev_7",
+        "kind": "person",
+        "name": "34.073",
+        "attrs": {}
+      },
+      {
+        "id": "ev_8",
+        "kind": "person",
+        "name": "24.751",
+        "attrs": {}
+      },
+      {
+        "id": "ev_9",
+        "kind": "person",
+        "name": "5.558",
+        "attrs": {}
+      },
+      {
+        "id": "ev_10",
+        "kind": "person",
+        "name": "0.13",
+        "attrs": {}
+      },
+      {
+        "id": "ev_11",
+        "kind": "person",
+        "name": "0.951",
+        "attrs": {}
+      },
+      {
+        "id": "ev_12",
+        "kind": "person",
+        "name": "52.017",
+        "attrs": {}
+      },
+      {
+        "id": "ev_13",
+        "kind": "person",
+        "name": "5.565",
+        "attrs": {}
+      },
+      {
+        "id": "ev_14",
+        "kind": "person",
+        "name": "10.053",
+        "attrs": {}
+      },
+      {
+        "id": "ev_15",
+        "kind": "person",
+        "name": "61.802",
+        "attrs": {}
+      },
+      {
+        "id": "ev_16",
+        "kind": "person",
+        "name": "33.719",
+        "attrs": {}
+      },
+      {
+        "id": "ev_17",
+        "kind": "person",
+        "name": "27.041",
+        "attrs": {}
+      },
+      {
+        "id": "ev_18",
+        "kind": "person",
+        "name": "7.105",
+        "attrs": {}
+      },
+      {
+        "id": "ev_19",
+        "kind": "person",
+        "name": "4.73",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "3.402",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "=52.017/4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "=1.923/13.203",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "=0.263/13.203",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "=(0.263*4)/24.751",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "=59.885/34.073",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "Data Source: Uber Technologies, Inc. (UBER) XBRL financial data from sec_edgar_xbrl. Q1 2026 and Q3 2025 are quarterly figures; FY 2025 is full-year.",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "=B4-C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "=D4/C4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "=B4-F4",
+        "attrs": {}
+      }
+    ],
+    "timeline": [],
+    "facts": [
+      {
+        "id": "fact_0",
+        "kind": "money",
+        "value": 13.203,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_1",
+        "kind": "money",
+        "value": 13.467,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 1.923,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_3",
+        "kind": "money",
+        "value": 1.113,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_4",
+        "kind": "money",
+        "value": 0.263,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_5",
+        "kind": "money",
+        "value": 6.626,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_6",
+        "kind": "money",
+        "value": 59.885,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_7",
+        "kind": "money",
+        "value": 34.073,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_8",
+        "kind": "money",
+        "value": 24.751,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_9",
+        "kind": "money",
+        "value": 5.558,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_10",
+        "kind": "money",
+        "value": 0.13,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_11",
+        "kind": "money",
+        "value": 0.951,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_12",
+        "kind": "money",
+        "value": 52.017,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_13",
+        "kind": "money",
+        "value": 5.565,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_14",
+        "kind": "money",
+        "value": 10.053,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_15",
+        "kind": "money",
+        "value": 61.802,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_16",
+        "kind": "money",
+        "value": 33.719,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_17",
+        "kind": "money",
+        "value": 27.041,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_18",
+        "kind": "money",
+        "value": 7.105,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_19",
+        "kind": "money",
+        "value": 4.73,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "money",
+        "value": 3.402,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "=52.017/4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "=1.923/13.203",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "=0.263/13.203",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "=(0.263*4)/24.751",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "=59.885/34.073",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "Data Source: Uber Technologies, Inc. (UBER) XBRL financial data from sec_edgar_xbrl. Q1 2026 and Q3 2025 are quarterly figures; FY 2025 is full-year.",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "=B4-C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "=D4/C4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "=B4-F4",
+        "unit": null,
+        "source": null
+      }
+    ],
+    "explicit_requirements": [],
+    "implicit_requirements": [],
+    "reference_answer": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Q1 2026 Variance",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Uber Technologies, Inc. — Q1 2026 Quarterly Variance Analysis",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "Q1 vs Q3 $ Var",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "E3",
+              "value": "Q1 vs Q3 % Var",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "F3",
+              "value": "FY25 Qtr Avg",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "G3",
+              "value": "Q1 vs FY Avg $ Var",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "H3",
+              "value": "Q1 vs FY Avg % Var",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 13.203,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 13.467,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": null,
+              "formula": "=B4-C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E4",
+              "value": null,
+              "formula": "=D4/C4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F4",
+              "value": null,
+              "formula": "=52.017/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G4",
+              "value": null,
+              "formula": "=B4-F4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H4",
+              "value": null,
+              "formula": "=G4/F4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Operating Income ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 1.923,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 1.113,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": null,
+              "formula": "=B5-C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E5",
+              "value": null,
+              "formula": "=D5/C5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F5",
+              "value": null,
+              "formula": "=5.565/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G5",
+              "value": null,
+              "formula": "=B5-F5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H5",
+              "value": null,
+              "formula": "=G5/F5",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Net Income ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 0.263,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 6.626,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": null,
+              "formula": "=B6-C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E6",
+              "value": null,
+              "formula": "=D6/C6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F6",
+              "value": null,
+              "formula": "=10.053/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G6",
+              "value": null,
+              "formula": "=B6-F6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H6",
+              "value": null,
+              "formula": "=G6/F6",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Total Assets ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 59.885,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 63.344,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": null,
+              "formula": "=B7-C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E7",
+              "value": null,
+              "formula": "=D7/C7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F7",
+              "value": null,
+              "formula": "=61.802/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G7",
+              "value": null,
+              "formula": "=B7-F7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H7",
+              "value": null,
+              "formula": "=G7/F7",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Total Liabilities ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 34.073,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 34.189,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": null,
+              "formula": "=B8-C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E8",
+              "value": null,
+              "formula": "=D8/C8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F8",
+              "value": null,
+              "formula": "=33.719/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G8",
+              "value": null,
+              "formula": "=B8-F8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H8",
+              "value": null,
+              "formula": "=G8/F8",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Stockholders Equity ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 24.751,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 28.134,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": null,
+              "formula": "=B9-C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E9",
+              "value": null,
+              "formula": "=D9/C9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F9",
+              "value": null,
+              "formula": "=27.041/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G9",
+              "value": null,
+              "formula": "=B9-F9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H9",
+              "value": null,
+              "formula": "=G9/F9",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Cash and Cash Equiv ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": 5.558,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": 8.432,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": null,
+              "formula": "=B10-C10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E10",
+              "value": null,
+              "formula": "=D10/C10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F10",
+              "value": null,
+              "formula": "=7.105/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G10",
+              "value": null,
+              "formula": "=B10-F10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H10",
+              "value": null,
+              "formula": "=G10/F10",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Diluted EPS ($)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": 0.13,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C11",
+              "value": 3.11,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D11",
+              "value": null,
+              "formula": "=B11-C11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "E11",
+              "value": null,
+              "formula": "=D11/C11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F11",
+              "value": null,
+              "formula": "=4.73/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "G11",
+              "value": null,
+              "formula": "=B11-F11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "H11",
+              "value": null,
+              "formula": "=G11/F11",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "R&D Expense ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": 0.951,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C12",
+              "value": 0.862,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D12",
+              "value": null,
+              "formula": "=B12-C12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "E12",
+              "value": null,
+              "formula": "=D12/C12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "F12",
+              "value": null,
+              "formula": "=3.402/4",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "G12",
+              "value": null,
+              "formula": "=B12-F12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "H12",
+              "value": null,
+              "formula": "=G12/F12",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A14",
+              "value": "Data Source: Uber Technologies, Inc. (UBER) XBRL financial data from sec_edgar_xbrl. Q1 2026 and Q3 2025 are quarterly figures; FY 2025 is full-year.",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0,
+            "C": 15.0,
+            "D": 15.0,
+            "E": 15.0,
+            "F": 15.0,
+            "G": 15.0,
+            "H": 15.0
+          }
+        },
+        {
+          "name": "Trend Summary",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Uber Technologies, Inc. — Trend Summary",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Q1 2026",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "C3",
+              "value": "Q3 2025",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "D3",
+              "value": "FY 2025",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Revenue ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": 13.203,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C4",
+              "value": 13.467,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D4",
+              "value": 52.017,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Operating Income ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": 1.923,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C5",
+              "value": 1.113,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D5",
+              "value": 5.565,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "Net Income ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": 0.263,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C6",
+              "value": 6.626,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D6",
+              "value": 10.053,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Total Assets ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": 59.885,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C7",
+              "value": 63.344,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D7",
+              "value": 61.802,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A8",
+              "value": "Total Liabilities ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B8",
+              "value": 34.073,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C8",
+              "value": 34.189,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D8",
+              "value": 33.719,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A9",
+              "value": "Stockholders Equity ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B9",
+              "value": 24.751,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C9",
+              "value": 28.134,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D9",
+              "value": 27.041,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A10",
+              "value": "Cash and Cash Equiv ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B10",
+              "value": 5.558,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C10",
+              "value": 8.432,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D10",
+              "value": 7.105,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "A11",
+              "value": "Diluted EPS ($)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B11",
+              "value": 0.13,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "C11",
+              "value": 3.11,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "D11",
+              "value": 4.73,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            },
+            {
+              "ref": "A12",
+              "value": "R&D Expense ($B)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B12",
+              "value": 0.951,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "C12",
+              "value": 0.862,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            },
+            {
+              "ref": "D12",
+              "value": 3.402,
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "#,##0.000",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0,
+            "C": 15.0,
+            "D": 15.0
+          }
+        },
+        {
+          "name": "Key Metrics",
+          "cells": [
+            {
+              "ref": "A1",
+              "value": "Uber Technologies, Inc. — Key Metrics (Q1 2026)",
+              "formula": null,
+              "bold": true,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A3",
+              "value": "Metric",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B3",
+              "value": "Value",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "A4",
+              "value": "Operating Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B4",
+              "value": null,
+              "formula": "=1.923/13.203",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A5",
+              "value": "Net Income Margin",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B5",
+              "value": null,
+              "formula": "=0.263/13.203",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A6",
+              "value": "ROE (Annualized)",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B6",
+              "value": null,
+              "formula": "=(0.263*4)/24.751",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00%",
+              "alignment": null
+            },
+            {
+              "ref": "A7",
+              "value": "Asset-to-Liability Ratio",
+              "formula": null,
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": null,
+              "alignment": null
+            },
+            {
+              "ref": "B7",
+              "value": null,
+              "formula": "=59.885/34.073",
+              "bold": false,
+              "italic": false,
+              "fill": "none",
+              "number_format": "0.00",
+              "alignment": null
+            }
+          ],
+          "column_widths": {
+            "A": 25.0,
+            "B": 15.0
+          }
+        }
+      ],
+      "sections": null,
+      "doc_header": null,
+      "title": null,
+      "signature_block": null,
+      "page_settings": "single_spaced",
+      "md_sections": null,
+      "md_title": null,
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "Uber Technologies, Inc. (UBER) XBRL financial data extract from sec_edgar_xbrl containing quarterly and annual financial metrics (Revenues, OperatingIncomeLoss, NetIncomeLoss, Assets, Liabilities, StockholdersEquity, CashAndCashEquivalentsAtCarryingValue, EarningsPerShareDiluted, ResearchAndDevelopmentExpense) for Q1 2026, Q3 2025, FY 2025, and historical periods.",
+          "content_blueprint": {
+            "title": "Uber Technologies, Inc",
+            "body": "# Seed Material: UBER TECHNOLOGIES, INC. (UBER)\nSource: sec_edgar_xbrl\nIdentifier: ticker:UBER\n\nCompany: UBER TECHNOLOGIES, INC.\nTicker: UBER\nCIK: 0001543151\nSector: tech_services\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 13,203,000,000\n  FY 2025: 52,017,000,000\n  Q3 2025: 37,651,000,000\n  Q3 2025: 13,467,000,000\n  None None: 13,467,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q3 2019: 3,166,000,000\n  Q3 2019: 3,099,000,000\n  Q3 2019: 2,768,000,000\n  Q3 2019: 2,584,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 1,923,000,000\n  FY 2025: 5,565,000,000\n  Q3 2025: 3,791,000,000\n  Q3 2025: 1,113,000,000\n  None None: 1,113,000,000\n\n### NetIncomeLoss\n  Q1 2026: 263,000,000\n  FY 2025: 10,053,000,000\n  None None: 10,053,000,000\n  Q3 2025: 9,757,000,000\n  Q3 2025: 6,626,000,000\n\n### Assets\n  Q1 2026: 59,885,000,000\n  FY 2025: 61,802,000,000\n  Q1 2026: 61,802,000,000\n  Q3 2025: 63,344,000,000\n  Q2 2025: 55,982,000,000\n\n### Liabilities\n  Q1 2026: 34,073,000,000\n  FY 2025: 33,719,000,000\n  Q1 2026: 33,719,000,000\n  Q3 2025: 34,189,000,000\n  Q2 2025: 32,352,000,000\n\n### StockholdersEquity\n  Q1 2026: 24,751,000,000\n  FY 2025: 27,041,000,000\n  Q1 2026: 27,041,000,000\n  Q3 2025: 28,134,000,000\n  Q2 2025: 22,598,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 5,558,000,000\n  FY 2025: 7,105,000,000\n  Q1 2026: 7,105,000,000\n  Q3 2025: 8,432,000,000\n  Q2 2025: 6,438,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 0.13\n  FY 2025: 4.73\n  Q3 2025: 4.57\n  Q3 2025: 3.11\n  None None: 3.11\n\n### ResearchAndDevelopmentExpense\n  Q1 2026: 951,000,000\n  FY 2025: 3,402,000,000\n  Q3 2025: 2,517,000,000\n  Q3 2025: 862,000,000\n  None None: 862,000,000\n\n## Recent Filings\n  8-K — 2026-05-11\n  13F-HR — 2026-05-08\n  8-K — 2026-05-08\n  10-Q — 2026-05-06\n  8-K — 2026-05-06"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "Q1 2026 Revenue value in variance tab cell B4",
+          "value": 13.203,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B4"
+        },
+        {
+          "description": "Q3 2025 Revenue value in variance tab cell C4",
+          "value": 13.467,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell C4"
+        },
+        {
+          "description": "Q1 2026 Operating Income value in variance tab cell B5",
+          "value": 1.923,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B5"
+        },
+        {
+          "description": "Q3 2025 Operating Income value in variance tab cell C5",
+          "value": 1.113,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell C5"
+        },
+        {
+          "description": "Q1 2026 Net Income value in variance tab cell B6",
+          "value": 0.263,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B6"
+        },
+        {
+          "description": "Q3 2025 Net Income value in variance tab cell C6",
+          "value": 6.626,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell C6"
+        },
+        {
+          "description": "Q1 2026 Total Assets value in variance tab cell B7",
+          "value": 59.885,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B7"
+        },
+        {
+          "description": "Q1 2026 Total Liabilities value in variance tab cell B8",
+          "value": 34.073,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B8"
+        },
+        {
+          "description": "Q1 2026 Stockholders Equity value in variance tab cell B9",
+          "value": 24.751,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B9"
+        },
+        {
+          "description": "Q1 2026 Cash and Cash Equivalents value in variance tab cell B10",
+          "value": 5.558,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B10"
+        },
+        {
+          "description": "Q1 2026 Diluted EPS value in variance tab cell B11",
+          "value": 0.13,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B11"
+        },
+        {
+          "description": "Q1 2026 R&D Expense value in variance tab cell B12",
+          "value": 0.951,
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell B12"
+        },
+        {
+          "description": "FY 2025 Revenue value in Trend Summary tab cell D4",
+          "value": 52.017,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D4"
+        },
+        {
+          "description": "FY 2025 Operating Income value in Trend Summary tab cell D5",
+          "value": 5.565,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D5"
+        },
+        {
+          "description": "FY 2025 Net Income value in Trend Summary tab cell D6",
+          "value": 10.053,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D6"
+        },
+        {
+          "description": "FY 2025 Total Assets value in Trend Summary tab cell D7",
+          "value": 61.802,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D7"
+        },
+        {
+          "description": "FY 2025 Total Liabilities value in Trend Summary tab cell D8",
+          "value": 33.719,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D8"
+        },
+        {
+          "description": "FY 2025 Stockholders Equity value in Trend Summary tab cell D9",
+          "value": 27.041,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D9"
+        },
+        {
+          "description": "FY 2025 Cash and Cash Equivalents value in Trend Summary tab cell D10",
+          "value": 7.105,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D10"
+        },
+        {
+          "description": "FY 2025 Diluted EPS value in Trend Summary tab cell D11",
+          "value": 4.73,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D11"
+        },
+        {
+          "description": "FY 2025 R&D Expense value in Trend Summary tab cell D12",
+          "value": 3.402,
+          "tolerance": null,
+          "location": "Sheet 'Trend Summary' cell D12"
+        },
+        {
+          "description": "Revenue FY quarterly average formula in variance tab cell F4",
+          "value": "=52.017/4",
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell F4"
+        },
+        {
+          "description": "Operating margin formula in Key Metrics tab cell B4",
+          "value": "=1.923/13.203",
+          "tolerance": null,
+          "location": "Sheet 'Key Metrics' cell B4"
+        },
+        {
+          "description": "Net income margin formula in Key Metrics tab cell B5",
+          "value": "=0.263/13.203",
+          "tolerance": null,
+          "location": "Sheet 'Key Metrics' cell B5"
+        },
+        {
+          "description": "ROE annualized formula in Key Metrics tab cell B6",
+          "value": "=(0.263*4)/24.751",
+          "tolerance": null,
+          "location": "Sheet 'Key Metrics' cell B6"
+        },
+        {
+          "description": "Asset-to-liability ratio formula in Key Metrics tab cell B7",
+          "value": "=59.885/34.073",
+          "tolerance": null,
+          "location": "Sheet 'Key Metrics' cell B7"
+        },
+        {
+          "description": "Data source note text in variance tab cell A14",
+          "value": "Data Source: Uber Technologies, Inc. (UBER) XBRL financial data from sec_edgar_xbrl. Q1 2026 and Q3 2025 are quarterly figures; FY 2025 is full-year.",
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell A14"
+        },
+        {
+          "description": "Dollar variance formula for Revenue in cell D4",
+          "value": "=B4-C4",
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell D4"
+        },
+        {
+          "description": "Percentage variance formula for Revenue in cell E4",
+          "value": "=D4/C4",
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell E4"
+        },
+        {
+          "description": "Q1 vs FY Avg dollar variance formula for Revenue in cell G4",
+          "value": "=B4-F4",
+          "tolerance": null,
+          "location": "Sheet 'Q1 2026 Variance' cell G4"
+        }
+      ],
+      "narrative_prompt": null,
+      "generator_model": null,
+      "generated_at": null
+    },
+    "estimated_hours": null,
+    "seed_rng": 1384544617
+  },
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "Uber Technologies, Inc. (UBER) XBRL financial data extract from sec_edgar_xbrl containing quarterly and annual financial metrics (Revenues, OperatingIncomeLoss, NetIncomeLoss, Assets, Liabilities, StockholdersEquity, CashAndCashEquivalentsAtCarryingValue, EarningsPerShareDiluted, ResearchAndDevelopmentExpense) for Q1 2026, Q3 2025, FY 2025, and historical periods.",
+      "content_blueprint": {
+        "title": "Uber Technologies, Inc",
+        "body": "# Seed Material: UBER TECHNOLOGIES, INC. (UBER)\nSource: sec_edgar_xbrl\nIdentifier: ticker:UBER\n\nCompany: UBER TECHNOLOGIES, INC.\nTicker: UBER\nCIK: 0001543151\nSector: tech_services\n\n## Financial Data (XBRL)\n\n### Revenues\n  Q1 2026: 13,203,000,000\n  FY 2025: 52,017,000,000\n  Q3 2025: 37,651,000,000\n  Q3 2025: 13,467,000,000\n  None None: 13,467,000,000\n\n### RevenueFromContractWithCustomerExcludingAssessedTax\n  Q3 2019: 3,166,000,000\n  Q3 2019: 3,099,000,000\n  Q3 2019: 2,768,000,000\n  Q3 2019: 2,584,000,000\n\n### OperatingIncomeLoss\n  Q1 2026: 1,923,000,000\n  FY 2025: 5,565,000,000\n  Q3 2025: 3,791,000,000\n  Q3 2025: 1,113,000,000\n  None None: 1,113,000,000\n\n### NetIncomeLoss\n  Q1 2026: 263,000,000\n  FY 2025: 10,053,000,000\n  None None: 10,053,000,000\n  Q3 2025: 9,757,000,000\n  Q3 2025: 6,626,000,000\n\n### Assets\n  Q1 2026: 59,885,000,000\n  FY 2025: 61,802,000,000\n  Q1 2026: 61,802,000,000\n  Q3 2025: 63,344,000,000\n  Q2 2025: 55,982,000,000\n\n### Liabilities\n  Q1 2026: 34,073,000,000\n  FY 2025: 33,719,000,000\n  Q1 2026: 33,719,000,000\n  Q3 2025: 34,189,000,000\n  Q2 2025: 32,352,000,000\n\n### StockholdersEquity\n  Q1 2026: 24,751,000,000\n  FY 2025: 27,041,000,000\n  Q1 2026: 27,041,000,000\n  Q3 2025: 28,134,000,000\n  Q2 2025: 22,598,000,000\n\n### CashAndCashEquivalentsAtCarryingValue\n  Q1 2026: 5,558,000,000\n  FY 2025: 7,105,000,000\n  Q1 2026: 7,105,000,000\n  Q3 2025: 8,432,000,000\n  Q2 2025: 6,438,000,000\n\n### EarningsPerShareDiluted\n  Q1 2026: 0.13\n  FY 2025: 4.73\n  Q3 2025: 4.57\n  Q3 2025: 3.11\n  None None: 3.11\n\n### ResearchAndDevelopmentExpense\n  Q1 2026: 951,000,000\n  FY 2025: 3,402,000,000\n  Q3 2025: 2,517,000,000\n  Q3 2025: 862,000,000\n  None None: 862,000,000\n\n## Recent Filings\n  8-K — 2026-05-11\n  13F-HR — 2026-05-08\n  8-K — 2026-05-08\n  10-Q — 2026-05-06\n  8-K — 2026-05-06"
+      }
+    }
+  ],
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_f04f42f09806a47e/variance_analysis.xlsx",
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_f04f42f09806a47e/input_0.md"
+  ],
+  "generator_model": "mimo-v2.5-pro",
+  "rubric_model": "mimo-v2.5-pro",
+  "created_at": "2026-05-13T19:09:21.651266+00:00"
+}

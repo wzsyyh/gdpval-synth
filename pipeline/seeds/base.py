@@ -57,8 +57,14 @@ def save_seed(seed: Seed) -> Path:
 def load_seeds(occupation: str) -> list[Seed]:
     out: list[Seed] = []
     for p in sorted(seed_dir(occupation).glob("*.json")):
+        if p.name == ".json":
+            continue
         try:
-            out.append(Seed.model_validate_json(p.read_text()))
+            seed = Seed.model_validate_json(p.read_text())
+            if not seed.seed_id:
+                logger.warning("skipping seed with empty seed_id: %s", p)
+                continue
+            out.append(seed)
         except Exception as e:  # noqa: BLE001
             logger.warning("failed to load seed %s: %s", p, e)
     return out
