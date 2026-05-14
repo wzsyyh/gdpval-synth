@@ -341,50 +341,50 @@ Hard quality validators 只能检查结构性属性（rubric 数量、分值分�
 
 ## 九、复现
 
-### 9.1 环境配置
+### 一键运行（推荐）
+
+```bash
+# 1. 配置 API 密钥
+cp .env.example .env
+# 编辑 .env 填写 MIMO_API_KEY、COURTLISTENER_API_TOKEN、GITHUB_TOKEN
+
+# 2. 一键运行完整流程
+./quickstart.sh
+
+# 或：跳过种子采集（种子已存在时）
+./quickstart.sh --skip-seeds
+
+# 或：小规模测试（10 个种子，2 个 worker）
+./quickstart.sh --small
+```
+
+### 分步运行
+
+如需分步控制，可手动执行：
 
 ```bash
 # 安装依赖
 uv sync
 
-# 配置 API 密钥（复制并填写）
-cp .env.example .env
-# 编辑 .env 添加：
-#   MIMO_API_KEY=...
-#   COURTLISTENER_API_TOKEN=...
-```
-
-### 9.2 采集种子
-
-```bash
-# 律师种子（CourtListener 判例）
+# 采集种子（ lawyer / financial / swe ）
 uv run python -m pipeline.seeds.courtlistener
-
-# 金融种子（SEC EDGAR XBRL）
 uv run python -m pipeline.seeds.edgar_xbrl
-
-# 软件工程师种子（GitHub PRs）
 uv run python -m pipeline.seeds.github_issues
+
+# 运行流水线
+uv run python -m pipeline.orchestrator -n 117 --workers 4 --skip-validation
+
+# 生成报告图表
+uv run python scripts/generate_charts.py
 ```
 
 种子缓存在 `pipeline/seeds/store/{occupation}/`。
 
-### 9.3 运行流水线
+### 查看任务
 
 ```bash
-# 完整批次：全部 117 个种子，4 个 worker，跳过一致性验证
-uv run python -m pipeline.orchestrator -n 117 --workers 4 --skip-validation
-```
-
-输出：
-- 已验收任务：`data/accepted/{task_id}.json` + 输入附件
-- 交付物：`data/deliverables/{task_id}/`
-
-### 9.4 查看任务
-
-```bash
-# 查看任务的题目、评分标准和预期值
-python scripts/inspect_task.py --task-id sc_xxx
+# 查看单个任务的题目、评分标准和预期值
+uv run python scripts/inspect_task.py --task-id sc_xxx
 
 # 打开渲染后的交付物
 open data/deliverables/sc_xxx/*.docx
