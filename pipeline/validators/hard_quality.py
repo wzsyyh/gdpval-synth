@@ -99,6 +99,34 @@ def _check_attachment_quality(task: TaskCandidate) -> str | None:
     return None
 
 
+def _check_answer_has_content(task: TaskCandidate) -> str | None:
+    """Ensure the reference answer has actual body content, not just a header."""
+    ref = task.canonical.reference_answer
+    if not ref:
+        return "no reference_answer"
+
+    fmt = ref.format
+    if fmt in ("docx", "pdf"):
+        sections = ref.sections
+        if not sections:
+            return f"format={fmt} but sections is empty (only header/title generated)"
+        total_paras = sum(len(s.paragraphs) for s in sections)
+        if total_paras < 3:
+            return f"format={fmt} but only {total_paras} paragraphs across {len(sections)} sections"
+    elif fmt == "markdown":
+        md_sections = ref.md_sections
+        if not md_sections:
+            return "format=markdown but md_sections is empty"
+        total_paras = sum(len(s.paragraphs) for s in md_sections)
+        if total_paras < 3:
+            return f"format=markdown but only {total_paras} paragraphs"
+    elif fmt == "xlsx":
+        sheets = ref.sheets
+        if not sheets:
+            return "format=xlsx but sheets is empty"
+    return None
+
+
 # ─────────────────────────── Public API ───────────────────────────
 
 
@@ -122,6 +150,7 @@ def validate(task: TaskCandidate, _seed: Seed) -> HardQualityReport:
         _check_score_distribution(task),
         _check_rubric_style(task),
         _check_attachment_quality(task),
+        _check_answer_has_content(task),
     ]
 
     for issue in checks:

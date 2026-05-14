@@ -251,6 +251,7 @@ Generate the COMPLETE deliverable content with enough detail to support 45-55 ru
 - expected_values is NOT optional. Generate 10-25 items minimum.
 
 **For docx/pdf:**
+- **CRITICAL: You MUST populate the `docx_sections` field in your JSON output.** Each section must have a `heading` and 3-8 `paragraphs` of full text. Do NOT leave `docx_sections` empty or null.
 - Provide full paragraph text for each section (3-8 paragraphs per major section)
 - Include specific facts, metrics, and data points from the seed
 - Use professional investment banking tone; headings should mirror the rubric checks
