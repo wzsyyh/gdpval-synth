@@ -201,7 +201,14 @@ def _render_markdown(blueprint: ReferenceAnswer, out_path: Path) -> Path:
         lines.append("")
 
     for section in (blueprint.md_sections or []):
-        prefix = "#" * section.heading_level
+        # Skip sections whose heading duplicates the md_title
+        if blueprint.md_title and section.heading.strip() == blueprint.md_title.strip():
+            continue
+        # Clamp heading_level to min 2 when md_title already rendered as H1
+        level = section.heading_level
+        if blueprint.md_title and level < 2:
+            level = 2
+        prefix = "#" * level
         lines.append(f"{prefix} {section.heading}")
         lines.append("")
         for para in section.paragraphs:

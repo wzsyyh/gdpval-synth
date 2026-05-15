@@ -4,7 +4,7 @@
   "archetype": "code_review",
   "difficulty": "light",
   "seed_id": "9b0f0c6dc64d5710",
-  "prompt": "You are a senior software engineer on the React core team at Meta. The team has just merged PR #14679, titled 'Enable hooks!', which turns on hooks everywhere in preparation for the upcoming release. Your manager has asked you to review the PR to ensure it is clean, complete, and safe for the release.\n\nThe PR contains three atomic commits:\n1. 7c54bff: Turn hooks on everywhere\n2. 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\n3. d1ffc25: Remove hooks flag entirely\n\nThe PR changes 27 files, with +32 additions and -107 deletions. The changes involve renaming test files, removing feature flag overrides from tests, and cleaning up the feature flag itself.\n\n**Materials provided:**\n- PR #14679 diff and description from the React repository\n\n**Task requirements:**\n1. Write a comprehensive code review of the PR, structured as a Markdown document.\n2. The review must include the following sections:\n   - **Summary**: A brief overview of the PR's purpose and scope.\n   - **Atomic Commit Analysis**: Evaluate each of the three commits (7c54bff, 021844a, d1ffc25) for correctness and atomicity.\n   - **File Rename Review**: Assess the test file renames (e.g., `ReactHooksInspection-test.internal.js` to `ReactHooksInspection-test.js`) and confirm they are safe.\n   - **Feature Flag Removal Analysis**: Analyze the removal of the `enableHooks` flag from `shared/ReactFeatureFlags` and its implications.\n   - **Risk Assessment**: Identify any potential risks or regressions introduced by this change.\n   - **Conclusion**: Provide a recommendation on whether the PR is ready for release.\n3. The review must reference specific file paths, function names, and code changes from the diff.\n4. The tone should be professional and constructive.\n\n**Deliverable specification:**\n- Output a Markdown file.\n- Use the section headings exactly as specified above.\n- Include code snippets in backtick fences where relevant.\n- Reference specific commit hashes (7c54bff, 021844a, d1ffc25) and file paths from the diff.",
+  "prompt": "You are a senior software engineer on the React core team at Meta. The team has just merged PR #14679, titled \"Enable hooks!\", which unconditionally enables React hooks across the codebase in preparation for the upcoming 16.8 release. Your tech lead has asked you to produce a thorough code review of this PR to document the changes for the team's internal knowledge base and to verify that the refactor is clean and complete.\n\nMaterials provided:\n- PR #14679 diff showing all 27 changed files with additions (+32) and deletions (-107)\n- PR description stating the three atomic commits: turn hooks on everywhere, remove test overrides, and remove the hooks flag entirely\n\nTask requirements:\n\n1. Write a structured code review document in Markdown format with the following sections:\n   - **PR Summary**: Describe what PR #14679 does, including the PR number, title, merge date (2019-01-23), and the three atomic commits described in the PR.\n   - **Scope of Changes**: Identify the categories of files changed (e.g., feature flags, reconciler logic, server-side rendering, test files, shallow renderer, public API). List specific file paths from the diff for each category.\n   - **Flag Removal Analysis**: Detail every location where `enableHooks` was removed, covering the main flag file (`packages/shared/ReactFeatureFlags.js`), all fork files under `packages/shared/forks/`, and all conditional guards that checked `enableHooks` in production code. For each location, state what the code looked like before and after.\n   - **Dispatcher Consolidation**: Explain how the `DispatcherWithoutHooks` exports were removed from `packages/react-reconciler/src/ReactFiberDispatcher.js` and `packages/react-dom/src/server/ReactPartialRendererHooks.js`, and how all call sites were updated to use only `Dispatcher`.\n   - **Test File Cleanup**: List the test files that were renamed from `.internal.js` to `.js` (promoting them to non-internal), and list the test files that had `ReactFeatureFlags.enableHooks = true` lines removed. Note the TODO comments that were also removed.\n   - **Public API Impact**: Describe how `packages/react/src/React.js` changed to unconditionally expose the hooks (`useCallback`, `useContext`, `useEffect`, `useImperativeHandle`, `useDebugValue`, `useLayoutEffect`, `useMemo`, `useReducer`, `useRef`, `useState`) instead of gating them behind the flag.\n   - **Risk Assessment**: Evaluate whether any code paths could be affected by enabling hooks unconditionally. Note the `DispatcherWithoutHooks` fallback that previously only provided `readContext`.\n\n2. Use code blocks to reference specific before/after snippets from the diff where relevant.\n\n3. End with a brief conclusion stating whether the PR achieves a clean removal of the feature flag.\n\nDeliverable: A single Markdown file named 'Code Review - PR 14679 Enable Hooks.md'.",
   "deliverable": {
     "deliverable_id": "code_review",
     "primary_format": "markdown",
@@ -13,290 +13,326 @@
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file with a title referencing PR #14679 and 'Enable hooks'.",
+      "criterion": "The submitted document is a Markdown file with the title referencing PR #14679 and Enable Hooks.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## Summary' section heading.",
+      "criterion": "The document contains a section titled 'PR Summary' or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## Atomic Commit Analysis' section heading.",
+      "criterion": "The document contains a section titled 'Scope of Changes' or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## File Rename Review' section heading.",
+      "criterion": "The document contains a section titled 'Flag Removal Analysis' or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## Feature Flag Removal Analysis' section heading.",
+      "criterion": "The document contains a section titled 'Dispatcher Consolidation' or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## Risk Assessment' section heading.",
+      "criterion": "The document contains a section titled 'Test File Cleanup' or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document includes a '## Conclusion' section heading.",
+      "criterion": "The document contains a section titled 'Public API Impact' or equivalent.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a section titled 'Risk Assessment' or equivalent.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Conclusion' section or equivalent.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Summary section states the PR changes 27 files.",
+      "criterion": "The PR Summary section states the PR number #14679.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section states the PR title as 'Enable hooks!'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section states the merge date as January 23, 2019.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section references the three atomic commits and their commit SHAs (7c54bff, 021844a, d1ffc25).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The PR Summary section states 27 changed files, 32 additions, and 107 deletions.",
       "category": "data",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Summary section states the PR has +32 additions.",
+      "criterion": "The Scope of Changes section identifies the feature flags category and lists packages/shared/ReactFeatureFlags.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Changes section identifies the reconciler category and lists at least two files from packages/react-reconciler/src/.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Scope of Changes section identifies the server-side rendering category and lists packages/react-dom/src/server/ReactPartialRenderer.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Changes section identifies the public API category and lists packages/react/src/React.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Scope of Changes section identifies the shallow renderer category and lists packages/react-test-renderer/src/ReactShallowRenderer.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Flag Removal Analysis section references the main flag file packages/shared/ReactFeatureFlags.js and states that enableHooks was exported as false.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Flag Removal Analysis section lists all seven fork files under packages/shared/forks/.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Flag Removal Analysis section notes that www, native-fb, and test-renderer.www forks had enableHooks set to true while others had it set to false.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Flag Removal Analysis section describes the renderWithHooks guard removal in ReactFiberHooks.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Flag Removal Analysis section describes the commitHookEffectList guard removal in ReactFiberCommitWork.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Flag Removal Analysis section describes the passive effects conditional simplification in ReactFiberScheduler.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Dispatcher Consolidation section states that DispatcherWithoutHooks was removed from ReactFiberDispatcher.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Dispatcher Consolidation section states that DispatcherWithoutHooks was removed from ReactPartialRendererHooks.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Dispatcher Consolidation section describes the import update in ReactFiberScheduler.js to remove DispatcherWithoutHooks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Dispatcher Consolidation section describes the conditional assignment simplification in ReactPartialRenderer.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Dispatcher Consolidation section notes that DispatcherWithoutHooks only provided readContext.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section lists the four test files renamed from .internal.js to .js.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section names ReactHooksInspection-test as one of the renamed files.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section names ReactHooksInspectionIntegration-test as one of the renamed files.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section names ReactDOMSuspensePlaceholder-test as one of the renamed files.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section names ReactShallowRendererHooks-test as one of the renamed files.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Test File Cleanup section notes the removal of TODO comments about switching tests to non-internal.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Test File Cleanup section lists at least 5 additional test files that had enableHooks = true removed without renaming.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Public API Impact section states that hooks are now unconditionally exposed in packages/react/src/React.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Public API Impact section lists all 10 hook functions by name.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Public API Impact section notes the removal of the enableHooks import from React.js.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section evaluates the DispatcherWithoutHooks fallback removal as low risk.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment section notes that hooks were already enabled in www and native-fb production forks.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section addresses the shallow renderer changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment section addresses server-side rendering changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Conclusion section states that the PR achieves a clean removal of the feature flag.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Conclusion section mentions the net line reduction (32 additions, 107 deletions).",
       "category": "data",
       "is_penalty": false
     },
     {
-      "score": 2,
-      "criterion": "The Summary section states the PR has -107 deletions.",
-      "category": "data",
+      "score": 3,
+      "criterion": "The document includes code blocks showing before/after snippets from the diff for at least two different files.",
+      "category": "completeness",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Summary section calculates or mentions a net line reduction of 75 lines.",
-      "category": "data",
+      "criterion": "The Flag Removal Analysis section covers at least 3 production source files (not test files) where enableHooks guards were removed.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies that enableHooks was set to false in the main ReactFeatureFlags.js and true in the www fork.",
+      "category": "accuracy",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section mentions the upcoming release as the motivation for the PR.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the first commit hash as 7c54bff.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the first commit description as 'Turn hooks on everywhere'.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the second commit hash as 021844a.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the second commit description as containing 'Remove test overrides'.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the third commit hash as d1ffc25.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section identifies the third commit description as 'Remove hooks flag entirely'.",
+      "criterion": "The document references the feature flag removal from at least 5 of the 7 fork files by exact path.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Atomic Commit Analysis section states that each commit is atomic and self-contained.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The File Rename Review section lists the rename of ReactHooksInspection-test.internal.js to ReactHooksInspection-test.js.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The File Rename Review section lists the rename of ReactHooksInspectionIntegration-test.internal.js to ReactHooksInspectionIntegration-test.js.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The File Rename Review section lists the rename of ReactDOMSuspensePlaceholder-test.internal.js to ReactDOMSuspensePlaceholder-test.js.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The File Rename Review section includes the package path packages/react-debug-tools/src/__tests__/ for the first two renames.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The File Rename Review section includes the package path packages/react-dom/src/__tests__/ for the third rename.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The File Rename Review section states that the renames are safe.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The File Rename Review section mentions that test content remains unchanged after renames.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Feature Flag Removal Analysis section references the module shared/ReactFeatureFlags.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Feature Flag Removal Analysis section identifies the feature flag name as enableHooks.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Feature Flag Removal Analysis section references the test file ReactDOMServerIntegrationHooks-test.internal.js.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Feature Flag Removal Analysis section includes a code snippet showing 'ReactFeatureFlags.enableHooks = true'.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Feature Flag Removal Analysis section states that the flag was initially set to true in commit 7c54bff.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Feature Flag Removal Analysis section states that the flag was removed entirely in commit d1ffc25.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Feature Flag Removal Analysis section states that removing the flag simplifies the codebase.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Risk Assessment section identifies the risk of regression as low.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Risk Assessment section mentions the atomic commit structure as a mitigation strategy.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Risk Assessment section mentions the potential risk of CI/CD pipelines breaking due to file renames.",
+      "criterion": "The document mentions that the hooks flag was used to gate both client-side and server-side rendering paths.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 3,
-      "criterion": "The Conclusion section provides a clear recommendation that the PR is ready for release.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Conclusion section summarizes that the changes are minimal, focused, and well-tested.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document uses a professional and constructive tone throughout.",
-      "category": "style",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document includes at least one code snippet in backtick fences.",
-      "category": "format",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document references all three commit hashes (7c54bff, 021844a, d1ffc25) at least once.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document does not use hedging language such as 'please ensure' or 'it is important that'.",
-      "category": "style",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section explains that the first commit modifies shared/ReactFeatureFlags to set enableHooks = true.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section explains that the second commit removes explicit overrides of ReactFeatureFlags.enableHooks = true from test files.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Atomic Commit Analysis section explains that the third commit removes the enableHooks flag entirely from shared/ReactFeatureFlags.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The File Rename Review section mentions the enableHooks override was removed from the beforeEach block in the test files.",
-      "category": "content",
+      "criterion": "The document provides a comprehensive analysis covering all six categories of changes (feature flags, reconciler, server rendering, tests, shallow renderer, public API).",
+      "category": "completeness",
       "is_penalty": false
     },
     {
       "score": -2,
-      "criterion": "The document omits all three atomic commit hashes (7c54bff, 021844a, d1ffc25).",
-      "category": "reference",
+      "criterion": "The document incorrectly states that enableHooks was removed from a file that does not appear in the diff.",
+      "category": "accuracy",
       "is_penalty": true
     },
     {
-      "score": -2,
-      "criterion": "The document omits mention of the enableHooks feature flag or its removal.",
-      "category": "reference",
+      "score": -3,
+      "criterion": "The document fails to mention the removal of DispatcherWithoutHooks from either ReactFiberDispatcher.js or ReactPartialRendererHooks.js.",
+      "category": "completeness",
       "is_penalty": true
     }
   ],
@@ -327,115 +363,127 @@
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "107",
+        "name": "2019-01-23",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "7c54bff",
+        "name": "107",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "021844a",
+        "name": "7c54bff",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "d1ffc25",
+        "name": "021844a",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "Turn hooks on everywhere",
+        "name": "d1ffc25",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "Remove test overrides",
+        "name": "packages/shared/ReactFeatureFlags.js",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "Remove hooks flag entirely",
+        "name": "packages/shared/forks/ReactFeatureFlags.www.js",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "ReactHooksInspection-test.js",
+        "name": "packages/shared/forks/ReactFeatureFlags.native-fb.js",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "ReactHooksInspectionIntegration-test.js",
+        "name": "packages/shared/forks/ReactFeatureFlags.test-renderer.www.js",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "ReactDOMSuspensePlaceholder-test.js",
+        "name": "packages/react-reconciler/src/ReactFiberHooks.js",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "shared/ReactFeatureFlags",
+        "name": "packages/react-reconciler/src/ReactFiberCommitWork.js",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "enableHooks",
+        "name": "packages/react-reconciler/src/ReactFiberScheduler.js",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "ReactDOMServerIntegrationHooks-test.internal.js",
+        "name": "packages/react-reconciler/src/ReactFiberDispatcher.js",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "ReactFeatureFlags.enableHooks = true",
+        "name": "packages/react-dom/src/server/ReactPartialRendererHooks.js",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "ready for release",
+        "name": "packages/react-dom/src/server/ReactPartialRenderer.js",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "packages/react-debug-tools/src/__tests__/",
+        "name": "packages/react/src/React.js",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "packages/react-dom/src/__tests__/",
+        "name": "useCallback, useContext, useEffect, useImperativeHandle, useDebugValue, useLayoutEffect, useMemo, useReducer, useRef, useState",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "upcoming release",
+        "name": "ReactHooksInspection-test.js",
         "attrs": {}
       },
       {
         "id": "ev_20",
         "kind": "person",
-        "name": "stable and ready for general use",
+        "name": "ReactDOMSuspensePlaceholder-test.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "ReactShallowRendererHooks-test.js",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "ReactShallowRenderer.js",
         "attrs": {}
       }
     ],
@@ -457,29 +505,29 @@
       },
       {
         "id": "fact_2",
-        "kind": "money",
-        "value": 27,
+        "kind": "string",
+        "value": "2019-01-23",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "money",
-        "value": 32,
+        "value": 27,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
         "kind": "money",
-        "value": 107,
+        "value": 32,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
         "kind": "money",
-        "value": 75,
+        "value": 107,
         "unit": null,
         "source": null
       },
@@ -507,105 +555,112 @@
       {
         "id": "fact_9",
         "kind": "string",
-        "value": "Turn hooks on everywhere",
+        "value": "packages/shared/ReactFeatureFlags.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
         "kind": "string",
-        "value": "Remove test overrides",
+        "value": "packages/shared/forks/ReactFeatureFlags.www.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "Remove hooks flag entirely",
+        "value": "packages/shared/forks/ReactFeatureFlags.native-fb.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "ReactHooksInspection-test.js",
+        "value": "packages/shared/forks/ReactFeatureFlags.test-renderer.www.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "ReactHooksInspectionIntegration-test.js",
+        "value": "packages/react-reconciler/src/ReactFiberHooks.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "ReactDOMSuspensePlaceholder-test.js",
+        "value": "packages/react-reconciler/src/ReactFiberCommitWork.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "shared/ReactFeatureFlags",
+        "value": "packages/react-reconciler/src/ReactFiberScheduler.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "enableHooks",
+        "value": "packages/react-reconciler/src/ReactFiberDispatcher.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "ReactDOMServerIntegrationHooks-test.internal.js",
+        "value": "packages/react-dom/src/server/ReactPartialRendererHooks.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "ReactFeatureFlags.enableHooks = true",
+        "value": "packages/react-dom/src/server/ReactPartialRenderer.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "ready for release",
+        "value": "packages/react/src/React.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_20",
         "kind": "string",
-        "value": "packages/react-debug-tools/src/__tests__/",
+        "value": "useCallback, useContext, useEffect, useImperativeHandle, useDebugValue, useLayoutEffect, useMemo, useReducer, useRef, useState",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_21",
         "kind": "string",
-        "value": "packages/react-dom/src/__tests__/",
+        "value": "ReactHooksInspection-test.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_22",
         "kind": "string",
-        "value": "upcoming release",
+        "value": "ReactDOMSuspensePlaceholder-test.js",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_23",
         "kind": "string",
-        "value": "stable and ready for general use",
+        "value": "ReactShallowRendererHooks-test.js",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "ReactShallowRenderer.js",
         "unit": null,
         "source": null
       }
@@ -622,243 +677,315 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Summary",
+          "heading": "Code Review - PR #14679: Enable Hooks!",
+          "heading_level": 1,
+          "required_content": [
+            "Title references PR #14679",
+            "Title references Enable Hooks"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "PR Summary",
           "heading_level": 2,
           "required_content": [
-            "Brief overview of PR purpose",
-            "Mention of upcoming React release",
-            "Scope of changes (27 files, +32 additions, -107 deletions)"
+            "PR number #14679",
+            "PR title 'Enable hooks!'",
+            "Merge date 2019-01-23",
+            "Three atomic commits: turn hooks on everywhere, remove test overrides, remove hooks flag entirely",
+            "Changed files count of 27",
+            "Additions +32, deletions -107"
           ],
           "paragraphs": [
-            "PR #14679, titled 'Enable hooks!', merges a series of atomic commits that prepare the React codebase for the upcoming release by enabling the hooks feature flag everywhere. The PR changes 27 files with +32 additions and -107 deletions, resulting in a net reduction of 75 lines. The changes are clean and focused, removing the `enableHooks` feature flag and its test overrides, which indicates hooks are now considered stable and ready for general use.",
-            "This PR is a critical step in the release process, as it removes the conditional logic that previously required developers to opt-in to hooks via a feature flag. By turning hooks on everywhere, the team is signaling confidence in the feature's stability and preparing for a public release."
+            "PR #14679, titled \"Enable hooks!\", was merged on January 23, 2019, in preparation for the upcoming React release. The PR unconditionally enables React hooks across the entire codebase by removing the `enableHooks` feature flag and all conditional logic that depended on it. The changes span 27 files with 32 additions and 107 deletions, reflecting a net reduction in code complexity.",
+            "The PR is organized into three atomic commits to simplify review: (1) commit 7c54bff turns hooks on everywhere by removing conditional guards, (2) commit 021844a removes test overrides and promotes internal tests that previously only overrode the hooks flag, and (3) commit d1ffc25 removes the hooks flag definition entirely from the shared feature flags module and all its forks."
           ]
         },
         {
-          "heading": "Atomic Commit Analysis",
+          "heading": "Scope of Changes",
           "heading_level": 2,
           "required_content": [
-            "Evaluation of commit 7c54bff",
-            "Evaluation of commit 021844a",
-            "Evaluation of commit d1ffc25",
-            "Assessment of atomicity and correctness"
+            "Feature flags files listed",
+            "Reconciler logic files listed",
+            "Server-side rendering files listed",
+            "Test files listed",
+            "Shallow renderer files listed",
+            "Public API files listed"
           ],
           "paragraphs": [
-            "The PR is structured into three atomic commits, each with a clear, focused purpose:\n\n1. **Commit 7c54bff: Turn hooks on everywhere**\n   This commit modifies `shared/ReactFeatureFlags` to set `enableHooks = true` by default. This is the foundational change that activates hooks across all environments. The change is minimal and isolated, making it easy to revert if necessary.\n\n2. **Commit 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)**\n   This commit removes explicit overrides of `ReactFeatureFlags.enableHooks = true` from test files, since the flag is now on by default. It also renames test files from `.internal.js` to `.js` to reflect their promoted status. For example:\n   ```\n   ReactHooksInspection-test.internal.js -> ReactHooksInspection-test.js\n   ReactHooksInspectionIntegration-test.internal.js -> ReactHooksInspectionIntegration-test.js\n   ReactDOMSuspensePlaceholder-test.internal.js -> ReactDOMSuspensePlaceholder-test.js\n   ```\n   This commit ensures tests run with the default configuration, reducing maintenance overhead.\n\n3. **Commit d1ffc25: Remove hooks flag entirely**\n   This commit removes the `enableHooks` flag from `shared/ReactFeatureFlags` entirely, cleaning up the codebase. Since hooks are now always enabled, the flag is no longer needed. This reduces complexity and prevents accidental re-introduction of the conditional logic.\n\nEach commit is atomic and self-contained, making the PR easy to review and bisect if issues arise."
+            "The changes in this PR fall into six distinct categories:",
+            "**Feature Flags** — The `enableHooks` constant is removed from the main flags file and all platform-specific forks: `packages/shared/ReactFeatureFlags.js`, `packages/shared/forks/ReactFeatureFlags.native-fb.js`, `packages/shared/forks/ReactFeatureFlags.native-oss.js`, `packages/shared/forks/ReactFeatureFlags.persistent.js`, `packages/shared/forks/ReactFeatureFlags.test-renderer.js`, `packages/shared/forks/ReactFeatureFlags.test-renderer.www.js`, and `packages/shared/forks/ReactFeatureFlags.www.js`.",
+            "**Reconciler Logic** — Conditional hooks code is removed from `packages/react-reconciler/src/ReactFiberHooks.js`, `packages/react-reconciler/src/ReactFiberCommitWork.js`, `packages/react-reconciler/src/ReactFiberScheduler.js`, and the `DispatcherWithoutHooks` export is removed from `packages/react-reconciler/src/ReactFiberDispatcher.js`.",
+            "**Server-Side Rendering** — The server renderer is updated in `packages/react-dom/src/server/ReactPartialRenderer.js` and `packages/react-dom/src/server/ReactPartialRendererHooks.js`, where `DispatcherWithoutHooks` is removed and the dispatcher assignment is simplified.",
+            "**Test Files** — Multiple test files have `ReactFeatureFlags.enableHooks = true` lines removed, and four test files are renamed from `.internal.js` to `.js` to promote them to non-internal status.",
+            "**Shallow Renderer** — `packages/react-test-renderer/src/ReactShallowRenderer.js` has the `enableHooks` conditional removed from constructor initialization and the render path.",
+            "**Public API** — `packages/react/src/React.js` is updated to unconditionally expose all hook functions on the React object."
           ]
         },
         {
-          "heading": "File Rename Review",
+          "heading": "Flag Removal Analysis",
           "heading_level": 2,
           "required_content": [
-            "Assessment of test file renames",
-            "List of renamed files",
-            "Confirmation of safety"
+            "Main flag file packages/shared/ReactFeatureFlags.js",
+            "All fork files listed with enableHooks removal",
+            "Conditional guards in production code explained",
+            "Before/after code patterns"
           ],
           "paragraphs": [
-            "The PR renames several test files from `.internal.js` to `.js`, which indicates these tests are no longer internal-only and can run in the standard test suite. The renames include:\n- `packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js` to `ReactHooksInspection-test.js`\n- `packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js` to `ReactHooksInspectionIntegration-test.js`\n- `packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js` to `ReactDOMSuspensePlaceholder-test.js`\n\nThese renames are safe because the test content remains unchanged, and the removal of the `enableHooks` override from the `beforeEach` block is the only code change. The tests will now run with the default feature flags, which include hooks enabled. No functionality is altered, and the test coverage remains the same."
+            "The core change removes the `enableHooks` export from `packages/shared/ReactFeatureFlags.js`. Previously, this file exported `export const enableHooks = false;` (line 12 in the original). This line is deleted entirely.",
+            "All platform-specific fork files are similarly updated. In `packages/shared/forks/ReactFeatureFlags.www.js`, the line `export const enableHooks = true;` is removed. In `packages/shared/forks/ReactFeatureFlags.native-fb.js`, `export const enableHooks = true;` is removed. In `packages/shared/forks/ReactFeatureFlags.test-renderer.www.js`, `export const enableHooks = true;` is removed. The remaining forks (`ReactFeatureFlags.native-oss.js`, `ReactFeatureFlags.persistent.js`, `ReactFeatureFlags.test-renderer.js`) each had `export const enableHooks = false;` which is now removed.",
+            "In `packages/react-reconciler/src/ReactFiberHooks.js`, the function `renderWithHooks` previously contained a guard: `if (!enableHooks) { return Component(props, refOrContext); }` which would short-circuit hook rendering. This guard is removed, so the full hooks rendering path is always executed. Similarly, `resetHooks()` previously returned early if hooks were disabled; that early return is removed.",
+            "In `packages/react-reconciler/src/ReactFiberCommitWork.js`, the function `commitHookEffectList` previously returned early with `if (!enableHooks) { return; }`. This guard is removed so hook effects are always committed.",
+            "In `packages/react-reconciler/src/ReactFiberScheduler.js`, the conditional `if (enableHooks && effectTag & Passive)` is simplified to `if (effectTag & Passive)`, and the conditional block for passive effects scheduling is simplified from `if (enableHooks && firstEffect !== null && rootWithPendingPassiveEffects !== null)` to `if (firstEffect !== null && rootWithPendingPassiveEffects !== null)`."
           ]
         },
         {
-          "heading": "Feature Flag Removal Analysis",
+          "heading": "Dispatcher Consolidation",
           "heading_level": 2,
           "required_content": [
-            "Analysis of enableHooks flag removal",
-            "Implications for the codebase",
-            "References to shared/ReactFeatureFlags"
+            "DispatcherWithoutHooks removed from ReactFiberDispatcher.js",
+            "DispatcherWithoutHooks removed from ReactPartialRendererHooks.js",
+            "Call sites updated to use only Dispatcher",
+            "ReactFiberScheduler.js import updated",
+            "ReactPartialRenderer.js simplified"
           ],
           "paragraphs": [
-            "The core change in this PR is the removal of the `enableHooks` feature flag from `shared/ReactFeatureFlags`. Initially, the flag was set to `true` by default (commit 7c54bff), and later removed entirely (commit d1ffc25). This indicates that hooks are now a permanent, non-optional feature of React.",
-            "Removing the flag simplifies the codebase by eliminating conditional logic that checked `ReactFeatureFlags.enableHooks`. For example, in test files like `ReactDOMServerIntegrationHooks-test.internal.js`, the line `ReactFeatureFlags.enableHooks = true` was removed, as it is no longer needed. This cleanup reduces technical debt and makes the code easier to maintain.",
-            "The removal also ensures that hooks are always available in all environments, including production, development, and test. This is consistent with the PR's goal of enabling hooks everywhere for the upcoming release."
+            "A key part of this refactor is the elimination of the `DispatcherWithoutHooks` fallback dispatcher. Previously, two dispatcher objects were exported: `Dispatcher` (with full hooks support) and `DispatcherWithoutHooks` (which only provided `readContext`).",
+            "In `packages/react-reconciler/src/ReactFiberDispatcher.js`, the export `export const DispatcherWithoutHooks = { readContext };` is removed entirely. The corresponding import in `packages/react-reconciler/src/ReactFiberScheduler.js` is updated from `import {Dispatcher, DispatcherWithoutHooks} from './ReactFiberDispatcher';` to `import {Dispatcher} from './ReactFiberDispatcher';`. The conditional assignment `if (enableHooks) { ReactCurrentDispatcher.current = Dispatcher; } else { ReactCurrentDispatcher.current = DispatcherWithoutHooks; }` is simplified to `ReactCurrentDispatcher.current = Dispatcher;`.",
+            "In `packages/react-dom/src/server/ReactPartialRendererHooks.js`, the export `export const DispatcherWithoutHooks = { readContext };` is removed. In `packages/react-dom/src/server/ReactPartialRenderer.js`, the import of `DispatcherWithoutHooks` is removed, and the conditional dispatcher assignment is simplified from `if (enableHooks) { ReactCurrentDispatcher.current = Dispatcher; } else { ReactCurrentDispatcher.current = DispatcherWithoutHooks; }` to `ReactCurrentDispatcher.current = Dispatcher;`.",
+            "This consolidation means that hooks are always available through the dispatcher, and there is no longer a code path where components run with a restricted dispatcher that lacks hook implementations."
+          ]
+        },
+        {
+          "heading": "Test File Cleanup",
+          "heading_level": 2,
+          "required_content": [
+            "Renamed test files listed (4 files)",
+            "Test files with enableHooks = true removed listed",
+            "TODO comments removed noted"
+          ],
+          "paragraphs": [
+            "Four test files are renamed from `.internal.js` to `.js`, promoting them from internal-only tests to standard tests: `packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js` (was `.internal.js`), `packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js` (was `.internal.js`), `packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js` (was `.internal.js`), and `packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js` (was `.internal.js`).",
+            "These renamed files also have the `ReactFeatureFlags.enableHooks = true` lines removed from their `beforeEach` blocks, along with TODO comments that read `// TODO: Switch this test to non-internal once the flag is on by default.`",
+            "Several additional test files that remain as `.internal.js` also have `ReactFeatureFlags.enableHooks = true` removed: `packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js`, `packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js`, `packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js`, `packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js`, `packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js`, `packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js`, `packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js`, and `packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js`."
+          ]
+        },
+        {
+          "heading": "Public API Impact",
+          "heading_level": 2,
+          "required_content": [
+            "packages/react/src/React.js changes",
+            "Hooks unconditionally exposed",
+            "All 10 hooks listed",
+            "Conditional block removed"
+          ],
+          "paragraphs": [
+            "In `packages/react/src/React.js`, the hook functions are moved from a conditional block into the main React object literal. Previously, hooks were added to the React object inside an `if (enableHooks) { ... }` block that was placed after the object definition. Now, the following hooks are included directly in the object definition: `useCallback`, `useContext`, `useEffect`, `useImperativeHandle`, `useDebugValue`, `useLayoutEffect`, `useMemo`, `useReducer`, `useRef`, and `useState`.",
+            "The import of `enableHooks` from `'shared/ReactFeatureFlags'` is also removed from this file. This means that hooks are now part of the stable public API of React and are always available to consumers, which is the intended behavior for the 16.8 release."
           ]
         },
         {
           "heading": "Risk Assessment",
           "heading_level": 2,
           "required_content": [
-            "Identification of potential risks",
-            "Assessment of regression likelihood",
-            "Mitigation strategies"
+            "Evaluation of code paths affected",
+            "DispatcherWithoutHooks fallback noted",
+            "Shallow renderer changes noted",
+            "Server-side rendering changes noted"
           ],
           "paragraphs": [
-            "The risk of regression from this PR is low. The changes are minimal and well-scoped, focusing only on feature flag removal and test file cleanup. The atomic commit structure allows for easy bisection if issues arise.",
-            "One potential risk is that some code paths may have relied on `enableHooks` being false, but this is unlikely since the flag was already set to true in many test environments. The PR ensures that hooks are enabled everywhere, which aligns with the intended release behavior.",
-            "Another consideration is that renaming test files could break CI/CD pipelines if they depend on specific file paths. However, this is mitigated by the fact that the renames are part of a coordinated cleanup, and the test framework should handle the changes transparently.",
-            "Overall, the risk is minimal, and the benefits of simplifying the codebase outweigh any potential issues."
+            "The primary risk of this change is that any code path that previously relied on hooks being disabled would now execute with hooks enabled. However, since the `enableHooks` flag was already `true` in the `www` and `native-fb` forks (the production builds for Facebook), the only environments where hooks were previously disabled were the default open-source build, the test renderer, and the persistent renderer. In practice, these environments were already testing with hooks enabled via test overrides.",
+            "The `DispatcherWithoutHooks` fallback previously provided only `readContext`, meaning that if hooks were somehow invoked when disabled, they would fail. Removing this fallback and always using the full `Dispatcher` is safe because hooks are now unconditionally enabled.",
+            "The shallow renderer (`ReactShallowRenderer.js`) previously had an `enableHooks` guard around dispatcher initialization and the hook-based rendering path. Removing this guard means the shallow renderer will always support hooks, which aligns with the public API change. The constructor now always initializes `_dispatcher`, `_workInProgressHook`, and related state.",
+            "Server-side rendering in `ReactPartialRenderer.js` similarly simplifies to always use the full `Dispatcher`, ensuring hooks are supported during SSR. This is consistent with the reconciler changes.",
+            "Overall, the PR achieves a clean removal of the feature flag with no functional regression risk, as the flag was already enabled in all production environments."
           ]
         },
         {
           "heading": "Conclusion",
           "heading_level": 2,
           "required_content": [
-            "Recommendation on PR readiness",
-            "Summary of key findings",
-            "Approval or concerns"
+            "Clean removal statement",
+            "Flag removal completeness confirmed"
           ],
           "paragraphs": [
-            "PR #14679 is a clean, well-structured change that prepares React for the upcoming release by enabling hooks everywhere. The three atomic commits are logical and easy to follow, and the file renames and feature flag removal are safe and beneficial. The risk of regression is low, and the changes align with the goal of stabilizing hooks for public use.",
-            "Based on this review, I recommend that PR #14679 is ready for release. The changes are minimal, focused, and well-tested, with no significant concerns or blocking issues. The team can proceed with confidence."
+            "PR #14679 achieves a clean and complete removal of the `enableHooks` feature flag. The three atomic commits systematically enable hooks in production code, clean up test overrides, and remove the flag definition. The net reduction of 75 lines (32 additions, 107 deletions) reflects the elimination of conditional logic and redundant dispatcher implementations. The changes are well-scoped and the PR is ready for the upcoming release."
           ]
         }
       ],
-      "md_title": "Code Review: PR #14679 - Enable hooks!",
+      "md_title": "Code Review - PR #14679: Enable Hooks!",
       "input_attachments": [
         {
           "attachment_id": "att_0",
           "filename": "input_0.md",
           "format": "md",
-          "description": "PR #14679 diff and description from the React repository",
+          "description": "PR #14679 diff showing 27 changed files with additions and deletions",
           "content_blueprint": {
-            "title": "PR #14679 diff and description from the React repository",
-            "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff (first 3000 chars)\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__"
+            "title": "PR #14679 diff showing 27 changed files with additions and deletions",
+            "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\nrename to packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nindex 98069e2d9f40..bc2ae71673d2 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\n@@ -9,7 +9,6 @@\n \n 'use strict';\n \n-let ReactFeatureFlags;\n let React;\n let ReactDOM;\n let Suspense;\n@@ -21,8 +20,6 @@ describe('ReactDOMSuspensePlaceholder', () => {\n \n   beforeEach(() => {\n     jest.resetModules();\n-    ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDOM = require('react-dom');\n     ReactCache = require('react-cache');\ndiff --git a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\nindex 0ee2d601bd6c..d6ef0a1e4d4f 100644\n--- a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n@@ -41,7 +41,6 @@ describe('ReactErrorBoundaries', () => {\n     jest.resetModules();\n     PropTypes = require('prop-types');\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     ReactDOM = require('react-dom');\n     React = require('react');\ndiff --git a/packages/react-dom/src/server/ReactPartialRenderer.js b/packages/react-dom/src/server/ReactPartialRenderer.js\nindex 597abb4a6699..82d56f3a49e0 100644\n--- a/packages/react-dom/src/server/ReactPartialRenderer.js\n+++ b/packages/react-dom/src/server/ReactPartialRenderer.js\n@@ -21,7 +21,6 @@ import describeComponentFrame from 'shared/describeComponentFrame';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n import {\n   warnAboutDeprecatedLifecycles,\n-  enableHooks,\n   enableSuspenseServerRenderer,\n } from 'shared/ReactFeatureFlags';\n \n@@ -55,7 +54,6 @@ import {\n   prepareToUseHooks,\n   finishHooks,\n   Dispatcher,\n-  DispatcherWithoutHooks,\n   currentThreadID,\n   setCurrentThreadID,\n } from './ReactPartialRendererHooks';\n@@ -786,11 +784,7 @@ class ReactDOMServerRenderer {\n     const prevThreadID = currentThreadID;\n     setCurrentThreadID(this.threadID);\n     const prevDispatcher = ReactCurrentDispatcher.current;\n-    if (enableHooks) {\n-      ReactCurrentDispatcher.current = Dispatcher;\n-    } else {\n-      ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-    }\n+    ReactCurrentDispatcher.current = Dispatcher;\n     try {\n       // Markup generated within <Suspense> ends up buffered until we know\n       // nothing in that boundary suspended\ndiff --git a/packages/react-dom/src/server/ReactPartialRendererHooks.js b/packages/react-dom/src/server/ReactPartialRendererHooks.js\nindex 025b51a8c026..d8496b8a2629 100644\n--- a/packages/react-dom/src/server/ReactPartialRendererHooks.js\n+++ b/packages/react-dom/src/server/ReactPartialRendererHooks.js\n@@ -423,6 +423,3 @@ export const Dispatcher: DispatcherType = {\n   // Debugging effect\n   useDebugValue: noop,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberCommitWork.js b/packages/react-reconciler/src/ReactFiberCommitWork.js\nindex 85cd0a5791ba..76e136dd7dbf 100644\n--- a/packages/react-reconciler/src/ReactFiberCommitWork.js\n+++ b/packages/react-reconciler/src/ReactFiberCommitWork.js\n@@ -24,7 +24,6 @@ import type {Thenable} from './ReactFiberScheduler';\n \n import {unstable_wrap as Schedule_tracing_wrap} from 'scheduler/tracing';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n } from 'shared/ReactFeatureFlags';\n@@ -312,9 +311,6 @@ function commitHookEffectList(\n   mountTag: number,\n   finishedWork: Fiber,\n ) {\n-  if (!enableHooks) {\n-    return;\n-  }\n   const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);\n   let lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;\n   if (lastEffect !== null) {\ndiff --git a/packages/react-reconciler/src/ReactFiberDispatcher.js b/packages/react-reconciler/src/ReactFiberDispatcher.js\nindex ed2ed3b2f315..f1572072b3f6 100644\n--- a/packages/react-reconciler/src/ReactFiberDispatcher.js\n+++ b/packages/react-reconciler/src/ReactFiberDispatcher.js\n@@ -34,6 +34,3 @@ export const Dispatcher = {\n   useRef,\n   useState,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberHooks.js b/packages/react-reconciler/src/ReactFiberHooks.js\nindex d2396cfdbec1..00cd8aa94039 100644\n--- a/packages/react-reconciler/src/ReactFiberHooks.js\n+++ b/packages/react-reconciler/src/ReactFiberHooks.js\n@@ -13,7 +13,6 @@ import type {ExpirationTime} from './ReactFiberExpirationTime';\n import type {HookEffectTag} from './ReactHookEffectTags';\n \n import {NoWork} from './ReactFiberExpirationTime';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import {\n   readContext,\n   stashContextDependencies,\n@@ -296,9 +295,6 @@ export function renderWithHooks(\n   refOrContext: any,\n   nextRenderExpirationTime: ExpirationTime,\n ): any {\n-  if (!enableHooks) {\n-    return Component(props, refOrContext);\n-  }\n   renderExpirationTime = nextRenderExpirationTime;\n   currentlyRenderingFiber = workInProgress;\n   firstCurrentHook = current !== null ? current.memoizedState : null;\n@@ -397,9 +393,6 @@ export function bailoutHooks(\n }\n \n export function resetHooks(): void {\n-  if (!enableHooks) {\n-    return;\n-  }\n   if (__DEV__) {\n     flushHookMismatchWarnings();\n   }\ndiff --git a/packages/react-reconciler/src/ReactFiberScheduler.js b/packages/react-reconciler/src/ReactFiberScheduler.js\nindex bcc41fe3670a..1563f54b69a8 100644\n--- a/packages/react-reconciler/src/ReactFiberScheduler.js\n+++ b/packages/react-reconciler/src/ReactFiberScheduler.js\n@@ -56,7 +56,6 @@ import {\n   SimpleMemoComponent,\n } from 'shared/ReactWorkTags';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n   enableUserTimingAPI,\n@@ -165,7 +164,7 @@ import {\n   commitDetachRef,\n   commitPassiveHookEffects,\n } from './ReactFiberCommitWork';\n-import {Dispatcher, DispatcherWithoutHooks} from './ReactFiberDispatcher';\n+import {Dispatcher} from './ReactFiberDispatcher';\n \n export type Thenable = {\n   then(resolve: () => mixed, reject?: () => mixed): mixed,\n@@ -510,7 +509,7 @@ function commitAllLifeCycles(\n       commitAttachRef(nextEffect);\n     }\n \n-    if (enableHooks && effectTag & Passive) {\n+    if (effectTag & Passive) {\n       rootWithPendingPassiveEffects = finishedRoot;\n     }\n \n@@ -784,11 +783,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {\n     }\n   }\n \n-  if (\n-    enableHooks &&\n-    firstEffect !== null &&\n-    rootWithPendingPassiveEffects !== null\n-  ) {\n+  if (firstEffect !== null && rootWithPendingPassiveEffects !== null) {\n     // This commit included a passive effect. These do not need to fire until\n     // after the next paint. Schedule an callback to fire them in an async\n     // event. To ensure serial execution, the callback will be flushed early if\n@@ -1221,11 +1216,7 @@ function renderRoot(root: FiberRoot, isYieldy: boolean): void {\n   flushPassiveEffects();\n \n   isWorking = true;\n-  if (enableHooks) {\n-    ReactCurrentDispatcher.current = Dispatcher;\n-  } else {\n-    ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-  }\n+  ReactCurrentDispatcher.current = Dispatcher;\n \n   const expirationTime = root.nextExpirationTimeToWorkOn;\n \ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\nindex e7c43ce27423..76783087a45a 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n@@ -25,7 +25,6 @@ describe('ReactHooks', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\nindex 74d69fac78de..fe67d1ab6234 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n@@ -59,7 +59,6 @@ describe('ReactHooksWithNoopRenderer', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.enableSchedulerTracing = true;\n     React = require('react');\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\nindex 3b9873923a17..05c59d5f339b 100644\n--- a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n@@ -21,7 +21,6 @@ describe('ReactNewContext', () => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     useContext = React.useContext;\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\nindex b6ca5beba117..73a55370a187 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspense', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     // JestReact = require('jest-react');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\nindex b3c46b7a2a80..ed3d9322ba1c 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n@@ -23,7 +23,6 @@ describe('ReactSuspenseFuzz', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     Suspense = React.Suspense;\n     ReactTestRenderer = require('react-test-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\nindex 9580c425a47b..daf898c6dfd2 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {\n   beforeEach(() => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     React = require('react');\ndiff --git a/packages/react-test-renderer/src/ReactShallowRenderer.js b/packages/react-test-renderer/src/ReactShallowRenderer.js\nindex 778e5943ec9c..815220efb7c1 100644\n--- a/packages/react-test-renderer/src/ReactShallowRenderer.js\n+++ b/packages/react-test-renderer/src/ReactShallowRenderer.js\n@@ -15,7 +15,6 @@ import shallowEqual from 'shared/shallowEqual';\n import invariant from 'shared/invariant';\n import checkPropTypes from 'prop-types/checkPropTypes';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import warning from 'shared/warning';\n import is from 'shared/objectIs';\n \n@@ -187,17 +186,15 @@ class ReactShallowRenderer {\n     this._rendering = false;\n     this._forcedUpdate = false;\n     this._updater = new Updater(this);\n-    if (enableHooks) {\n-      this._dispatcher = this._createDispatcher();\n-      this._workInProgressHook = null;\n-      this._firstWorkInProgressHook = null;\n-      this._isReRender = false;\n-      this._didScheduleRenderPhaseUpdate = false;\n-      this._renderPhaseUpdates = null;\n-      this._currentlyRenderingComponent = null;\n-      this._numberOfReRenders = 0;\n-      this._previousComponentIdentity = null;\n-    }\n+    this._dispatcher = this._createDispatcher();\n+    this._workInProgressHook = null;\n+    this._firstWorkInProgressHook = null;\n+    this._isReRender = false;\n+    this._didScheduleRenderPhaseUpdate = false;\n+    this._renderPhaseUpdates = null;\n+    this._currentlyRenderingComponent = null;\n+    this._numberOfReRenders = 0;\n+    this._previousComponentIdentity = null;\n   }\n \n   _context: null | Object;\n@@ -560,27 +557,19 @@ class ReactShallowRenderer {\n \n         this._mountClassComponent(element, this._context);\n       } else {\n-        if (enableHooks) {\n-          const prevDispatcher = ReactCurrentDispatcher.current;\n-          ReactCurrentDispatcher.current = this._dispatcher;\n-          this._prepareToUseHooks(element.type);\n-          try {\n-            this._rendered = element.type.call(\n-              undefined,\n-              element.props,\n-              this._context,\n-            );\n-          } finally {\n-            ReactCurrentDispatcher.current = prevDispatcher;\n-          }\n-          this._finishHooks(element, context);\n-        } else {\n+        const prevDispatcher = ReactCurrentDispatcher.current;\n+        ReactCurrentDispatcher.current = this._dispatcher;\n+        this._prepareToUseHooks(element.type);\n+        try {\n           this._rendered = element.type.call(\n             undefined,\n             element.props,\n             this._context,\n           );\n+        } finally {\n+          ReactCurrentDispatcher.current = prevDispatcher;\n         }\n+        this._finishHooks(element, context);\n       }\n     }\n \ndiff --git a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nsimilarity index 97%\nrename from packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\nrename to packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nindex 2b1f3f56b823..60c79a12d702 100644\n--- a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\n+++ b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\n@@ -16,9 +16,6 @@ let React;\n describe('ReactShallowRenderer with hooks', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     createRenderer = require('react-test-renderer/shallow').createRenderer;\n     React = require('react');\n   });\ndiff --git a/packages/react/src/React.js b/packages/react/src/React.js\nindex 4b868feca9c8..78f72791eb02 100644\n--- a/packages/react/src/React.js\n+++ b/packages/react/src/React.js\n@@ -13,7 +13,6 @@ import {\n   REACT_STRICT_MODE_TYPE,\n   REACT_SUSPENSE_TYPE,\n } from 'shared/ReactSymbols';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n \n import {Component, PureComponent} from './ReactBaseClasses';\n import {createRef} from './ReactCreateRef';\n@@ -66,6 +65,17 @@ const React = {\n   lazy,\n   memo,\n \n+  useCallback,\n+  useContext,\n+  useEffect,\n+  useImperativeHandle,\n+  useDebugValue,\n+  useLayoutEffect,\n+  useMemo,\n+  useReducer,\n+  useRef,\n+  useState,\n+\n   Fragment: REACT_FRAGMENT_TYPE,\n   StrictMode: REACT_STRICT_MODE_TYPE,\n   Suspense: REACT_SUSPENSE_TYPE,\n@@ -95,17 +105,4 @@ if (enableStableConcurrentModeAPIs) {\n   React.unstable_Profiler = undefined;\n }\n \n-if (enableHooks) {\n-  React.useCallback = useCallback;\n-  React.useContext = useContext;\n-  React.useEffect = useEffect;\n-  React.useImperativeHandle = useImperativeHandle;\n-  React.useDebugValue = useDebugValue;\n-  React.useLayoutEffect = useLayoutEffect;\n-  React.useMemo = useMemo;\n-  React.useReducer = useReducer;\n-  React.useRef = useRef;\n-  React.useState = useState;\n-}\n-\n export default React;\ndiff --git a/packages/shared/ReactFeatureFlags.js b/packages/shared/ReactFeatureFlags.js\nindex 666205e7b304..af5241d1f28b 100644\n--- a/packages/shared/ReactFeatureFlags.js\n+++ b/packages/shared/ReactFeatureFlags.js\n@@ -9,7 +9,6 @@\n \n export const enableUserTimingAPI = __DEV__;\n \n-export const enableHooks = false;\n // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:\n export const debugRenderPhaseSideEffects = false;\n \ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-fb.js b/packages/shared/forks/ReactFeatureFlags.native-fb.js\nindex 943cef96e8a5..1a308519bad7 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-fb.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-fb.js\n@@ -16,7 +16,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-fb';\n export const {debugRenderPhaseSideEffects} = require('ReactFeatureFlags');\n \n // The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n export const enableUserTimingAPI = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\n export const enableSchedulerTracing = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-oss.js b/packages/shared/forks/ReactFeatureFlags.native-oss.js\nindex 7e24ece36746..2e4918dc1e59 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-oss.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-oss.js\n@@ -14,7 +14,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-oss';\n \n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n-export const enableHooks = false;\n export const enableUserTimingAPI = __DEV__;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const warnAboutDeprecatedLifecycles = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.persistent.js b/packages/shared/forks/ReactFeatureFlags.persistent.js\nindex caa763c94c7e..34cce860a0d5 100644\n--- a/packages/shared/forks/ReactFeatureFlags.persistent.js\n+++ b/packages/shared/forks/ReactFeatureFlags.persistent.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\nindex f55f419a6d49..d33865e96468 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\nindex 516f5738d5a3..09c63908f825 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = true;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.www.js b/packages/shared/forks/ReactFeatureFlags.www.js\nindex 40ea1ca5e0a9..56e563822b0f 100644\n--- a/packages/shared/forks/ReactFeatureFlags.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.www.js\n@@ -21,9 +21,6 @@ export const {\n   warnAboutShorthandPropertyCollision,\n } = require('ReactFeatureFlags');\n \n-// The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n-\n // In www, we have experimental support for gathering data\n // from User Timing API calls in production. By default, we\n // only emit performance.mark/measure calls in __DEV__. But if\n"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR description with title 'Enable hooks!' and three atomic commit descriptions",
+          "content_blueprint": {
+            "title": "PR description with title 'Enable hooks!' and three atomic commit descriptions",
+            "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\nrename to packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nindex 98069e2d9f40..bc2ae71673d2 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\n@@ -9,7 +9,6 @@\n \n 'use strict';\n \n-let ReactFeatureFlags;\n let React;\n let ReactDOM;\n let Suspense;\n@@ -21,8 +20,6 @@ describe('ReactDOMSuspensePlaceholder', () => {\n \n   beforeEach(() => {\n     jest.resetModules();\n-    ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDOM = require('react-dom');\n     ReactCache = require('react-cache');\ndiff --git a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\nindex 0ee2d601bd6c..d6ef0a1e4d4f 100644\n--- a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n@@ -41,7 +41,6 @@ describe('ReactErrorBoundaries', () => {\n     jest.resetModules();\n     PropTypes = require('prop-types');\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     ReactDOM = require('react-dom');\n     React = require('react');\ndiff --git a/packages/react-dom/src/server/ReactPartialRenderer.js b/packages/react-dom/src/server/ReactPartialRenderer.js\nindex 597abb4a6699..82d56f3a49e0 100644\n--- a/packages/react-dom/src/server/ReactPartialRenderer.js\n+++ b/packages/react-dom/src/server/ReactPartialRenderer.js\n@@ -21,7 +21,6 @@ import describeComponentFrame from 'shared/describeComponentFrame';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n import {\n   warnAboutDeprecatedLifecycles,\n-  enableHooks,\n   enableSuspenseServerRenderer,\n } from 'shared/ReactFeatureFlags';\n \n@@ -55,7 +54,6 @@ import {\n   prepareToUseHooks,\n   finishHooks,\n   Dispatcher,\n-  DispatcherWithoutHooks,\n   currentThreadID,\n   setCurrentThreadID,\n } from './ReactPartialRendererHooks';\n@@ -786,11 +784,7 @@ class ReactDOMServerRenderer {\n     const prevThreadID = currentThreadID;\n     setCurrentThreadID(this.threadID);\n     const prevDispatcher = ReactCurrentDispatcher.current;\n-    if (enableHooks) {\n-      ReactCurrentDispatcher.current = Dispatcher;\n-    } else {\n-      ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-    }\n+    ReactCurrentDispatcher.current = Dispatcher;\n     try {\n       // Markup generated within <Suspense> ends up buffered until we know\n       // nothing in that boundary suspended\ndiff --git a/packages/react-dom/src/server/ReactPartialRendererHooks.js b/packages/react-dom/src/server/ReactPartialRendererHooks.js\nindex 025b51a8c026..d8496b8a2629 100644\n--- a/packages/react-dom/src/server/ReactPartialRendererHooks.js\n+++ b/packages/react-dom/src/server/ReactPartialRendererHooks.js\n@@ -423,6 +423,3 @@ export const Dispatcher: DispatcherType = {\n   // Debugging effect\n   useDebugValue: noop,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberCommitWork.js b/packages/react-reconciler/src/ReactFiberCommitWork.js\nindex 85cd0a5791ba..76e136dd7dbf 100644\n--- a/packages/react-reconciler/src/ReactFiberCommitWork.js\n+++ b/packages/react-reconciler/src/ReactFiberCommitWork.js\n@@ -24,7 +24,6 @@ import type {Thenable} from './ReactFiberScheduler';\n \n import {unstable_wrap as Schedule_tracing_wrap} from 'scheduler/tracing';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n } from 'shared/ReactFeatureFlags';\n@@ -312,9 +311,6 @@ function commitHookEffectList(\n   mountTag: number,\n   finishedWork: Fiber,\n ) {\n-  if (!enableHooks) {\n-    return;\n-  }\n   const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);\n   let lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;\n   if (lastEffect !== null) {\ndiff --git a/packages/react-reconciler/src/ReactFiberDispatcher.js b/packages/react-reconciler/src/ReactFiberDispatcher.js\nindex ed2ed3b2f315..f1572072b3f6 100644\n--- a/packages/react-reconciler/src/ReactFiberDispatcher.js\n+++ b/packages/react-reconciler/src/ReactFiberDispatcher.js\n@@ -34,6 +34,3 @@ export const Dispatcher = {\n   useRef,\n   useState,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberHooks.js b/packages/react-reconciler/src/ReactFiberHooks.js\nindex d2396cfdbec1..00cd8aa94039 100644\n--- a/packages/react-reconciler/src/ReactFiberHooks.js\n+++ b/packages/react-reconciler/src/ReactFiberHooks.js\n@@ -13,7 +13,6 @@ import type {ExpirationTime} from './ReactFiberExpirationTime';\n import type {HookEffectTag} from './ReactHookEffectTags';\n \n import {NoWork} from './ReactFiberExpirationTime';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import {\n   readContext,\n   stashContextDependencies,\n@@ -296,9 +295,6 @@ export function renderWithHooks(\n   refOrContext: any,\n   nextRenderExpirationTime: ExpirationTime,\n ): any {\n-  if (!enableHooks) {\n-    return Component(props, refOrContext);\n-  }\n   renderExpirationTime = nextRenderExpirationTime;\n   currentlyRenderingFiber = workInProgress;\n   firstCurrentHook = current !== null ? current.memoizedState : null;\n@@ -397,9 +393,6 @@ export function bailoutHooks(\n }\n \n export function resetHooks(): void {\n-  if (!enableHooks) {\n-    return;\n-  }\n   if (__DEV__) {\n     flushHookMismatchWarnings();\n   }\ndiff --git a/packages/react-reconciler/src/ReactFiberScheduler.js b/packages/react-reconciler/src/ReactFiberScheduler.js\nindex bcc41fe3670a..1563f54b69a8 100644\n--- a/packages/react-reconciler/src/ReactFiberScheduler.js\n+++ b/packages/react-reconciler/src/ReactFiberScheduler.js\n@@ -56,7 +56,6 @@ import {\n   SimpleMemoComponent,\n } from 'shared/ReactWorkTags';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n   enableUserTimingAPI,\n@@ -165,7 +164,7 @@ import {\n   commitDetachRef,\n   commitPassiveHookEffects,\n } from './ReactFiberCommitWork';\n-import {Dispatcher, DispatcherWithoutHooks} from './ReactFiberDispatcher';\n+import {Dispatcher} from './ReactFiberDispatcher';\n \n export type Thenable = {\n   then(resolve: () => mixed, reject?: () => mixed): mixed,\n@@ -510,7 +509,7 @@ function commitAllLifeCycles(\n       commitAttachRef(nextEffect);\n     }\n \n-    if (enableHooks && effectTag & Passive) {\n+    if (effectTag & Passive) {\n       rootWithPendingPassiveEffects = finishedRoot;\n     }\n \n@@ -784,11 +783,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {\n     }\n   }\n \n-  if (\n-    enableHooks &&\n-    firstEffect !== null &&\n-    rootWithPendingPassiveEffects !== null\n-  ) {\n+  if (firstEffect !== null && rootWithPendingPassiveEffects !== null) {\n     // This commit included a passive effect. These do not need to fire until\n     // after the next paint. Schedule an callback to fire them in an async\n     // event. To ensure serial execution, the callback will be flushed early if\n@@ -1221,11 +1216,7 @@ function renderRoot(root: FiberRoot, isYieldy: boolean): void {\n   flushPassiveEffects();\n \n   isWorking = true;\n-  if (enableHooks) {\n-    ReactCurrentDispatcher.current = Dispatcher;\n-  } else {\n-    ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-  }\n+  ReactCurrentDispatcher.current = Dispatcher;\n \n   const expirationTime = root.nextExpirationTimeToWorkOn;\n \ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\nindex e7c43ce27423..76783087a45a 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n@@ -25,7 +25,6 @@ describe('ReactHooks', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\nindex 74d69fac78de..fe67d1ab6234 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n@@ -59,7 +59,6 @@ describe('ReactHooksWithNoopRenderer', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.enableSchedulerTracing = true;\n     React = require('react');\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\nindex 3b9873923a17..05c59d5f339b 100644\n--- a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n@@ -21,7 +21,6 @@ describe('ReactNewContext', () => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     useContext = React.useContext;\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\nindex b6ca5beba117..73a55370a187 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspense', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     // JestReact = require('jest-react');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\nindex b3c46b7a2a80..ed3d9322ba1c 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n@@ -23,7 +23,6 @@ describe('ReactSuspenseFuzz', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     Suspense = React.Suspense;\n     ReactTestRenderer = require('react-test-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\nindex 9580c425a47b..daf898c6dfd2 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {\n   beforeEach(() => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     React = require('react');\ndiff --git a/packages/react-test-renderer/src/ReactShallowRenderer.js b/packages/react-test-renderer/src/ReactShallowRenderer.js\nindex 778e5943ec9c..815220efb7c1 100644\n--- a/packages/react-test-renderer/src/ReactShallowRenderer.js\n+++ b/packages/react-test-renderer/src/ReactShallowRenderer.js\n@@ -15,7 +15,6 @@ import shallowEqual from 'shared/shallowEqual';\n import invariant from 'shared/invariant';\n import checkPropTypes from 'prop-types/checkPropTypes';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import warning from 'shared/warning';\n import is from 'shared/objectIs';\n \n@@ -187,17 +186,15 @@ class ReactShallowRenderer {\n     this._rendering = false;\n     this._forcedUpdate = false;\n     this._updater = new Updater(this);\n-    if (enableHooks) {\n-      this._dispatcher = this._createDispatcher();\n-      this._workInProgressHook = null;\n-      this._firstWorkInProgressHook = null;\n-      this._isReRender = false;\n-      this._didScheduleRenderPhaseUpdate = false;\n-      this._renderPhaseUpdates = null;\n-      this._currentlyRenderingComponent = null;\n-      this._numberOfReRenders = 0;\n-      this._previousComponentIdentity = null;\n-    }\n+    this._dispatcher = this._createDispatcher();\n+    this._workInProgressHook = null;\n+    this._firstWorkInProgressHook = null;\n+    this._isReRender = false;\n+    this._didScheduleRenderPhaseUpdate = false;\n+    this._renderPhaseUpdates = null;\n+    this._currentlyRenderingComponent = null;\n+    this._numberOfReRenders = 0;\n+    this._previousComponentIdentity = null;\n   }\n \n   _context: null | Object;\n@@ -560,27 +557,19 @@ class ReactShallowRenderer {\n \n         this._mountClassComponent(element, this._context);\n       } else {\n-        if (enableHooks) {\n-          const prevDispatcher = ReactCurrentDispatcher.current;\n-          ReactCurrentDispatcher.current = this._dispatcher;\n-          this._prepareToUseHooks(element.type);\n-          try {\n-            this._rendered = element.type.call(\n-              undefined,\n-              element.props,\n-              this._context,\n-            );\n-          } finally {\n-            ReactCurrentDispatcher.current = prevDispatcher;\n-          }\n-          this._finishHooks(element, context);\n-        } else {\n+        const prevDispatcher = ReactCurrentDispatcher.current;\n+        ReactCurrentDispatcher.current = this._dispatcher;\n+        this._prepareToUseHooks(element.type);\n+        try {\n           this._rendered = element.type.call(\n             undefined,\n             element.props,\n             this._context,\n           );\n+        } finally {\n+          ReactCurrentDispatcher.current = prevDispatcher;\n         }\n+        this._finishHooks(element, context);\n       }\n     }\n \ndiff --git a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nsimilarity index 97%\nrename from packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\nrename to packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nindex 2b1f3f56b823..60c79a12d702 100644\n--- a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\n+++ b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\n@@ -16,9 +16,6 @@ let React;\n describe('ReactShallowRenderer with hooks', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     createRenderer = require('react-test-renderer/shallow').createRenderer;\n     React = require('react');\n   });\ndiff --git a/packages/react/src/React.js b/packages/react/src/React.js\nindex 4b868feca9c8..78f72791eb02 100644\n--- a/packages/react/src/React.js\n+++ b/packages/react/src/React.js\n@@ -13,7 +13,6 @@ import {\n   REACT_STRICT_MODE_TYPE,\n   REACT_SUSPENSE_TYPE,\n } from 'shared/ReactSymbols';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n \n import {Component, PureComponent} from './ReactBaseClasses';\n import {createRef} from './ReactCreateRef';\n@@ -66,6 +65,17 @@ const React = {\n   lazy,\n   memo,\n \n+  useCallback,\n+  useContext,\n+  useEffect,\n+  useImperativeHandle,\n+  useDebugValue,\n+  useLayoutEffect,\n+  useMemo,\n+  useReducer,\n+  useRef,\n+  useState,\n+\n   Fragment: REACT_FRAGMENT_TYPE,\n   StrictMode: REACT_STRICT_MODE_TYPE,\n   Suspense: REACT_SUSPENSE_TYPE,\n@@ -95,17 +105,4 @@ if (enableStableConcurrentModeAPIs) {\n   React.unstable_Profiler = undefined;\n }\n \n-if (enableHooks) {\n-  React.useCallback = useCallback;\n-  React.useContext = useContext;\n-  React.useEffect = useEffect;\n-  React.useImperativeHandle = useImperativeHandle;\n-  React.useDebugValue = useDebugValue;\n-  React.useLayoutEffect = useLayoutEffect;\n-  React.useMemo = useMemo;\n-  React.useReducer = useReducer;\n-  React.useRef = useRef;\n-  React.useState = useState;\n-}\n-\n export default React;\ndiff --git a/packages/shared/ReactFeatureFlags.js b/packages/shared/ReactFeatureFlags.js\nindex 666205e7b304..af5241d1f28b 100644\n--- a/packages/shared/ReactFeatureFlags.js\n+++ b/packages/shared/ReactFeatureFlags.js\n@@ -9,7 +9,6 @@\n \n export const enableUserTimingAPI = __DEV__;\n \n-export const enableHooks = false;\n // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:\n export const debugRenderPhaseSideEffects = false;\n \ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-fb.js b/packages/shared/forks/ReactFeatureFlags.native-fb.js\nindex 943cef96e8a5..1a308519bad7 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-fb.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-fb.js\n@@ -16,7 +16,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-fb';\n export const {debugRenderPhaseSideEffects} = require('ReactFeatureFlags');\n \n // The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n export const enableUserTimingAPI = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\n export const enableSchedulerTracing = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-oss.js b/packages/shared/forks/ReactFeatureFlags.native-oss.js\nindex 7e24ece36746..2e4918dc1e59 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-oss.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-oss.js\n@@ -14,7 +14,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-oss';\n \n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n-export const enableHooks = false;\n export const enableUserTimingAPI = __DEV__;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const warnAboutDeprecatedLifecycles = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.persistent.js b/packages/shared/forks/ReactFeatureFlags.persistent.js\nindex caa763c94c7e..34cce860a0d5 100644\n--- a/packages/shared/forks/ReactFeatureFlags.persistent.js\n+++ b/packages/shared/forks/ReactFeatureFlags.persistent.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\nindex f55f419a6d49..d33865e96468 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\nindex 516f5738d5a3..09c63908f825 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = true;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.www.js b/packages/shared/forks/ReactFeatureFlags.www.js\nindex 40ea1ca5e0a9..56e563822b0f 100644\n--- a/packages/shared/forks/ReactFeatureFlags.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.www.js\n@@ -21,9 +21,6 @@ export const {\n   warnAboutShorthandPropertyCollision,\n } = require('ReactFeatureFlags');\n \n-// The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n-\n // In www, we have experimental support for gathering data\n // from User Timing API calls in production. By default, we\n // only emit performance.mark/measure calls in __DEV__. But if\n"
           }
         }
       ],
       "expected_values": [
         {
-          "description": "PR number is correctly referenced as #14679",
+          "description": "PR number referenced in the document",
           "value": "#14679",
           "tolerance": null,
-          "location": "Title and Summary section"
+          "location": "PR Summary section"
         },
         {
-          "description": "PR title is 'Enable hooks!'",
+          "description": "PR title referenced in the document",
           "value": "Enable hooks!",
           "tolerance": null,
-          "location": "Title and Summary section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Total changed files count is 27",
+          "description": "Merge date referenced in the document",
+          "value": "2019-01-23",
+          "tolerance": null,
+          "location": "PR Summary section"
+        },
+        {
+          "description": "Number of changed files stated",
           "value": 27,
           "tolerance": null,
-          "location": "Summary section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Total additions count is +32",
+          "description": "Additions count stated",
           "value": 32,
           "tolerance": null,
-          "location": "Summary section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Total deletions count is -107",
+          "description": "Deletions count stated",
           "value": 107,
           "tolerance": null,
-          "location": "Summary section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Net line reduction is 75",
-          "value": 75,
-          "tolerance": null,
-          "location": "Summary section"
-        },
-        {
-          "description": "First commit hash is 7c54bff",
+          "description": "First atomic commit SHA referenced",
           "value": "7c54bff",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Second commit hash is 021844a",
+          "description": "Second atomic commit SHA referenced",
           "value": "021844a",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "PR Summary section"
         },
         {
-          "description": "Third commit hash is d1ffc25",
+          "description": "Third atomic commit SHA referenced",
           "value": "d1ffc25",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "PR Summary section"
         },
         {
-          "description": "First commit description: Turn hooks on everywhere",
-          "value": "Turn hooks on everywhere",
+          "description": "Main feature flag file path referenced",
+          "value": "packages/shared/ReactFeatureFlags.js",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "Flag Removal Analysis section"
         },
         {
-          "description": "Second commit description: Remove test overrides",
-          "value": "Remove test overrides",
+          "description": "Fork file for www referenced",
+          "value": "packages/shared/forks/ReactFeatureFlags.www.js",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "Flag Removal Analysis section"
         },
         {
-          "description": "Third commit description: Remove hooks flag entirely",
-          "value": "Remove hooks flag entirely",
+          "description": "Fork file for native-fb referenced",
+          "value": "packages/shared/forks/ReactFeatureFlags.native-fb.js",
           "tolerance": null,
-          "location": "Atomic Commit Analysis section"
+          "location": "Flag Removal Analysis section"
         },
         {
-          "description": "Test file rename: ReactHooksInspection-test.internal.js to ReactHooksInspection-test.js",
+          "description": "Fork file for test-renderer.www referenced",
+          "value": "packages/shared/forks/ReactFeatureFlags.test-renderer.www.js",
+          "tolerance": null,
+          "location": "Flag Removal Analysis section"
+        },
+        {
+          "description": "Reconciler hooks file referenced",
+          "value": "packages/react-reconciler/src/ReactFiberHooks.js",
+          "tolerance": null,
+          "location": "Flag Removal Analysis section"
+        },
+        {
+          "description": "Commit work file referenced",
+          "value": "packages/react-reconciler/src/ReactFiberCommitWork.js",
+          "tolerance": null,
+          "location": "Flag Removal Analysis section"
+        },
+        {
+          "description": "Scheduler file referenced",
+          "value": "packages/react-reconciler/src/ReactFiberScheduler.js",
+          "tolerance": null,
+          "location": "Flag Removal Analysis section"
+        },
+        {
+          "description": "Dispatcher file referenced",
+          "value": "packages/react-reconciler/src/ReactFiberDispatcher.js",
+          "tolerance": null,
+          "location": "Dispatcher Consolidation section"
+        },
+        {
+          "description": "Server dispatcher hooks file referenced",
+          "value": "packages/react-dom/src/server/ReactPartialRendererHooks.js",
+          "tolerance": null,
+          "location": "Dispatcher Consolidation section"
+        },
+        {
+          "description": "Server partial renderer file referenced",
+          "value": "packages/react-dom/src/server/ReactPartialRenderer.js",
+          "tolerance": null,
+          "location": "Dispatcher Consolidation section"
+        },
+        {
+          "description": "Public API file referenced",
+          "value": "packages/react/src/React.js",
+          "tolerance": null,
+          "location": "Public API Impact section"
+        },
+        {
+          "description": "All 10 hooks listed in the public API",
+          "value": "useCallback, useContext, useEffect, useImperativeHandle, useDebugValue, useLayoutEffect, useMemo, useReducer, useRef, useState",
+          "tolerance": null,
+          "location": "Public API Impact section"
+        },
+        {
+          "description": "Renamed test file ReactHooksInspection-test",
           "value": "ReactHooksInspection-test.js",
           "tolerance": null,
-          "location": "File Rename Review section"
+          "location": "Test File Cleanup section"
         },
         {
-          "description": "Test file rename: ReactHooksInspectionIntegration-test.internal.js to ReactHooksInspectionIntegration-test.js",
-          "value": "ReactHooksInspectionIntegration-test.js",
-          "tolerance": null,
-          "location": "File Rename Review section"
-        },
-        {
-          "description": "Test file rename: ReactDOMSuspensePlaceholder-test.internal.js to ReactDOMSuspensePlaceholder-test.js",
+          "description": "Renamed test file ReactDOMSuspensePlaceholder-test",
           "value": "ReactDOMSuspensePlaceholder-test.js",
           "tolerance": null,
-          "location": "File Rename Review section"
+          "location": "Test File Cleanup section"
         },
         {
-          "description": "Feature flag module path is shared/ReactFeatureFlags",
-          "value": "shared/ReactFeatureFlags",
+          "description": "Renamed test file ReactShallowRendererHooks-test",
+          "value": "ReactShallowRendererHooks-test.js",
           "tolerance": null,
-          "location": "Feature Flag Removal Analysis section"
+          "location": "Test File Cleanup section"
         },
         {
-          "description": "Feature flag name is enableHooks",
-          "value": "enableHooks",
+          "description": "Shallow renderer file referenced in risk assessment",
+          "value": "ReactShallowRenderer.js",
           "tolerance": null,
-          "location": "Feature Flag Removal Analysis section"
-        },
-        {
-          "description": "Specific test file referenced: ReactDOMServerIntegrationHooks-test.internal.js",
-          "value": "ReactDOMServerIntegrationHooks-test.internal.js",
-          "tolerance": null,
-          "location": "Feature Flag Removal Analysis section"
-        },
-        {
-          "description": "Code snippet shows removal of ReactFeatureFlags.enableHooks = true from test file",
-          "value": "ReactFeatureFlags.enableHooks = true",
-          "tolerance": null,
-          "location": "Feature Flag Removal Analysis section"
-        },
-        {
-          "description": "The review concludes with a recommendation that the PR is ready for release",
-          "value": "ready for release",
-          "tolerance": null,
-          "location": "Conclusion section"
-        },
-        {
-          "description": "Package path for react-debug-tools test renames",
-          "value": "packages/react-debug-tools/src/__tests__/",
-          "tolerance": null,
-          "location": "File Rename Review section"
-        },
-        {
-          "description": "Package path for react-dom test rename",
-          "value": "packages/react-dom/src/__tests__/",
-          "tolerance": null,
-          "location": "File Rename Review section"
-        },
-        {
-          "description": "The Summary mentions the upcoming release as motivation",
-          "value": "upcoming release",
-          "tolerance": null,
-          "location": "Summary section"
-        },
-        {
-          "description": "The review mentions hooks are stable and ready for general use",
-          "value": "stable and ready for general use",
-          "tolerance": null,
-          "location": "Summary section"
+          "location": "Risk Assessment section"
         }
       ],
       "narrative_prompt": null,
@@ -873,18 +1000,29 @@
       "attachment_id": "att_0",
       "filename": "input_0.md",
       "format": "md",
-      "description": "PR #14679 diff and description from the React repository",
+      "description": "PR #14679 diff showing 27 changed files with additions and deletions",
       "content_blueprint": {
-        "title": "PR #14679 diff and description from the React repository",
-        "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff (first 3000 chars)\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__"
+        "title": "PR #14679 diff showing 27 changed files with additions and deletions",
+        "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\nrename to packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nindex 98069e2d9f40..bc2ae71673d2 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\n@@ -9,7 +9,6 @@\n \n 'use strict';\n \n-let ReactFeatureFlags;\n let React;\n let ReactDOM;\n let Suspense;\n@@ -21,8 +20,6 @@ describe('ReactDOMSuspensePlaceholder', () => {\n \n   beforeEach(() => {\n     jest.resetModules();\n-    ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDOM = require('react-dom');\n     ReactCache = require('react-cache');\ndiff --git a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\nindex 0ee2d601bd6c..d6ef0a1e4d4f 100644\n--- a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n@@ -41,7 +41,6 @@ describe('ReactErrorBoundaries', () => {\n     jest.resetModules();\n     PropTypes = require('prop-types');\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     ReactDOM = require('react-dom');\n     React = require('react');\ndiff --git a/packages/react-dom/src/server/ReactPartialRenderer.js b/packages/react-dom/src/server/ReactPartialRenderer.js\nindex 597abb4a6699..82d56f3a49e0 100644\n--- a/packages/react-dom/src/server/ReactPartialRenderer.js\n+++ b/packages/react-dom/src/server/ReactPartialRenderer.js\n@@ -21,7 +21,6 @@ import describeComponentFrame from 'shared/describeComponentFrame';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n import {\n   warnAboutDeprecatedLifecycles,\n-  enableHooks,\n   enableSuspenseServerRenderer,\n } from 'shared/ReactFeatureFlags';\n \n@@ -55,7 +54,6 @@ import {\n   prepareToUseHooks,\n   finishHooks,\n   Dispatcher,\n-  DispatcherWithoutHooks,\n   currentThreadID,\n   setCurrentThreadID,\n } from './ReactPartialRendererHooks';\n@@ -786,11 +784,7 @@ class ReactDOMServerRenderer {\n     const prevThreadID = currentThreadID;\n     setCurrentThreadID(this.threadID);\n     const prevDispatcher = ReactCurrentDispatcher.current;\n-    if (enableHooks) {\n-      ReactCurrentDispatcher.current = Dispatcher;\n-    } else {\n-      ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-    }\n+    ReactCurrentDispatcher.current = Dispatcher;\n     try {\n       // Markup generated within <Suspense> ends up buffered until we know\n       // nothing in that boundary suspended\ndiff --git a/packages/react-dom/src/server/ReactPartialRendererHooks.js b/packages/react-dom/src/server/ReactPartialRendererHooks.js\nindex 025b51a8c026..d8496b8a2629 100644\n--- a/packages/react-dom/src/server/ReactPartialRendererHooks.js\n+++ b/packages/react-dom/src/server/ReactPartialRendererHooks.js\n@@ -423,6 +423,3 @@ export const Dispatcher: DispatcherType = {\n   // Debugging effect\n   useDebugValue: noop,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberCommitWork.js b/packages/react-reconciler/src/ReactFiberCommitWork.js\nindex 85cd0a5791ba..76e136dd7dbf 100644\n--- a/packages/react-reconciler/src/ReactFiberCommitWork.js\n+++ b/packages/react-reconciler/src/ReactFiberCommitWork.js\n@@ -24,7 +24,6 @@ import type {Thenable} from './ReactFiberScheduler';\n \n import {unstable_wrap as Schedule_tracing_wrap} from 'scheduler/tracing';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n } from 'shared/ReactFeatureFlags';\n@@ -312,9 +311,6 @@ function commitHookEffectList(\n   mountTag: number,\n   finishedWork: Fiber,\n ) {\n-  if (!enableHooks) {\n-    return;\n-  }\n   const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);\n   let lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;\n   if (lastEffect !== null) {\ndiff --git a/packages/react-reconciler/src/ReactFiberDispatcher.js b/packages/react-reconciler/src/ReactFiberDispatcher.js\nindex ed2ed3b2f315..f1572072b3f6 100644\n--- a/packages/react-reconciler/src/ReactFiberDispatcher.js\n+++ b/packages/react-reconciler/src/ReactFiberDispatcher.js\n@@ -34,6 +34,3 @@ export const Dispatcher = {\n   useRef,\n   useState,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberHooks.js b/packages/react-reconciler/src/ReactFiberHooks.js\nindex d2396cfdbec1..00cd8aa94039 100644\n--- a/packages/react-reconciler/src/ReactFiberHooks.js\n+++ b/packages/react-reconciler/src/ReactFiberHooks.js\n@@ -13,7 +13,6 @@ import type {ExpirationTime} from './ReactFiberExpirationTime';\n import type {HookEffectTag} from './ReactHookEffectTags';\n \n import {NoWork} from './ReactFiberExpirationTime';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import {\n   readContext,\n   stashContextDependencies,\n@@ -296,9 +295,6 @@ export function renderWithHooks(\n   refOrContext: any,\n   nextRenderExpirationTime: ExpirationTime,\n ): any {\n-  if (!enableHooks) {\n-    return Component(props, refOrContext);\n-  }\n   renderExpirationTime = nextRenderExpirationTime;\n   currentlyRenderingFiber = workInProgress;\n   firstCurrentHook = current !== null ? current.memoizedState : null;\n@@ -397,9 +393,6 @@ export function bailoutHooks(\n }\n \n export function resetHooks(): void {\n-  if (!enableHooks) {\n-    return;\n-  }\n   if (__DEV__) {\n     flushHookMismatchWarnings();\n   }\ndiff --git a/packages/react-reconciler/src/ReactFiberScheduler.js b/packages/react-reconciler/src/ReactFiberScheduler.js\nindex bcc41fe3670a..1563f54b69a8 100644\n--- a/packages/react-reconciler/src/ReactFiberScheduler.js\n+++ b/packages/react-reconciler/src/ReactFiberScheduler.js\n@@ -56,7 +56,6 @@ import {\n   SimpleMemoComponent,\n } from 'shared/ReactWorkTags';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n   enableUserTimingAPI,\n@@ -165,7 +164,7 @@ import {\n   commitDetachRef,\n   commitPassiveHookEffects,\n } from './ReactFiberCommitWork';\n-import {Dispatcher, DispatcherWithoutHooks} from './ReactFiberDispatcher';\n+import {Dispatcher} from './ReactFiberDispatcher';\n \n export type Thenable = {\n   then(resolve: () => mixed, reject?: () => mixed): mixed,\n@@ -510,7 +509,7 @@ function commitAllLifeCycles(\n       commitAttachRef(nextEffect);\n     }\n \n-    if (enableHooks && effectTag & Passive) {\n+    if (effectTag & Passive) {\n       rootWithPendingPassiveEffects = finishedRoot;\n     }\n \n@@ -784,11 +783,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {\n     }\n   }\n \n-  if (\n-    enableHooks &&\n-    firstEffect !== null &&\n-    rootWithPendingPassiveEffects !== null\n-  ) {\n+  if (firstEffect !== null && rootWithPendingPassiveEffects !== null) {\n     // This commit included a passive effect. These do not need to fire until\n     // after the next paint. Schedule an callback to fire them in an async\n     // event. To ensure serial execution, the callback will be flushed early if\n@@ -1221,11 +1216,7 @@ function renderRoot(root: FiberRoot, isYieldy: boolean): void {\n   flushPassiveEffects();\n \n   isWorking = true;\n-  if (enableHooks) {\n-    ReactCurrentDispatcher.current = Dispatcher;\n-  } else {\n-    ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-  }\n+  ReactCurrentDispatcher.current = Dispatcher;\n \n   const expirationTime = root.nextExpirationTimeToWorkOn;\n \ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\nindex e7c43ce27423..76783087a45a 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n@@ -25,7 +25,6 @@ describe('ReactHooks', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\nindex 74d69fac78de..fe67d1ab6234 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n@@ -59,7 +59,6 @@ describe('ReactHooksWithNoopRenderer', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.enableSchedulerTracing = true;\n     React = require('react');\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\nindex 3b9873923a17..05c59d5f339b 100644\n--- a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n@@ -21,7 +21,6 @@ describe('ReactNewContext', () => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     useContext = React.useContext;\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\nindex b6ca5beba117..73a55370a187 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspense', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     // JestReact = require('jest-react');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\nindex b3c46b7a2a80..ed3d9322ba1c 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n@@ -23,7 +23,6 @@ describe('ReactSuspenseFuzz', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     Suspense = React.Suspense;\n     ReactTestRenderer = require('react-test-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\nindex 9580c425a47b..daf898c6dfd2 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {\n   beforeEach(() => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     React = require('react');\ndiff --git a/packages/react-test-renderer/src/ReactShallowRenderer.js b/packages/react-test-renderer/src/ReactShallowRenderer.js\nindex 778e5943ec9c..815220efb7c1 100644\n--- a/packages/react-test-renderer/src/ReactShallowRenderer.js\n+++ b/packages/react-test-renderer/src/ReactShallowRenderer.js\n@@ -15,7 +15,6 @@ import shallowEqual from 'shared/shallowEqual';\n import invariant from 'shared/invariant';\n import checkPropTypes from 'prop-types/checkPropTypes';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import warning from 'shared/warning';\n import is from 'shared/objectIs';\n \n@@ -187,17 +186,15 @@ class ReactShallowRenderer {\n     this._rendering = false;\n     this._forcedUpdate = false;\n     this._updater = new Updater(this);\n-    if (enableHooks) {\n-      this._dispatcher = this._createDispatcher();\n-      this._workInProgressHook = null;\n-      this._firstWorkInProgressHook = null;\n-      this._isReRender = false;\n-      this._didScheduleRenderPhaseUpdate = false;\n-      this._renderPhaseUpdates = null;\n-      this._currentlyRenderingComponent = null;\n-      this._numberOfReRenders = 0;\n-      this._previousComponentIdentity = null;\n-    }\n+    this._dispatcher = this._createDispatcher();\n+    this._workInProgressHook = null;\n+    this._firstWorkInProgressHook = null;\n+    this._isReRender = false;\n+    this._didScheduleRenderPhaseUpdate = false;\n+    this._renderPhaseUpdates = null;\n+    this._currentlyRenderingComponent = null;\n+    this._numberOfReRenders = 0;\n+    this._previousComponentIdentity = null;\n   }\n \n   _context: null | Object;\n@@ -560,27 +557,19 @@ class ReactShallowRenderer {\n \n         this._mountClassComponent(element, this._context);\n       } else {\n-        if (enableHooks) {\n-          const prevDispatcher = ReactCurrentDispatcher.current;\n-          ReactCurrentDispatcher.current = this._dispatcher;\n-          this._prepareToUseHooks(element.type);\n-          try {\n-            this._rendered = element.type.call(\n-              undefined,\n-              element.props,\n-              this._context,\n-            );\n-          } finally {\n-            ReactCurrentDispatcher.current = prevDispatcher;\n-          }\n-          this._finishHooks(element, context);\n-        } else {\n+        const prevDispatcher = ReactCurrentDispatcher.current;\n+        ReactCurrentDispatcher.current = this._dispatcher;\n+        this._prepareToUseHooks(element.type);\n+        try {\n           this._rendered = element.type.call(\n             undefined,\n             element.props,\n             this._context,\n           );\n+        } finally {\n+          ReactCurrentDispatcher.current = prevDispatcher;\n         }\n+        this._finishHooks(element, context);\n       }\n     }\n \ndiff --git a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nsimilarity index 97%\nrename from packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\nrename to packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nindex 2b1f3f56b823..60c79a12d702 100644\n--- a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\n+++ b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\n@@ -16,9 +16,6 @@ let React;\n describe('ReactShallowRenderer with hooks', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     createRenderer = require('react-test-renderer/shallow').createRenderer;\n     React = require('react');\n   });\ndiff --git a/packages/react/src/React.js b/packages/react/src/React.js\nindex 4b868feca9c8..78f72791eb02 100644\n--- a/packages/react/src/React.js\n+++ b/packages/react/src/React.js\n@@ -13,7 +13,6 @@ import {\n   REACT_STRICT_MODE_TYPE,\n   REACT_SUSPENSE_TYPE,\n } from 'shared/ReactSymbols';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n \n import {Component, PureComponent} from './ReactBaseClasses';\n import {createRef} from './ReactCreateRef';\n@@ -66,6 +65,17 @@ const React = {\n   lazy,\n   memo,\n \n+  useCallback,\n+  useContext,\n+  useEffect,\n+  useImperativeHandle,\n+  useDebugValue,\n+  useLayoutEffect,\n+  useMemo,\n+  useReducer,\n+  useRef,\n+  useState,\n+\n   Fragment: REACT_FRAGMENT_TYPE,\n   StrictMode: REACT_STRICT_MODE_TYPE,\n   Suspense: REACT_SUSPENSE_TYPE,\n@@ -95,17 +105,4 @@ if (enableStableConcurrentModeAPIs) {\n   React.unstable_Profiler = undefined;\n }\n \n-if (enableHooks) {\n-  React.useCallback = useCallback;\n-  React.useContext = useContext;\n-  React.useEffect = useEffect;\n-  React.useImperativeHandle = useImperativeHandle;\n-  React.useDebugValue = useDebugValue;\n-  React.useLayoutEffect = useLayoutEffect;\n-  React.useMemo = useMemo;\n-  React.useReducer = useReducer;\n-  React.useRef = useRef;\n-  React.useState = useState;\n-}\n-\n export default React;\ndiff --git a/packages/shared/ReactFeatureFlags.js b/packages/shared/ReactFeatureFlags.js\nindex 666205e7b304..af5241d1f28b 100644\n--- a/packages/shared/ReactFeatureFlags.js\n+++ b/packages/shared/ReactFeatureFlags.js\n@@ -9,7 +9,6 @@\n \n export const enableUserTimingAPI = __DEV__;\n \n-export const enableHooks = false;\n // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:\n export const debugRenderPhaseSideEffects = false;\n \ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-fb.js b/packages/shared/forks/ReactFeatureFlags.native-fb.js\nindex 943cef96e8a5..1a308519bad7 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-fb.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-fb.js\n@@ -16,7 +16,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-fb';\n export const {debugRenderPhaseSideEffects} = require('ReactFeatureFlags');\n \n // The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n export const enableUserTimingAPI = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\n export const enableSchedulerTracing = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-oss.js b/packages/shared/forks/ReactFeatureFlags.native-oss.js\nindex 7e24ece36746..2e4918dc1e59 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-oss.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-oss.js\n@@ -14,7 +14,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-oss';\n \n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n-export const enableHooks = false;\n export const enableUserTimingAPI = __DEV__;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const warnAboutDeprecatedLifecycles = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.persistent.js b/packages/shared/forks/ReactFeatureFlags.persistent.js\nindex caa763c94c7e..34cce860a0d5 100644\n--- a/packages/shared/forks/ReactFeatureFlags.persistent.js\n+++ b/packages/shared/forks/ReactFeatureFlags.persistent.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\nindex f55f419a6d49..d33865e96468 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\nindex 516f5738d5a3..09c63908f825 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = true;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.www.js b/packages/shared/forks/ReactFeatureFlags.www.js\nindex 40ea1ca5e0a9..56e563822b0f 100644\n--- a/packages/shared/forks/ReactFeatureFlags.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.www.js\n@@ -21,9 +21,6 @@ export const {\n   warnAboutShorthandPropertyCollision,\n } = require('ReactFeatureFlags');\n \n-// The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n-\n // In www, we have experimental support for gathering data\n // from User Timing API calls in production. By default, we\n // only emit performance.mark/measure calls in __DEV__. But if\n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR description with title 'Enable hooks!' and three atomic commit descriptions",
+      "content_blueprint": {
+        "title": "PR description with title 'Enable hooks!' and three atomic commit descriptions",
+        "body": "# Seed Material: facebook/react#14679: Enable hooks!\nSource: github_issue_pr\nIdentifier: pr:facebook/react#14679\n\nRepository: facebook/react\nPR Number: #14679\nPR Title: Enable hooks!\nMerged At: 2019-01-23T21:28:10Z\nChanged Files: 27\nAdditions: +32, Deletions: -107\n\n## PR Description\nTurn hooks on everywhere in preparation for the upcoming release.\r\n\r\nCommits are atomic to simplify the review:\r\n* 7c54bff: Turn hooks on everywhere\r\n* 021844a: Remove test overrides (and promote internal tests that only override the hooks flag)\r\n* d1ffc25: Remove hooks flag entirely\n\n## Diff\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nsimilarity index 97%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\nindex d84bd82fb278..b340779a74d1 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspection-test.js\n@@ -16,9 +16,6 @@ let ReactDebugTools;\n describe('ReactHooksInspection', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDebugTools = require('react-debug-tools');\n   });\ndiff --git a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nsimilarity index 98%\nrename from packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\nrename to packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\nindex 703db2af538d..33d7cec90ee6 100644\n--- a/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.internal.js\n+++ b/packages/react-debug-tools/src/__tests__/ReactHooksInspectionIntegration-test.js\n@@ -17,9 +17,6 @@ let ReactDebugTools;\n describe('ReactHooksInspectionIntergration', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDebugTools = require('react-debug-tools');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\nindex 97de8867b2bd..d69256c15ad5 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMServerIntegrationHooks-test.internal.js\n@@ -38,7 +38,6 @@ function initModules() {\n \n   ReactFeatureFlags = require('shared/ReactFeatureFlags');\n   ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-  ReactFeatureFlags.enableHooks = true;\n   React = require('react');\n   ReactDOM = require('react-dom');\n   ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nsimilarity index 97%\nrename from packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\nrename to packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\nindex 98069e2d9f40..bc2ae71673d2 100644\n--- a/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactDOMSuspensePlaceholder-test.js\n@@ -9,7 +9,6 @@\n \n 'use strict';\n \n-let ReactFeatureFlags;\n let React;\n let ReactDOM;\n let Suspense;\n@@ -21,8 +20,6 @@ describe('ReactDOMSuspensePlaceholder', () => {\n \n   beforeEach(() => {\n     jest.resetModules();\n-    ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactDOM = require('react-dom');\n     ReactCache = require('react-cache');\ndiff --git a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\nindex 0ee2d601bd6c..d6ef0a1e4d4f 100644\n--- a/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n+++ b/packages/react-dom/src/__tests__/ReactErrorBoundaries-test.internal.js\n@@ -41,7 +41,6 @@ describe('ReactErrorBoundaries', () => {\n     jest.resetModules();\n     PropTypes = require('prop-types');\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     ReactDOM = require('react-dom');\n     React = require('react');\ndiff --git a/packages/react-dom/src/server/ReactPartialRenderer.js b/packages/react-dom/src/server/ReactPartialRenderer.js\nindex 597abb4a6699..82d56f3a49e0 100644\n--- a/packages/react-dom/src/server/ReactPartialRenderer.js\n+++ b/packages/react-dom/src/server/ReactPartialRenderer.js\n@@ -21,7 +21,6 @@ import describeComponentFrame from 'shared/describeComponentFrame';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n import {\n   warnAboutDeprecatedLifecycles,\n-  enableHooks,\n   enableSuspenseServerRenderer,\n } from 'shared/ReactFeatureFlags';\n \n@@ -55,7 +54,6 @@ import {\n   prepareToUseHooks,\n   finishHooks,\n   Dispatcher,\n-  DispatcherWithoutHooks,\n   currentThreadID,\n   setCurrentThreadID,\n } from './ReactPartialRendererHooks';\n@@ -786,11 +784,7 @@ class ReactDOMServerRenderer {\n     const prevThreadID = currentThreadID;\n     setCurrentThreadID(this.threadID);\n     const prevDispatcher = ReactCurrentDispatcher.current;\n-    if (enableHooks) {\n-      ReactCurrentDispatcher.current = Dispatcher;\n-    } else {\n-      ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-    }\n+    ReactCurrentDispatcher.current = Dispatcher;\n     try {\n       // Markup generated within <Suspense> ends up buffered until we know\n       // nothing in that boundary suspended\ndiff --git a/packages/react-dom/src/server/ReactPartialRendererHooks.js b/packages/react-dom/src/server/ReactPartialRendererHooks.js\nindex 025b51a8c026..d8496b8a2629 100644\n--- a/packages/react-dom/src/server/ReactPartialRendererHooks.js\n+++ b/packages/react-dom/src/server/ReactPartialRendererHooks.js\n@@ -423,6 +423,3 @@ export const Dispatcher: DispatcherType = {\n   // Debugging effect\n   useDebugValue: noop,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberCommitWork.js b/packages/react-reconciler/src/ReactFiberCommitWork.js\nindex 85cd0a5791ba..76e136dd7dbf 100644\n--- a/packages/react-reconciler/src/ReactFiberCommitWork.js\n+++ b/packages/react-reconciler/src/ReactFiberCommitWork.js\n@@ -24,7 +24,6 @@ import type {Thenable} from './ReactFiberScheduler';\n \n import {unstable_wrap as Schedule_tracing_wrap} from 'scheduler/tracing';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n } from 'shared/ReactFeatureFlags';\n@@ -312,9 +311,6 @@ function commitHookEffectList(\n   mountTag: number,\n   finishedWork: Fiber,\n ) {\n-  if (!enableHooks) {\n-    return;\n-  }\n   const updateQueue: FunctionComponentUpdateQueue | null = (finishedWork.updateQueue: any);\n   let lastEffect = updateQueue !== null ? updateQueue.lastEffect : null;\n   if (lastEffect !== null) {\ndiff --git a/packages/react-reconciler/src/ReactFiberDispatcher.js b/packages/react-reconciler/src/ReactFiberDispatcher.js\nindex ed2ed3b2f315..f1572072b3f6 100644\n--- a/packages/react-reconciler/src/ReactFiberDispatcher.js\n+++ b/packages/react-reconciler/src/ReactFiberDispatcher.js\n@@ -34,6 +34,3 @@ export const Dispatcher = {\n   useRef,\n   useState,\n };\n-export const DispatcherWithoutHooks = {\n-  readContext,\n-};\ndiff --git a/packages/react-reconciler/src/ReactFiberHooks.js b/packages/react-reconciler/src/ReactFiberHooks.js\nindex d2396cfdbec1..00cd8aa94039 100644\n--- a/packages/react-reconciler/src/ReactFiberHooks.js\n+++ b/packages/react-reconciler/src/ReactFiberHooks.js\n@@ -13,7 +13,6 @@ import type {ExpirationTime} from './ReactFiberExpirationTime';\n import type {HookEffectTag} from './ReactHookEffectTags';\n \n import {NoWork} from './ReactFiberExpirationTime';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import {\n   readContext,\n   stashContextDependencies,\n@@ -296,9 +295,6 @@ export function renderWithHooks(\n   refOrContext: any,\n   nextRenderExpirationTime: ExpirationTime,\n ): any {\n-  if (!enableHooks) {\n-    return Component(props, refOrContext);\n-  }\n   renderExpirationTime = nextRenderExpirationTime;\n   currentlyRenderingFiber = workInProgress;\n   firstCurrentHook = current !== null ? current.memoizedState : null;\n@@ -397,9 +393,6 @@ export function bailoutHooks(\n }\n \n export function resetHooks(): void {\n-  if (!enableHooks) {\n-    return;\n-  }\n   if (__DEV__) {\n     flushHookMismatchWarnings();\n   }\ndiff --git a/packages/react-reconciler/src/ReactFiberScheduler.js b/packages/react-reconciler/src/ReactFiberScheduler.js\nindex bcc41fe3670a..1563f54b69a8 100644\n--- a/packages/react-reconciler/src/ReactFiberScheduler.js\n+++ b/packages/react-reconciler/src/ReactFiberScheduler.js\n@@ -56,7 +56,6 @@ import {\n   SimpleMemoComponent,\n } from 'shared/ReactWorkTags';\n import {\n-  enableHooks,\n   enableSchedulerTracing,\n   enableProfilerTimer,\n   enableUserTimingAPI,\n@@ -165,7 +164,7 @@ import {\n   commitDetachRef,\n   commitPassiveHookEffects,\n } from './ReactFiberCommitWork';\n-import {Dispatcher, DispatcherWithoutHooks} from './ReactFiberDispatcher';\n+import {Dispatcher} from './ReactFiberDispatcher';\n \n export type Thenable = {\n   then(resolve: () => mixed, reject?: () => mixed): mixed,\n@@ -510,7 +509,7 @@ function commitAllLifeCycles(\n       commitAttachRef(nextEffect);\n     }\n \n-    if (enableHooks && effectTag & Passive) {\n+    if (effectTag & Passive) {\n       rootWithPendingPassiveEffects = finishedRoot;\n     }\n \n@@ -784,11 +783,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {\n     }\n   }\n \n-  if (\n-    enableHooks &&\n-    firstEffect !== null &&\n-    rootWithPendingPassiveEffects !== null\n-  ) {\n+  if (firstEffect !== null && rootWithPendingPassiveEffects !== null) {\n     // This commit included a passive effect. These do not need to fire until\n     // after the next paint. Schedule an callback to fire them in an async\n     // event. To ensure serial execution, the callback will be flushed early if\n@@ -1221,11 +1216,7 @@ function renderRoot(root: FiberRoot, isYieldy: boolean): void {\n   flushPassiveEffects();\n \n   isWorking = true;\n-  if (enableHooks) {\n-    ReactCurrentDispatcher.current = Dispatcher;\n-  } else {\n-    ReactCurrentDispatcher.current = DispatcherWithoutHooks;\n-  }\n+  ReactCurrentDispatcher.current = Dispatcher;\n \n   const expirationTime = root.nextExpirationTimeToWorkOn;\n \ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\nindex e7c43ce27423..76783087a45a 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooks-test.internal.js\n@@ -25,7 +25,6 @@ describe('ReactHooks', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     ReactDOMServer = require('react-dom/server');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\nindex 74d69fac78de..fe67d1ab6234 100644\n--- a/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactHooksWithNoopRenderer-test.internal.js\n@@ -59,7 +59,6 @@ describe('ReactHooksWithNoopRenderer', () => {\n \n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.enableSchedulerTracing = true;\n     React = require('react');\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\nindex 3b9873923a17..05c59d5f339b 100644\n--- a/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactNewContext-test.internal.js\n@@ -21,7 +21,6 @@ describe('ReactNewContext', () => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     useContext = React.useContext;\n     ReactNoop = require('react-noop-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\nindex b6ca5beba117..73a55370a187 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspense-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspense', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     ReactTestRenderer = require('react-test-renderer');\n     // JestReact = require('jest-react');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\nindex b3c46b7a2a80..ed3d9322ba1c 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseFuzz-test.internal.js\n@@ -23,7 +23,6 @@ describe('ReactSuspenseFuzz', () => {\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n-    ReactFeatureFlags.enableHooks = true;\n     React = require('react');\n     Suspense = React.Suspense;\n     ReactTestRenderer = require('react-test-renderer');\ndiff --git a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\nindex 9580c425a47b..daf898c6dfd2 100644\n--- a/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n+++ b/packages/react-reconciler/src/__tests__/ReactSuspenseWithNoopRenderer-test.internal.js\n@@ -17,7 +17,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {\n   beforeEach(() => {\n     jest.resetModules();\n     ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    ReactFeatureFlags.enableHooks = true;\n     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;\n     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n     React = require('react');\ndiff --git a/packages/react-test-renderer/src/ReactShallowRenderer.js b/packages/react-test-renderer/src/ReactShallowRenderer.js\nindex 778e5943ec9c..815220efb7c1 100644\n--- a/packages/react-test-renderer/src/ReactShallowRenderer.js\n+++ b/packages/react-test-renderer/src/ReactShallowRenderer.js\n@@ -15,7 +15,6 @@ import shallowEqual from 'shared/shallowEqual';\n import invariant from 'shared/invariant';\n import checkPropTypes from 'prop-types/checkPropTypes';\n import ReactSharedInternals from 'shared/ReactSharedInternals';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n import warning from 'shared/warning';\n import is from 'shared/objectIs';\n \n@@ -187,17 +186,15 @@ class ReactShallowRenderer {\n     this._rendering = false;\n     this._forcedUpdate = false;\n     this._updater = new Updater(this);\n-    if (enableHooks) {\n-      this._dispatcher = this._createDispatcher();\n-      this._workInProgressHook = null;\n-      this._firstWorkInProgressHook = null;\n-      this._isReRender = false;\n-      this._didScheduleRenderPhaseUpdate = false;\n-      this._renderPhaseUpdates = null;\n-      this._currentlyRenderingComponent = null;\n-      this._numberOfReRenders = 0;\n-      this._previousComponentIdentity = null;\n-    }\n+    this._dispatcher = this._createDispatcher();\n+    this._workInProgressHook = null;\n+    this._firstWorkInProgressHook = null;\n+    this._isReRender = false;\n+    this._didScheduleRenderPhaseUpdate = false;\n+    this._renderPhaseUpdates = null;\n+    this._currentlyRenderingComponent = null;\n+    this._numberOfReRenders = 0;\n+    this._previousComponentIdentity = null;\n   }\n \n   _context: null | Object;\n@@ -560,27 +557,19 @@ class ReactShallowRenderer {\n \n         this._mountClassComponent(element, this._context);\n       } else {\n-        if (enableHooks) {\n-          const prevDispatcher = ReactCurrentDispatcher.current;\n-          ReactCurrentDispatcher.current = this._dispatcher;\n-          this._prepareToUseHooks(element.type);\n-          try {\n-            this._rendered = element.type.call(\n-              undefined,\n-              element.props,\n-              this._context,\n-            );\n-          } finally {\n-            ReactCurrentDispatcher.current = prevDispatcher;\n-          }\n-          this._finishHooks(element, context);\n-        } else {\n+        const prevDispatcher = ReactCurrentDispatcher.current;\n+        ReactCurrentDispatcher.current = this._dispatcher;\n+        this._prepareToUseHooks(element.type);\n+        try {\n           this._rendered = element.type.call(\n             undefined,\n             element.props,\n             this._context,\n           );\n+        } finally {\n+          ReactCurrentDispatcher.current = prevDispatcher;\n         }\n+        this._finishHooks(element, context);\n       }\n     }\n \ndiff --git a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nsimilarity index 97%\nrename from packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\nrename to packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\nindex 2b1f3f56b823..60c79a12d702 100644\n--- a/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.internal.js\n+++ b/packages/react-test-renderer/src/__tests__/ReactShallowRendererHooks-test.js\n@@ -16,9 +16,6 @@ let React;\n describe('ReactShallowRenderer with hooks', () => {\n   beforeEach(() => {\n     jest.resetModules();\n-    let ReactFeatureFlags = require('shared/ReactFeatureFlags');\n-    // TODO: Switch this test to non-internal once the flag is on by default.\n-    ReactFeatureFlags.enableHooks = true;\n     createRenderer = require('react-test-renderer/shallow').createRenderer;\n     React = require('react');\n   });\ndiff --git a/packages/react/src/React.js b/packages/react/src/React.js\nindex 4b868feca9c8..78f72791eb02 100644\n--- a/packages/react/src/React.js\n+++ b/packages/react/src/React.js\n@@ -13,7 +13,6 @@ import {\n   REACT_STRICT_MODE_TYPE,\n   REACT_SUSPENSE_TYPE,\n } from 'shared/ReactSymbols';\n-import {enableHooks} from 'shared/ReactFeatureFlags';\n \n import {Component, PureComponent} from './ReactBaseClasses';\n import {createRef} from './ReactCreateRef';\n@@ -66,6 +65,17 @@ const React = {\n   lazy,\n   memo,\n \n+  useCallback,\n+  useContext,\n+  useEffect,\n+  useImperativeHandle,\n+  useDebugValue,\n+  useLayoutEffect,\n+  useMemo,\n+  useReducer,\n+  useRef,\n+  useState,\n+\n   Fragment: REACT_FRAGMENT_TYPE,\n   StrictMode: REACT_STRICT_MODE_TYPE,\n   Suspense: REACT_SUSPENSE_TYPE,\n@@ -95,17 +105,4 @@ if (enableStableConcurrentModeAPIs) {\n   React.unstable_Profiler = undefined;\n }\n \n-if (enableHooks) {\n-  React.useCallback = useCallback;\n-  React.useContext = useContext;\n-  React.useEffect = useEffect;\n-  React.useImperativeHandle = useImperativeHandle;\n-  React.useDebugValue = useDebugValue;\n-  React.useLayoutEffect = useLayoutEffect;\n-  React.useMemo = useMemo;\n-  React.useReducer = useReducer;\n-  React.useRef = useRef;\n-  React.useState = useState;\n-}\n-\n export default React;\ndiff --git a/packages/shared/ReactFeatureFlags.js b/packages/shared/ReactFeatureFlags.js\nindex 666205e7b304..af5241d1f28b 100644\n--- a/packages/shared/ReactFeatureFlags.js\n+++ b/packages/shared/ReactFeatureFlags.js\n@@ -9,7 +9,6 @@\n \n export const enableUserTimingAPI = __DEV__;\n \n-export const enableHooks = false;\n // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:\n export const debugRenderPhaseSideEffects = false;\n \ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-fb.js b/packages/shared/forks/ReactFeatureFlags.native-fb.js\nindex 943cef96e8a5..1a308519bad7 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-fb.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-fb.js\n@@ -16,7 +16,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-fb';\n export const {debugRenderPhaseSideEffects} = require('ReactFeatureFlags');\n \n // The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n export const enableUserTimingAPI = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\n export const enableSchedulerTracing = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.native-oss.js b/packages/shared/forks/ReactFeatureFlags.native-oss.js\nindex 7e24ece36746..2e4918dc1e59 100644\n--- a/packages/shared/forks/ReactFeatureFlags.native-oss.js\n+++ b/packages/shared/forks/ReactFeatureFlags.native-oss.js\n@@ -14,7 +14,6 @@ import typeof * as FeatureFlagsShimType from './ReactFeatureFlags.native-oss';\n \n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n-export const enableHooks = false;\n export const enableUserTimingAPI = __DEV__;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const warnAboutDeprecatedLifecycles = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.persistent.js b/packages/shared/forks/ReactFeatureFlags.persistent.js\nindex caa763c94c7e..34cce860a0d5 100644\n--- a/packages/shared/forks/ReactFeatureFlags.persistent.js\n+++ b/packages/shared/forks/ReactFeatureFlags.persistent.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = __DEV__;\n export const enableProfilerTimer = __PROFILE__;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\nindex f55f419a6d49..d33865e96468 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = false;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\nindex 516f5738d5a3..09c63908f825 100644\n--- a/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.test-renderer.www.js\n@@ -15,7 +15,6 @@ import typeof * as PersistentFeatureFlagsType from './ReactFeatureFlags.persiste\n export const debugRenderPhaseSideEffects = false;\n export const debugRenderPhaseSideEffectsForStrictMode = false;\n export const enableUserTimingAPI = __DEV__;\n-export const enableHooks = true;\n export const warnAboutDeprecatedLifecycles = false;\n export const replayFailedUnitOfWorkWithInvokeGuardedCallback = false;\n export const enableProfilerTimer = false;\ndiff --git a/packages/shared/forks/ReactFeatureFlags.www.js b/packages/shared/forks/ReactFeatureFlags.www.js\nindex 40ea1ca5e0a9..56e563822b0f 100644\n--- a/packages/shared/forks/ReactFeatureFlags.www.js\n+++ b/packages/shared/forks/ReactFeatureFlags.www.js\n@@ -21,9 +21,6 @@ export const {\n   warnAboutShorthandPropertyCollision,\n } = require('ReactFeatureFlags');\n \n-// The rest of the flags are static for better dead code elimination.\n-export const enableHooks = true;\n-\n // In www, we have experimental support for gathering data\n // from User Timing API calls in production. By default, we\n // only emit performance.mark/measure calls in __DEV__. But if\n"
       }
     }
   ],
   "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_9b0f0c6dc64d5710/code_review.md",
   "input_attachment_paths": [
-    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_9b0f0c6dc64d5710/input_0.md"
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_9b0f0c6dc64d5710/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_9b0f0c6dc64d5710/input_1.md"
   ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T05:04:20.461979+00:00"
+  "created_at": "2026-05-15T09:47:20.110410+00:00"
 }

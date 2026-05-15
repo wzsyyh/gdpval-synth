@@ -128,7 +128,7 @@ def _extract_linked_issue(body: str | None) -> int | None:
     return None
 
 
-def harvest(target_per_repo: int = 3, max_diff_chars: int = 15000) -> list[Seed]:
+def harvest(target_per_repo: int = 3) -> list[Seed]:
     gh = GitHubClient()
     seeds: list[Seed] = []
     try:
@@ -187,8 +187,8 @@ def harvest(target_per_repo: int = 3, max_diff_chars: int = 15000) -> list[Seed]
 
                 excerpt = (
                     f"Repo: {repo}\nPR #{number}: {pr.get('title')}\n\n"
-                    f"PR body:\n{pr_body[:4000]}\n\n"
-                    f"Linked issue #{issue_num}:\n{issue_body[:3000] if issue_body else '(none)'}"
+                    f"PR body:\n{pr_body}\n\n"
+                    f"Linked issue #{issue_num}:\n{issue_body if issue_body else '(none)'}"
                 )
 
                 seed = Seed(
@@ -209,11 +209,11 @@ def harvest(target_per_repo: int = 3, max_diff_chars: int = 15000) -> list[Seed]
                         "deletions": pr.get("deletions"),
                         "changed_files": pr.get("changed_files"),
                         "merged_at": pr.get("merged_at"),
-                        "diff": diff[:max_diff_chars],
-                        "diff_truncated": len(diff) > max_diff_chars,
+                        "diff": diff,
+                        "diff_truncated": False,
                         "language": pr.get("base", {}).get("repo", {}).get("language"),
                     },
-                    text_excerpt=excerpt[:10000],
+                    text_excerpt=excerpt,
                 )
                 save_seed(seed)
                 seeds.append(seed)

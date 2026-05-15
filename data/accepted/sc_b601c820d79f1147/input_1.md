@@ -1,4 +1,4 @@
-# PR description for pallets/flask#3923
+# Linked Issue #593
 
 
 # Seed Material: pallets/flask#3923: Nested blueprints
@@ -56,7 +56,7 @@ class Blueprint(object):
 ```
 
 
-## Diff (first 3000 chars)
+## Diff
 diff --git a/CHANGES.rst b/CHANGES.rst
 index 280a2dd5a5..8c615d5fb8 100644
 --- a/CHANGES.rst
@@ -136,4 +136,271 @@ index 484881f45c..d6f15e8ce1 100644
 -                f" Blueprints that are created on the fly need unique"
 -                f" names."
 -            )
--   
+-        else:
+-            self.blueprints[blueprint.name] = blueprint
+-            first_registration = True
+-
+-        blueprint.register(self, options, first_registration)
++        blueprint.register(self, options)
+ 
+     def iter_blueprints(self):
+         """Iterates over all blueprints by the order they were registered.
+@@ -1235,22 +1221,18 @@ def _find_error_handler(self, e):
+         """
+         exc_class, code = self._get_exc_class_and_code(type(e))
+ 
+-        for name, c in (
+-            (request.blueprint, code),
+-            (None, code),
+-            (request.blueprint, None),
+-            (None, None),
+-        ):
+-            handler_map = self.error_handler_spec[name][c]
++        for c in [code, None]:
++            for name in chain(self._request_blueprints(), [None]):
++                handler_map = self.error_handler_spec[name][c]
+ 
+-            if not handler_map:
+-                continue
++                if not handler_map:
++                    continue
+ 
+-            for cls in exc_class.__mro__:
+-                handler = handler_map.get(cls)
++                for cls in exc_class.__mro__:
++                    handler = handler_map.get(cls)
+ 
+-                if handler is not None:
+-                    return handler
++                    if handler is not None:
++                        return handler
+ 
+     def handle_http_exception(self, e):
+         """Handles an HTTP exception.  By default this will invoke the
+@@ -1749,17 +1731,17 @@ def preprocess_request(self):
+         further request handling is stopped.
+         """
+ 
+-        bp = _request_ctx_stack.top.request.blueprint
+-
+         funcs = self.url_value_preprocessors[None]
+-        if bp is not None and bp in self.url_value_preprocessors:
+-            funcs = chain(funcs, self.url_value_preprocessors[bp])
++        for bp in self._request_blueprints():
++            if bp in self.url_value_preprocessors:
++                funcs = chain(funcs, self.url_value_preprocessors[bp])
+         for func in funcs:
+             func(request.endpoint, request.view_args)
+ 
+         funcs = self.before_request_funcs[None]
+-        if bp is not None and bp in self.before_request_funcs:
+-            funcs = chain(funcs, self.before_request_funcs[bp])
++        for bp in self._request_blueprints():
++            if bp in self.before_request_funcs:
++                funcs = chain(funcs, self.before_request_funcs[bp])
+         for func in funcs:
+             rv = func()
+             if rv is not None:
+@@ -1779,10 +1761,10 @@ def process_response(self, response):
+                  instance of :attr:`response_class`.
+         """
+         ctx = _request_ctx_stack.top
+-        bp = ctx.request.blueprint
+         funcs = ctx._after_request_functions
+-        if bp is not None and bp in self.after_request_funcs:
+-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
++        for bp in self._request_blueprints():
++            if bp in self.after_request_funcs:
++                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
+         if None in self.after_request_funcs:
+             funcs = chain(funcs, reversed(self.after_request_funcs[None]))
+         for handler in funcs:
+@@ -1815,9 +1797,9 @@ def do_teardown_request(self, exc=_sentinel):
+         if exc is _sentinel:
+             exc = sys.exc_info()[1]
+         funcs = reversed(self.teardown_request_funcs[None])
+-        bp = _request_ctx_stack.top.request.blueprint
+-        if bp is not None and bp in self.teardown_request_funcs:
+-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
++        for bp in self._request_blueprints():
++            if bp in self.teardown_request_funcs:
++                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))
+         for func in funcs:
+             func(exc)
+         request_tearing_down.send(self, exc=exc)
+@@ -1985,3 +1967,9 @@ def __call__(self, environ, start_response):
+         wrapped to apply middleware.
+         """
+         return self.wsgi_app(environ, start_response)
++
++    def _request_blueprints(self):
++        if _request_ctx_stack.top.request.blueprint is None:
++            return []
++        else:
++            return reversed(_request_ctx_stack.top.request.blueprint.split("."))
+diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py
+index d769cd58e3..92345cf2ba 100644
+--- a/src/flask/blueprints.py
++++ b/src/flask/blueprints.py
+@@ -45,6 +45,8 @@ def __init__(self, blueprint, app, options, first_registration):
+         #: blueprint.
+         self.url_prefix = url_prefix
+ 
++        self.name_prefix = self.options.get("name_prefix", "")
++
+         #: A dictionary with URL defaults that is added to each and every
+         #: URL that was defined with the blueprint.
+         self.url_defaults = dict(self.blueprint.url_values_defaults)
+@@ -68,7 +70,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+             defaults = dict(defaults, **options.pop("defaults"))
+         self.app.add_url_rule(
+             rule,
+-            f"{self.blueprint.name}.{endpoint}",
++            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
+             view_func,
+             defaults=defaults,
+             **options,
+@@ -168,6 +170,7 @@ def __init__(
+ 
+         self.url_values_defaults = url_defaults
+         self.cli_group = cli_group
++        self._blueprints = []
+ 
+     def _is_setup_finished(self):
+         return self.warn_on_modifications and self._got_registered_once
+@@ -210,7 +213,16 @@ def make_setup_state(self, app, options, first_registration=False):
+         """
+         return BlueprintSetupState(self, app, options, first_registration)
+ 
+-    def register(self, app, options, first_registration=False):
++    def register_blueprint(self, blueprint, **options):
++        """Register a :class:`~flask.Blueprint` on this blueprint. Keyword
++        arguments passed to this method will override the defaults set
++        on the blueprint.
++
++        .. versionadded:: 2.0
++        """
++        self._blueprints.append((blueprint, options))
++
++    def register(self, app, options):
+         """Called by :meth:`Flask.register_blueprint` to register all
+         views and callbacks registered on the blueprint with the
+         application. Creates a :class:`.BlueprintSetupState` and calls
+@@ -223,6 +235,20 @@ def register(self, app, options, first_registration=False):
+         :param first_registration: Whether this is the first time this
+             blueprint has been registered on the application.
+         """
++        first_registration = False
++
++        if self.name in app.blueprints:
++            assert app.blueprints[self.name] is self, (
++                "A name collision occurred between blueprints"
++                f" {self!r} and {app.blueprints[self.name]!r}."
++                f" Both share the same name {self.name!r}."
++                f" Blueprints that are created on the fly need unique"
++                f" names."
++            )
++        else:
++            app.blueprints[self.name] = self
++            first_registration = True
++
+         self._got_registered_once = True
+         state = self.make_setup_state(app, options, first_registration)
+ 
+@@ -278,19 +304,28 @@ def extend(bp_dict, parent_dict, ensure_sync=False):
+         for deferred in self.deferred_functions:
+             deferred(state)
+ 
+-        if not self.cli.commands:
+-            return
+-
+         cli_resolved_group = options.get("cli_group", self.cli_group)
+ 
+-        if cli_resolved_group is None:
+-            app.cli.commands.update(self.cli.commands)
+-        elif cli_resolved_group is _sentinel:
+-            self.cli.name = self.name
+-            app.cli.add_command(self.cli)
+-        else:
+-            self.cli.name = cli_resolved_group
+-            app.cli.add_command(self.cli)
++        if self.cli.commands:
++            if cli_resolved_group is None:
++                app.cli.commands.update(self.cli.commands)
++            elif cli_resolved_group is _sentinel:
++                self.cli.name = self.name
++                app.cli.add_command(self.cli)
++            else:
++                self.cli.name = cli_resolved_group
++                app.cli.add_command(self.cli)
++
++        for blueprint, bp_options in self._blueprints:
++            url_prefix = options.get("url_prefix", "")
++            if "url_prefix" in bp_options:
++                url_prefix = (
++                    url_prefix.rstrip("/") + "/" + bp_options["url_prefix"].lstrip("/")
++                )
++
++            bp_options["url_prefix"] = url_prefix
++            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
++            blueprint.register(app, bp_options)
+ 
+     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
+         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
+diff --git a/tests/test_blueprints.py b/tests/test_blueprints.py
+index 903c7421bf..b986ca022d 100644
+--- a/tests/test_blueprints.py
++++ b/tests/test_blueprints.py
+@@ -850,3 +850,52 @@ def about():
+ 
+     assert client.get("/de/").data == b"/de/about"
+     assert client.get("/de/about").data == b"/de/"
++
++
++def test_nested_blueprint(app, client):
++    parent = flask.Blueprint("parent", __name__)
++    child = flask.Blueprint("child", __name__)
++    grandchild = flask.Blueprint("grandchild", __name__)
++
++    @parent.errorhandler(403)
++    def forbidden(e):
++        return "Parent no", 403
++
++    @parent.route("/")
++    def parent_index():
++        return "Parent yes"
++
++    @parent.route("/no")
++    def parent_no():
++        flask.abort(403)
++
++    @child.route("/")
++    def child_index():
++        return "Child yes"
++
++    @child.route("/no")
++    def child_no():
++        flask.abort(403)
++
++    @grandchild.errorhandler(403)
++    def grandchild_forbidden(e):
++        return "Grandchild no", 403
++
++    @grandchild.route("/")
++    def grandchild_index():
++        return "Grandchild yes"
++
++    @grandchild.route("/no")
++    def grandchild_no():
++        flask.abort(403)
++
++    child.register_blueprint(grandchild, url_prefix="/grandchild")
++    parent.register_blueprint(child, url_prefix="/child")
++    app.register_blueprint(parent, url_prefix="/parent")
++
++    assert client.get("/parent/").data == b"Parent yes"
++    assert client.get("/parent/child/").data == b"Child yes"
++    assert client.get("/parent/child/grandchild/").data == b"Grandchild yes"
++    assert client.get("/parent/no").data == b"Parent no"
++    assert client.get("/parent/child/no").data == b"Parent no"
++    assert client.get("/parent/child/grandchild/no").data == b"Grandchild no"

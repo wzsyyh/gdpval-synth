@@ -1,4 +1,4 @@
-# Diff of PR #36897 showing changes to doc/source/whatsnew/v1
+# Issue #36895 description indicating the regression in merging DatetimeIndex with empty DataFrame
 
 
 # Seed Material: pandas-dev/pandas#36897: regression fix for merging DF with datetime index with empty DF
@@ -20,7 +20,7 @@ Additions: +56, Deletions: -6
 - [ X] whatsnew entry
 
 
-## Diff (first 3000 chars)
+## Diff
 diff --git a/doc/source/whatsnew/v1.2.0.rst b/doc/source/whatsnew/v1.2.0.rst
 index 6f137302d4994..167af1e5e282e 100644
 --- a/doc/source/whatsnew/v1.2.0.rst
@@ -82,4 +82,53 @@ index b1922241c7843..260a0e9d486b2 100644
          result = df.merge(df, on=[df.index.year], how="inner")
          tm.assert_frame_equal(result, expected)
  
-+    @pytes
++    @pytest.mark.parametrize("merge_type", ["left", "right"])
++    def test_merge_datetime_multi_index_empty_df(self, merge_type):
++        # see gh-36895
++
++        left = DataFrame(
++            data={
++                "data": [1.5, 1.5],
++            },
++            index=MultiIndex.from_tuples(
++                [[Timestamp("1950-01-01"), "A"], [Timestamp("1950-01-02"), "B"]],
++                names=["date", "panel"],
++            ),
++        )
++
++        right = DataFrame(
++            index=MultiIndex.from_tuples([], names=["date", "panel"]), columns=["state"]
++        )
++
++        expected_index = MultiIndex.from_tuples(
++            [[Timestamp("1950-01-01"), "A"], [Timestamp("1950-01-02"), "B"]],
++            names=["date", "panel"],
++        )
++
++        if merge_type == "left":
++            expected = DataFrame(
++                data={
++                    "data": [1.5, 1.5],
++                    "state": [None, None],
++                },
++                index=expected_index,
++            )
++            results_merge = left.merge(right, how="left", on=["date", "panel"])
++            results_join = left.join(right, how="left")
++        else:
++            expected = DataFrame(
++                data={
++                    "state": [None, None],
++                    "data": [1.5, 1.5],
++                },
++                index=expected_index,
++            )
++            results_merge = right.merge(left, how="right", on=["date", "panel"])
++            results_join = right.join(left, how="right")
++
++        tm.assert_frame_equal(results_merge, expected)
++        tm.assert_frame_equal(results_join, expected)
++
+     def test_join_multi_levels(self):
+ 
+         # GH 3662

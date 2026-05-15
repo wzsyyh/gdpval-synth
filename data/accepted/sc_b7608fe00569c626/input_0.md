@@ -1,4 +1,4 @@
-# PR #5688 diff showing changes to requests/__init__
+# PR #5688 diff and description from psf/requests repository
 
 
 # Seed Material: psf/requests#5688: Upgrade to chardet 4.x
@@ -15,7 +15,7 @@ Additions: +3, Deletions: -5
 ## PR Description
 I just released [chardet 4.0.0](https://github.com/chardet/chardet/releases/tag/4.0.0) today, and it's faster and fully backward compatible with chardet 3.x (as long as you aren't mucking around in the models it uses under-the-hood directly). The next major release will be Python 3.6+, but seeing as it took me three years to put out this one, that's unlikely to be soon.
 
-## Diff (first 3000 chars)
+## Diff
 diff --git a/requests/__init__.py b/requests/__init__.py
 index c00f556bbc..f8f94295f9 100644
 --- a/requests/__init__.py

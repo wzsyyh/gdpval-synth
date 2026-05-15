@@ -1,35 +1,51 @@
-# Bug Fix Write-Up: PR #36897 – Regression Fix for Merging DataFrame with DatetimeIndex with Empty DataFrame
+# Bug Fix Review: PR #36897 - Regression in merge with DatetimeIndex and empty DataFrame
 
-## Summary
+# Bug Fix Review: PR #36897 - Regression in merge with DatetimeIndex and empty DataFrame
 
-This document describes the bug fix implemented in PR #36897, which addresses a regression reported in issue #36895. The regression occurs when attempting to merge a DataFrame that has a DatetimeIndex against an empty DataFrame. The operation raises a KeyError instead of completing successfully. This bug was introduced during the 1.1 development cycle and affects users who rely on merging indexed DataFrames with potentially empty counterparts. The fix is targeted for the pandas v1.2.0 release.
+This document provides a comprehensive review of PR #36897, which addresses a regression in pandas where merging a DataFrame with a datetime index against an empty DataFrame would fail. The regression was reported in issue #36895 and was merged on November 3, 2020. The fix modifies the `_maybe_add_join_keys` method in `pandas/core/reshape/merge.py` to correctly handle the case where the right indexer contains all -1 values, indicating an empty DataFrame on the right side of the merge operation.
 
-## Root Cause
+## Root Cause Analysis
 
-The root cause is in the `_maybe_add_join_keys` method of the merge operation, located in `pandas/core/reshape/merge.py` around line 830. This method is responsible for constructing the key columns in the merged result when the merge is performed on columns derived from the index. The original code contained an asymmetric check: it computed a mask for the left_indexer where entries equal -1 (indicating no match) and tested if the mask was entirely true. If so, it used the right-side values exclusively. However, it did not perform the analogous check for the right_indexer. When the right DataFrame was empty, the right_indexer was entirely -1, but the code fell through to the else branch, attempting to use `Index(lvals).where(~mask, rvals)`. This operation failed because `rvals` contained invalid placeholder values, leading to the KeyError.
+The `_maybe_add_join_keys` method in `pandas/core/reshape/merge.py` is responsible for constructing the join key columns in the result of a merge operation. When merging on index levels, this method determines which values to use for the key columns based on the left_indexer and right_indexer arrays.
 
-The asymmetry meant that merging a non-empty left DataFrame with an empty right DataFrame (where all right_indexer values are -1) was not handled correctly, while the reverse case (empty left, non-empty right) was handled by the `mask.all()` check. This oversight caused the regression when the DatetimeIndex merge path was used.
+In the original code (lines 833-839), there was a single variable `mask` that checked if `left_indexer == -1`. A value of -1 in the left_indexer indicates that the corresponding row in the result came from the right DataFrame (i.e., there was no match on the left side). The original logic had only two cases: if all values in mask were True (meaning all rows came from the right), it used `rvals` (right values); otherwise, it used `Index(lvals).where(~mask, rvals)` to conditionally select between left and right values.
 
-## Fix Description
+The critical flaw was that the code did not account for the symmetric case where the right_indexer contained all -1 values. When merging a non-empty DataFrame with an empty DataFrame using a left merge, the left_indexer would contain valid indices (not -1), while the right_indexer would contain all -1 values. The original `mask` (checking left_indexer == -1) would be all False, causing the code to fall through to the `else` branch, which incorrectly tried to use the right values that were all missing, leading to errors.
 
-The fix in PR #36897 consists of three coordinated changes within the `_maybe_add_join_keys` method:
+Specifically, when the right DataFrame is empty, `rvals` would contain NaN or missing values for all rows, and `Index(lvals).where(~mask, rvals)` would still attempt to align these values incorrectly, resulting in the reported regression where the merge operation would fail or produce incorrect results.
 
-1. **Variable Renaming**: The original `mask` variable, which checked `left_indexer == -1`, was renamed to `mask_left` for clarity. A new variable `mask_right` was introduced to check `right_indexer == -1`. This makes the intent explicit: we are masking out unmatched entries on each side.
+## Patch Analysis
 
-2. **Symmetrical Handling**: An `elif` branch was added: `elif mask_right.all(): key_col = lvals`. This ensures that when all entries in the right_indexer are -1 (i.e., the right DataFrame is empty or has no matches), the result key column is populated entirely with the left-side values (`lvals`). This mirrors the existing `if mask_left.all()` branch that uses the right-side values.
+The patch in PR #36897 modifies lines 830-842 of `pandas/core/reshape/merge.py`. The changes can be broken down as follows:
 
-3. **Corrected Where Clause**: The final `where` call was updated from `Index(lvals).where(~mask, rvals)` to `Index(lvals).where(~mask_left, rvals)`. This ensures that only entries unmatched on the left are replaced with right-side values, which is the correct behavior for the mixed case where neither side is entirely unmatched.
+First, the single `mask` variable is replaced with two separate masks: `mask_left = left_indexer == -1` and `mask_right = right_indexer == -1`. This allows the code to independently check both sides of the merge for missing indices.
 
-Together, these changes ensure that merging a DataFrame with a DatetimeIndex against an empty DataFrame completes without error and produces the correct result. The fix is minimal and targeted, affecting only the key column assembly logic.
+Second, a new conditional branch is added: `elif mask_right.all(): key_col = lvals`. This handles the case where the right indexer contains all -1 values (meaning the result came entirely from the left DataFrame). In this scenario, the key column should use the left values (`lvals`), which was not handled in the original code.
 
-## Test Added
+Third, the `else` branch is updated to use `~mask_left` instead of `~mask` in the `where` condition: `key_col = Index(lvals).where(~mask_left, rvals)`. This ensures that when neither side is entirely missing, the code correctly uses the left values where the left index is valid (not -1) and substitutes with right values only where the left index is -1.
 
-A new test case was added to `pandas/tests/reshape/merge/test_multi.py` to verify the fix. The test file's imports were updated to include `Timestamp` from pandas (i.e., `from pandas import DataFrame, Index, MultiIndex, Series, Timestamp`). The test, defined as a method within the existing test class, creates a DataFrame with a DatetimeIndex and merges it with an empty DataFrame. The test verifies that the merge operation completes without raising a KeyError and that the result matches the expected output. This test directly reproduces the scenario from issue #36895, ensuring the regression is fixed and does not recur.
+The comment on line 834 is also updated from 'make sure to just use the right values' to 'make sure to just use the right values or vice-versa' to reflect the new symmetric handling.
 
-## Whatsnew Entry
+## Test Coverage
 
-The fix is documented in the pandas v1.2.0 release notes. In `doc/source/whatsnew/v1.2.0.rst`, under the Reshaping section, the following entry was added: "Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)". This entry ensures users are aware of the regression fix and can locate the relevant issue for more details.
+The fix includes comprehensive test coverage in `pandas/tests/reshape/merge/test_multi.py`. A new test method `test_merge_datetime_multi_index_empty_df` is added at line 484, following the existing `test_merge_datetime_index` method.
 
-## Checklist Verification
+The test is parametrized with `merge_type` values "left" and "right", ensuring both merge directions are covered. It creates a `left` DataFrame with a datetime MultiIndex (levels 'date' and 'panel') containing two rows of data, and a `right` DataFrame with the same MultiIndex structure but completely empty (no rows).
 
-The PR description includes a checklist confirming that all standard quality gates were met: tests were added and passed, the code passes `black pandas` formatting, the diff passes `flake8 --diff` linting, and a whatsnew entry was included. All items are checked off, indicating the PR is ready for merge pending review. This checklist verifies that the fix adheres to the pandas project's contribution standards.
+For a 'left' merge, the expected result is a DataFrame with the original two rows from the left DataFrame, plus a 'state' column filled with None values, preserving the datetime MultiIndex. The test verifies both `left.merge(right, how='left')` and `left.join(right, how='left')` operations produce this expected result.
+
+For a 'right' merge, the expected result similarly contains the original data but with columns reordered (state first, then data), and the test verifies `right.merge(left, how='right')` and `right.join(left, how='right')` operations.
+
+The test uses `Timestamp('1950-01-01')` and `Timestamp('1950-01-02')` for the datetime index values, and explicitly references issue #36895 in the test comment. All assertions use `tm.assert_frame_equal` to ensure exact equality of the result DataFrames with the expected ones.
+
+## Fix Completeness Assessment
+
+The fix appears to be complete for the reported regression. By adding symmetric handling for both `mask_left.all()` and `mask_right.all()`, the code now correctly handles cases where either the left or right DataFrame is empty during a merge operation. The existing `else` branch handles the general case where neither side is entirely missing.
+
+The test coverage specifically verifies left and right merges with empty DataFrames, which are the merge types most likely to trigger this bug. Inner and outer merges would also be affected, but they are implicitly covered by the logic change since the same code path is executed regardless of merge type.
+
+A potential edge case not explicitly tested is merging with an empty DataFrame that has a regular (non-datetime) index. However, the fix in `_maybe_add_join_keys` is generic and operates on indexers rather than index types, so it should work for any index type. The datetime index in the test case is likely chosen because it was the specific scenario reported in issue #36895.
+
+The whatsnew entry in `doc/source/whatsnew/v1.2.0.rst` is updated correctly at line 536, adding the entry 'Fixed regression in merge on merging DatetimeIndex with empty DataFrame (:issue:`36895`)' under the Reshaping section. This ensures users are informed of the fix in the v1.2.0 release.
+
+Overall, the fix is low-risk. The changes are minimal and localized to the specific logic error. The addition of proper test coverage ensures the regression will not recur. The symmetric handling of left and right indexers makes the code more robust and should prevent similar issues in the future.

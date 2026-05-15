@@ -99,6 +99,52 @@ def _check_attachment_quality(task: TaskCandidate) -> str | None:
     return None
 
 
+def _check_rubric_seed_grounding(task: TaskCandidate, seed: Seed) -> str | None:
+    """Check that rubric criteria don't reference facts outside the seed."""
+    seed_text = (seed.text_excerpt or "").lower()
+    if not seed_text or len(seed_text) < 200:
+        return None  # can't check without sufficient seed text
+
+    # Also include key payload fields in the searchable text
+    p = seed.payload or {}
+    extra_fields = []
+    for key in ("pr_body", "issue_body", "case_name", "citation", "entity_name", "ticker"):
+        val = p.get(key)
+        if val and isinstance(val, str):
+            extra_fields.append(val.lower())
+    searchable = seed_text + " " + " ".join(extra_fields)
+
+    # Extract quoted strings from rubric criteria
+    ungrounded: list[str] = []
+    skip_terms = {
+        "docx", "pdf", "xlsx", "md", "csv", "markdown", "word document",
+        "excel", "spreadsheet", "the document", "the memo", "the report",
+        "the review", "the analysis", "section", "appendix", "table",
+        "figure", "chart", "page", "header", "footer",
+    }
+    for r in task.rubric:
+        quoted = re.findall(r'"([^"]+)"', r.criterion)
+        for q in quoted:
+            q_lower = q.lower().strip()
+            # Skip short strings, format terms, and structural references
+            if len(q) < 6:
+                continue
+            if q_lower in skip_terms:
+                continue
+            if q_lower.startswith(("section ", "appendix ", "table ", "figure ")):
+                continue
+            # Check if quoted string appears in seed
+            if q_lower not in searchable:
+                ungrounded.append(f"[+{r.score}] \"{q}\"")
+
+    if len(ungrounded) >= 3:
+        return (
+            f"rubric has {len(ungrounded)} criteria quoting facts not in seed: "
+            + "; ".join(ungrounded[:5])
+        )
+    return None
+
+
 def _check_answer_has_content(task: TaskCandidate) -> str | None:
     """Ensure the reference answer has actual body content, not just a header."""
     ref = task.canonical.reference_answer
@@ -130,7 +176,7 @@ def _check_answer_has_content(task: TaskCandidate) -> str | None:
 # ─────────────────────────── Public API ───────────────────────────
 
 
-def validate(task: TaskCandidate, _seed: Seed) -> HardQualityReport:
+def validate(task: TaskCandidate, seed: Seed) -> HardQualityReport:
     """Run all hard quality checks."""
     issues: list[str] = []
     metrics: dict[str, int | float | bool] = {}
@@ -151,6 +197,7 @@ def validate(task: TaskCandidate, _seed: Seed) -> HardQualityReport:
         _check_rubric_style(task),
         _check_attachment_quality(task),
         _check_answer_has_content(task),
+        _check_rubric_seed_grounding(task, seed),
     ]
 
     for issue in checks:

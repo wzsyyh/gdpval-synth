@@ -1,63 +1,70 @@
-# Code Review: psf/requests#5797 – Switch to charset_normalizer
+# Code Review: PR #5797 - Switch LGPL'd chardet for MIT licensed charset_normalizer
 
-## PR Overview
+## Overview
 
-PR #5797 in the `psf/requests` repository switches the default character encoding detection dependency for Python 3 from `chardet` to the MIT-licensed `charset_normalizer`. The primary motivation, as outlined in the PR description, is to resolve license ambiguity for downstream projects. While `requests` itself is Apache-licensed, its dependency on the LGPL-licensed `chardet` creates uncertainty for projects that bundle `requests` into a single binary, such as the example given of `docker-compose`'s approach. An LGPL dependency can force the entire bundle to be LGPL, which is prohibitive for many proprietary or differently-licensed projects. By changing to an MIT-licensed dependency, `requests` removes this ambiguity for its Python 3 users. For Python 2, `chardet` remains a mandatory dependency.
+This review covers PR #5797, titled "Switch LGPL'd chardet for MIT licensed charset_normalizer." The PR proposes to replace the mandatory `chardet` dependency for Python 3 with `charset_normalizer`, an MIT-licensed library, to resolve license ambiguity for downstream projects that bundle `requests` into a single binary. The change maintains backward compatibility by using `chardet` if it is already installed and introducing a new extra `[use_chardet_on_py3]` to explicitly install `chardet` on Python 3.
 
-The PR also introduces an "escape hatch" mechanism to minimize disruption. If `chardet` is already installed in a user's environment, `requests` will continue to use it, preserving existing behavior. This backward compatibility is crucial for adoption. The PR author also added an optional extra, `[use_chardet_on_py3]`, allowing users to explicitly install `chardet` alongside `requests` if they prefer its behavior or encounter issues with `charset_normalizer`.
+The PR affects 10 files, including core dependency checks (`requests/__init__.py`), compatibility modules (`requests/compat.py` and `requests/packages.py`), help/info functions (`requests/help.py`), documentation (`docs/user/advanced.rst` and `HISTORY.md`), and build/test configuration (`setup.py` and `tox.ini`). The overall approach is pragmatic, but several details require careful scrutiny.
 
-## Change Analysis
+## Architectural Impact
 
-The diff modifies 10 files. The changes span documentation, dependency configuration, and core runtime logic. Below is a file-by-file analysis of the key changes:
+The PR introduces a dual-path dependency strategy: on Python 3, `charset_normalizer` is preferred, but `chardet` is used if installed. This is implemented via try/except import blocks in `requests/compat.py` and `requests/__init__.py`. The architecture remains largely unchanged, but the new conditional logic adds complexity to the initialization flow.
 
-- **`.gitignore`**: Adds common IDE files (`.idea`, `*.iml`) and a Python version file (`.python-version`) to the ignore list. This is a minor cleanup unrelated to the core change.
-- **`HISTORY.md`**: Under a new `dev` section, a `Dependencies` subsection is added. It explicitly documents the change from `chardet` to `charset_normalizer` for Python 3, the backward-compatible behavior if `chardet` is installed, the new `[use_chardet_on_py3]` extra, and the continued use of `chardet` for Python 2. This provides clear user-facing release notes.
-- **`docs/user/advanced.rst`**: The `Encodings` section is updated to explain the new dual-library support. It clarifies that `chardet` is used if installed, but is no longer mandatory for Python 3 due to its LGPL license. It also mentions `charset-normalizer` (MIT-licensed) as the new default and notes the `[use_chardet_on_py3]` extra. The documentation is now more detailed and accurate.
+The most significant architectural change is in `requests/packages.py`. Previously, it iterated over `('urllib3', 'idna', 'chardet')` to re-export modules under the `requests.packages` namespace. Now, it only iterates over `('urllib3', 'idna')`, and then manually re-exports the chosen character detection library as `requests.packages.chardet`. This preserves backward compatibility for code that imports `requests.packages.chardet`, regardless of whether the underlying library is `charset_normalizer` or `chardet`.
 
-- **`requests/compat.py`**: This file contains the core fallback logic. A new function `get_encodings_from_content_type` is defined. Inside this function, the code first attempts to import `charset_normalizer`. If that import fails (i.e., the library is not installed), it falls back to importing `chardet`. The imported module is then assigned to a variable `chardet` for use downstream, regardless of which library was actually imported. This allows the rest of the codebase to reference `chardet` as a unified interface, abstracting away which library is actually performing the detection.
-- **`setup.py`**: The `install_requires` list is changed to replace `chardet` with `charset_normalizer` for Python 3. A new `extras_require` entry is added: `use_chardet_on_py3: ['chardet>=3.0.2,<5']`. This extra allows users to explicitly add the old dependency. The `chardet` dependency for Python 2 is left in place.
-- **`requests/__init__.py`**: The direct `import chardet` at the top of the module is removed. Instead, the import is now conditional and happens within the `requests/compat.py` logic. This ensures that the correct library is loaded based on availability.
+The `requests.help.info()` function now includes two new keys: `'charset_normalizer'` and `'using_charset_normalizer'`. This expands the public API and is a welcome addition for debugging, but downstream tools parsing this output must be aware of the new fields.
 
-## Backward Compatibility & Migration
+## Backward Compatibility Analysis
 
-The PR is designed as a soft migration with strong backward compatibility. The primary strategy is to check for the presence of `chardet` first. As stated in the PR description and implemented in `requests/compat.py`, the code "will use chardet first if it is installed." This means existing environments where `chardet` is already a transitive dependency (from an older version of `requests` or another package) will see no behavioral change. Only new installations of `requests` in clean environments (where `charset_normalizer` is the new default) will experience the switch.
+The backward compatibility strategy is implemented in `requests/compat.py` with a simple try/except block: `try: import chardet; except ImportError: import charset_normalizer as chardet`. This ensures that any code importing from `requests.compat.chardet` will continue to work, as the alias is set regardless of which library is present. However, this approach silently masks the switch, which could lead to subtle differences in encoding detection behavior if the libraries' heuristics differ.
 
-For users who want to explicitly retain `chardet` on Python 3, the PR introduces the `[use_chardet_on_py3]` extra. The PR description references an extra named `[lgpl]`, but the actual diff in `HISTORY.md` and `setup.py` uses the name `[use_chardet_on_py3]`. This is a minor discrepancy between the description and the implementation; the code uses `[use_chardet_on_py3]`.
+In `setup.py`, the dependency list is updated to `charset_normalizer~=2.0.0` for Python 3 and `chardet>=3.0.2,<5` for Python 2. The new extra `[use_chardet_on_py3]` allows users to explicitly install `chardet` on Python 3. This is a good escape hatch, but it requires users to be aware of the change and modify their installation commands. The PR description notes that Python 2 still depends on `chardet` directly, which is consistent with the library's support policy.
 
-The change does not affect Python 2 at all. The `HISTORY.md` entry and the `setup.py` changes confirm that Python 2 continues to depend on `chardet` as a mandatory dependency, as `charset_normalizer` does not support Python 2.
+The version compatibility checks in `requests/__init__.py` have been expanded to handle both libraries. The function `check_compatibility` now accepts three arguments: `urllib3_version`, `chardet_version`, and `charset_normalizer_version`. It checks the version ranges `(3,0,2) <= (major, minor, patch) < (5,0,0)` for `chardet` and `(2,0,0) <= (major, minor, patch) < (3,0,0)` for `charset_normalizer`. If neither is installed, it raises an exception. This logic is correct but adds complexity to the initialization code. The warning message now includes both library versions, which is helpful for debugging.
 
-Overall, this is a careful migration path. Most users will not need to take any action. Users with strict dependency pinning will continue to use their pinned version of `requests`, which would still use `chardet`. The change only affects users who upgrade to the new version of `requests` and either don't have `chardet` installed or choose to remove it.
+The tox.ini configuration is updated to test both the default path (charset_normalizer) and the `use_chardet_on_py3` extra. This ensures that both dependency paths are tested in CI, which is critical for maintaining backward compatibility.
 
-## Impact on Internal Services
+## Code Quality Issues
 
-For our internal services, the impact depends on their current dependency management. Services using a `requirements.txt` file with a pinned version of `requests` (e.g., `requests==2.25.1`) will be unaffected until they explicitly upgrade. Services using looser version specifiers (e.g., `requests>=2.25`) will pick up this change upon their next dependency resolution.
+Several code quality issues were identified during the review:
 
-The main risk is subtle differences in encoding detection behavior between `chardet` and `charset_normalizer`. While the PR author states their non-exhaustive tests showed identical results, there is no guarantee of 100% parity. Services that handle non-standard or tricky encodings could potentially see different text decoding, leading to data processing errors or garbled text in logs or user interfaces.
+1. **In `requests/__init__.py`**: The `check_compatibility` function now has three parameters, but the call site passes `chardet_version` and `charset_normalizer_version` which may be `None`. The function handles this correctly by checking for `None` before splitting the version string. However, if both are `None`, it raises a generic `Exception` with the message "You need either charset_normalizer or chardet installed." This is acceptable but could be replaced with a more specific exception type (e.g., `ImportError`).
 
-**Recommended Actions:**
-1.  **Inventory:** Identify which services are on a version of `requests` >=2.26.0 (when this change was merged) or use loose version specifiers.
-2.  **Test:** For high-risk services (those processing user-uploaded content, legacy APIs with specific charsets), run a test suite with the new `charset_normalizer` default and verify the decoded output matches expectations.
-3.  **Control:** If a service is found to behave incorrectly with `charset_normalizer`, use the `[use_chardet_on_py3]` extra in its dependency file (e.g., `pip install requests[use_chardet_on_py3]`) to force the use of `chardet`.
-4.  **Pin:** For stability, consider pinning `requests` to a specific version in production `requirements.txt` files and manage upgrades deliberately.
+2. **In `requests/packages.py`**: The code uses a list comprehension to iterate over `sys.modules` and re-export the chosen library as `chardet`. The variable `target` is set to `chardet.__name__`, which is `'chardet'` if `chardet` is imported, or `'charset_normalizer'` if `charset_normalizer` is imported (since it's aliased as `chardet` in the except block). The line `sys.modules['requests.packages.' + target.replace(target, 'chardet')]` is redundant because `target.replace(target, 'chardet')` always evaluates to `'chardet'`. This should be simplified to `sys.modules['requests.packages.chardet']`.
 
-## Quality & Risks
+3. **In `docs/user/advanced.rst`**: There is a typo: `When you install ``request`` without specifying ``[use_chardet_on_py3]]`` extra` has an extra closing bracket. It should be `` `[use_chardet_on_py3]` ``.
 
-The implementation quality is high. The fallback logic in `requests/compat.py` is clean and abstracts the choice of library effectively, allowing the rest of the codebase to use a single interface (`chardet`). The documentation updates in `HISTORY.md` and `docs/user/advanced.rst` are thorough and clear, explaining the change, the rationale, and the migration path for users. This transparency is excellent for an open-source project.
+4. **In `HISTORY.md`**: The documentation for the extra is shown with a shell code block, but it uses double quotes which may not be portable on all shells. It could be improved with a note about quoting differences.
 
-One minor risk is the discrepancy in extra naming between the PR description and the actual code. The description mentions a `[lgpl]` extra, but the code implements `[use_chardet_on_py3]`. This could cause confusion if a user reads the PR description and tries to install `requests[lgpl]`, which would fail. The code, however, is the source of truth.
+5. **In `requests/help.py`**: The key `'using_charset_normalizer'` is set to `chardet is None`. This is a boolean that indicates whether `charset_normalizer` is in use, but the logic is inverted: if `chardet` is `None`, then `charset_normalizer` must be in use. This is correct but could be confusing; a more explicit name like `'uses_charset_normalizer'` might be clearer.
 
-The primary technical risk, as mentioned, is the potential for `charset_normalizer` to detect encodings differently than `chardet` for a subset of inputs. The PR author's testing was non-exhaustive. For most common encodings (UTF-8, ISO-8859-1, ASCII), both libraries will perform identically. The risk is higher for less common encodings or malformed content.
+## Testing Implications
 
-The change correctly isolates the risk to Python 3 only, leaving the well-tested Python 2 path untouched. This is a sensible and conservative approach.
+The `tox.ini` changes introduce two test environments: `default` and `use_chardet_on_py3`. The `default` environment will use `charset_normalizer` on Python 3, while `use_chardet_on_py3` will explicitly install `chardet`. This ensures that both dependency paths are tested. However, there is no explicit test environment that verifies the behavior when neither library is installed (the `else` branch in `requests/__init__.py` that raises an exception). This edge case should be tested to ensure the error message is clear and helpful.
 
-## Conclusion & Recommendation
+Additionally, there are no tests that verify the encoding detection behavior of `charset_normalizer` versus `chardet` on a representative set of test cases. The PR description mentions that the author's non-exhaustive tests showed no differences, but for a library as widely used as `requests`, a more comprehensive regression test suite would be beneficial. At a minimum, the existing test suite should be run with both libraries to ensure no regressions.
 
-In conclusion, PR #5797 is a well-executed, backward-compatible change that solves a legitimate licensing concern for a wide class of downstream projects. The implementation prioritizes stability through its fallback mechanism and provides clear escape hatches for users.
+The changes to `requests/packages.py` affect the `requests.packages` namespace. Existing tests that import `requests.packages.chardet` should continue to pass, but there should be explicit tests that verify the module is correctly re-exported when using `charset_normalizer` as the backend.
 
-For our internal services, the risk is low but not zero. I recommend the following plan:
-1.  **Communication:** Notify the team about this change and its implications.
-2.  **Dependency Review:** Audit our service `requirements.txt` files to understand which will be affected.
-3.  **Staged Rollout:** For services using loose version specifiers, upgrade `requests` in staging environments first and run integration tests, paying close attention to any text-heavy or encoding-sensitive operations.
-4.  **Mitigation:** For any service that exhibits issues, apply the `[use_chardet_on_py3]` extra as a quick fix.
+## Documentation Accuracy
 
-The change itself is safe to adopt. The licensing benefit is significant, and the backward compatibility measures are sound. A proactive but measured approach to upgrading our services will ensure a smooth transition.
+The documentation updates in `docs/user/advanced.rst` are generally accurate. The text correctly explains that `charset_normalizer` is used by default on Python 3, but `chardet` is used if installed. It also notes that Python 2 still depends on `chardet`. However, there is a minor error: the section says "When you install ``request`` without specifying ``[use_chardet_on_py3]]`` extra" – note the double closing bracket. This should be corrected to `` `[use_chardet_on_py3]` ``.
+
+The `HISTORY.md` changes are clear and concise. They explain the dependency change, the backward compatibility strategy, and the new extra. The inclusion of a shell command example is helpful. However, the documentation could be improved by noting that the `[use_chardet_on_py3]` extra is only relevant for Python 3, as the dependency is already mandatory on Python 2.
+
+Overall, the documentation accurately reflects the code changes, but the typo in `docs/user/advanced.rst` should be fixed before merging.
+
+## Recommendation
+
+**Recommendation: Request Changes**
+
+While the PR achieves its goal of switching from an LGPL to an MIT dependency for Python 3 and maintains backward compatibility, there are several issues that should be addressed before merging:
+
+1. **Fix the typo** in `docs/user/advanced.rst` (extra closing bracket).
+2. **Simplify the redundant code** in `requests/packages.py` (the `target.replace(target, 'chardet')` line).
+3. **Add a test** for the case when neither `charset_normalizer` nor `chardet` is installed.
+4. **Consider adding a note** in `HISTORY.md` that the `[use_chardet_on_py3]` extra is in `docs/user/advanced.rst`.
+
+These are all minor issues, but they should be corrected to ensure code quality and clarity. The overall approach is sound, and the backward compatibility strategy is well-designed. The PR also includes good updates to the help/info output and tox.ini testing configuration.
+
+After these changes are made, the PR can be approved.

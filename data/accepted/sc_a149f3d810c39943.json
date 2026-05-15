@@ -4,7 +4,7 @@
   "archetype": "code_review",
   "difficulty": "hard",
   "seed_id": "a149f3d810c39943",
-  "prompt": "You are a senior software engineer on the Redis core team responsible for maintaining the LOLWUT feature series. The team has received PR #14048 titled \"LOLWUT for Redis 8\" which introduces a new LOLWUT command implementing Nanni Balestrini's TAPE MARK I algorithm from 1962 for computer-generated poetry. This PR has been merged, but the engineering manager has requested a thorough post-merge code review to ensure the implementation meets Redis quality standards and to document any concerns for the backport to Redis 8 mentioned in the PR description.\n\nYour review must cover the following areas:\n\n1. **Structural Integration**: Analyze the changes to `src/Makefile` and `src/lolwut.c` to assess how the new `lolwut8.o` object file is integrated into the build system and how `lolwut8Command` is declared and registered. Verify the ordering of object files in the Makefile and function declarations in lolwut.c.\n\n2. **Implementation Fidelity**: Based on the PR description, evaluate whether the implementation claims to faithfully reproduce Balestrini's original 1962 TAPE MARK I algorithm. The algorithm combines verses from three literary sources: \"Diary of Hiroshima\" by Michihito Hachiya, \"The Mystery of the Elevator\" by Paul Goldwin, and \"Tao Te Ching\" by Lao Tse. The algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources.\n\n3. **Cultural and Historical Accuracy**: The PR description states that TAPE MARK I was published in Almanacco Letterario Bompiani in 1962 and used an IBM 7090 mainframe. The PR notes the original code took six minutes to generate each verse. Verify that the review addresses these historical claims.\n\n4. **Backport Readiness**: The PR description explicitly states \"This commit should be back-ported to Redis 8.\" Evaluate what considerations are needed for the backport.\n\nProduce a formal code review document in Markdown format. Include specific line references from the diff where possible, identify any potential issues with the integration, and provide recommendations.",
+  "prompt": "You are a senior software engineer on the Redis core team. The LOLWUT command is a Redis tradition where each major release includes a fun, artistic ASCII or generative art piece that users can invoke with the LOLWUT command. The team has just received PR #14048, which adds LOLWUT 8 — a computer poetry generator inspired by Nanni Balestrini's 1962 TAPE MARK I algorithm. The PR is proposed by Salvatore Sanfilippo (the original author of Redis) and targets backporting to Redis 8.\n\nYour task is to perform a thorough code review of this PR. The review must evaluate correctness, maintainability, adherence to existing patterns in the codebase, and potential issues. You have access to the PR diff and description. Focus on the three changed files: src/Makefile, src/lolwut.c, and the new src/lolwut8.c.\n\nProduce a structured code review document in Markdown format with the following sections:\n\n1. **Summary**: A 2-3 paragraph overview of the PR, its purpose, and your overall assessment.\n2. **File-by-File Analysis**: For each of the three changed files, describe the changes, evaluate correctness, and flag any concerns.\n3. **Algorithm Analysis**: Analyze the verse selection algorithm in lolwut8.c. Explain how the metrical compatibility check works, how the group alternation constraint is enforced, and whether the algorithm faithfully reproduces the described TAPE MARK I process.\n4. **Issues and Concerns**: List specific code-level issues (bugs, potential crashes, style violations, missing error handling) with file paths and line references where possible.\n5. **Verdict**: State whether you recommend merging, merging with changes, or requesting revisions. Justify your verdict.\n\nYour review should reference specific lines, variable names, function names, and file paths from the diff. Evaluate whether the version-matching logic in lolwut.c correctly dispatches to lolwut8Command for Redis 8.x versions. Assess memory management, the shuffle implementation, and the compatibility of the new object file addition in the Makefile.",
   "deliverable": {
     "deliverable_id": "code_review",
     "primary_format": "markdown",
@@ -13,291 +13,327 @@
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file with the title containing 'Code Review' and 'LOLWUT 8'.",
+      "criterion": "The submitted document is a Markdown file with a title referencing PR #14048 and LOLWUT 8.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review identifies the PR as redis/redis#14048.",
+      "criterion": "The document includes a 'Summary' section with level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'File-by-File Analysis' section with level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an 'Algorithm Analysis' section with level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes an 'Issues and Concerns' section with level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document includes a 'Verdict' section with level-2 heading.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section states that the PR adds LOLWUT 8 implementing Nanni Balestrini's TAPE MARK I algorithm from 1962.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section identifies the three literary sources: Diary of Hiroshima, The Mystery of the Elevator, and Tao Te Ching.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary section identifies Salvatore Sanfilippo as the PR author.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review mentions the merge date of 2025-05-26.",
+      "criterion": "The Summary section mentions the PR is proposed for backporting to Redis 8.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The File-by-File Analysis for src/Makefile states that lolwut8.o is added to REDIS_SERVER_OBJ.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Makefile analysis notes that lolwut8.o is positioned after lolwut6.o in the object list.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The src/lolwut.c analysis identifies the forward declaration of lolwut8Command.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The src/lolwut.c analysis discusses the version matching condition for Redis 8.x and 7.9.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The lolwut.c analysis notes the version condition follows the same pattern as lolwut6Command.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The src/lolwut8.c analysis describes the Verse struct with its five fields: text_en, text_it, fraction1, fraction2, group.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The lolwut8.c analysis states there are 16 total verses across 3 groups.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The analysis identifies the Fisher-Yates shuffle algorithm used in the shuffle function.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The analysis mentions the use of zmalloc for the working copy of verses.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review states the PR has 182 additions and 1 deletion.",
+      "criterion": "The analysis mentions the use of zfree to deallocate the working copy.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The analysis identifies addReplyVerbatim as the function used to send the final output.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Algorithm Analysis section explains the metrical compatibility check compares fraction1 and fraction2 character positions.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Algorithm Analysis section explains the group alternation constraint using strcmp.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Algorithm Analysis states the first verse (j == 0) is always accepted without compatibility checking.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Algorithm Analysis mentions the maximum stanza length is 10 verses.",
       "category": "data",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review identifies the number of changed files as 3.",
+      "criterion": "The Algorithm Analysis notes the algorithm terminates early if no compatible verse is found.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Algorithm Analysis discusses the greedy selection approach (first compatible verse is chosen).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Algorithm Analysis references the IBM 7090 mainframe used by Balestrini.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "An issue is raised about the use of rand() instead of Redis's internal RNG.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "An issue is raised about the fixed-size text_en[100] and text_it[100] buffers in the Verse struct.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "An issue is raised about the variable j being reused for both the stanza loop and the string iteration loop.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "An issue is raised about the hardcoded URLs (Wikipedia and YouTube) in the output footer.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "An issue is raised about the stanza[10] array not being zero-initialized.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "An issue is raised about missing error handling for the zmalloc call.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Verdict section recommends 'Merge with changes' (not simply 'Merge' or 'Reject').",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Verdict section lists at least 3 specific revisions required before merging.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Verdict mentions replacing rand() with Redis's internal RNG as a required revision.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Verdict mentions renaming the reused loop variable j as a required revision.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review correctly identifies the copyright year as '2025-Present' in the new file header.",
       "category": "data",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review has a section on build system integration discussing src/Makefile.",
-      "category": "structure",
+      "criterion": "The review correctly identifies the three license options: RSALv2, SSPLv1, AGPLv3.",
+      "category": "data",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review has a section on function registration discussing src/lolwut.c.",
-      "category": "structure",
+      "criterion": "The review mentions Emiliano Russo as the author of the Python code referenced in the file header.",
+      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review has a section on implementation analysis discussing src/lolwut8.c.",
-      "category": "structure",
+      "criterion": "The review mentions the Almanacco Letterario Bompiani publication.",
+      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review has a section on historical and cultural claims.",
-      "category": "structure",
+      "criterion": "The review correctly identifies 'IT' as the optional argument for Italian output.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies the version dispatch condition matching 7.9 to LOLWUT 8.",
+      "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review has a section on backport considerations for Redis 8.",
-      "category": "structure",
+      "criterion": "The review correctly identifies that lolwut6Command handles Redis version 5.9.",
+      "category": "data",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review mentions lolwut8.o as the new object file added to the Makefile.",
+      "criterion": "The review mentions the Wikipedia URL on Digital poetry included in the output.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the YouTube URL included in the output.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review identifies the string processing as converting to uppercase and replacing '/' with spaces.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review identifies the stanza assembly loop as iterating up to 10 times.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review correctly identifies that the first Hiroshima verse has fraction1 '1/4' and fraction2 '2/3'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review mentions the Verse struct field sizes: text_en[100], text_it[100], fraction1[5], fraction2[5], group[2].",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review correctly identifies the metrical compatibility check as comparing characters at positions [0] and [2] of fraction strings.",
       "category": "accuracy",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The review identifies lolwut8Command as the new function declared.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review notes the position of lolwut8.o after lolwut6.o in the Makefile.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review mentions existing LOLWUT object files lolwut.o, lolwut5.o, and lolwut6.o.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review identifies the algorithm as TAPE MARK I.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review identifies Nanni Balestrini as the algorithm creator.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review mentions the publication year 1962.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review mentions the publication venue Almanacco Letterario Bompiani.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review identifies all three literary sources: Diary of Hiroshima, The Mystery of the Elevator, and Tao Te Ching.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review identifies all three source authors: Michihito Hachiya, Paul Goldwin, and Lao Tse.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review mentions the IBM 7090 mainframe as the original hardware.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review mentions the original generation time of six minutes per verse.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review discusses metrical compatibility rules as part of the algorithm.",
+      "criterion": "The review identifies the group alternation constraint as preventing consecutive verses from the same literary source.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The review discusses source alternation between literary sources.",
-      "category": "content",
+      "criterion": "The review correctly notes that output is sent using addReplyVerbatim with format marker 'txt'.",
+      "category": "data",
       "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review mentions the PR description's backport statement for Redis 8.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review addresses the English vs. Italian output language consideration.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review mentions the specific translation example of adding \"it\" before \"expands rapidly\".",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review includes a risk assessment section.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review provides specific recommendations for the backport.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review identifies the need to verify dispatcher compatibility for the backport.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review notes that the changes are additive and do not modify existing functionality.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review references the Wikipedia page on Digital poetry.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review identifies TAPE MARK I as predating most computational art experiments.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review discusses the cultural significance of the intersection of literature, technology, and algorithmic creativity.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review includes a recommendations section with specific action items.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review suggests updating LOLWUT help text to describe the TAPE MARK I algorithm.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review suggests adding a reference to Balestrini's work in Redis documentation.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 3,
-      "criterion": "The review demonstrates understanding of the LOLWUT command dispatch mechanism by referencing the version-based routing in the lolwut function.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 3,
-      "criterion": "The review correctly identifies that lolwut7.o is absent from the Makefile, suggesting LOLWUT 8 is the first version added since Redis 6.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 3,
-      "criterion": "The review discusses memory safety and error handling considerations for the new implementation.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 3,
-      "criterion": "The review identifies the need for testing requirements for the backport including output validation and algorithm correctness.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document uses proper Markdown formatting with headings and paragraphs.",
-      "category": "style",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review maintains a professional, technical tone throughout.",
-      "category": "style",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The review correctly notes that the PR description includes a trivia note about the six-minute generation time with a smiley emoticon.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review mentions the LOLWUT tradition in Redis.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The review identifies the algorithm as one of the first experiments in computer-generated poetry.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": -2,
-      "criterion": "The review incorrectly states the number of additions or deletions in the PR.",
-      "category": "accuracy",
-      "is_penalty": true
-    },
-    {
-      "score": -2,
-      "criterion": "The review fails to identify any of the three literary sources.",
-      "category": "completeness",
-      "is_penalty": true
     }
   ],
   "canonical": {
@@ -321,121 +357,235 @@
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "redis/redis",
+        "name": "src/Makefile, src/lolwut.c, src/lolwut8.c",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "2025-05-26",
+        "name": "src/lolwut8.c",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "182",
+        "name": "177",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "Diary of Hiroshima",
+        "name": "100",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "Michihito Hachiya",
+        "name": "Fisher-Yates",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "The Mystery of the Elevator",
+        "name": "Diary of Hiroshima by Michihito Hachiya",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "Paul Goldwin",
+        "name": "The Mystery of the Elevator by Paul Goldwin",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "Tao Te Ching",
+        "name": "Tao Te Ching by Lao Tse",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "Lao Tse",
+        "name": "v[0] == '8' && v[1] == '.' && v[2] != '9'",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "Nanni Balestrini",
+        "name": "v[0] == '7' && v[1] == '.' && v[2] == '9'",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "Almanacco Letterario Bompiani",
+        "name": "void lolwut8Command(client *c);",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "1962",
+        "name": "lolwut8.o",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "IBM 7090",
+        "name": "after lolwut6.o and before acl.o",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "six minutes",
+        "name": "addReplyVerbatim",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "lolwut8.o",
+        "name": "txt",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "lolwut8Command",
+        "name": "zmalloc",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "lolwut.o lolwut5.o lolwut6.o",
+        "name": "zfree",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "This commit should be back-ported to Redis 8.",
+        "name": "sds (Simple Dynamic Strings)",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "Digital poetry",
+        "name": "1962",
         "attrs": {}
       },
       {
         "id": "ev_20",
         "kind": "person",
-        "name": "adding \"it\" before \"expands rapidly\"",
+        "name": "IBM 7090",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "Merge with changes",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "Redis's internal RNG",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "The blinding / globe / of fire",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "1/4",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "2/3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "2025-Present",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "RSALv2, SSPLv1, AGPLv3",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "Salvatore Sanfilippo",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "Emiliano Russo",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "Almanacco Letterario Bompiani",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "English",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "fraction1 and fraction2 character positions",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "strcmp(working_verses[i].group, stanza[j-1].group) != 0",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "https://en.wikipedia.org/wiki/Digital_poetry",
+        "attrs": {}
+      },
+      {
+        "id": "ev_35",
+        "kind": "person",
+        "name": "https://www.youtube.com/watch?v=8i7uFCK7G0o",
+        "attrs": {}
+      },
+      {
+        "id": "ev_36",
+        "kind": "person",
+        "name": "109-141",
+        "attrs": {}
+      },
+      {
+        "id": "ev_37",
+        "kind": "person",
+        "name": "150",
+        "attrs": {}
+      },
+      {
+        "id": "ev_38",
+        "kind": "person",
+        "name": "1961",
+        "attrs": {}
+      },
+      {
+        "id": "ev_39",
+        "kind": "person",
+        "name": "5.9",
         "attrs": {}
       }
     ],
@@ -450,169 +600,344 @@
       },
       {
         "id": "fact_1",
-        "kind": "string",
-        "value": "redis/redis",
+        "kind": "money",
+        "value": 3,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_2",
         "kind": "string",
-        "value": "2025-05-26",
+        "value": "src/Makefile, src/lolwut.c, src/lolwut8.c",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "string",
-        "value": "3",
+        "value": "src/lolwut8.c",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
-        "kind": "string",
-        "value": "182",
+        "kind": "money",
+        "value": 177,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
-        "kind": "string",
-        "value": "1",
+        "kind": "money",
+        "value": 16,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_6",
-        "kind": "string",
-        "value": "Diary of Hiroshima",
+        "kind": "money",
+        "value": 6,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_7",
-        "kind": "string",
-        "value": "Michihito Hachiya",
+        "kind": "money",
+        "value": 5,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_8",
-        "kind": "string",
-        "value": "The Mystery of the Elevator",
+        "kind": "money",
+        "value": 4,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
-        "kind": "string",
-        "value": "Paul Goldwin",
+        "kind": "money",
+        "value": 10,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
-        "kind": "string",
-        "value": "Tao Te Ching",
+        "kind": "money",
+        "value": 100,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
-        "kind": "string",
-        "value": "Lao Tse",
+        "kind": "money",
+        "value": 5,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
-        "kind": "string",
-        "value": "Nanni Balestrini",
+        "kind": "money",
+        "value": 2,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "Almanacco Letterario Bompiani",
+        "value": "Fisher-Yates",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "1962",
+        "value": "Diary of Hiroshima by Michihito Hachiya",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "IBM 7090",
+        "value": "The Mystery of the Elevator by Paul Goldwin",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "six minutes",
+        "value": "Tao Te Ching by Lao Tse",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "lolwut8.o",
+        "value": "v[0] == '8' && v[1] == '.' && v[2] != '9'",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "lolwut8Command",
+        "value": "v[0] == '7' && v[1] == '.' && v[2] == '9'",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "22",
+        "value": "void lolwut8Command(client *c);",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_20",
         "kind": "string",
-        "value": "54",
+        "value": "lolwut8.o",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_21",
         "kind": "string",
-        "value": "lolwut.o lolwut5.o lolwut6.o",
+        "value": "after lolwut6.o and before acl.o",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_22",
         "kind": "string",
-        "value": "This commit should be back-ported to Redis 8.",
+        "value": "addReplyVerbatim",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_23",
         "kind": "string",
-        "value": "Digital poetry",
+        "value": "txt",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_24",
         "kind": "string",
-        "value": "adding \"it\" before \"expands rapidly\"",
+        "value": "zmalloc",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "zfree",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "sds (Simple Dynamic Strings)",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "1962",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "IBM 7090",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "Merge with changes",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "money",
+        "value": 4,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "Redis's internal RNG",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "The blinding / globe / of fire",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "1/4",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "2/3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "string",
+        "value": "2025-Present",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "string",
+        "value": "RSALv2, SSPLv1, AGPLv3",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "string",
+        "value": "Salvatore Sanfilippo",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "string",
+        "value": "Emiliano Russo",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "string",
+        "value": "Almanacco Letterario Bompiani",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_40",
+        "kind": "string",
+        "value": "IT",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_41",
+        "kind": "string",
+        "value": "English",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_42",
+        "kind": "string",
+        "value": "fraction1 and fraction2 character positions",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_43",
+        "kind": "string",
+        "value": "strcmp(working_verses[i].group, stanza[j-1].group) != 0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_44",
+        "kind": "string",
+        "value": "https://en.wikipedia.org/wiki/Digital_poetry",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_45",
+        "kind": "string",
+        "value": "https://www.youtube.com/watch?v=8i7uFCK7G0o",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_46",
+        "kind": "string",
+        "value": "109-141",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_47",
+        "kind": "string",
+        "value": "150",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_48",
+        "kind": "string",
+        "value": "1961",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_49",
+        "kind": "string",
+        "value": "5.9",
         "unit": null,
         "source": null
       }
@@ -629,288 +954,541 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Code Review: LOLWUT 8 - TAPE MARK I Implementation",
-          "heading_level": 1,
+          "heading": "Summary",
+          "heading_level": 2,
           "required_content": [
-            "PR identification (redis/redis#14048)",
-            "Review scope overview",
-            "Summary verdict"
+            "Overview of PR purpose and LOLWUT tradition",
+            "Assessment of the TAPE MARK I algorithm implementation",
+            "Overall recommendation"
           ],
           "paragraphs": [
-            "This document presents a post-merge code review of PR #14048 titled \"LOLWUT for Redis 8,\" which introduces the LOLWUT 8 command implementing Nanni Balestrini's TAPE MARK I algorithm from 1962. The PR was merged on 2025-05-26 and modifies three files with 182 additions and 1 deletion. The review covers structural integration, implementation fidelity to the original algorithm, cultural and historical accuracy, and backport readiness for Redis 8.",
-            "The overall assessment is that the PR integrates cleanly into the existing LOLWUT framework with minimal structural risk. The implementation faithfully represents the spirit of Balestrini's pioneering computational poetry experiment while adapting it for a modern English-language audience. However, several areas warrant attention before backporting to Redis 8."
+            "PR #14048 introduces LOLWUT 8 for Redis 8, implementing Nanni Balestrini's TAPE MARK I algorithm from 1962 — one of the earliest experiments in computer-generated poetry. The PR adds a new source file (src/lolwut8.c), modifies the version-dispatch logic in src/lolwut.c, and updates the object file list in src/Makefile. The implementation allows users to invoke LOLWUT to receive a unique procedurally-generated poem assembled from verses of three literary sources: Diary of Hiroshima by Michihito Hachiya, The Mystery of the Elevator by Paul Goldwin, and Tao Te Ching by Lao Tse.",
+            "The PR is authored by Salvatore Sanfilippo, the original creator of Redis, and is proposed for backporting to Redis 8. The code introduces a Verse struct with English and Italian text variants, metrical fraction fields, and group identifiers. It uses a Fisher-Yates shuffle followed by a greedy compatibility-based stanza assembly algorithm that enforces both metrical matching and group alternation between consecutive verses.",
+            "Overall, the implementation is creative and culturally interesting, staying true to the LOLWUT tradition. However, the code review reveals several concerns including potential use of uninitialized memory, lack of bounds checking on fixed-size buffers, a version-dispatch condition that may not handle all edge cases correctly, and deviations from existing code style in the codebase. The recommendation is to merge with changes, requesting revisions to address the identified issues before backporting."
           ]
         },
         {
-          "heading": "1. Build System Integration - src/Makefile",
+          "heading": "File-by-File Analysis",
           "heading_level": 2,
           "required_content": [
-            "Line reference to REDIS_SERVER_OBJ modification",
-            "Position of lolwut8.o in the object file list",
-            "Comparison with existing lolwut.o and lolwut6.o entries",
-            "Assessment of integration correctness"
+            "Analysis of src/Makefile changes",
+            "Analysis of src/lolwut.c version dispatch changes",
+            "Analysis of src/lolwut8.c new file"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "src/Makefile",
+          "heading_level": 3,
+          "required_content": [
+            "Addition of lolwut8.o to REDIS_SERVER_OBJ",
+            "Position in the object list relative to lolwut6.o",
+            "Correctness of the change"
           ],
           "paragraphs": [
-            "The diff to `src/Makefile` modifies the `REDIS_SERVER_OBJ` variable to include `lolwut8.o` in the object file list. The change is a single-line modification at the position where the existing LOLWUT object files (`lolwut.o` and `lolwut6.o`) are listed, with `lolwut8.o` inserted immediately after `lolwut6.o` and before `acl.o`.",
-            "This placement is consistent with the pattern of grouping related LOLWUT version object files together. The original line contained `lolwut.o lolwut5.o lolwut6.o` and the new line reads `lolwut.o lolwut5.o lolwut6.o lolwut8.o`. Note that `lolwut7.o` is absent from the list, suggesting this is the first LOLWUT version added since Redis 6.",
-            "The insertion preserves alphabetical ordering within the LOLWUT group and maintains the overall ordering convention of the REDIS_SERVER_OBJ variable. No compilation dependencies or include paths are modified, which is appropriate since `lolwut8.c` is expected to follow the same standalone pattern as previous LOLWUT version files."
+            "The Makefile change is minimal and correct. The new object file lolwut8.o is appended to the REDIS_SERVER_OBJ list immediately after lolwut6.o, which is the natural and consistent placement. This ensures the new source file will be compiled and linked into the Redis server binary. The change is a single-line modification on line 378 of the Makefile (within the diff context), adding lolwut8.o between lolwut6.o and acl.o.",
+            "No concerns with this change. It follows the existing pattern established by lolwut5.o and lolwut6.o."
           ]
         },
         {
-          "heading": "2. Function Registration - src/lolwut.c",
-          "heading_level": 2,
+          "heading": "src/lolwut.c",
+          "heading_level": 3,
           "required_content": [
             "Forward declaration of lolwut8Command",
-            "Position in the file relative to existing declarations",
-            "Function signature consistency"
+            "Version matching condition for Redis 8.x",
+            "Pattern consistency with lolwut5 and lolwut6 dispatch"
           ],
           "paragraphs": [
-            "The diff to `src/lolwut.c` adds a forward declaration for `lolwut8Command` at line 22, positioned immediately after the existing declarations for `lolwut5Command` and `lolwut6Command`. The declaration follows the same pattern: `void lolwut8Command(client *c);` which is consistent with the established API for LOLWUT version commands.",
-            "This forward declaration is necessary because the main `lolwutCommand` function dispatches to version-specific handlers based on the version number argument. The registration mechanism in the `lolwut` function (referenced at line 54 in the diff) would need to include a case for version 8 that calls `lolwut8Command`.",
-            "The placement after `lolwut6Command` and before the default target comment block at line 54 follows the logical ordering of version numbers. No issues were identified with the declaration syntax or integration point."
+            "Two changes are made to src/lolwut.c. First, a forward declaration `void lolwut8Command(client *c);` is added at line 22, consistent with the existing declarations for lolwut5Command and lolwut6Command. Second, a new else-if branch is added to the version dispatch logic in the lolwutCommand function.",
+            "The version matching condition checks `(v[0] == '8' && v[1] == '.' && v[2] != '9') || (v[0] == '7' && v[1] == '.' && v[2] == '9')`. This follows the pattern established for lolwut6Command, which matches version 6.x (but not 6.9) and also matches version 5.9. The intent is that LOLWUT 8 displays for Redis 8.0 through 8.8, and also for Redis 7.9 (the unstable development version that would precede Redis 8.0).",
+            "However, there is a subtle concern: the condition `v[2] != '9'` only checks that the third character of the version string is not '9'. For multi-digit minor versions like '8.12', the third character would be '1', which passes the check — but this relies on the assumption that Redis minor versions are single-digit. Given Redis's versioning history this is likely acceptable, but it is worth noting as a potential fragility if the versioning scheme ever changes. The existing lolwut6 dispatch has the same characteristic, so this is consistent with established patterns."
           ]
         },
         {
-          "heading": "3. Implementation Analysis - src/lolwut8.c",
-          "heading_level": 2,
+          "heading": "src/lolwut8.c",
+          "heading_level": 3,
           "required_content": [
-            "New file introduction (182 additions)",
-            "TAPE MARK I algorithm structure",
-            "Three literary sources identification",
-            "Metrical compatibility rules",
-            "Source alternation enforcement"
+            "Copyright header and license information",
+            "Verse struct definition",
+            "Fisher-Yates shuffle implementation",
+            "lolwut8Command function structure",
+            "Verse selection algorithm",
+            "String processing and output"
           ],
           "paragraphs": [
-            "The new `src/lolwut8.c` file contains the complete implementation of the TAPE MARK I algorithm. Based on the PR description, the implementation maintains fidelity to Balestrini's original 1962 design by combining verses from three specific literary sources: \"Diary of Hiroshima\" by Michihito Hachiya, \"The Mystery of the Elevator\" by Paul Goldwin, and \"Tao Te Ching\" by Lao Tse.",
-            "The algorithm operates by selecting verses based on metrical compatibility rules and enforcing alternation between the three different literary sources. This ensures that each execution of the LOLWUT 8 command generates a unique poetic composition, true to Balestrini's original intent.",
-            "The PR author notes that the default output is in English rather than Italian, but justifies this by observing that Balestrini's original sources were not in Italian either, so translation was already part of the creative process. Minor modifications to the English translations were made to preserve metrical properties or ensure sentences stand independently, such as adding \"it\" before \"expands rapidly.\"",
-            "The implementation represents one of the first experiments in computer-generated poetry, predating most computational art experiments. The PR description notes that TAPE MARK I demonstrates the early intersection of literature, technology, and algorithmic creativity, and this implementation honors that pioneering work while making it accessible through Redis's LOLWUT tradition."
+            "The new file src/lolwut8.c contains 177 lines of code implementing the LOLWUT 8 command. It includes a proper Redis copyright header (2025-Present, Redis Ltd.) with triple license options (RSALv2, SSPLv1, AGPLv3), and credits Salvatore Sanfilippo as the original author with the algorithm based on the Almanacco Bompiani description and Python code by Emiliano Russo.",
+            "The Verse struct at lines 28-34 contains five fields: text_en (100 chars), text_it (100 chars), fraction1 (5 chars), fraction2 (5 chars), and group (2 chars). The struct defines 16 total verses across three groups: 6 from Hiroshima (group 1), 5 from the Elevator mystery (group 2), and 4 from Tao Te Ching (group 3).",
+            "The Fisher-Yates shuffle implementation at lines 38-44 is correct and standard. It iterates from the last element down to index 1, swapping each element with a random element at an index less than or equal to the current index. The function uses `rand()` for randomization.",
+            "The main function lolwut8Command begins by parsing an optional IT argument for Italian output. It creates a working copy of the verses array using zmalloc and memcpy, then shuffles the copy. The stanza assembly loop iterates up to 10 times, searching for compatible verses using a metrical compatibility check that compares fraction characters and enforces group alternation. Selected verses are removed from the working set by shifting remaining elements. After assembly, the working copy is freed with zfree.",
+            "The combined SDS string is built by concatenating selected verses (English or Italian), then converted to uppercase with forward slashes replaced by spaces. A background information footer is appended with historical context about TAPE MARK I, including a Wikipedia link and a YouTube link. The output is sent using addReplyVerbatim with a 'txt' format marker."
           ]
         },
         {
-          "heading": "4. Historical and Cultural Claims Verification",
+          "heading": "Algorithm Analysis",
           "heading_level": 2,
           "required_content": [
-            "Publication venue: Almanacco Letterario Bompiani",
-            "Publication year: 1962",
-            "Hardware: IBM 7090 mainframe",
-            "Generation time: six minutes per verse",
-            "Creator: Nanni Balestrini",
-            "Wikipedia reference to Digital poetry"
+            "Metrical compatibility check explanation",
+            "Group alternation constraint",
+            "Faithfulness to TAPE MARK I algorithm",
+            "Limitations and edge cases"
           ],
           "paragraphs": [
-            "The PR description makes several historical claims about TAPE MARK I that should be verified during a full code review but are presented as accurate based on available documentation. The algorithm was created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani in 1962.",
-            "The implementation notes state that the original code ran on an IBM 7090 mainframe and took six minutes to generate each verse. The PR description includes a trivia note about this performance characteristic with a smiley emoticon, suggesting this is a well-documented historical fact.",
-            "A Wikipedia reference to \"Digital poetry\" is provided in the PR description as additional context for the cultural significance of TAPE MARK I as a pioneering moment in computational creativity. The PR emphasizes that TAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity.",
-            "The three literary sources used by Balestrini represent a diverse cultural collection spanning Japanese documentation of the Hiroshima bombing, English mystery fiction, and classical Chinese philosophy. This diversity of sources was integral to the algorithm's creative output."
+            "The verse selection algorithm in lolwut8Command implements a greedy, sequential stanza-building process. Starting from a shuffled array of 16 verses, it builds a stanza of up to 10 verses by iterating through the working set and selecting the first verse that satisfies two constraints: metrical compatibility and group alternation.",
+            "The metrical compatibility check at lines 118-122 compares character-level fractions between the current candidate verse's fraction1 and the previous stanza verse's fraction2. Specifically, it checks three conditions connected by logical OR: (1) the first character of the candidate's fraction1 equals the first character of the previous verse's fraction2, (2) the third character of the candidate's fraction1 equals the first character of the previous verse's fraction2, or (3) the third character of the candidate's fraction1 equals the third character of the previous verse's fraction2. These characters represent the numerator and denominator digits of the metrical fractions (e.g., '1/4' has first char '1' and third char '4').",
+            "The group alternation constraint uses strcmp to ensure the current verse's group differs from the previous verse's group. This enforces Balestrini's rule that consecutive verses must come from different literary sources. Since there are only three groups, this prevents two consecutive verses from the same source but does not prevent a pattern like group 1, group 2, group 1, group 2 — which is acceptable behavior.",
+            "The first verse (j == 0) is always accepted without checking compatibility, as indicated by the condition `j == 0` at line 118. This is correct since there is no previous verse to compare against. The algorithm terminates early if no compatible verse is found in the remaining working set, resulting in stanzas shorter than 10 verses.",
+            "A notable limitation is that the algorithm always selects the first compatible verse it encounters in the shuffled order, rather than optimizing for the 'best' match. This is consistent with Balestrini's original computational approach on the IBM 7090, where the goal was procedural generation rather than optimization. Each execution of the command will produce a different poem due to the initial shuffle, honoring the original intent. However, the stanza will always be at most 10 verses long, and with only 16 source verses, some verses may never appear in a single execution."
           ]
         },
         {
-          "heading": "5. Backport Considerations for Redis 8",
+          "heading": "Issues and Concerns",
           "heading_level": 2,
           "required_content": [
-            "Explicit backport request in PR description",
-            "Build system compatibility",
-            "API stability concerns",
-            "Testing requirements"
+            "Memory management issues",
+            "Buffer safety concerns",
+            "Random number generation concerns",
+            "Code style inconsistencies",
+            "Error handling gaps"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "1. Potential Use of Uninitialized Stanza Array",
+          "heading_level": 3,
+          "required_content": [
+            "Description of the issue with stanza[10] array",
+            "Risk of reading uninitialized memory",
+            "Impact on compatibility check"
           ],
           "paragraphs": [
-            "The PR description explicitly states: \"This commit should be back-ported to Redis 8.\" This is a significant requirement that introduces additional review considerations.",
-            "From a build system perspective, the changes to `src/Makefile` and `src/lolwut.c` are additive and do not modify existing functionality. The insertion of `lolwut8.o` into the object list and the forward declaration of `lolwut8Command` should be compatible with the Redis 8 branch, provided the LOLWUT framework code in `src/lolwut.c` is identical or sufficiently similar.",
-            "The backport should verify that the `lolwutCommand` dispatcher in the Redis 8 branch properly handles version 8 and routes to `lolwut8Command`. If the dispatcher logic differs between the main branch and Redis 8, the backport may require additional modifications to the registration mechanism.",
-            "Testing requirements for the backport should include verifying that the LOLWUT 8 command produces valid output, that the metrical compatibility rules and source alternation are correctly enforced, and that the command integrates properly with the existing Redis command infrastructure."
+            "The `stanza[10]` array declared at line 108 is a local stack variable and is not initialized. When j > 0, the algorithm reads `stanza[j-1].fraction2` and `stanza[j-1].group` at lines 120-122. While the first iteration (j == 0) bypasses this check, subsequent iterations rely on previously written stanza entries. Since the loop only reads stanza[j-1] after it has been written in the previous iteration, this is technically safe — the array element is always written before being read.",
+            "However, if the loop terminates early (found == 0 on first iteration), the stanza array remains partially uninitialized. This is not a bug in the current logic since the variable `j` correctly tracks the number of valid entries, but it could be a source of confusion for future maintainers. A safer approach would be to zero-initialize the array: `Verse stanza[10] = {0};`."
           ]
         },
         {
-          "heading": "6. Recommendations and Risk Assessment",
-          "heading_level": 2,
+          "heading": "2. Fixed-Size Buffer Overflow Risk in Verse Struct",
+          "heading_level": 3,
           "required_content": [
-            "Overall risk level",
-            "Items requiring verification in full diff",
-            "Backport approval recommendation",
-            "Documentation updates needed"
+            "text_en and text_it fields are 100 chars",
+            "Longest verse text and remaining capacity",
+            "Risk if verses are modified in the future"
           ],
           "paragraphs": [
-            "Based on the partial diff provided (first 3000 characters), the structural changes appear low-risk. The integration into the build system and function registration follows established patterns. However, a complete review of `src/lolwut8.c` is necessary to assess the implementation quality, memory safety, and algorithm correctness.",
-            "Items requiring verification in the full diff include: the complete implementation of the TAPE MARK I algorithm in `src/lolwut8.c`, the dispatcher integration in the `lolwut` function around line 54 of `src/lolwut.c`, error handling for invalid verse selections, and memory management for dynamically generated poetry output.",
-            "The backport to Redis 8 is recommended pending verification of dispatcher compatibility. The additive nature of the changes minimizes the risk of regression, but the backport should be tested on the Redis 8 branch to ensure proper integration with any LOLWUT framework changes that may have occurred between versions.",
-            "Documentation updates should include updating the LOLWUT help text to describe the TAPE MARK I algorithm and its cultural significance, and potentially adding a reference to Balestrini's work in the Redis documentation or changelog."
+            "The Verse struct uses fixed-size character arrays: text_en[100] and text_it[100]. The longest English verse text in the current set is ' Assumes / the well-known shape / of a mushroom ' at approximately 49 characters, and the longest Italian text is similar. This leaves adequate headroom under the 100-character limit.",
+            "However, there is no compile-time or runtime check that the string literals fit within these buffers. If a maintainer adds longer verses in the future, the code would silently truncate or potentially cause undefined behavior depending on how the initialization is handled. Using `sizeof` checks or a compile-time assertion would make this more robust."
+          ]
+        },
+        {
+          "heading": "3. Use of rand() Instead of Redis Random Utilities",
+          "heading_level": 3,
+          "required_content": [
+            "shuffle() uses rand() for randomization",
+            "Redis has its own random number generation facilities",
+            "Thread safety and seeding concerns"
+          ],
+          "paragraphs": [
+            "The shuffle function at line 39 uses `rand()` for random number generation. The Redis codebase includes its own random number generator based on the Mersenne Twister (mt19937-64), as evidenced by the mt19937-64.o object file included in the Makefile. Using the system rand() may produce lower-quality randomness and has thread-safety concerns in multi-threaded contexts. Redis typically uses its internal random functions for consistency. This is a minor concern since LOLWUT is not performance-critical and is unlikely to be called from multiple threads, but using Redis's built-in RNG would be more consistent with the codebase."
+          ]
+        },
+        {
+          "heading": "4. Version Dispatch Edge Case for Redis 7.9 vs 8.0",
+          "heading_level": 3,
+          "required_content": [
+            "LOLWUT 8 displays for Redis 7.9 unstable builds",
+            "Comparison with lolwut6Command matching 5.9",
+            "Potential for user confusion during development"
+          ],
+          "paragraphs": [
+            "The version matching condition in src/lolwut.c maps both Redis 8.x (except 8.9) and Redis 7.9 to lolwut8Command. This follows the established pattern where lolwut6Command handles both 6.x and 5.9. The intent is that the unstable 7.9 development version previews the LOLWUT 8 experience before the stable 8.0 release.",
+            "While this is consistent with existing behavior, it could be surprising if a user running a Redis 7.9 development build expects to see a LOLWUT 7 experience. This is not a bug but rather an inherited design choice from the existing dispatch pattern. The PR description and commit message do not explicitly discuss this behavior, which could be documented more clearly."
+          ]
+        },
+        {
+          "heading": "5. Missing Error Handling for zmalloc",
+          "heading_level": 3,
+          "required_content": [
+            "zmalloc call for working_verses has no NULL check",
+            "Behavior on allocation failure",
+            "Redis convention for memory allocation"
+          ],
+          "paragraphs": [
+            "At line 97, `zmalloc(num_verses * sizeof(Verse))` allocates memory for the working copy of verses without a NULL check. In Redis's implementation, zmalloc typically calls abort() on allocation failure rather than returning NULL, so this is not a practical bug. However, explicitly documenting this assumption or adding a defensive check would improve code clarity, especially for code that may be backported or maintained by different contributors."
+          ]
+        },
+        {
+          "heading": "6. Output Always Uppercased with Slashes Removed",
+          "heading_level": 3,
+          "required_content": [
+            "All output converted to uppercase",
+            "Forward slashes replaced with spaces",
+            "Impact on readability of the poem"
+          ],
+          "paragraphs": [
+            "Lines 148-152 convert the entire combined output to uppercase and replace all '/' characters with spaces. The uppercase conversion was part of Balestrini's original presentation style. The slash removal transforms the metrical fraction separators (used as visual cues in the source data) into spaces, which affects the visual rhythm of the output. This is an intentional design choice that matches the described algorithm's output format, where the slashes served as internal separators that should not appear in the final poem."
+          ]
+        },
+        {
+          "heading": "7. The stanza loop variable `j` is reused as a string iteration index",
+          "heading_level": 3,
+          "required_content": [
+            "Variable j used for both stanza count and string iteration",
+            "Potential confusion for maintainers",
+            "Scope and shadowing concerns"
+          ],
+          "paragraphs": [
+            "The variable `j` is first used as the stanza loop counter (lines 109-141) and then reused as the string iteration index in the uppercase conversion loop at line 150 (`for (size_t j = 0; ...)`). While the scopes do not technically conflict (the first `j` is an `int` and the second is a `size_t` within a nested block), this reuse of the same variable name in the same function is poor practice and could confuse maintainers. A distinct variable name like `k` or `idx` would be clearer for the string processing loop."
+          ]
+        },
+        {
+          "heading": "8. Links in Output Footer",
+          "heading_level": 3,
+          "required_content": [
+            "Wikipedia and YouTube links included in output",
+            "Potential for link rot",
+            "Hardcoded URLs in source code"
+          ],
+          "paragraphs": [
+            "The output includes two hardcoded URLs: a Wikipedia article on Digital poetry (https://en.wikipedia.org/wiki/Digital_poetry) and a YouTube video (https://www.youtube.com/watch?v=8i7uFCK7G0o). These links add educational value but are hardcoded in the source. If either URL becomes unavailable, the output will contain broken links. This is a minor concern for a fun command, but worth noting. The existing LOLWUT implementations do not typically include external URLs in their output."
+          ]
+        },
+        {
+          "heading": "Verdict",
+          "heading_level": 2,
+          "required_content": [
+            "Final recommendation",
+            "Justification based on findings",
+            "List of required changes before merge"
+          ],
+          "paragraphs": [
+            "Recommendation: Merge with changes. The PR successfully implements an interesting and culturally significant computer poetry algorithm that fits well within the LOLWUT tradition. The core algorithm logic is sound, the file structure follows existing patterns, and the implementation honors Balestrini's original TAPE MARK I work.",
+            "However, the following revisions should be addressed before merging and backporting: (1) Replace `rand()` with Redis's internal RNG for consistency. (2) Rename the string processing loop variable to avoid reuse of `j`. (3) Consider zero-initializing the `stanza` array for defensive coding. (4) Add a brief comment about the version dispatch behavior mapping 7.9 to LOLWUT 8.",
+            "The remaining issues (fixed buffer sizes, missing NULL check on zmalloc, hardcoded URLs) are minor and can be addressed in follow-up or accepted as-is given the nature of this fun command. The algorithm analysis confirms the implementation is faithful to the described TAPE MARK I process, with the greedy selection and group alternation constraints properly enforced."
           ]
         }
       ],
-      "md_title": "Code Review: LOLWUT 8 - TAPE MARK I Implementation (redis/redis#14048)",
+      "md_title": "Code Review: PR #14048 — LOLWUT 8: TAPE MARK I Computer Poetry",
       "input_attachments": [
         {
           "attachment_id": "att_0",
           "filename": "input_0.md",
           "format": "md",
-          "description": "PR #14048 diff showing changes to src/Makefile, src/lolwut.c, and the new src/lolwut8.c file (182 additions, 1 deletion across 3 files)",
+          "description": "PR #14048 diff (3 changed files: src/Makefile, src/lolwut.c, src/lolwut8.c)",
           "content_blueprint": {
-            "title": "PR #14048 diff showing changes to src/Makefile, src/lolwut",
-            "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut"
+            "title": "PR #14048 diff (3 changed files: src/Makefile, src/lolwut",
+            "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwutCommand(client *c) {\n     else if ((v[0] == '6' && v[1] == '.' && v[2] != '9') ||\n              (v[0] == '5' && v[1] == '.' && v[2] == '9'))\n         lolwut6Command(c);\n+    else if ((v[0] == '8' && v[1] == '.' && v[2] != '9') ||\n+             (v[0] == '7' && v[1] == '.' && v[2] == '9'))\n+        lolwut8Command(c);\n     else\n         lolwutUnstableCommand(c);\n \ndiff --git a/src/lolwut8.c b/src/lolwut8.c\nnew file mode 100644\nindex 00000000000..1be150e6e0c\n--- /dev/null\n+++ b/src/lolwut8.c\n@@ -0,0 +1,177 @@\n+/*\n+ * Copyright (c) 2025-Present, Redis Ltd.\n+ * All rights reserved.\n+ *\n+ * Licensed under your choice of (a) the Redis Source Available License 2.0\n+ * (RSALv2); or (b) the Server Side Public License v1 (SSPLv1); or (c) the\n+ * GNU Affero General Public License v3 (AGPLv3).\n+ *\n+ * Originally authored by: Salvatore Sanfilippo.\n+ * Algorithm based on the Almanacco Bompiani description and the Python\n+ * code written by Emiliano Russo.\n+ */\n+\n+#include \"server.h\"\n+#include <ctype.h>\n+\n+/* The LOLWUT 8 command:\n+ *\n+ * LOLWUT [EN|IT]\n+ *\n+ * By default the command produces verses in English language, in order for\n+ * the output to be more universally accessible. However, passing IT as argument\n+ * it is possible to reproduce the original output, exactly like done by\n+ * Nanni Balestrini in TAPE MARK I, and described in the Almanacco Letterario\n+ * Bompiani, 1962.\n+ */\n+\n+// Structure to represent a verse with its metrical characteristics.\n+typedef struct {\n+    char text_en[100];    // English verse text.\n+    char text_it[100];    // Italian verse text.\n+    char fraction1[5];    // First fraction (rhythm/meter indicator).\n+    char fraction2[5];    // Second fraction (rhythm/meter indicator).\n+    char group[2];        // Group number (1-3 representing different\n+                          // literary sources).\n+} Verse;\n+\n+// Fisher-Yates shuffle algorithm to randomize verse order.\n+static void shuffle(Verse *array, int size) {\n+    for (int i = size - 1; i > 0; i--) {\n+        int j = rand() % (i + 1);\n+        Verse temp = array[j];\n+        array[j] = array[i];\n+        array[i] = temp;\n+    }\n+}\n+\n+void lolwut8Command(client *c) {\n+    int en_lang = 1;  // Default to English.\n+\n+    /* Parse the optional arguments if any. */\n+    if (c->argc > 1 && !strcasecmp(c->argv[1]->ptr,\"IT\"))\n+        en_lang = 0;\n+\n+    // Define verses from three literary sources with their metrical fractions:\n+    // Group 1: Diary of Hiroshima by Michihito Hachiya.\n+    // Group 2: The Mystery of the Elevator by Paul Goldwin.\n+    // Group 3: Tao Te Ching by Lao Tse.\n+    Verse verses[] = {\n+        // Group 1: Hiroshima verses.\n+        {\" The blinding / globe / of fire \",\n+         \" l accecante   /  globo  /  di fuoco  \", \"1/4\", \"2/3\", \"1\"},\n+        {\" It expands / rapidly \",\n+         \" si espande   /  rapidamente  \", \"1/2\", \"3/4\", \"1\"},\n+        {\" Thirty times / brighter / than the sun \",\n+         \" trenta volte  / piu luminoso  / del sole \", \"2/3\", \"2/4\", \"1\"},\n+        {\" When it reaches / the stratosphere \",\n+         \" quando  raggiunge / la stratosfera  \", \"3/4\", \"1/2\", \"1\"},\n+        {\" The summit / of the cloud \",\n+         \" la  sommita  /  della nuvola \", \"1/3\", \"2/3\", \"1\"},\n+        {\" Assumes / the well-known shape / of a mushroom \",\n+         \" assume   / la ben nota forma  / di fungo \", \"2/4\", \"3/4\", \"1\"},\n+\n+        // Group 2: Elevator mystery verses.\n+        {\" The head / pressed / upon the shoulder \",\n+         \" la testa / premuta  / sulla spalla  \", \"1/4\", \"2/4\", \"2\"},\n+        {\" The hair / between the lips \",\n+         \" i  capelli   /  tra le labbra \", \"1/4\", \"2/4\", \"2\"},\n+        {\" They lay / motionless / without speaking \",\n+         \" giacquero  /   immobili / senza parlare \", \"2/3\", \"2/3\", \"2\"},\n+        {\" Till he moved / his fingers / slowly \",\n+         \" finche non mosse  /  le dita  / lentamente    \", \"3/4\", \"1/3\", \"2\"},\n+        {\" Trying / to grasp \",\n+         \" cercando / di afferrare  \", \"3/4\", \"1/2\", \"2\"},\n+\n+        // Group 3: Tao Te Ching verses.\n+        {\" While the multitude / of things / comes into being \",\n+         \" mentre la moltitudine  /  delle cose  /   accade   \", \"1/2\", \"1/2\", \"3\"},\n+        {\" I envisage / their return \",\n+         \" io contemplo  /  il loro ritorno    \", \"2/3\", \"3/4\", \"3\"},\n+        {\" Although / things / flourish \",\n+         \" malgrado / che le cose  /  fioriscano    \", \"1/2\", \"2/3\", \"3\"},\n+        {\" They all return / to / their roots \",\n+         \" esse tornano  / tutte    / alla loro radice   \", \"2/3\", \"1/4\", \"3\"}\n+    };\n+\n+    // Calculate the total number of verses.\n+    int num_verses = sizeof(verses) / sizeof(verses[0]);\n+\n+    // Create a working copy of verses for manipulation.\n+    Verse *working_verses = zmalloc(num_verses * sizeof(Verse));\n+    memcpy(working_verses, verses, num_verses * sizeof(Verse));\n+\n+    // Step 1: Shuffle the verses randomly.\n+    shuffle(working_verses, num_verses);\n+\n+    // Step 2: Build stanza by finding compatible verses\n+    // Each subsequent verse must:\n+    // - Have compatible metrical fractions (connecting criteria).\n+    // - Belong to a different group than the previous verse.\n+    Verse stanza[10];\n+\n+    int j; // At the end, it will contain the number of added stanzas.\n+    for (j = 0; j < 10; j++) {\n+        int i = 0;\n+        int found = 0;\n+\n+        // Search for compatible verse among remaining verses.\n+        while (i < num_verses) {\n+            // Metrical compatibility check: this is used to select verses\n+            // that go somewhat well together, if their fractions match.\n+            // The algorithm checks if current verse's first fraction matches\n+            // with previous verse's second fraction in various ways, and\n+            // force successive verses to be of different groups.\n+            if (j == 0 || // First stanza is always accepted.\n+                ((working_verses[i].fraction1[0] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[2]) &&\n+                 strcmp(working_verses[i].group, stanza[j-1].group) != 0))\n+            {\n+\n+                // Add compatible verse to stanza.\n+                stanza[j] = working_verses[i];\n+\n+                // Remove selected verse from working set, to avoid reuse.\n+                for (int k = i; k < num_verses - 1; k++)\n+                    working_verses[k] = working_verses[k + 1];\n+                num_verses--;\n+\n+                found = 1;\n+                break;\n+            }\n+            i++;\n+        }\n+\n+        // Exit if there are no longer matching verses.\n+        if (!found) break;\n+    }\n+    zfree(working_verses);\n+\n+    // Step 3: Combine all stanza verses into single SDS string.\n+    sds combined = sdsempty();\n+    for (int i = 0; i < j; i++) {\n+        if (en_lang) {\n+            combined = sdscat(combined, stanza[i].text_en);\n+        } else {\n+            combined = sdscat(combined, stanza[i].text_it);\n+        }\n+        combined = sdscat(combined, \"\\n\");\n+    }\n+\n+    // Step 4: Make uppercase, and strip the \"/\".\n+    for (size_t j = 0; j < sdslen(combined); j++) {\n+        combined[j] = toupper(combined[j]);\n+        if (combined[j] == '/') combined[j] = ' ';\n+    }\n+\n+    // Step 5: Add background info about what the user just saw.\n+    combined = sdscat(combined,\n+        \"\\nIn 1961, Nanni Balestrini created one of the first computer-generated poems, TAPE MARK I, using an IBM 7090 mainframe. Each execution combined verses from three literary sources following algorithmic rules based on metrical compatibility and group constraints. This LOLWUT command reproduces Balestrini's original algorithm, generating new stanzas through the same computational poetry process described in Almanacco Letterario Bompiani, 1962.\\n\\n\"\n+        \"https://en.wikipedia.org/wiki/Digital_poetry\\n\"\n+        \"https://www.youtube.com/watch?v=8i7uFCK7G0o (English subs)\\n\\n\"\n+        \"Use: LOLWUT IT for the original Italian output.\\n\\n\");\n+\n+    addReplyVerbatim(c,combined,sdslen(combined),\"txt\");\n+    sdsfree(combined);\n+}\n"
           }
         },
         {
           "attachment_id": "att_1",
           "filename": "input_1.md",
           "format": "md",
-          "description": "PR #14048 description with background on TAPE MARK I algorithm, implementation notes, and cultural significance",
+          "description": "PR #14048 description and background on TAPE MARK I algorithm",
           "content_blueprint": {
-            "title": "PR #14048 description with background on TAPE MARK I algorithm, implementation notes, and cultural significance",
-            "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut"
+            "title": "PR #14048 description and background on TAPE MARK I algorithm",
+            "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwutCommand(client *c) {\n     else if ((v[0] == '6' && v[1] == '.' && v[2] != '9') ||\n              (v[0] == '5' && v[1] == '.' && v[2] == '9'))\n         lolwut6Command(c);\n+    else if ((v[0] == '8' && v[1] == '.' && v[2] != '9') ||\n+             (v[0] == '7' && v[1] == '.' && v[2] == '9'))\n+        lolwut8Command(c);\n     else\n         lolwutUnstableCommand(c);\n \ndiff --git a/src/lolwut8.c b/src/lolwut8.c\nnew file mode 100644\nindex 00000000000..1be150e6e0c\n--- /dev/null\n+++ b/src/lolwut8.c\n@@ -0,0 +1,177 @@\n+/*\n+ * Copyright (c) 2025-Present, Redis Ltd.\n+ * All rights reserved.\n+ *\n+ * Licensed under your choice of (a) the Redis Source Available License 2.0\n+ * (RSALv2); or (b) the Server Side Public License v1 (SSPLv1); or (c) the\n+ * GNU Affero General Public License v3 (AGPLv3).\n+ *\n+ * Originally authored by: Salvatore Sanfilippo.\n+ * Algorithm based on the Almanacco Bompiani description and the Python\n+ * code written by Emiliano Russo.\n+ */\n+\n+#include \"server.h\"\n+#include <ctype.h>\n+\n+/* The LOLWUT 8 command:\n+ *\n+ * LOLWUT [EN|IT]\n+ *\n+ * By default the command produces verses in English language, in order for\n+ * the output to be more universally accessible. However, passing IT as argument\n+ * it is possible to reproduce the original output, exactly like done by\n+ * Nanni Balestrini in TAPE MARK I, and described in the Almanacco Letterario\n+ * Bompiani, 1962.\n+ */\n+\n+// Structure to represent a verse with its metrical characteristics.\n+typedef struct {\n+    char text_en[100];    // English verse text.\n+    char text_it[100];    // Italian verse text.\n+    char fraction1[5];    // First fraction (rhythm/meter indicator).\n+    char fraction2[5];    // Second fraction (rhythm/meter indicator).\n+    char group[2];        // Group number (1-3 representing different\n+                          // literary sources).\n+} Verse;\n+\n+// Fisher-Yates shuffle algorithm to randomize verse order.\n+static void shuffle(Verse *array, int size) {\n+    for (int i = size - 1; i > 0; i--) {\n+        int j = rand() % (i + 1);\n+        Verse temp = array[j];\n+        array[j] = array[i];\n+        array[i] = temp;\n+    }\n+}\n+\n+void lolwut8Command(client *c) {\n+    int en_lang = 1;  // Default to English.\n+\n+    /* Parse the optional arguments if any. */\n+    if (c->argc > 1 && !strcasecmp(c->argv[1]->ptr,\"IT\"))\n+        en_lang = 0;\n+\n+    // Define verses from three literary sources with their metrical fractions:\n+    // Group 1: Diary of Hiroshima by Michihito Hachiya.\n+    // Group 2: The Mystery of the Elevator by Paul Goldwin.\n+    // Group 3: Tao Te Ching by Lao Tse.\n+    Verse verses[] = {\n+        // Group 1: Hiroshima verses.\n+        {\" The blinding / globe / of fire \",\n+         \" l accecante   /  globo  /  di fuoco  \", \"1/4\", \"2/3\", \"1\"},\n+        {\" It expands / rapidly \",\n+         \" si espande   /  rapidamente  \", \"1/2\", \"3/4\", \"1\"},\n+        {\" Thirty times / brighter / than the sun \",\n+         \" trenta volte  / piu luminoso  / del sole \", \"2/3\", \"2/4\", \"1\"},\n+        {\" When it reaches / the stratosphere \",\n+         \" quando  raggiunge / la stratosfera  \", \"3/4\", \"1/2\", \"1\"},\n+        {\" The summit / of the cloud \",\n+         \" la  sommita  /  della nuvola \", \"1/3\", \"2/3\", \"1\"},\n+        {\" Assumes / the well-known shape / of a mushroom \",\n+         \" assume   / la ben nota forma  / di fungo \", \"2/4\", \"3/4\", \"1\"},\n+\n+        // Group 2: Elevator mystery verses.\n+        {\" The head / pressed / upon the shoulder \",\n+         \" la testa / premuta  / sulla spalla  \", \"1/4\", \"2/4\", \"2\"},\n+        {\" The hair / between the lips \",\n+         \" i  capelli   /  tra le labbra \", \"1/4\", \"2/4\", \"2\"},\n+        {\" They lay / motionless / without speaking \",\n+         \" giacquero  /   immobili / senza parlare \", \"2/3\", \"2/3\", \"2\"},\n+        {\" Till he moved / his fingers / slowly \",\n+         \" finche non mosse  /  le dita  / lentamente    \", \"3/4\", \"1/3\", \"2\"},\n+        {\" Trying / to grasp \",\n+         \" cercando / di afferrare  \", \"3/4\", \"1/2\", \"2\"},\n+\n+        // Group 3: Tao Te Ching verses.\n+        {\" While the multitude / of things / comes into being \",\n+         \" mentre la moltitudine  /  delle cose  /   accade   \", \"1/2\", \"1/2\", \"3\"},\n+        {\" I envisage / their return \",\n+         \" io contemplo  /  il loro ritorno    \", \"2/3\", \"3/4\", \"3\"},\n+        {\" Although / things / flourish \",\n+         \" malgrado / che le cose  /  fioriscano    \", \"1/2\", \"2/3\", \"3\"},\n+        {\" They all return / to / their roots \",\n+         \" esse tornano  / tutte    / alla loro radice   \", \"2/3\", \"1/4\", \"3\"}\n+    };\n+\n+    // Calculate the total number of verses.\n+    int num_verses = sizeof(verses) / sizeof(verses[0]);\n+\n+    // Create a working copy of verses for manipulation.\n+    Verse *working_verses = zmalloc(num_verses * sizeof(Verse));\n+    memcpy(working_verses, verses, num_verses * sizeof(Verse));\n+\n+    // Step 1: Shuffle the verses randomly.\n+    shuffle(working_verses, num_verses);\n+\n+    // Step 2: Build stanza by finding compatible verses\n+    // Each subsequent verse must:\n+    // - Have compatible metrical fractions (connecting criteria).\n+    // - Belong to a different group than the previous verse.\n+    Verse stanza[10];\n+\n+    int j; // At the end, it will contain the number of added stanzas.\n+    for (j = 0; j < 10; j++) {\n+        int i = 0;\n+        int found = 0;\n+\n+        // Search for compatible verse among remaining verses.\n+        while (i < num_verses) {\n+            // Metrical compatibility check: this is used to select verses\n+            // that go somewhat well together, if their fractions match.\n+            // The algorithm checks if current verse's first fraction matches\n+            // with previous verse's second fraction in various ways, and\n+            // force successive verses to be of different groups.\n+            if (j == 0 || // First stanza is always accepted.\n+                ((working_verses[i].fraction1[0] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[2]) &&\n+                 strcmp(working_verses[i].group, stanza[j-1].group) != 0))\n+            {\n+\n+                // Add compatible verse to stanza.\n+                stanza[j] = working_verses[i];\n+\n+                // Remove selected verse from working set, to avoid reuse.\n+                for (int k = i; k < num_verses - 1; k++)\n+                    working_verses[k] = working_verses[k + 1];\n+                num_verses--;\n+\n+                found = 1;\n+                break;\n+            }\n+            i++;\n+        }\n+\n+        // Exit if there are no longer matching verses.\n+        if (!found) break;\n+    }\n+    zfree(working_verses);\n+\n+    // Step 3: Combine all stanza verses into single SDS string.\n+    sds combined = sdsempty();\n+    for (int i = 0; i < j; i++) {\n+        if (en_lang) {\n+            combined = sdscat(combined, stanza[i].text_en);\n+        } else {\n+            combined = sdscat(combined, stanza[i].text_it);\n+        }\n+        combined = sdscat(combined, \"\\n\");\n+    }\n+\n+    // Step 4: Make uppercase, and strip the \"/\".\n+    for (size_t j = 0; j < sdslen(combined); j++) {\n+        combined[j] = toupper(combined[j]);\n+        if (combined[j] == '/') combined[j] = ' ';\n+    }\n+\n+    // Step 5: Add background info about what the user just saw.\n+    combined = sdscat(combined,\n+        \"\\nIn 1961, Nanni Balestrini created one of the first computer-generated poems, TAPE MARK I, using an IBM 7090 mainframe. Each execution combined verses from three literary sources following algorithmic rules based on metrical compatibility and group constraints. This LOLWUT command reproduces Balestrini's original algorithm, generating new stanzas through the same computational poetry process described in Almanacco Letterario Bompiani, 1962.\\n\\n\"\n+        \"https://en.wikipedia.org/wiki/Digital_poetry\\n\"\n+        \"https://www.youtube.com/watch?v=8i7uFCK7G0o (English subs)\\n\\n\"\n+        \"Use: LOLWUT IT for the original Italian output.\\n\\n\");\n+\n+    addReplyVerbatim(c,combined,sdslen(combined),\"txt\");\n+    sdsfree(combined);\n+}\n"
           }
         }
       ],
       "expected_values": [
         {
-          "description": "PR number referenced in the review",
+          "description": "PR number referenced in the code review",
           "value": "#14048",
           "tolerance": null,
-          "location": "Title section and throughout the review"
+          "location": "Document title and Summary section"
         },
         {
-          "description": "Repository identifier",
-          "value": "redis/redis",
-          "tolerance": null,
-          "location": "Title section"
-        },
-        {
-          "description": "Merge date of the PR",
-          "value": "2025-05-26",
+          "description": "Number of changed files in the PR",
+          "value": 3,
           "tolerance": null,
           "location": "Summary section"
         },
         {
-          "description": "Number of changed files",
-          "value": "3",
+          "description": "List of changed files mentioned in the review",
+          "value": "src/Makefile, src/lolwut.c, src/lolwut8.c",
           "tolerance": null,
           "location": "Summary section"
         },
         {
-          "description": "Number of additions",
-          "value": "182",
+          "description": "Source file for LOLWUT 8 implementation",
+          "value": "src/lolwut8.c",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Multiple sections"
         },
         {
-          "description": "Number of deletions",
-          "value": "1",
+          "description": "Number of lines in the new lolwut8.c file",
+          "value": 177,
           "tolerance": null,
-          "location": "Summary section"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "First literary source name",
-          "value": "Diary of Hiroshima",
+          "description": "Number of source verses defined in the Verse array",
+          "value": 16,
           "tolerance": null,
-          "location": "Section 3 and 4"
+          "location": "src/lolwut8.c section and Algorithm Analysis"
         },
         {
-          "description": "First literary source author",
-          "value": "Michihito Hachiya",
+          "description": "Number of verses from Hiroshima (Group 1)",
+          "value": 6,
           "tolerance": null,
-          "location": "Section 3 and 4"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Second literary source name",
-          "value": "The Mystery of the Elevator",
+          "description": "Number of verses from Elevator mystery (Group 2)",
+          "value": 5,
           "tolerance": null,
-          "location": "Section 3 and 4"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Second literary source author",
-          "value": "Paul Goldwin",
+          "description": "Number of verses from Tao Te Ching (Group 3)",
+          "value": 4,
           "tolerance": null,
-          "location": "Section 3"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Third literary source name",
-          "value": "Tao Te Ching",
+          "description": "Maximum stanza length in the algorithm",
+          "value": 10,
           "tolerance": null,
-          "location": "Section 3 and 4"
+          "location": "Algorithm Analysis section"
         },
         {
-          "description": "Third literary source author",
-          "value": "Lao Tse",
+          "description": "Size of text_en and text_it buffers in the Verse struct",
+          "value": 100,
           "tolerance": null,
-          "location": "Section 3 and 4"
+          "location": "Issues section on buffer safety"
         },
         {
-          "description": "Algorithm creator name",
-          "value": "Nanni Balestrini",
+          "description": "Size of fraction1 and fraction2 fields in the Verse struct",
+          "value": 5,
           "tolerance": null,
-          "location": "Title, Section 3, and Section 4"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Publication venue",
-          "value": "Almanacco Letterario Bompiani",
+          "description": "Size of group field in the Verse struct",
+          "value": 2,
           "tolerance": null,
-          "location": "Section 4"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Publication year",
-          "value": "1962",
+          "description": "Shuffle algorithm name used in the implementation",
+          "value": "Fisher-Yates",
           "tolerance": null,
-          "location": "Title, Section 3, and Section 4"
+          "location": "src/lolwut8.c section and Algorithm Analysis"
         },
         {
-          "description": "Hardware used for original implementation",
-          "value": "IBM 7090",
+          "description": "Literary source for Group 1 verses",
+          "value": "Diary of Hiroshima by Michihito Hachiya",
           "tolerance": null,
-          "location": "Section 4"
+          "location": "Summary and src/lolwut8.c section"
         },
         {
-          "description": "Time to generate each verse in original",
-          "value": "six minutes",
+          "description": "Literary source for Group 2 verses",
+          "value": "The Mystery of the Elevator by Paul Goldwin",
           "tolerance": null,
-          "location": "Section 4"
+          "location": "Summary and src/lolwut8.c section"
         },
         {
-          "description": "Object file name added to Makefile",
+          "description": "Literary source for Group 3 verses",
+          "value": "Tao Te Ching by Lao Tse",
+          "tolerance": null,
+          "location": "Summary and src/lolwut8.c section"
+        },
+        {
+          "description": "Version matching condition for Redis 8.x",
+          "value": "v[0] == '8' && v[1] == '.' && v[2] != '9'",
+          "tolerance": null,
+          "location": "src/lolwut.c section"
+        },
+        {
+          "description": "Version matching condition for Redis 7.9",
+          "value": "v[0] == '7' && v[1] == '.' && v[2] == '9'",
+          "tolerance": null,
+          "location": "src/lolwut.c section"
+        },
+        {
+          "description": "Forward declaration added in lolwut.c",
+          "value": "void lolwut8Command(client *c);",
+          "tolerance": null,
+          "location": "src/lolwut.c section"
+        },
+        {
+          "description": "Object file added to REDIS_SERVER_OBJ in Makefile",
           "value": "lolwut8.o",
           "tolerance": null,
-          "location": "Section 1"
+          "location": "src/Makefile section"
         },
         {
-          "description": "Function name declared in lolwut.c",
-          "value": "lolwut8Command",
+          "description": "Location where lolwut8.o is added relative to other objects",
+          "value": "after lolwut6.o and before acl.o",
           "tolerance": null,
-          "location": "Section 2"
+          "location": "src/Makefile section"
         },
         {
-          "description": "Forward declaration line number referenced",
-          "value": "22",
+          "description": "Function used to send the final output to the client",
+          "value": "addReplyVerbatim",
           "tolerance": null,
-          "location": "Section 2"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Dispatcher location line number referenced",
-          "value": "54",
+          "description": "Format marker used with addReplyVerbatim",
+          "value": "txt",
           "tolerance": null,
-          "location": "Section 2"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Existing LOLWUT object files mentioned in order",
-          "value": "lolwut.o lolwut5.o lolwut6.o",
+          "description": "Memory allocation function used for working copy",
+          "value": "zmalloc",
           "tolerance": null,
-          "location": "Section 1"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Backport statement from PR description quoted",
-          "value": "This commit should be back-ported to Redis 8.",
+          "description": "Memory free function used for working copy",
+          "value": "zfree",
           "tolerance": null,
-          "location": "Section 5"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "Wikipedia reference mentioned",
-          "value": "Digital poetry",
+          "description": "String library used for combined output",
+          "value": "sds (Simple Dynamic Strings)",
           "tolerance": null,
-          "location": "Section 4"
+          "location": "src/lolwut8.c section"
         },
         {
-          "description": "English translation example mentioned",
-          "value": "adding \"it\" before \"expands rapidly\"",
+          "description": "Year TAPE MARK I was created by Balestrini",
+          "value": "1962",
           "tolerance": null,
-          "location": "Section 3"
+          "location": "Summary section"
+        },
+        {
+          "description": "Mainframe used by Balestrini for TAPE MARK I",
+          "value": "IBM 7090",
+          "tolerance": null,
+          "location": "Algorithm Analysis section"
+        },
+        {
+          "description": "Final verdict recommendation in the review",
+          "value": "Merge with changes",
+          "tolerance": null,
+          "location": "Verdict section"
+        },
+        {
+          "description": "Number of recommended revisions listed in the verdict",
+          "value": 4,
+          "tolerance": null,
+          "location": "Verdict section"
+        },
+        {
+          "description": "Alternative to rand() suggested in the review",
+          "value": "Redis's internal RNG",
+          "tolerance": null,
+          "location": "Issues section 3 and Verdict"
+        },
+        {
+          "description": "First verse from Hiroshima group (English)",
+          "value": "The blinding / globe / of fire",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "First fraction of the first Hiroshima verse",
+          "value": "1/4",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Second fraction of the first Hiroshima verse",
+          "value": "2/3",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Copyright year range in the new file header",
+          "value": "2025-Present",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Three license options listed in the copyright header",
+          "value": "RSALv2, SSPLv1, AGPLv3",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Original author credited in the file header",
+          "value": "Salvatore Sanfilippo",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Python code author credited in the file header",
+          "value": "Emiliano Russo",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Publication where TAPE MARK I was described",
+          "value": "Almanacco Letterario Bompiani",
+          "tolerance": null,
+          "location": "Summary section"
+        },
+        {
+          "description": "Optional language argument for Italian output",
+          "value": "IT",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Default language for LOLWUT 8 output",
+          "value": "English",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Metrical compatibility check compares fraction characters",
+          "value": "fraction1 and fraction2 character positions",
+          "tolerance": null,
+          "location": "Algorithm Analysis section"
+        },
+        {
+          "description": "Group alternation enforced using strcmp",
+          "value": "strcmp(working_verses[i].group, stanza[j-1].group) != 0",
+          "tolerance": null,
+          "location": "Algorithm Analysis section"
+        },
+        {
+          "description": "Wikipedia URL included in output footer",
+          "value": "https://en.wikipedia.org/wiki/Digital_poetry",
+          "tolerance": null,
+          "location": "Issues section 8"
+        },
+        {
+          "description": "YouTube URL included in output footer",
+          "value": "https://www.youtube.com/watch?v=8i7uFCK7G0o",
+          "tolerance": null,
+          "location": "Issues section 8"
+        },
+        {
+          "description": "Line number range for the stanza assembly loop",
+          "value": "109-141",
+          "tolerance": null,
+          "location": "Issues section 7"
+        },
+        {
+          "description": "Line number for the uppercase conversion loop",
+          "value": "150",
+          "tolerance": null,
+          "location": "Issues section 7"
+        },
+        {
+          "description": "Year mentioned in the background info footer",
+          "value": "1961",
+          "tolerance": null,
+          "location": "src/lolwut8.c section"
+        },
+        {
+          "description": "Redis version that lolwut6Command handles besides 6.x",
+          "value": "5.9",
+          "tolerance": null,
+          "location": "src/lolwut.c section"
         }
       ],
       "narrative_prompt": null,
@@ -925,20 +1503,20 @@
       "attachment_id": "att_0",
       "filename": "input_0.md",
       "format": "md",
-      "description": "PR #14048 diff showing changes to src/Makefile, src/lolwut.c, and the new src/lolwut8.c file (182 additions, 1 deletion across 3 files)",
+      "description": "PR #14048 diff (3 changed files: src/Makefile, src/lolwut.c, src/lolwut8.c)",
       "content_blueprint": {
-        "title": "PR #14048 diff showing changes to src/Makefile, src/lolwut",
-        "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut"
+        "title": "PR #14048 diff (3 changed files: src/Makefile, src/lolwut",
+        "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwutCommand(client *c) {\n     else if ((v[0] == '6' && v[1] == '.' && v[2] != '9') ||\n              (v[0] == '5' && v[1] == '.' && v[2] == '9'))\n         lolwut6Command(c);\n+    else if ((v[0] == '8' && v[1] == '.' && v[2] != '9') ||\n+             (v[0] == '7' && v[1] == '.' && v[2] == '9'))\n+        lolwut8Command(c);\n     else\n         lolwutUnstableCommand(c);\n \ndiff --git a/src/lolwut8.c b/src/lolwut8.c\nnew file mode 100644\nindex 00000000000..1be150e6e0c\n--- /dev/null\n+++ b/src/lolwut8.c\n@@ -0,0 +1,177 @@\n+/*\n+ * Copyright (c) 2025-Present, Redis Ltd.\n+ * All rights reserved.\n+ *\n+ * Licensed under your choice of (a) the Redis Source Available License 2.0\n+ * (RSALv2); or (b) the Server Side Public License v1 (SSPLv1); or (c) the\n+ * GNU Affero General Public License v3 (AGPLv3).\n+ *\n+ * Originally authored by: Salvatore Sanfilippo.\n+ * Algorithm based on the Almanacco Bompiani description and the Python\n+ * code written by Emiliano Russo.\n+ */\n+\n+#include \"server.h\"\n+#include <ctype.h>\n+\n+/* The LOLWUT 8 command:\n+ *\n+ * LOLWUT [EN|IT]\n+ *\n+ * By default the command produces verses in English language, in order for\n+ * the output to be more universally accessible. However, passing IT as argument\n+ * it is possible to reproduce the original output, exactly like done by\n+ * Nanni Balestrini in TAPE MARK I, and described in the Almanacco Letterario\n+ * Bompiani, 1962.\n+ */\n+\n+// Structure to represent a verse with its metrical characteristics.\n+typedef struct {\n+    char text_en[100];    // English verse text.\n+    char text_it[100];    // Italian verse text.\n+    char fraction1[5];    // First fraction (rhythm/meter indicator).\n+    char fraction2[5];    // Second fraction (rhythm/meter indicator).\n+    char group[2];        // Group number (1-3 representing different\n+                          // literary sources).\n+} Verse;\n+\n+// Fisher-Yates shuffle algorithm to randomize verse order.\n+static void shuffle(Verse *array, int size) {\n+    for (int i = size - 1; i > 0; i--) {\n+        int j = rand() % (i + 1);\n+        Verse temp = array[j];\n+        array[j] = array[i];\n+        array[i] = temp;\n+    }\n+}\n+\n+void lolwut8Command(client *c) {\n+    int en_lang = 1;  // Default to English.\n+\n+    /* Parse the optional arguments if any. */\n+    if (c->argc > 1 && !strcasecmp(c->argv[1]->ptr,\"IT\"))\n+        en_lang = 0;\n+\n+    // Define verses from three literary sources with their metrical fractions:\n+    // Group 1: Diary of Hiroshima by Michihito Hachiya.\n+    // Group 2: The Mystery of the Elevator by Paul Goldwin.\n+    // Group 3: Tao Te Ching by Lao Tse.\n+    Verse verses[] = {\n+        // Group 1: Hiroshima verses.\n+        {\" The blinding / globe / of fire \",\n+         \" l accecante   /  globo  /  di fuoco  \", \"1/4\", \"2/3\", \"1\"},\n+        {\" It expands / rapidly \",\n+         \" si espande   /  rapidamente  \", \"1/2\", \"3/4\", \"1\"},\n+        {\" Thirty times / brighter / than the sun \",\n+         \" trenta volte  / piu luminoso  / del sole \", \"2/3\", \"2/4\", \"1\"},\n+        {\" When it reaches / the stratosphere \",\n+         \" quando  raggiunge / la stratosfera  \", \"3/4\", \"1/2\", \"1\"},\n+        {\" The summit / of the cloud \",\n+         \" la  sommita  /  della nuvola \", \"1/3\", \"2/3\", \"1\"},\n+        {\" Assumes / the well-known shape / of a mushroom \",\n+         \" assume   / la ben nota forma  / di fungo \", \"2/4\", \"3/4\", \"1\"},\n+\n+        // Group 2: Elevator mystery verses.\n+        {\" The head / pressed / upon the shoulder \",\n+         \" la testa / premuta  / sulla spalla  \", \"1/4\", \"2/4\", \"2\"},\n+        {\" The hair / between the lips \",\n+         \" i  capelli   /  tra le labbra \", \"1/4\", \"2/4\", \"2\"},\n+        {\" They lay / motionless / without speaking \",\n+         \" giacquero  /   immobili / senza parlare \", \"2/3\", \"2/3\", \"2\"},\n+        {\" Till he moved / his fingers / slowly \",\n+         \" finche non mosse  /  le dita  / lentamente    \", \"3/4\", \"1/3\", \"2\"},\n+        {\" Trying / to grasp \",\n+         \" cercando / di afferrare  \", \"3/4\", \"1/2\", \"2\"},\n+\n+        // Group 3: Tao Te Ching verses.\n+        {\" While the multitude / of things / comes into being \",\n+         \" mentre la moltitudine  /  delle cose  /   accade   \", \"1/2\", \"1/2\", \"3\"},\n+        {\" I envisage / their return \",\n+         \" io contemplo  /  il loro ritorno    \", \"2/3\", \"3/4\", \"3\"},\n+        {\" Although / things / flourish \",\n+         \" malgrado / che le cose  /  fioriscano    \", \"1/2\", \"2/3\", \"3\"},\n+        {\" They all return / to / their roots \",\n+         \" esse tornano  / tutte    / alla loro radice   \", \"2/3\", \"1/4\", \"3\"}\n+    };\n+\n+    // Calculate the total number of verses.\n+    int num_verses = sizeof(verses) / sizeof(verses[0]);\n+\n+    // Create a working copy of verses for manipulation.\n+    Verse *working_verses = zmalloc(num_verses * sizeof(Verse));\n+    memcpy(working_verses, verses, num_verses * sizeof(Verse));\n+\n+    // Step 1: Shuffle the verses randomly.\n+    shuffle(working_verses, num_verses);\n+\n+    // Step 2: Build stanza by finding compatible verses\n+    // Each subsequent verse must:\n+    // - Have compatible metrical fractions (connecting criteria).\n+    // - Belong to a different group than the previous verse.\n+    Verse stanza[10];\n+\n+    int j; // At the end, it will contain the number of added stanzas.\n+    for (j = 0; j < 10; j++) {\n+        int i = 0;\n+        int found = 0;\n+\n+        // Search for compatible verse among remaining verses.\n+        while (i < num_verses) {\n+            // Metrical compatibility check: this is used to select verses\n+            // that go somewhat well together, if their fractions match.\n+            // The algorithm checks if current verse's first fraction matches\n+            // with previous verse's second fraction in various ways, and\n+            // force successive verses to be of different groups.\n+            if (j == 0 || // First stanza is always accepted.\n+                ((working_verses[i].fraction1[0] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[2]) &&\n+                 strcmp(working_verses[i].group, stanza[j-1].group) != 0))\n+            {\n+\n+                // Add compatible verse to stanza.\n+                stanza[j] = working_verses[i];\n+\n+                // Remove selected verse from working set, to avoid reuse.\n+                for (int k = i; k < num_verses - 1; k++)\n+                    working_verses[k] = working_verses[k + 1];\n+                num_verses--;\n+\n+                found = 1;\n+                break;\n+            }\n+            i++;\n+        }\n+\n+        // Exit if there are no longer matching verses.\n+        if (!found) break;\n+    }\n+    zfree(working_verses);\n+\n+    // Step 3: Combine all stanza verses into single SDS string.\n+    sds combined = sdsempty();\n+    for (int i = 0; i < j; i++) {\n+        if (en_lang) {\n+            combined = sdscat(combined, stanza[i].text_en);\n+        } else {\n+            combined = sdscat(combined, stanza[i].text_it);\n+        }\n+        combined = sdscat(combined, \"\\n\");\n+    }\n+\n+    // Step 4: Make uppercase, and strip the \"/\".\n+    for (size_t j = 0; j < sdslen(combined); j++) {\n+        combined[j] = toupper(combined[j]);\n+        if (combined[j] == '/') combined[j] = ' ';\n+    }\n+\n+    // Step 5: Add background info about what the user just saw.\n+    combined = sdscat(combined,\n+        \"\\nIn 1961, Nanni Balestrini created one of the first computer-generated poems, TAPE MARK I, using an IBM 7090 mainframe. Each execution combined verses from three literary sources following algorithmic rules based on metrical compatibility and group constraints. This LOLWUT command reproduces Balestrini's original algorithm, generating new stanzas through the same computational poetry process described in Almanacco Letterario Bompiani, 1962.\\n\\n\"\n+        \"https://en.wikipedia.org/wiki/Digital_poetry\\n\"\n+        \"https://www.youtube.com/watch?v=8i7uFCK7G0o (English subs)\\n\\n\"\n+        \"Use: LOLWUT IT for the original Italian output.\\n\\n\");\n+\n+    addReplyVerbatim(c,combined,sdslen(combined),\"txt\");\n+    sdsfree(combined);\n+}\n"
       }
     },
     {
       "attachment_id": "att_1",
       "filename": "input_1.md",
       "format": "md",
-      "description": "PR #14048 description with background on TAPE MARK I algorithm, implementation notes, and cultural significance",
+      "description": "PR #14048 description and background on TAPE MARK I algorithm",
       "content_blueprint": {
-        "title": "PR #14048 description with background on TAPE MARK I algorithm, implementation notes, and cultural significance",
-        "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwut"
+        "title": "PR #14048 description and background on TAPE MARK I algorithm",
+        "body": "# Seed Material: redis/redis#14048: LOLWUT for Redis 8.\nSource: github_issue_pr\nIdentifier: pr:redis/redis#14048\n\nRepository: redis/redis\nPR Number: #14048\nPR Title: LOLWUT for Redis 8.\nMerged At: 2025-05-26T06:27:46Z\nChanged Files: 3\nAdditions: +182, Deletions: -1\n\n## PR Description\n# Add LOLWUT 8: TAPE MARK I - Computer Poetry Generation\r\n\r\nThis PR introduces LOLWUT 8, implementing Nanni Balestrini's groundbreaking TAPE MARK I algorithm from 1962 - one of the first experiments in computer-generated poetry.\r\n\r\n## Background\r\n\r\nTAPE MARK I, created by Italian poet Nanni Balestrini and published in Almanacco Letterario Bompiani (1962), represents a [pioneering moment in computational creativity](https://en.wikipedia.org/wiki/Digital_poetry). Using an IBM 7090 mainframe, Balestrini developed an algorithm that combines verses from three different literary sources:\r\n\r\n1. **Diary of Hiroshima** by Michihito Hachiya\r\n2. **The Mystery of the Elevator** by Paul Goldwin  \r\n3. **Tao Te Ching** by Lao Tse\r\n\r\nThe algorithm selects and arranges verses based on metrical compatibility rules and ensures alternation between different literary sources, creating unique poetic combinations with each execution.\r\n\r\n## Implementation\r\n\r\nThis LOLWUT command faithfully reproduces Balestrini's original algorithm.\r\nThe main difference is that the default output is in English, and not in Italian. However it should be noted that Balestrini used three poems that were not in Italian anyway, so the translation process was already part of it. In the English versions, sometimes I operated minimal changes in order to preserve either the metric, or to make sure that the sentence stands on its own (like adding \"it\" before expands rapidly).\r\n\r\n## Cultural Significance\r\n\r\nTAPE MARK I predates most computational art experiments and demonstrates the early intersection of literature, technology, and algorithmic creativity. This implementation honors that pioneering work while making it accessible to a modern audience through Redis's LOLWUT tradition.\r\n\r\nEach execution generates a unique poem, just as Balestrini intended.\r\n\r\nTrivia: the original code, running on an IBM 7090, used six minutes to generate each verse :D\r\n\r\n**IMPORTANT** This commit should be back-ported to Redis 8.\r\n\n\n## Diff\ndiff --git a/src/Makefile b/src/Makefile\nindex 6cfac4aac13..4b86468b6a6 100644\n--- a/src/Makefile\n+++ b/src/Makefile\n@@ -375,7 +375,7 @@ endif\n \n REDIS_SERVER_NAME=redis-server$(PROG_SUFFIX)\n REDIS_SENTINEL_NAME=redis-sentinel$(PROG_SUFFIX)\n-REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n+REDIS_SERVER_OBJ=threads_mngr.o adlist.o quicklist.o ae.o anet.o dict.o ebuckets.o eventnotifier.o iothread.o mstr.o kvstore.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o cluster_legacy.o crc16.o endianconv.o slowlog.o eval.o bio.o rio.o rand.o memtest.o syscheck.o crcspeed.o crccombine.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o t_stream.o listpack.o localtime.o lolwut.o lolwut5.o lolwut6.o lolwut8.o acl.o tracking.o socket.o tls.o sha256.o timeout.o setcpuaffinity.o monotonic.o mt19937-64.o resp_parser.o call_reply.o script_lua.o script.o functions.o function_lua.o commands.o strl.o connection.o unix.o logreqres.o\n REDIS_CLI_NAME=redis-cli$(PROG_SUFFIX)\n REDIS_CLI_OBJ=anet.o adlist.o dict.o redis-cli.o zmalloc.o release.o ae.o redisassert.o crcspeed.o crccombine.o crc64.o siphash.o crc16.o monotonic.o cli_common.o mt19937-64.o strl.o cli_commands.o\n REDIS_BENCHMARK_NAME=redis-benchmark$(PROG_SUFFIX)\ndiff --git a/src/lolwut.c b/src/lolwut.c\nindex 3017f7aa5ff..8467c7803bb 100644\n--- a/src/lolwut.c\n+++ b/src/lolwut.c\n@@ -19,6 +19,7 @@\n \n void lolwut5Command(client *c);\n void lolwut6Command(client *c);\n+void lolwut8Command(client *c);\n \n /* The default target for LOLWUT if no matching version was found.\n  * This is what unstable versions of Redis will display. */\n@@ -54,6 +55,9 @@ void lolwutCommand(client *c) {\n     else if ((v[0] == '6' && v[1] == '.' && v[2] != '9') ||\n              (v[0] == '5' && v[1] == '.' && v[2] == '9'))\n         lolwut6Command(c);\n+    else if ((v[0] == '8' && v[1] == '.' && v[2] != '9') ||\n+             (v[0] == '7' && v[1] == '.' && v[2] == '9'))\n+        lolwut8Command(c);\n     else\n         lolwutUnstableCommand(c);\n \ndiff --git a/src/lolwut8.c b/src/lolwut8.c\nnew file mode 100644\nindex 00000000000..1be150e6e0c\n--- /dev/null\n+++ b/src/lolwut8.c\n@@ -0,0 +1,177 @@\n+/*\n+ * Copyright (c) 2025-Present, Redis Ltd.\n+ * All rights reserved.\n+ *\n+ * Licensed under your choice of (a) the Redis Source Available License 2.0\n+ * (RSALv2); or (b) the Server Side Public License v1 (SSPLv1); or (c) the\n+ * GNU Affero General Public License v3 (AGPLv3).\n+ *\n+ * Originally authored by: Salvatore Sanfilippo.\n+ * Algorithm based on the Almanacco Bompiani description and the Python\n+ * code written by Emiliano Russo.\n+ */\n+\n+#include \"server.h\"\n+#include <ctype.h>\n+\n+/* The LOLWUT 8 command:\n+ *\n+ * LOLWUT [EN|IT]\n+ *\n+ * By default the command produces verses in English language, in order for\n+ * the output to be more universally accessible. However, passing IT as argument\n+ * it is possible to reproduce the original output, exactly like done by\n+ * Nanni Balestrini in TAPE MARK I, and described in the Almanacco Letterario\n+ * Bompiani, 1962.\n+ */\n+\n+// Structure to represent a verse with its metrical characteristics.\n+typedef struct {\n+    char text_en[100];    // English verse text.\n+    char text_it[100];    // Italian verse text.\n+    char fraction1[5];    // First fraction (rhythm/meter indicator).\n+    char fraction2[5];    // Second fraction (rhythm/meter indicator).\n+    char group[2];        // Group number (1-3 representing different\n+                          // literary sources).\n+} Verse;\n+\n+// Fisher-Yates shuffle algorithm to randomize verse order.\n+static void shuffle(Verse *array, int size) {\n+    for (int i = size - 1; i > 0; i--) {\n+        int j = rand() % (i + 1);\n+        Verse temp = array[j];\n+        array[j] = array[i];\n+        array[i] = temp;\n+    }\n+}\n+\n+void lolwut8Command(client *c) {\n+    int en_lang = 1;  // Default to English.\n+\n+    /* Parse the optional arguments if any. */\n+    if (c->argc > 1 && !strcasecmp(c->argv[1]->ptr,\"IT\"))\n+        en_lang = 0;\n+\n+    // Define verses from three literary sources with their metrical fractions:\n+    // Group 1: Diary of Hiroshima by Michihito Hachiya.\n+    // Group 2: The Mystery of the Elevator by Paul Goldwin.\n+    // Group 3: Tao Te Ching by Lao Tse.\n+    Verse verses[] = {\n+        // Group 1: Hiroshima verses.\n+        {\" The blinding / globe / of fire \",\n+         \" l accecante   /  globo  /  di fuoco  \", \"1/4\", \"2/3\", \"1\"},\n+        {\" It expands / rapidly \",\n+         \" si espande   /  rapidamente  \", \"1/2\", \"3/4\", \"1\"},\n+        {\" Thirty times / brighter / than the sun \",\n+         \" trenta volte  / piu luminoso  / del sole \", \"2/3\", \"2/4\", \"1\"},\n+        {\" When it reaches / the stratosphere \",\n+         \" quando  raggiunge / la stratosfera  \", \"3/4\", \"1/2\", \"1\"},\n+        {\" The summit / of the cloud \",\n+         \" la  sommita  /  della nuvola \", \"1/3\", \"2/3\", \"1\"},\n+        {\" Assumes / the well-known shape / of a mushroom \",\n+         \" assume   / la ben nota forma  / di fungo \", \"2/4\", \"3/4\", \"1\"},\n+\n+        // Group 2: Elevator mystery verses.\n+        {\" The head / pressed / upon the shoulder \",\n+         \" la testa / premuta  / sulla spalla  \", \"1/4\", \"2/4\", \"2\"},\n+        {\" The hair / between the lips \",\n+         \" i  capelli   /  tra le labbra \", \"1/4\", \"2/4\", \"2\"},\n+        {\" They lay / motionless / without speaking \",\n+         \" giacquero  /   immobili / senza parlare \", \"2/3\", \"2/3\", \"2\"},\n+        {\" Till he moved / his fingers / slowly \",\n+         \" finche non mosse  /  le dita  / lentamente    \", \"3/4\", \"1/3\", \"2\"},\n+        {\" Trying / to grasp \",\n+         \" cercando / di afferrare  \", \"3/4\", \"1/2\", \"2\"},\n+\n+        // Group 3: Tao Te Ching verses.\n+        {\" While the multitude / of things / comes into being \",\n+         \" mentre la moltitudine  /  delle cose  /   accade   \", \"1/2\", \"1/2\", \"3\"},\n+        {\" I envisage / their return \",\n+         \" io contemplo  /  il loro ritorno    \", \"2/3\", \"3/4\", \"3\"},\n+        {\" Although / things / flourish \",\n+         \" malgrado / che le cose  /  fioriscano    \", \"1/2\", \"2/3\", \"3\"},\n+        {\" They all return / to / their roots \",\n+         \" esse tornano  / tutte    / alla loro radice   \", \"2/3\", \"1/4\", \"3\"}\n+    };\n+\n+    // Calculate the total number of verses.\n+    int num_verses = sizeof(verses) / sizeof(verses[0]);\n+\n+    // Create a working copy of verses for manipulation.\n+    Verse *working_verses = zmalloc(num_verses * sizeof(Verse));\n+    memcpy(working_verses, verses, num_verses * sizeof(Verse));\n+\n+    // Step 1: Shuffle the verses randomly.\n+    shuffle(working_verses, num_verses);\n+\n+    // Step 2: Build stanza by finding compatible verses\n+    // Each subsequent verse must:\n+    // - Have compatible metrical fractions (connecting criteria).\n+    // - Belong to a different group than the previous verse.\n+    Verse stanza[10];\n+\n+    int j; // At the end, it will contain the number of added stanzas.\n+    for (j = 0; j < 10; j++) {\n+        int i = 0;\n+        int found = 0;\n+\n+        // Search for compatible verse among remaining verses.\n+        while (i < num_verses) {\n+            // Metrical compatibility check: this is used to select verses\n+            // that go somewhat well together, if their fractions match.\n+            // The algorithm checks if current verse's first fraction matches\n+            // with previous verse's second fraction in various ways, and\n+            // force successive verses to be of different groups.\n+            if (j == 0 || // First stanza is always accepted.\n+                ((working_verses[i].fraction1[0] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[0] ||\n+                  working_verses[i].fraction1[2] == stanza[j-1].fraction2[2]) &&\n+                 strcmp(working_verses[i].group, stanza[j-1].group) != 0))\n+            {\n+\n+                // Add compatible verse to stanza.\n+                stanza[j] = working_verses[i];\n+\n+                // Remove selected verse from working set, to avoid reuse.\n+                for (int k = i; k < num_verses - 1; k++)\n+                    working_verses[k] = working_verses[k + 1];\n+                num_verses--;\n+\n+                found = 1;\n+                break;\n+            }\n+            i++;\n+        }\n+\n+        // Exit if there are no longer matching verses.\n+        if (!found) break;\n+    }\n+    zfree(working_verses);\n+\n+    // Step 3: Combine all stanza verses into single SDS string.\n+    sds combined = sdsempty();\n+    for (int i = 0; i < j; i++) {\n+        if (en_lang) {\n+            combined = sdscat(combined, stanza[i].text_en);\n+        } else {\n+            combined = sdscat(combined, stanza[i].text_it);\n+        }\n+        combined = sdscat(combined, \"\\n\");\n+    }\n+\n+    // Step 4: Make uppercase, and strip the \"/\".\n+    for (size_t j = 0; j < sdslen(combined); j++) {\n+        combined[j] = toupper(combined[j]);\n+        if (combined[j] == '/') combined[j] = ' ';\n+    }\n+\n+    // Step 5: Add background info about what the user just saw.\n+    combined = sdscat(combined,\n+        \"\\nIn 1961, Nanni Balestrini created one of the first computer-generated poems, TAPE MARK I, using an IBM 7090 mainframe. Each execution combined verses from three literary sources following algorithmic rules based on metrical compatibility and group constraints. This LOLWUT command reproduces Balestrini's original algorithm, generating new stanzas through the same computational poetry process described in Almanacco Letterario Bompiani, 1962.\\n\\n\"\n+        \"https://en.wikipedia.org/wiki/Digital_poetry\\n\"\n+        \"https://www.youtube.com/watch?v=8i7uFCK7G0o (English subs)\\n\\n\"\n+        \"Use: LOLWUT IT for the original Italian output.\\n\\n\");\n+\n+    addReplyVerbatim(c,combined,sdslen(combined),\"txt\");\n+    sdsfree(combined);\n+}\n"
       }
     }
   ],
@@ -949,5 +1527,5 @@
   ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T04:37:26.840481+00:00"
+  "created_at": "2026-05-15T08:41:51.810824+00:00"
 }

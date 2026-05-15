@@ -4,7 +4,7 @@
   "archetype": "design_doc",
   "difficulty": "medium",
   "seed_id": "4b0c600511d56518",
-  "prompt": "You are a senior software engineer on the HTTPX open-source project maintainers team. The team is preparing the 0.23.0 release, which includes a significant change: dropping the `charset-normalizer` dependency and switching to `utf-8` as the default character set for response decoding. The release also drops Python 3.6 support and includes multiple bug fixes. Your tech lead has asked you to prepare a technical design document that justifies the release decisions and explains the architectural impact on downstream users, specifically around the character-set handling change.\n\nMaterials provided:\n- The attached PR #2214 diff showing the CHANGELOG.md and __version__.py changes for the 0.23.0 release.\n- The PR description discussing the rationale for the median point bump and the desire to resolve the charset-normalizer discussion (issue #2083, PR #2165).\n\nYour task:\n1. Write a technical design document titled 'Release Design Doc - HTTPX 0.23.0' that covers the following sections:\n   - **Release Overview**: Summarize the release scope, including the version number, release date, and the two major changes (dropping Python 3.6 support and the character-set change). Reference the relevant issue and PR numbers.\n   - **Character-Set Handling Change**: Explain the previous behavior (falling back to `charset-normalizer` for auto-detection) and the new default behavior (`utf-8`). Describe how users can re-enable auto-detection by following the documentation link provided in the changelog. Justify why this change was made in terms of dependency reduction and simplification.\n   - **Bug Fix Summary**: List and categorize all bug fixes included in the release. For each fix, state the issue number and a one-sentence description of the problem resolved. Group them by subsystem (e.g., URL handling, authentication, multipart uploads, stream reading, CLI client).\n   - **Migration Impact Assessment**: Analyze the impact on existing users, particularly those relying on automatic character-set detection for non-UTF-8 responses. Provide guidance on how users should test their applications after upgrading.\n   - **Release Checklist**: Propose a checklist of pre-release tasks, including version bump verification, changelog review, and dependency updates.\n2. Use Markdown formatting with clear section headings.\n3. The document must reference all PR and issue numbers exactly as they appear in the provided materials.\n4. The document should be between 1200 and 2000 words.",
+  "prompt": "You are a senior backend engineer on the HTTPX open-source project maintainers team. The core team has just merged PR #2214 to prepare version 0.23.0, which includes a breaking change: dropping Python 3.6 support and replacing the `charset-normalizer` dependency with a default `utf-8` character set. Before tagging the release, the project lead wants a formal release engineering design document that captures the decision rationale, migration impact, and communication plan so that downstream consumers and contributors can prepare.\n\nMaterials provided:\n1. The merged PR #2214 diff and description for version 0.23.0, which includes the full release notes and the version bump in `httpx/__version__.py`.\n2. The linked discussion #2083 that motivated the `charset-normalizer` removal.\n3. The prior PR #2165 that introduced the alternative auto-detection approach.\n\nTask requirements:\n- Produce a Markdown design document titled 'Release Engineering Plan - HTTPX 0.23.0'.\n- Include the following sections with the specified content:\n  1. **Summary**: State the release date (23rd May, 2022), the two breaking changes (dropping Python 3.6 and replacing `charset-normalizer`), and the version bump from 0.22.0 to 0.23.0.\n  2. **Motivation**: Explain why the breaking changes were made, referencing discussion #2083 and PR #2165. Describe the rationale for using a median point bump (0.22 → 0.23) to batch breaking changes.\n  3. **Affected Components**: List each changed file from the diff (`CHANGELOG.md` and `httpx/__version__.py`) and describe what changed in each.\n  4. **Migration Guide for Downstream Users**: For each breaking change, provide concrete steps a user must take. For the Python 3.6 drop, state the minimum supported version. For the charset change, explain how to re-enable auto-detection using the documentation link provided in the release notes.\n  5. **Bug Fixes Included**: List all ten bug fixes from the release notes with their issue numbers (e.g., #2185, #2204, #1866, #2065, #2068, #2074, #2076, #2125, #2156, #2158). Group them by subsystem (URL handling, authentication, CLI, streaming, multipart, redirects).\n  6. **Release Checklist**: Provide a step-by-step checklist for tagging and publishing the release, including verifying the version string in `httpx/__version__.py` is `0.23.0`, running the test suite, and updating the documentation site.\n- Use Markdown with level-2 headings for each section.\n- Reference the actual PR numbers, issue numbers, file names, and version strings from the material.\n- The document should be 600-900 words.",
   "deliverable": {
     "deliverable_id": "design_doc",
     "primary_format": "markdown",
@@ -13,272 +13,278 @@
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file with the exact title 'Release Design Doc - HTTPX 0.23.0' as an H1 heading.",
+      "criterion": "The submitted document is a Markdown file with the title 'Release Engineering Plan - HTTPX 0.23.0'.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains an H2 heading 'Release Overview'.",
+      "criterion": "The document contains a level-2 heading 'Summary'.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains an H2 heading 'Character-Set Handling Change'.",
-      "category": "structure",
+      "criterion": "The Summary section states the release date as '23rd May, 2022'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Summary section correctly identifies the version bump from 0.22.0 to 0.23.0.",
+      "category": "data",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains an H2 heading 'Bug Fix Summary'.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains an H2 heading 'Migration Impact Assessment'.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains an H2 heading 'Release Checklist'.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Release Overview section states the release version as 0.23.0.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Release Overview section states the release date as 23rd May, 2022.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Release Overview section references issue #2097 as the reason for dropping Python 3.6 support.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Release Overview section references PR #2165 in relation to the character-set handling change.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Release Overview section references discussion #2083 as motivation for the character-set change.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Character-Set Handling Change section describes the previous behavior as falling back to `charset-normalizer` for auto-detection.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Character-Set Handling Change section describes the new default behavior as using `utf-8`.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Character-Set Handling Change section includes the full documentation link https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Character-Set Handling Change section justifies the change in terms of dependency reduction and simplification.",
+      "criterion": "The Summary section lists the first breaking change as dropping Python 3.6 support.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for `URL.copy_with` with issue #2185.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for digest authentication with issue #2204.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for multipart upload file seeking with issue #2065.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for `iter_bytes` zero-length chunks with issue #2068.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for preserving Authorization header on redirects with issue #2074.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for binary output in CLI client with issue #2076.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for `--proxies` argument display with issue #2125.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for task cancellation during stream reading with issue #2156.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for HTTPError request attribute with issue #2158.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Bug Fix Summary section lists the fix for console markup escaping with issue #1866.",
-      "category": "reference",
+      "criterion": "The Summary section lists the second breaking change as replacing `charset-normalizer` with `utf-8` default.",
+      "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Bug Fix Summary section groups fixes by subsystem (e.g., URL handling, authentication, multipart uploads, stream reading, CLI client).",
+      "criterion": "The document contains a level-2 heading 'Motivation'.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Bug Fix Summary section includes the example binary output placeholder '<16086 bytes of binary data>'.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Migration Impact Assessment section identifies the impact on users relying on automatic character-set detection.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Migration Impact Assessment section provides guidance on testing after upgrading, including steps like verifying Python version and running integration tests.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Migration Impact Assessment section mentions that Python 3.7 or later is required after dropping Python 3.6.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Release Checklist includes an item for version bump verification referencing `httpx/__version__.py`.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Release Checklist includes an item for changelog review.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Release Checklist includes an item for dependency updates (removal of `charset-normalizer`).",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Release Checklist includes an item for testing on multiple Python versions.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Release Checklist includes an item for documentation updates.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references the `__version__` string change from 0.22.0 to 0.23.0 in the `httpx/__version__.py` file.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document mentions that the median point bump was chosen due to dropping Python 3.6 support.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Character-Set Handling Change section mentions that `charset-normalizer` was previously an external dependency.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document correctly states that the release was prepared via PR #2214.",
+      "criterion": "The Motivation section references discussion #2083 as the motivation for the `charset-normalizer` removal.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document uses consistent Markdown formatting with proper headings and lists.",
-      "category": "style",
+      "criterion": "The Motivation section references PR #2165 as introducing the alternative auto-detection approach.",
+      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document word count is between 1200 and 2000 words.",
-      "category": "format",
+      "criterion": "The Motivation section references issue #2097 for dropping Python 3.6 support.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section explains the rationale for using a median point bump (0.22 → 0.23) to batch breaking changes.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a level-2 heading 'Affected Components'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Affected Components section lists both changed files: `CHANGELOG.md` and `httpx/__version__.py`.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Affected Components section describes that `CHANGELOG.md` received release notes for version 0.23.0.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Affected Components section describes that `httpx/__version__.py` had its `__version__` string updated from \"0.22.0\" to \"0.23.0\".",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a level-2 heading 'Migration Guide for Downstream Users'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Migration Guide states that the minimum supported Python version after the change is Python 3.7.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Migration Guide includes the documentation link for character set auto-detection: https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Migration Guide provides concrete steps for users affected by the Python 3.6 drop.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Migration Guide provides concrete steps for users affected by the `charset-normalizer` removal.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a level-2 heading 'Bug Fixes Included'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the `URL.copy_with` fix with issue #2185.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the digest authentication case-insensitive comparison fix with issue #2204.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the console markup escaping fix with issue #1866.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the multipart file seek fix with issue #2065.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the `iter_bytes` zero-length chunks fix with issue #2068.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the Authorization header preservation fix with issue #2074.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the binary output display fix with issue #2076.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the `--proxies` argument display fix with issue #2125.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the task cancellation response close fix with issue #2156.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Bug Fixes section lists the `HTTPError` `.request` type error fix with issue #2158.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Bug Fixes section groups fixes by subsystem (URL handling, authentication, CLI, streaming, multipart, redirects).",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Bug Fixes section correctly counts ten bug fixes in total.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a level-2 heading 'Release Checklist'.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Release Checklist includes verifying the version string in `httpx/__version__.py` is `0.23.0`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Release Checklist includes running the test suite.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Release Checklist includes updating the documentation site.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Release Checklist includes creating a git tag and publishing to PyPI.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Bug Fixes section mentions the specific binary output format `<16086 bytes of binary data>` from issue #2076.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Migration Guide explicitly mentions that Python 3.6 reached end-of-life in December 2021.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation section explains that the median point bump signals breaking changes to downstream consumers in the 0.x series.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Affected Components section notes that no other source code files were altered in PR #2214 beyond CHANGELOG.md and httpx/__version__.py.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Release Checklist includes notifying downstream consumers via project communication channels.",
+      "category": "content",
       "is_penalty": false
     },
     {
       "score": 3,
-      "criterion": "The Migration Impact Assessment section provides a specific, actionable testing strategy with at least 3 distinct steps.",
-      "category": "judgment",
+      "criterion": "The document correctly identifies all ten bug fixes from the release notes with their exact issue numbers (#2185, #2204, #1866, #2065, #2068, #2074, #2076, #2125, #2156, #2158) without any omissions or incorrect numbers.",
+      "category": "completeness",
       "is_penalty": false
     },
     {
       "score": 3,
-      "criterion": "The Release Checklist is comprehensive and includes at least 5 distinct items covering version, changelog, dependencies, testing, and documentation.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": -2,
-      "criterion": "The document omits any of the 10 bug fixes listed in the changelog (missing one or more issue numbers).",
-      "category": "completeness",
-      "is_penalty": true
-    },
-    {
-      "score": -2,
-      "criterion": "The document includes a bug fix issue number not present in the provided changelog.",
+      "criterion": "The Bug Fixes section correctly assigns each bug fix to its appropriate subsystem group (URL handling, authentication, CLI, streaming, multipart, redirects, exception handling) as defined in the answer.",
       "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": -2,
+      "criterion": "The document fails to mention that PR #2214 only modified two files (CHANGELOG.md and httpx/__version__.py).",
+      "category": "completeness",
       "is_penalty": true
     }
   ],
@@ -297,139 +303,193 @@
       {
         "id": "ev_0",
         "kind": "person",
-        "name": "Release Design Doc - HTTPX 0.23.0",
+        "name": "Release Engineering Plan - HTTPX 0.23.0",
         "attrs": {}
       },
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "0.23.0",
+        "name": "23rd May, 2022",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "23rd May, 2022",
+        "name": "0.22.0",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "#2097",
+        "name": "0.23.0",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "#2165",
+        "name": "Python 3.6",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "#2083",
+        "name": "charset-normalizer",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "charset-normalizer",
+        "name": "utf-8",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "utf-8",
+        "name": "2083",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection",
+        "name": "2165",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "#2185",
+        "name": "2097",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "#2204",
+        "name": "CHANGELOG.md",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "#2065",
+        "name": "httpx/__version__.py",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "#2068",
+        "name": "3.7",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "#2074",
+        "name": "https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "#2076",
+        "name": "URL.copy_with",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "#2125",
+        "name": "2185",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "#2156",
+        "name": "case-insensitive comparison",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "#2158",
+        "name": "2204",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "<16086 bytes of binary data>",
+        "name": "1866",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "httpx/__version__.py",
+        "name": "2076",
         "attrs": {}
       },
       {
         "id": "ev_20",
         "kind": "person",
-        "name": "\"0.23.0\"",
+        "name": "<16086 bytes of binary data>",
         "attrs": {}
       },
       {
         "id": "ev_21",
         "kind": "person",
-        "name": "3.7",
+        "name": "2125",
         "attrs": {}
       },
       {
         "id": "ev_22",
         "kind": "person",
-        "name": "#1866",
+        "name": "2068",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "2156",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "2065",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "2074",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "2158",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "ten",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "test suite",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "documentation site",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "git tag",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "PyPI",
         "attrs": {}
       }
     ],
@@ -438,168 +498,245 @@
       {
         "id": "fact_0",
         "kind": "string",
-        "value": "Release Design Doc - HTTPX 0.23.0",
+        "value": "Release Engineering Plan - HTTPX 0.23.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_1",
         "kind": "string",
-        "value": "0.23.0",
+        "value": "23rd May, 2022",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_2",
         "kind": "string",
-        "value": "23rd May, 2022",
+        "value": "0.22.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "string",
-        "value": "#2097",
+        "value": "0.23.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
         "kind": "string",
-        "value": "#2165",
+        "value": "Python 3.6",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
         "kind": "string",
-        "value": "#2083",
+        "value": "charset-normalizer",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_6",
         "kind": "string",
-        "value": "charset-normalizer",
+        "value": "utf-8",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_7",
         "kind": "string",
-        "value": "utf-8",
+        "value": "2083",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_8",
         "kind": "string",
-        "value": "https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection",
+        "value": "2165",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
-        "kind": "money",
-        "value": 10,
+        "kind": "string",
+        "value": "2097",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
         "kind": "string",
-        "value": "#2185",
+        "value": "CHANGELOG.md",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "#2204",
+        "value": "httpx/__version__.py",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "#2065",
+        "value": "0.22.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "#2068",
+        "value": "0.23.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "#2074",
+        "value": "3.7",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "#2076",
+        "value": "https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "#2125",
+        "value": "URL.copy_with",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "#2156",
+        "value": "2185",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "#2158",
+        "value": "case-insensitive comparison",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "<16086 bytes of binary data>",
+        "value": "2204",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_20",
         "kind": "string",
-        "value": "httpx/__version__.py",
+        "value": "1866",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_21",
         "kind": "string",
-        "value": "\"0.23.0\"",
+        "value": "2076",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_22",
         "kind": "string",
-        "value": "3.7",
+        "value": "<16086 bytes of binary data>",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_23",
         "kind": "string",
-        "value": "#1866",
+        "value": "2125",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "string",
+        "value": "2068",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "2156",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "2065",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "2074",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "2158",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "ten",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "0.23.0",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "test suite",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "documentation site",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "git tag",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "PyPI",
         "unit": null,
         "source": null
       }
@@ -616,252 +753,307 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Release Design Doc - HTTPX 0.23.0",
+          "heading": "Release Engineering Plan - HTTPX 0.23.0",
           "heading_level": 1,
           "required_content": [
-            "Title as specified",
-            "Version number 0.23.0",
-            "Release date May 23, 2022"
+            "Title must be exactly 'Release Engineering Plan - HTTPX 0.23.0'"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Summary",
+          "heading_level": 2,
+          "required_content": [
+            "Release date: 23rd May, 2022",
+            "Version bump from 0.22.0 to 0.23.0",
+            "Two breaking changes: dropping Python 3.6 and replacing charset-normalizer with utf-8 default"
           ],
           "paragraphs": [
-            "Release Design Doc - HTTPX 0.23.0",
-            "Version: 0.23.0 | Release Date: 23rd May, 2022"
+            "HTTPX version 0.23.0 was released on 23rd May, 2022. This release bumps the project version from 0.22.0 to 0.23.0 in `httpx/__version__.py` and introduces two breaking changes: the removal of Python 3.6 support and the replacement of the `charset-normalizer` dependency with a default `utf-8` character set encoding. The release also includes ten bug fixes addressing issues across URL handling, authentication, the command-line client, streaming, multipart uploads, and redirect behavior."
           ]
         },
         {
-          "heading": "Release Overview",
+          "heading": "Motivation",
           "heading_level": 2,
           "required_content": [
-            "Version number 0.23.0",
-            "Release date 23rd May, 2022",
-            "Two major changes: drop Python 3.6 support, change character-set default",
-            "Reference to issue #2097 for Python 3.6 drop",
-            "Reference to PR #2165 and discussion #2083 for character-set change",
-            "Median point bump justification"
+            "Reference to discussion #2083",
+            "Reference to PR #2165",
+            "Rationale for median point bump (0.22 → 0.23) to batch breaking changes"
           ],
           "paragraphs": [
-            "HTTPX version 0.23.0, released on 23rd May, 2022, is a median point release that introduces two major changes alongside numerous bug fixes. The release drops support for Python 3.6 (issue #2097) and changes the default character-set handling for responses, eliminating the dependency on `charset-normalizer` in favor of a default `utf-8` encoding (PR #2165, addressing discussion #2083).",
-            "The median point bump from 0.22.0 to 0.23.0 was chosen because dropping Python 3.6 support warrants a version increment that signals compatibility changes to downstream users. This release represents a focused effort to simplify the library's dependency tree and improve out-of-the-box behavior for the majority of use cases."
+            "The decision to drop Python 3.6 support was driven by the need to align with the Python ecosystem's lifecycle, as referenced in issue #2097. The replacement of `charset-normalizer` with a default `utf-8` encoding was motivated by discussion #2083, which proposed simplifying the dependency tree. PR #2165 introduced an alternative approach for users who require automatic character set detection, allowing the core library to remove the `charset-normalizer` dependency entirely. The median point bump from 0.22.0 to 0.23.0 was chosen to signal these breaking changes clearly to downstream consumers, as a minor version increment in the 0.x series indicates backward-incompatible modifications."
           ]
         },
         {
-          "heading": "Character-Set Handling Change",
+          "heading": "Affected Components",
           "heading_level": 2,
           "required_content": [
-            "Previous behavior: fallback to charset-normalizer for auto-detection",
-            "New behavior: default utf-8",
-            "Link to documentation for re-enabling auto-detection",
-            "Justification: dependency reduction, simplification",
-            "Reference to PR #2165 and discussion #2083"
+            "List of changed files: CHANGELOG.md and httpx/__version__.py",
+            "Description of changes in each file"
           ],
           "paragraphs": [
-            "Previously, HTTPX used `charset-normalizer` as a fallback to automatically detect the character encoding of responses when no explicit charset was specified in the Content-Type header. This approach added an external dependency and introduced variability in encoding detection across different environments.",
-            "In version 0.23.0, the default behavior is simplified: responses are decoded using `utf-8` unless a charset is explicitly specified. This change removes the `charset-normalizer` dependency, reducing the library's dependency footprint and making behavior more predictable. For users who require automatic character-set detection (e.g., for legacy systems serving non-UTF-8 content), HTTPX provides opt-in functionality. The documentation at https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection explains how to re-enable this feature.",
-            "This change was motivated by the discussion in issue #2083 and implemented in PR #2165. It aligns with the library's goal of providing sensible defaults while allowing advanced configuration when needed."
+            "Two files were modified in PR #2214. First, `CHANGELOG.md` received a new section documenting the 0.23.0 release, including the two 'Changed' items and ten 'Fixed' items with their associated issue numbers. Second, `httpx/__version__.py` had its `__version__` string updated from `\"0.22.0\"` to `\"0.23.0\"` to reflect the new release. No other source code files were altered in this PR, as the functional changes were already merged in prior pull requests."
           ]
         },
         {
-          "heading": "Bug Fix Summary",
+          "heading": "Migration Guide for Downstream Users",
           "heading_level": 2,
           "required_content": [
-            "List all 10 bug fixes from changelog",
-            "Group by subsystem",
-            "Include issue numbers",
-            "One-sentence descriptions"
+            "Migration steps for Python 3.6 drop: minimum supported version is Python 3.7",
+            "Migration steps for charset-normalizer removal: link to documentation for re-enabling auto-detection"
           ],
           "paragraphs": [
-            "The 0.23.0 release includes 10 bug fixes, categorized by subsystem as follows:",
-            "**URL Handling**: Fix `URL.copy_with` for some oddly formed URL cases. (#2185)",
-            "**Authentication**: Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)",
-            "**Multipart Uploads**: When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)",
-            "**Stream Reading**: Ensure that `iter_bytes` never yields zero-length chunks. (#2068). Close responses when task cancellations occur during stream reading. (#2156).",
-            "**CLI Client**: Fix console markup escaping in command line client. (#1866). When responses have binary output, don't print the output to the console in the command line client; use output like `<16086 bytes of binary data>` instead. (#2076). Fix display of `--proxies` argument in the command line client help. (#2125).",
-            "**Headers and Requests**: Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074).",
-            "**Exceptions**: Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)."
+            "For users currently running HTTPX on Python 3.6, the immediate migration step is to upgrade to Python 3.7 or later. Python 3.6 reached end-of-life in December 2021, and this release formalizes HTTPX's minimum supported version as Python 3.7. Users should update their CI configurations, dependency files, and deployment environments accordingly.\n\nFor users who rely on automatic character set detection, the default behavior has changed from using `charset-normalizer` to assuming `utf-8`. To re-enable auto-detection, users must explicitly configure the client as described in the official documentation at https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection. This involves installing the optional dependency and passing the appropriate parameter when constructing the HTTPX client."
           ]
         },
         {
-          "heading": "Migration Impact Assessment",
+          "heading": "Bug Fixes Included",
           "heading_level": 2,
           "required_content": [
-            "Impact on users relying on auto-detection",
-            "Guidance for testing after upgrade",
-            "Reference to documentation link",
-            "Note on Python 3.6 dropping"
+            "All ten bug fixes listed with issue numbers",
+            "Grouping by subsystem: URL handling, authentication, CLI, streaming, multipart, redirects"
           ],
           "paragraphs": [
-            "Users upgrading to HTTPX 0.23.0 should be aware of two primary impacts. First, applications running on Python 3.6 will need to upgrade their Python version to 3.7 or later, as support has been dropped (issue #2097). Second, applications that rely on automatic character-set detection for non-UTF-8 responses may experience decoding errors or incorrect text output.",
-            "To mitigate these risks, users should follow these steps after upgrading: (1) Verify that their application no longer targets Python 3.6. (2) For any endpoint that serves non-UTF-8 encoded content, explicitly configure the character-set detection as described in the documentation: https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection. (3) Run comprehensive integration tests that cover all response types, including binary and non-UTF-8 text responses. (4) Monitor application logs for encoding-related warnings or errors during the transition period.",
-            "The migration path is designed to be straightforward for most users, as UTF-8 is the predominant encoding on the modern web. However, specialized applications interfacing with legacy systems should take extra care to validate their decoding behavior."
+            "The release includes ten bug fixes, grouped by subsystem as follows:\n\n**URL Handling:**\n- Fix `URL.copy_with` for some oddly formed URL cases. (#2185)\n\n**Authentication:**\n- Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)\n\n**Command-Line Client (CLI):**\n- Fix console markup escaping in command line client. (#1866)\n- When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)\n- Fix display of `--proxies` argument in the command line client help. (#2125)\n\n**Streaming:**\n- Ensure that `iter_bytes` never yields zero-length chunks. (#2068)\n- Close responses when task cancellations occur during stream reading. (#2156)\n\n**Multipart Uploads:**\n- When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)\n\n**Redirects:**\n- Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)\n\n**Exception Handling:**\n- Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)"
           ]
         },
         {
           "heading": "Release Checklist",
           "heading_level": 2,
           "required_content": [
-            "Version bump verification",
-            "Changelog review",
-            "Dependency updates",
-            "Testing recommendations",
-            "Documentation updates"
+            "Verify version string in httpx/__version__.py is 0.23.0",
+            "Run test suite",
+            "Update documentation site",
+            "Tag and publish the release"
           ],
           "paragraphs": [
-            "The following checklist should be completed before publishing the 0.23.0 release:",
-            "- [ ] **Version Bump Verification**: Confirm that `httpx/__version__.py` contains `__version__ = \"0.23.0\"` and that the CHANGELOG.md header matches.",
-            "- [ ] **Changelog Review**: Ensure all changes listed in the CHANGELOG.md under 0.23.0 are accurate and include the correct issue/PR references.",
-            "- [ ] **Dependency Updates**: Verify that `charset-normalizer` has been removed from the project's dependencies (e.g., in `setup.py` or `pyproject.toml`).",
-            "- [ ] **Testing**: Run the full test suite on Python 3.7, 3.8, 3.9, 3.10, and 3.11 to ensure compatibility and correctness.",
-            "- [ ] **Documentation Updates**: Confirm that the documentation for character-set encodings and auto-detection is published and accessible at the provided URL.",
-            "- [ ] **Release Notes**: Draft and publish release notes on GitHub and PyPI summarizing the key changes and migration guidance."
+            "Before tagging and publishing the 0.23.0 release, the following checklist should be completed:\n\n1. Verify that `httpx/__version__.py` contains `__version__ = \"0.23.0\"`.\n2. Confirm that `CHANGELOG.md` includes the full release notes for version 0.23.0 as merged in PR #2214.\n3. Run the complete test suite to ensure no regressions were introduced by the breaking changes or bug fixes.\n4. Update the project documentation site to reflect the new default character set behavior and the dropped Python 3.6 support.\n5. Create a git tag for `0.23.0` and publish the release to PyPI.\n6. Notify downstream consumers via the project's communication channels (GitHub releases, mailing list, social media)."
           ]
         }
       ],
-      "md_title": "Release Design Doc - HTTPX 0.23.0",
-      "input_attachments": [],
+      "md_title": "Release Engineering Plan - HTTPX 0.23.0",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #2214 diff and description for HTTPX version 0.23.0 release, including CHANGELOG.md additions and httpx/__version__.py version bump",
+          "content_blueprint": {
+            "title": "PR #2214 diff and description for HTTPX version 0",
+            "body": "# Seed Material: encode/httpx#2214: Version 0.23.0\nSource: github_issue_pr\nIdentifier: pr:encode/httpx#2214\n\nRepository: encode/httpx\nPR Number: #2214\nPR Title: Version 0.23.0\nMerged At: 2022-05-23T15:31:13Z\nChanged Files: 2\nAdditions: +21, Deletions: -1\n\n## PR Description\nDrafting up our next release.\r\n\r\nSince we're dropping Python 3.6, this needs to be a median point bump.\r\n\r\nOne thing I'd like to discuss before we push on with this is resolving https://github.com/encode/httpx/discussions/2083 (See PR #2165). The median point bump is a good motivator to drop our `charset-normalizer` dependancy, so it seems like an efficient use of time to address it as part of this release, if possible.\r\n\r\nI'm planning to push on with that by addressing @[adriangb](https://github.com/adriangb)'s comment, so that we have two alternative approaches for consideration.\r\n\r\n---\r\n\r\nRelease notes...\r\n\r\n## 0.23.0 (23rd May, 2022)\r\n\r\n ### Changed\r\n\r\n * Drop support for Python 3.6. (#2097)\r\n * Use `utf-8` as the default character set, instead of falling back to `charset-normalizer` for auto-detection. To enable automatic character set detection, see [the documentation](https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection). (#2165)\r\n\r\n ### Fixed\r\n\r\n * Fix `URL.copy_with` for some oddly formed URL cases. (#2185)\r\n * Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)\r\n * Fix console markup escaping in command line client. (#1866)\r\n * When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)\r\n * Ensure that `iter_bytes` never yields zero-length chunks. (#2068)\r\n * Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)\r\n * When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)\r\n * Fix display of `--proxies` argument in the command line client help. (#2125)\r\n * Close responses when task cancellations occur during stream reading. (#2156)\r\n * Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)\n\n## Diff\ndiff --git a/CHANGELOG.md b/CHANGELOG.md\nindex f4e940ee16..6f5e7c4256 100644\n--- a/CHANGELOG.md\n+++ b/CHANGELOG.md\n@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.\n \n The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).\n \n+## 0.23.0 (23rd May, 2022)\n+\n+### Changed\n+\n+* Drop support for Python 3.6. (#2097)\n+* Use `utf-8` as the default character set, instead of falling back to `charset-normalizer` for auto-detection. To enable automatic character set detection, see [the documentation](https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection). (#2165)\n+\n+### Fixed\n+\n+* Fix `URL.copy_with` for some oddly formed URL cases. (#2185)\n+* Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)\n+* Fix console markup escaping in command line client. (#1866)\n+* When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)\n+* Ensure that `iter_bytes` never yields zero-length chunks. (#2068)\n+* Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)\n+* When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)\n+* Fix display of `--proxies` argument in the command line client help. (#2125)\n+* Close responses when task cancellations occur during stream reading. (#2156)\n+* Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)\n+\n ## 0.22.0 (26th January, 2022)\n \n ### Added\ndiff --git a/httpx/__version__.py b/httpx/__version__.py\nindex f08752c89c..68831d05c8 100644\n--- a/httpx/__version__.py\n+++ b/httpx/__version__.py\n@@ -1,3 +1,3 @@\n __title__ = \"httpx\"\n __description__ = \"A next generation HTTP client, for Python 3.\"\n-__version__ = \"0.22.0\"\n+__version__ = \"0.23.0\"\n"
+          }
+        }
+      ],
       "expected_values": [
         {
-          "description": "Title of the document",
-          "value": "Release Design Doc - HTTPX 0.23.0",
+          "description": "Document title is exactly 'Release Engineering Plan - HTTPX 0.23.0'",
+          "value": "Release Engineering Plan - HTTPX 0.23.0",
           "tolerance": null,
-          "location": "Document title or H1 heading"
+          "location": "Title (H1 heading)"
         },
         {
-          "description": "Version number mentioned in the release overview",
-          "value": "0.23.0",
-          "tolerance": null,
-          "location": "Release Overview section"
-        },
-        {
-          "description": "Release date mentioned in the release overview",
+          "description": "Release date mentioned in Summary section",
           "value": "23rd May, 2022",
           "tolerance": null,
-          "location": "Release Overview section"
+          "location": "Summary section, first paragraph"
         },
         {
-          "description": "Issue number for dropping Python 3.6 support",
-          "value": "#2097",
+          "description": "Version before bump",
+          "value": "0.22.0",
           "tolerance": null,
-          "location": "Release Overview section"
+          "location": "Summary section"
         },
         {
-          "description": "PR number for character-set handling change",
-          "value": "#2165",
+          "description": "Version after bump",
+          "value": "0.23.0",
           "tolerance": null,
-          "location": "Release Overview section and Character-Set Handling Change section"
+          "location": "Summary section and httpx/__version__.py reference"
         },
         {
-          "description": "Discussion number for character-set change rationale",
-          "value": "#2083",
+          "description": "First breaking change: dropping Python 3.6",
+          "value": "Python 3.6",
           "tolerance": null,
-          "location": "Release Overview section and Character-Set Handling Change section"
+          "location": "Summary section, breaking changes list"
         },
         {
-          "description": "Previous character-set behavior described",
+          "description": "Second breaking change: replacing charset-normalizer",
           "value": "charset-normalizer",
           "tolerance": null,
-          "location": "Character-Set Handling Change section"
+          "location": "Summary section, breaking changes list"
         },
         {
-          "description": "New default character-set encoding",
+          "description": "Default character set after change",
           "value": "utf-8",
           "tolerance": null,
-          "location": "Character-Set Handling Change section"
+          "location": "Summary and Motivation sections"
         },
         {
-          "description": "Documentation link for re-enabling auto-detection",
+          "description": "Discussion reference number",
+          "value": "2083",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "PR that introduced alternative auto-detection approach",
+          "value": "2165",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Issue number for dropping Python 3.6",
+          "value": "2097",
+          "tolerance": null,
+          "location": "Motivation section"
+        },
+        {
+          "description": "Changed file: CHANGELOG.md",
+          "value": "CHANGELOG.md",
+          "tolerance": null,
+          "location": "Affected Components section"
+        },
+        {
+          "description": "Changed file: httpx/__version__.py",
+          "value": "httpx/__version__.py",
+          "tolerance": null,
+          "location": "Affected Components section"
+        },
+        {
+          "description": "Version string before change in __version__.py",
+          "value": "0.22.0",
+          "tolerance": null,
+          "location": "Affected Components section"
+        },
+        {
+          "description": "Version string after change in __version__.py",
+          "value": "0.23.0",
+          "tolerance": null,
+          "location": "Affected Components section"
+        },
+        {
+          "description": "Minimum supported Python version after change",
+          "value": "3.7",
+          "tolerance": null,
+          "location": "Migration Guide section"
+        },
+        {
+          "description": "Documentation link for character set auto-detection",
           "value": "https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection",
           "tolerance": null,
-          "location": "Character-Set Handling Change section"
+          "location": "Migration Guide section"
         },
         {
-          "description": "Number of bug fixes listed in the release",
-          "value": 10,
+          "description": "Bug fix for URL.copy_with",
+          "value": "URL.copy_with",
           "tolerance": null,
-          "location": "Bug Fix Summary section"
+          "location": "Bug Fixes section, URL Handling group"
         },
         {
           "description": "Issue number for URL.copy_with fix",
-          "value": "#2185",
+          "value": "2185",
           "tolerance": null,
-          "location": "Bug Fix Summary section"
+          "location": "Bug Fixes section, URL Handling group"
+        },
+        {
+          "description": "Bug fix for digest authentication algorithm comparison",
+          "value": "case-insensitive comparison",
+          "tolerance": null,
+          "location": "Bug Fixes section, Authentication group"
         },
         {
           "description": "Issue number for digest authentication fix",
-          "value": "#2204",
+          "value": "2204",
           "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for multipart upload fix",
-          "value": "#2065",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for iter_bytes zero-length chunks fix",
-          "value": "#2068",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for redirect Authorization header fix",
-          "value": "#2074",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for binary output CLI fix",
-          "value": "#2076",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for --proxies argument display fix",
-          "value": "#2125",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for task cancellation fix",
-          "value": "#2156",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Issue number for HTTPError request attribute fix",
-          "value": "#2158",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "Example binary output placeholder mentioned",
-          "value": "<16086 bytes of binary data>",
-          "tolerance": null,
-          "location": "Bug Fix Summary section"
-        },
-        {
-          "description": "File path where version is set",
-          "value": "httpx/__version__.py",
-          "tolerance": null,
-          "location": "Release Checklist section"
-        },
-        {
-          "description": "Expected version string in __version__.py",
-          "value": "\"0.23.0\"",
-          "tolerance": null,
-          "location": "Release Checklist section"
-        },
-        {
-          "description": "Minimum Python version after dropping 3.6",
-          "value": "3.7",
-          "tolerance": null,
-          "location": "Migration Impact Assessment section"
+          "location": "Bug Fixes section, Authentication group"
         },
         {
           "description": "Issue number for console markup escaping fix",
-          "value": "#1866",
+          "value": "1866",
           "tolerance": null,
-          "location": "Bug Fix Summary section"
+          "location": "Bug Fixes section, CLI group"
+        },
+        {
+          "description": "Issue number for binary output display fix",
+          "value": "2076",
+          "tolerance": null,
+          "location": "Bug Fixes section, CLI group"
+        },
+        {
+          "description": "Binary output display format mentioned",
+          "value": "<16086 bytes of binary data>",
+          "tolerance": null,
+          "location": "Bug Fixes section, CLI group"
+        },
+        {
+          "description": "Issue number for --proxies argument display fix",
+          "value": "2125",
+          "tolerance": null,
+          "location": "Bug Fixes section, CLI group"
+        },
+        {
+          "description": "Issue number for iter_bytes zero-length chunks fix",
+          "value": "2068",
+          "tolerance": null,
+          "location": "Bug Fixes section, Streaming group"
+        },
+        {
+          "description": "Issue number for task cancellation response close fix",
+          "value": "2156",
+          "tolerance": null,
+          "location": "Bug Fixes section, Streaming group"
+        },
+        {
+          "description": "Issue number for multipart file seek fix",
+          "value": "2065",
+          "tolerance": null,
+          "location": "Bug Fixes section, Multipart group"
+        },
+        {
+          "description": "Issue number for Authorization header preservation fix",
+          "value": "2074",
+          "tolerance": null,
+          "location": "Bug Fixes section, Redirects group"
+        },
+        {
+          "description": "Issue number for HTTPError .request type error fix",
+          "value": "2158",
+          "tolerance": null,
+          "location": "Bug Fixes section, Exception Handling group"
+        },
+        {
+          "description": "Total number of bug fixes listed",
+          "value": "ten",
+          "tolerance": null,
+          "location": "Bug Fixes section introduction"
+        },
+        {
+          "description": "Release checklist step: verify version string",
+          "value": "0.23.0",
+          "tolerance": null,
+          "location": "Release Checklist section, step 1"
+        },
+        {
+          "description": "Release checklist step: run test suite",
+          "value": "test suite",
+          "tolerance": null,
+          "location": "Release Checklist section, step 3"
+        },
+        {
+          "description": "Release checklist step: update documentation",
+          "value": "documentation site",
+          "tolerance": null,
+          "location": "Release Checklist section, step 4"
+        },
+        {
+          "description": "Release checklist step: create git tag",
+          "value": "git tag",
+          "tolerance": null,
+          "location": "Release Checklist section, step 5"
+        },
+        {
+          "description": "Release checklist step: publish to PyPI",
+          "value": "PyPI",
+          "tolerance": null,
+          "location": "Release Checklist section, step 5"
         }
       ],
       "narrative_prompt": null,
@@ -871,10 +1063,23 @@
     "estimated_hours": null,
     "seed_rng": 1550145654
   },
-  "input_attachment_specs": [],
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #2214 diff and description for HTTPX version 0.23.0 release, including CHANGELOG.md additions and httpx/__version__.py version bump",
+      "content_blueprint": {
+        "title": "PR #2214 diff and description for HTTPX version 0",
+        "body": "# Seed Material: encode/httpx#2214: Version 0.23.0\nSource: github_issue_pr\nIdentifier: pr:encode/httpx#2214\n\nRepository: encode/httpx\nPR Number: #2214\nPR Title: Version 0.23.0\nMerged At: 2022-05-23T15:31:13Z\nChanged Files: 2\nAdditions: +21, Deletions: -1\n\n## PR Description\nDrafting up our next release.\r\n\r\nSince we're dropping Python 3.6, this needs to be a median point bump.\r\n\r\nOne thing I'd like to discuss before we push on with this is resolving https://github.com/encode/httpx/discussions/2083 (See PR #2165). The median point bump is a good motivator to drop our `charset-normalizer` dependancy, so it seems like an efficient use of time to address it as part of this release, if possible.\r\n\r\nI'm planning to push on with that by addressing @[adriangb](https://github.com/adriangb)'s comment, so that we have two alternative approaches for consideration.\r\n\r\n---\r\n\r\nRelease notes...\r\n\r\n## 0.23.0 (23rd May, 2022)\r\n\r\n ### Changed\r\n\r\n * Drop support for Python 3.6. (#2097)\r\n * Use `utf-8` as the default character set, instead of falling back to `charset-normalizer` for auto-detection. To enable automatic character set detection, see [the documentation](https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection). (#2165)\r\n\r\n ### Fixed\r\n\r\n * Fix `URL.copy_with` for some oddly formed URL cases. (#2185)\r\n * Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)\r\n * Fix console markup escaping in command line client. (#1866)\r\n * When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)\r\n * Ensure that `iter_bytes` never yields zero-length chunks. (#2068)\r\n * Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)\r\n * When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)\r\n * Fix display of `--proxies` argument in the command line client help. (#2125)\r\n * Close responses when task cancellations occur during stream reading. (#2156)\r\n * Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)\n\n## Diff\ndiff --git a/CHANGELOG.md b/CHANGELOG.md\nindex f4e940ee16..6f5e7c4256 100644\n--- a/CHANGELOG.md\n+++ b/CHANGELOG.md\n@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.\n \n The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).\n \n+## 0.23.0 (23rd May, 2022)\n+\n+### Changed\n+\n+* Drop support for Python 3.6. (#2097)\n+* Use `utf-8` as the default character set, instead of falling back to `charset-normalizer` for auto-detection. To enable automatic character set detection, see [the documentation](https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection). (#2165)\n+\n+### Fixed\n+\n+* Fix `URL.copy_with` for some oddly formed URL cases. (#2185)\n+* Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)\n+* Fix console markup escaping in command line client. (#1866)\n+* When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)\n+* Ensure that `iter_bytes` never yields zero-length chunks. (#2068)\n+* Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)\n+* When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)\n+* Fix display of `--proxies` argument in the command line client help. (#2125)\n+* Close responses when task cancellations occur during stream reading. (#2156)\n+* Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)\n+\n ## 0.22.0 (26th January, 2022)\n \n ### Added\ndiff --git a/httpx/__version__.py b/httpx/__version__.py\nindex f08752c89c..68831d05c8 100644\n--- a/httpx/__version__.py\n+++ b/httpx/__version__.py\n@@ -1,3 +1,3 @@\n __title__ = \"httpx\"\n __description__ = \"A next generation HTTP client, for Python 3.\"\n-__version__ = \"0.22.0\"\n+__version__ = \"0.23.0\"\n"
+      }
+    }
+  ],
   "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_4b0c600511d56518/design_doc.md",
-  "input_attachment_paths": [],
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_4b0c600511d56518/input_0.md"
+  ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T04:55:12.883368+00:00"
+  "created_at": "2026-05-15T09:31:44.012741+00:00"
 }

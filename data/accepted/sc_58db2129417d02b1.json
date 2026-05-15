@@ -4,7 +4,7 @@
   "archetype": "code_review",
   "difficulty": "hard",
   "seed_id": "58db2129417d02b1",
-  "prompt": "You are a senior platform engineer at a container orchestration startup, part of the core infrastructure team. The team is evaluating Docker's PR #40007 (moby/moby#40007), which adds host.docker.internal DNS resolution support for Linux containers. This feature addresses a long-standing parity gap where macOS and Windows Docker Desktop already supported host.docker.internal, but Linux dockerd did not. Your team needs to understand the implementation's security implications, configuration design, and operational impact before adopting this feature in production clusters.\n\nMaterials provided:\n1. PR #40007 diff and description from the moby/moby repository\n2. The PR references issues from docker/for-linux#264, docker/libnetwork#2348, and several other community issues\n\nYour task is to produce a detailed technical code review document that evaluates the PR's approach, identifies potential risks, and makes actionable recommendations. Structure your review as follows:\n\n1. **Summary and Context**: Describe what PR #40007 implements, which issues it addresses, and why host.docker.internal parity across platforms matters.\n\n2. **Architecture and Design Analysis**: Evaluate the design decisions including: the use of a magic string \"host-gateway\" in --add-host, the new daemon-level HostGatewayIP configuration field added to the DNSConfig struct, the default behavior (falling back to the default bridge IP), and how Docker Desktop is expected to override this value.\n\n3. **Security Review**: Analyze security implications of: the default gateway IP fallback behavior, the error handling when HostGatewayIP is empty, the use of string matching on \"host-gateway\" in container_operations.go, and the network exposure surface this creates.\n\n4. **Code Quality Assessment**: Review specific changes across the modified files (cmd/dockerd/config.go, daemon/config/config.go, daemon/container_operations.go, daemon/daemon_unix.go) for correctness, error handling, and Go idioms.\n\n5. **Operational Recommendations**: Provide guidance on deployment considerations, configuration management, and any migration steps for teams adopting this feature.\n\nDeliver your review as a Markdown document with clear section headings. Reference specific file paths, line-level changes, and the exact configuration fields introduced by the PR. Include code snippets from the diff where relevant to support your analysis.",
+  "prompt": "You are a senior infrastructure engineer on the Docker daemon team, responsible for reviewing changes to core networking and container lifecycle code. The team has received PR #40007, which introduces support for a special 'host-gateway' string in the --add-host flag on Linux. This change allows containers to resolve host.docker.internal to the host's IP address, addressing a long-standing feature request from the Linux community (docker/for-linux#264). The PR modifies 8 files, including daemon configuration, container network operations, and integration tests. Your lead has asked you to prepare a detailed code review assessment that evaluates the PR's design, implementation quality, and potential risks before merging.\n\n**Materials provided:**\n- PR #40007 diff and description (attached)\n- Integration test file: `integration/container/daemon_linux_test.go`\n- Configuration struct definition in `daemon/config/config.go`\n\n**Task requirements:**\n1. **Structural Analysis:**\n   - Identify all files modified by the PR and categorize them by functional area (e.g., configuration, networking, testing).\n   - Map the data flow: how does the 'host-gateway' string propagate from the CLI flag through configuration to the container's /etc/hosts?\n\n2. **Design Evaluation:**\n   - Assess the decision to use a magic string (`host-gateway`) instead of a direct IP address in `--add-host`. Discuss trade-offs.\n   - Evaluate the fallback mechanism: how is the default bridge IP determined when `--host-gateway-ip` is not specified?\n   - Review the new `HostGatewayIP` field in `DNSConfig`. Is this the appropriate location? Should it be part of a different config section?\n\n3. **Implementation Review:**\n   - Examine the validation logic in `opts/hosts.go`. Does the skip validation for `host-gateway` introduce any risks?\n   - Analyze the error handling in `daemon/container_operations.go` when `gateway` is empty.\n   - Review the integration test `TestDaemonHostGatewayIP`. Does it cover both the default bridge IP and explicit `--host-gateway-ip` scenarios? Are there edge cases missing?\n\n4. **Risk Assessment:**\n   - Identify backward compatibility implications: does this change break existing `--add-host` usage?\n   - Consider security implications: could the `host-gateway` magic string be exploited?\n   - Discuss platform-specific concerns: the PR mentions Docker Desktop will need to set `host-gateway-ip` to the Host Proxy IP for VPNkit. What coordination is required?\n\n5. **Recommendations:**\n   - Provide specific, actionable suggestions for improving the PR.\n   - Note any missing documentation or testing gaps.\n\n**Deliverable specification:**\n- Output a Markdown file titled 'Code Review - PR #40007: host.docker.internal Support'.\n- Use the following sections: Summary, Structural Analysis, Design Evaluation, Implementation Review, Risk Assessment, Recommendations.\n- Include code snippets from the diff where relevant (use triple backticks with 'go' language tag).\n- All references to issues must include the full repository path (e.g., `docker/for-linux#264`).\n- The review must be technically precise and suitable for sharing with the PR author and team leads.",
   "deliverable": {
     "deliverable_id": "code_review",
     "primary_format": "markdown",
@@ -12,286 +12,304 @@
   },
   "rubric": [
     {
-      "score": 1,
-      "criterion": "The submitted document is a Markdown file with a clear title referencing PR #40007.",
+      "score": 2,
+      "criterion": "The submitted document has the exact title 'Code Review - PR #40007: host.docker.internal Support'.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a section titled Summary and Context or equivalent.",
+      "criterion": "The document includes a section titled 'Summary' as the first major section.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a section titled Architecture and Design Analysis or equivalent.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a section titled Security Review or equivalent.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a section titled Code Quality Assessment or equivalent.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a section titled Operational Recommendations or equivalent.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Summary section identifies PR #40007 as implementing host.docker.internal support for Linux dockerd.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Summary section references docker/for-linux#264 as the primary issue addressed.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Summary section references docker/libnetwork#2348 as the replaced PR.",
+      "criterion": "The Summary section references the primary issue docker/for-linux#264.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section mentions at least three other community issues from the PR description.",
+      "criterion": "The Summary states the PR modifies 8 files.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Summary mentions 95 additions and 5 deletions.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section titled 'Structural Analysis' that categorizes changed files by functional area.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Structural Analysis categorizes at least 4 functional areas (e.g., Configuration & CLI, Networking Logic, Validation, Testing).",
       "category": "completeness",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Architecture section identifies the magic string as host-gateway used in --add-host.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Architecture section identifies the HostGatewayIP field in the DNSConfig struct.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Architecture section specifies that HostGatewayIP is of type net.IP.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Architecture section explains the default fallback behavior to the default bridge IP.",
+      "criterion": "The Structural Analysis describes the data flow from the CLI flag through configuration to the container's /etc/hosts.",
       "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Architecture section mentions Docker Desktop expected use of Host Proxy IP with VPNkit.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Architecture section identifies daemon/container_operations.go as the file containing the host-gateway replacement logic.",
-      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Architecture section references the use of opts.NewIPOpt for flag registration.",
-      "category": "accuracy",
+      "criterion": "The data flow description mentions the constant HostGatewayName.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The data flow mentions the function buildSandboxOptions in daemon/container_operations.go.",
+      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Security Review section notes that host.docker.internal resolution is opt-in via --add-host.",
+      "criterion": "The document includes a section titled 'Design Evaluation' that discusses the magic string design choice.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Design Evaluation discusses the trade-offs of using a magic string versus a direct IP address.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Design Evaluation mentions the fallback mechanism to the default bridge network's IP.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Security Review section discusses the default bridge IP (172.17.0.0/16) as the typical fallback.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Security Review section mentions the error message unable to derive the IP value for host-gateway for empty HostGatewayIP.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Security Review section identifies network.HostGatewayName as the constant used for string comparison.",
-      "category": "reference",
+      "criterion": "The Design Evaluation evaluates the placement of HostGatewayIP in the DNSConfig struct.",
+      "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Security Review section notes the lack of reachability validation for HostGatewayIP.",
+      "criterion": "The Design Evaluation notes that HostGatewayIP is not a DNS configuration and suggests a more appropriate location.",
       "category": "judgment",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Security Review section mentions the JSON tag host-gateway-ip,omitempty on the HostGatewayIP field.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Code Quality section identifies cmd/dockerd/config.go as the file where the daemon flag is registered.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Code Quality section identifies daemon/config/config.go as the file with the DNSConfig struct change.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Code Quality section identifies daemon/container_operations.go as containing the replacement logic.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Code Quality section identifies daemon/daemon_unix.go as the platform-specific file.",
-      "category": "reference",
+      "criterion": "The document includes a section titled 'Implementation Review' that examines validation logic in opts/hosts.go.",
+      "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Code Quality section notes the addition of the net import in daemon/config/config.go.",
-      "category": "data",
+      "criterion": "The Implementation Review references the ValidateExtraHost function.",
+      "category": "reference",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The Code Quality section comments on the flag description text for --host-gateway-ip.",
+      "score": 2,
+      "criterion": "The Implementation Review analyzes the error handling in daemon/container_operations.go when gateway is empty.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Code Quality section acknowledges that the implementation uses Go idioms correctly.",
+      "criterion": "The Implementation Review quotes the exact error message 'unable to derive the IP value for host-gateway'.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Implementation Review covers the integration test TestDaemonHostGatewayIP and its scenarios.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Review mentions the test uses container.WithExtraHost.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Review notes that the test verifies the bridge gateway IP using inspect.IPAM.Config[0].Gateway.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Implementation Review mentions the explicit IP 6.7.8.9 used in the second test scenario.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes a section titled 'Risk Assessment' that discusses backward compatibility.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Risk Assessment concludes the change is fully backward compatible.",
       "category": "judgment",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Operational Recommendations section advises explicit --host-gateway-ip configuration in production.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Operational Recommendations section notes Docker Desktop handles Host Proxy IP automatically.",
+      "criterion": "The Risk Assessment discusses security implications of the host-gateway magic string.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Operational Recommendations section suggests testing host.docker.internal resolution.",
+      "criterion": "The Risk Assessment notes that HostGatewayIP is of type net.IP.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Risk Assessment discusses platform-specific coordination requirements with Docker Desktop.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Operational Recommendations section recommends updating documentation about host-gateway.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references the example verification command from the PR: docker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts.",
+      "criterion": "The Risk Assessment mentions VPNkit as the technology requiring coordination.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The document references the example IP 172.18.0.1 from the PR verification output.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references the example IP 1.2.3.4 from the PR verification with custom --host-gateway-ip.",
-      "category": "data",
+      "criterion": "The document includes a section titled 'Recommendations' with specific actionable suggestions.",
+      "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document correctly identifies that host.docker.internal was previously supported on macOS and Windows but not Linux.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document mentions the PR merge date of January 27, 2020.",
-      "category": "data",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references jtreminio/dashtainer#2 as an example community issue about Xdebug.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document explains the split on colon delimiter in container_operations.go for extra host parsing.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document discusses the security implication that containers on the default bridge already know the gateway IP.",
-      "category": "judgment",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document mentions Docker Compose extra_hosts configuration as an adoption path.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document includes code references or snippets from the diff.",
+      "criterion": "The Recommendations include at least 3 numbered suggestions.",
       "category": "completeness",
       "is_penalty": false
     },
     {
+      "score": 2,
+      "criterion": "The Recommendations suggest moving HostGatewayIP from DNSConfig to CommonConfig.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
       "score": 1,
-      "criterion": "The document has a professional tone appropriate for an engineering code review.",
+      "criterion": "The Recommendations suggest adding logging for fallback failure in daemon_unix.go.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations suggest expanding integration test coverage for IPv6 and error cases.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations suggest updating documentation for --host-gateway-ip.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Recommendations suggest extracting a validation helper function in opts/hosts.go.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document includes at least two code snippets from the PR diff, formatted with Go syntax highlighting.",
       "category": "style",
       "is_penalty": false
     },
     {
+      "score": 1,
+      "criterion": "The document references the file daemon/network/constants.go as the location of the HostGatewayName constant.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the file cmd/dockerd/config.go as the location of the --host-gateway-ip flag definition.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the JSON tag 'host-gateway-ip,omitempty' for the HostGatewayIP field.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the IpamInfo method used to retrieve gateway IP information.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses the assertion function is.Contains in the context of test review.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly identifies the daemon flag name as --host-gateway-ip.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the integration test file as integration/container/daemon_linux_test.go.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the TestContainerConfig helper struct in integration/internal/container/ops.go.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
       "score": -2,
-      "criterion": "The document invents file names, function names, or issue numbers not present in the provided PR material.",
-      "category": "accuracy",
+      "criterion": "The document fails to reference any of the other issues addressed by the PR (e.g., docker/for-win#5167, docker/for-mac#2705).",
+      "category": "completeness",
       "is_penalty": true
     },
     {
-      "score": -3,
-      "criterion": "The document incorrectly states that host.docker.internal resolution is automatic without requiring --add-host.",
-      "category": "accuracy",
+      "score": -2,
+      "criterion": "The document does not mention the HostGatewayName constant by name.",
+      "category": "data",
       "is_penalty": true
+    },
+    {
+      "score": 1,
+      "criterion": "The document correctly states that the HostGatewayIP field is added to the DNSConfig struct in daemon/config/config.go.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the opts.NewIPOpt function used for the --host-gateway-ip flag.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document identifies the daemon_unix.go file as the location where the fallback to the bridge IP occurs.",
+      "category": "reference",
+      "is_penalty": false
     }
   ],
   "canonical": {
@@ -315,115 +333,103 @@
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "moby/moby",
+        "name": "docker/for-linux#264",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "docker/for-linux#264",
+        "name": "HostGatewayName",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "docker/libnetwork#2348",
+        "name": "host-gateway",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "host-gateway",
+        "name": "daemon/config/config.go",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "host.docker.internal",
+        "name": "DNSConfig",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "daemon/config/config.go",
+        "name": "bridge",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "net.IP",
+        "name": "unable to derive the IP value for host-gateway",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "host-gateway-ip,omitempty",
+        "name": "TestDaemonHostGatewayIP",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "cmd/dockerd/config.go",
+        "name": "6.7.8.9",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "unable to derive the IP value for host-gateway",
+        "name": "WithExtraHost",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "network.HostGatewayName",
+        "name": "opts/hosts.go",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "daemon/container_operations.go",
+        "name": "host-gateway-ip",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "172.17.0.0/16",
+        "name": "VPNkit",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "172.18.0.1",
+        "name": "daemon/network/constants.go",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "1.2.3.4",
+        "name": "IpamInfo",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "daemon/daemon_unix.go",
+        "name": "is.Contains",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "VPNkit",
-        "attrs": {}
-      },
-      {
-        "id": "ev_18",
-        "kind": "person",
-        "name": "2020-01-27",
-        "attrs": {}
-      },
-      {
-        "id": "ev_19",
-        "kind": "person",
-        "name": "jtreminio/dashtainer#2",
+        "name": "host-gateway-ip,omitempty",
         "attrs": {}
       }
     ],
@@ -431,71 +437,71 @@
     "facts": [
       {
         "id": "fact_0",
-        "kind": "money",
-        "value": 40007,
+        "kind": "string",
+        "value": "40007",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_1",
         "kind": "string",
-        "value": "moby/moby",
-        "unit": null,
-        "source": null
-      },
-      {
-        "id": "fact_2",
-        "kind": "string",
         "value": "docker/for-linux#264",
         "unit": null,
         "source": null
       },
       {
+        "id": "fact_2",
+        "kind": "money",
+        "value": 8,
+        "unit": null,
+        "source": null
+      },
+      {
         "id": "fact_3",
-        "kind": "string",
-        "value": "docker/libnetwork#2348",
+        "kind": "money",
+        "value": 95,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
-        "kind": "string",
-        "value": "host-gateway",
+        "kind": "money",
+        "value": 5,
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
         "kind": "string",
-        "value": "host.docker.internal",
+        "value": "HostGatewayName",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_6",
         "kind": "string",
-        "value": "daemon/config/config.go",
+        "value": "host-gateway",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_7",
         "kind": "string",
-        "value": "net.IP",
+        "value": "daemon/config/config.go",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_8",
         "kind": "string",
-        "value": "host-gateway-ip,omitempty",
+        "value": "DNSConfig",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
         "kind": "string",
-        "value": "cmd/dockerd/config.go",
+        "value": "bridge",
         "unit": null,
         "source": null
       },
@@ -509,63 +515,70 @@
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "network.HostGatewayName",
+        "value": "TestDaemonHostGatewayIP",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "daemon/container_operations.go",
+        "value": "6.7.8.9",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "172.17.0.0/16",
+        "value": "WithExtraHost",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "172.18.0.1",
+        "value": "opts/hosts.go",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "1.2.3.4",
+        "value": "host-gateway-ip",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "daemon/daemon_unix.go",
+        "value": "VPNkit",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "VPNkit",
+        "value": "daemon/network/constants.go",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "2020-01-27",
+        "value": "IpamInfo",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "jtreminio/dashtainer#2",
+        "value": "is.Contains",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "host-gateway-ip,omitempty",
         "unit": null,
         "source": null
       }
@@ -582,212 +595,250 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Summary and Context",
-          "heading_level": 2,
+          "heading": "Code Review - PR #40007: host.docker.internal Support",
+          "heading_level": 1,
           "required_content": [
-            "PR #40007 implements host.docker.internal DNS resolution for Linux containers",
-            "Addresses docker/for-linux#264 and replaces docker/libnetwork#2348",
-            "Provides parity with Docker Desktop on macOS and Windows",
-            "Uses --add-host=host.docker.internal:host-gateway syntax",
-            "References multiple community issues showing demand for this feature"
+            "Overall assessment of the PR",
+            "Mention of the primary issue addressed (docker/for-linux#264)",
+            "List of key files changed"
           ],
           "paragraphs": [
-            "PR #40007 in the moby/moby repository implements support for the host.docker.internal DNS name in dockerd on Linux, addressing a long-standing feature gap between Docker Desktop (macOS/Windows) and native Linux Docker installations. The PR was merged on January 27, 2020, and directly addresses docker/for-linux#264 (Support host.docker.internal DNS name to host), while also replacing and closing docker/libnetwork#2348 which proposed a special DNS record approach for host.docker.internal and gateway.docker.internal.",
-            "The implementation introduces a new --add-host syntax using a magic string host-gateway. Containers can now resolve host.docker.internal to the Docker host IP address by running with the flag --add-host=host.docker.internal:host-gateway. This adds an entry to the container /etc/hosts file mapping host.docker.internal to the configured gateway IP. The PR also adds a new daemon-level configuration flag --host-gateway-ip that allows operators to override the default gateway IP address.",
-            "This feature addresses a significant number of community issues spanning multiple Docker projects. These include docker/for-win#5167 (WSL2 host IP resolution), docker/for-mac#2705 and moby/moby#36625 (improving docker.for.mac.host.* naming), docker/for-win#1855, and numerous project-specific issues such as jtreminio/dashtainer#2 (Xdebug remote host on Linux), drud/ddev#843 (xdebug on Linux), cypress-io/cypress-docker-images#183 (host.docker.internal resolution), and others. The breadth of referenced issues demonstrates substantial community demand for cross-platform host resolution parity."
+            "This code review assesses PR #40007, which introduces support for resolving `host.docker.internal` to the host machine's IP address within Docker containers on Linux. The change addresses a significant feature gap reported in docker/for-linux#264 and several other related issues (docker/for-win#5167, docker/for-mac#2705, moby/moby#36625). The PR modifies 8 files, adding 95 lines and removing 5 lines, spanning daemon configuration, container networking operations, and integration tests. The implementation allows users to append a special `host-gateway` string to the `--add-host` flag, which resolves to either the IP of the default bridge network or a user-specified daemon flag `--host-gateway-ip`. This is a targeted, well-scoped change that brings Linux parity with Docker Desktop's existing `host.docker.internal` support."
           ]
         },
         {
-          "heading": "Architecture and Design Analysis",
+          "heading": "Structural Analysis",
           "heading_level": 2,
           "required_content": [
-            "Magic string host-gateway used in --add-host flag",
-            "New HostGatewayIP field added to DNSConfig struct in daemon/config/config.go",
-            "Default fallback to default bridge IP when HostGatewayIP is not set",
-            "Docker Desktop expected to set HostGatewayIP to Host Proxy IP for VPNkit routing",
-            "Configuration propagation from daemon flag to container sandbox options"
+            "Categorization of changed files by functional area",
+            "Data flow description from CLI to /etc/hosts",
+            "Mention of specific files: config.go, container_operations.go, constants.go, hosts.go, daemon_linux_test.go"
           ],
           "paragraphs": [
-            "The PR introduces a layered design for host gateway resolution. At the configuration layer, a new HostGatewayIP field of type net.IP is added to the DNSConfig struct in daemon/config/config.go. This field is tagged with json:\"host-gateway-ip,omitempty\" and is exposed as the --host-gateway-ip daemon flag in cmd/dockerd/config.go, initialized via opts.NewIPOpt(&conf.HostGatewayIP, \"\"). The empty default signals that the system should fall back to the default bridge network gateway IP at runtime.",
-            "At the container execution layer, daemon/container_operations.go processes the --add-host entries during sandbox option building. The code splits each extra host entry on the colon delimiter, then performs a string comparison of the IP portion against network.HostGatewayName (the host-gateway constant). When matched, it replaces the placeholder with daemon.configStore.HostGatewayIP.String(). If the resolved gateway string is empty, the operation fails with the error unable to derive the IP value for host-gateway.",
-            "This design separates concerns cleanly: the daemon holds the authoritative gateway IP configuration, while containers opt in to host resolution explicitly via --add-host. Docker Desktop is expected to set --host-gateway-ip to its Host Proxy IP so that DNS requests for host.docker.internal can be routed through VPNkit. On native Linux, the default bridge IP (typically 172.17.0.1 or similar) serves as the fallback, which correctly points to the Docker host from the container perspective.",
-            "A notable architectural decision is the use of a magic string rather than a dedicated flag or DNS record approach (as proposed in docker/libnetwork#2348). The magic string approach reuses existing --add-host infrastructure, minimizing the surface area of changes, but introduces implicit behavior that is not discoverable from the CLI help alone. The daemon-level flag provides an escape hatch for environments where the default bridge IP is not the correct host address."
+            "The PR modifies 8 files across four functional areas. **Configuration & CLI** (2 files): `cmd/dockerd/config.go` adds the `--host-gateway-ip` flag definition; `daemon/config/config.go` adds the `HostGatewayIP net.IP` field to the `DNSConfig` struct. **Networking Logic** (2 files): `daemon/container_operations.go` handles the runtime replacement of the `host-gateway` string with the configured IP; `daemon/network/constants.go` introduces the `HostGatewayName` constant. **Validation** (1 file): `opts/hosts.go` modifies `ValidateExtraHost` to skip IP validation for the magic string. **Testing** (3 files): `integration/container/daemon_linux_test.go` adds `TestDaemonHostGatewayIP`; `integration/internal/container/ops.go` adds the `WithExtraHost` test helper.",
+            "The data flow is linear: (1) The `--host-gateway-ip` CLI flag is parsed into `config.CommonConfig.HostGatewayIP` via `opts.NewIPOpt`. (2) During daemon initialization in `daemon_unix.go`, if `HostGatewayIP` is nil, the controller fetches the default bridge network's gateway IP. (3) At container creation in `container_operations.go`, `buildSandboxOptions` iterates over extra hosts. If the IP portion equals `HostGatewayName` (`\"host-gateway\"`), it replaces it with `daemon.configStore.HostGatewayIP.String()`. (4) This final IP is passed to `libnetwork.OptionExtraHost` and written into the container's `/etc/hosts`."
           ]
         },
         {
-          "heading": "Security Review",
+          "heading": "Design Evaluation",
           "heading_level": 2,
           "required_content": [
-            "Default gateway IP exposes the Docker host bridge network address to containers",
-            "Error handling when HostGatewayIP is empty returns a clear error to prevent silent failures",
-            "String matching on host-gateway is safe but relies on the network.HostGatewayName constant",
-            "Host-gateway resolution is opt-in via --add-host, not automatic",
-            "No validation that HostGatewayIP is within a valid network range for the host"
+            "Discussion of the magic string design choice",
+            "Evaluation of the fallback mechanism to default bridge IP",
+            "Assessment of HostGatewayIP placement in DNSConfig"
           ],
           "paragraphs": [
-            "The security posture of this feature has several important dimensions. First, host.docker.internal resolution is strictly opt-in: containers must explicitly use --add-host=host.docker.internal:host-gateway. This prevents any automatic exposure of the host IP address to containers, which is a sound security design choice. Containers without the explicit flag gain no new network information.",
-            "The default behavior of falling back to the default bridge IP has security implications worth noting. The default bridge network (typically 172.17.0.0/16) is already known to containers on that network, as the gateway IP is assigned as their default route. Therefore, exposing this IP via host.docker.internal does not reveal new information to containers already on the default bridge. However, containers on custom bridge networks would receive the default bridge IP, which may or may not be reachable depending on network topology, creating a potential source of confusion rather than a security vulnerability.",
-            "The error handling in daemon/container_operations.go is appropriate: when HostGatewayIP is empty (the default on Linux without Docker Desktop), the code returns a formatted error stating unable to derive the IP value for host-gateway. This prevents silent failures where host.docker.internal might resolve to an incorrect or empty address. The use of network.HostGatewayName constant for the string comparison ensures consistency and prevents typos from creating security gaps.",
-            "One area for improvement is the lack of explicit validation that the configured HostGatewayIP is a valid, reachable address for the host. An operator could misconfigure --host-gateway-ip with a non-routable or incorrect address, and the PR does not validate reachability. This is acceptable for an initial implementation but should be documented as a deployment consideration. Additionally, the JSON tag on HostGatewayIP includes omitempty, meaning the field will be absent from marshaled configurations when not set, which is correct for optional configuration."
+            "The decision to use a magic string (`host-gateway`) in `--add-host` is pragmatic. It avoids introducing a new flag (e.g., `--add-host-host-gateway`) and reuses the existing `--add-host` syntax, making it familiar to users. The trade-off is that it introduces a non-IP value into a field historically expected to be an IP address, requiring special-case validation logic in `opts/hosts.go`. This is acceptable because the string is well-defined (`HostGatewayName` constant) and the validation skip is narrowly scoped.",
+            "The fallback mechanism in `daemon/daemon_unix.go` is robust. It queries the libnetwork controller for the `\"bridge\"` network, retrieves its IPAM info, and prefers IPv4 (`v4Info`) over IPv6 (`v6Info`). This handles the common case where the host's bridge IP is the gateway. However, it silently fails if the bridge network is not present (the `if err == nil` check). The error is not logged, which could complicate debugging in environments with custom network drivers.",
+            "Placing `HostGatewayIP` inside `DNSConfig` (alongside `DNS`, `DNSOptions`, `DNSSearch`) is semantically questionable. `HostGatewayIP` is not a DNS configuration; it's a host networking parameter. A more appropriate location might be a new `HostConfig` struct or within the existing `CommonConfig` top-level. The current placement works but may confuse future developers."
           ]
         },
         {
-          "heading": "Code Quality Assessment",
+          "heading": "Implementation Review",
           "heading_level": 2,
           "required_content": [
-            "Changes in cmd/dockerd/config.go add the --host-gateway-ip flag registration",
-            "daemon/config/config.go adds HostGatewayIP net.IP field to DNSConfig struct",
-            "daemon/container_operations.go contains the host-gateway string replacement logic",
-            "daemon/daemon_unix.go changes for Unix-specific gateway IP default handling",
-            "Go idioms and error handling in the implementation"
+            "Review of validation logic in opts/hosts.go",
+            "Error handling in container_operations.go",
+            "Coverage analysis of integration tests",
+            "Specific code references: ValidateExtraHost, HostGatewayName check, error message"
           ],
           "paragraphs": [
-            "The code changes across the four modified files demonstrate competent Go engineering. In cmd/dockerd/config.go, the new flag is registered using opts.NewIPOpt(&conf.HostGatewayIP, \"\"), which correctly ties the flag to the configuration struct and validates IP address input. The flag description IP address that the special host-gateway string in --add-host resolves to. Defaults to the IP address of the default bridge is clear and informative for operators.",
-            "In daemon/config/config.go, the HostGatewayIP field is added to the DNSConfig struct alongside existing DNS, DNSOptions, and DNSSearch fields. The addition of the net import is necessary for the net.IP type. The JSON tag uses the conventional kebab-case naming (host-gateway-ip) consistent with other configuration fields. The alignment of existing fields is adjusted to accommodate the new field, maintaining code readability.",
-            "The core logic in daemon/container_operations.go is concise and correct. The code iterates over ExtraHosts, splits each entry on the colon, and checks if the IP portion equals network.HostGatewayName. The replacement logic is straightforward: it reads daemon.configStore.HostGatewayIP.String() and substitutes it for the placeholder. The error message is descriptive and actionable. One minor observation is that the code does not validate the format of the --add-host entry before splitting, relying on upstream validation from the CLI parsing layer.",
-            "The changes in daemon/daemon_unix.go appear to contain Unix-specific logic for determining the default gateway IP, though the full diff content is truncated in the provided material. Based on the PR description, this file likely contains the logic to identify the default bridge network gateway IP as the fallback value when HostGatewayIP is not explicitly configured. This platform-specific handling is appropriate given that network configuration differs between Linux and other Unix systems."
+            "The validation change in `opts/hosts.go` is correct but could be more explicit. The condition `if arr[1] != network.HostGatewayName` skips IP validation only for the exact string `\"host-gateway\"`. This is safe because `HostGatewayName` is a compile-time constant. However, it introduces an implicit contract: any future magic strings would require similar code changes. Adding a comment or extracting a helper function (e.g., `isSpecialHostGateway`) would improve clarity.",
+            "The error handling in `daemon/container_operations.go` when `gateway` is empty is strict: it returns a formatted error (`\"unable to derive the IP value for host-gateway\"`). This is appropriate because an empty gateway indicates a misconfigured daemon (no bridge network and no `--host-gateway-ip`). The error message is descriptive and will appear in container creation logs, aiding debugging.",
+            "The integration test `TestDaemonHostGatewayIP` covers two critical scenarios: (1) when `--host-gateway-ip` is not specified, verifying the `/etc/hosts` entry matches the bridge network's gateway IP (`inspect.IPAM.Config[0].Gateway`); (2) when `--host-gateway-ip=6.7.8.9` is specified, verifying the literal `\"6.7.8.9\"` appears. The test uses `container.WithExtraHost(\"host.docker.internal:host-gateway\")`, exercising the full data flow. However, it does not test IPv6 fallback or error cases (e.g., invalid `--host-gateway-ip` value)."
           ]
         },
         {
-          "heading": "Operational Recommendations",
+          "heading": "Risk Assessment",
           "heading_level": 2,
           "required_content": [
-            "Teams should explicitly set --host-gateway-ip in production environments",
-            "Docker Desktop users get automatic configuration via Host Proxy IP",
-            "Default bridge IP fallback may not work correctly on custom networks",
-            "Testing should verify host.docker.internal resolution on target network topologies",
-            "Documentation should clarify the host-gateway magic string behavior"
+            "Backward compatibility analysis",
+            "Security implications of the magic string",
+            "Platform-specific coordination requirements",
+            "References to Docker Desktop and VPNkit"
           ],
           "paragraphs": [
-            "For production deployments on Linux, teams should explicitly configure the --host-gateway-ip daemon flag rather than relying on the default bridge IP fallback. In environments with complex network topologies such as custom bridge networks, overlay networks in Docker Swarm, or Kubernetes the default bridge IP may not be reachable from all containers. Explicit configuration ensures consistent behavior across all network configurations.",
-            "Docker Desktop for macOS and Windows will automatically set HostGatewayIP to the Host Proxy IP used by VPNkit, so no manual configuration is needed on those platforms. For Linux deployments behind corporate proxies or VPNs, teams should set --host-gateway-ip to the appropriate host IP that containers need to reach, which may differ from the default bridge gateway.",
-            "When adopting this feature, teams should test host.docker.internal resolution in their specific network topology. The verification steps shown in the PR description provide a straightforward way to confirm correct IP mapping. Teams using Docker Compose should add host-gateway to the extra_hosts configuration for services that need host access.",
-            "Documentation and internal runbooks should be updated to explain the host-gateway magic string, as this behavior is not discoverable from standard --add-host documentation alone. New team members may be confused by --add-host=host.docker.internal:host-gateway if they are accustomed to explicit IP addresses in --add-host entries. The daemon flag --host-gateway-ip should be included in standard daemon configuration templates for Linux-based Docker deployments."
+            "The change is fully backward compatible. Existing `--add-host` usage with valid IP addresses is unaffected because the validation skip only applies to the exact string `\"host-gateway\"`. Users who do not use this string will see no behavior change. The new `--host-gateway-ip` daemon flag is optional and defaults to `\"\"` (empty), which triggers the bridge IP fallback.",
+            "From a security perspective, the `host-gateway` magic string does not introduce new attack surface. It only maps to the host's bridge IP or a daemon-configured IP, which are already accessible from containers via the bridge network. The `HostGatewayIP` field is a `net.IP`, which is validated by `opts.NewIPOpt`. However, if an administrator sets `--host-gateway-ip` to a malicious IP (e.g., an internal service), containers could be redirected. This is an inherent risk of daemon configuration, not specific to this PR.",
+            "The PR description notes that Docker Desktop must set `--host-gateway-ip` to the \"Host Proxy IP\" for VPNkit. This requires coordination between the moby/moby codebase and the Docker Desktop team. If Docker Desktop does not update its daemon configuration to include this flag, `host.docker.internal` will resolve to the bridge IP instead of the host's actual IP, breaking the expected behavior for Mac/Windows users running Linux containers. This dependency should be documented in release notes."
+          ]
+        },
+        {
+          "heading": "Recommendations",
+          "heading_level": 2,
+          "required_content": [
+            "Specific actionable suggestions for improvement",
+            "Missing documentation or testing gaps",
+            "Code-level improvements"
+          ],
+          "paragraphs": [
+            "1. **Refactor `HostGatewayIP` placement**: Move `HostGatewayIP` from `DNSConfig` to a new top-level field in `CommonConfig` (e.g., `HostGatewayIP net.IP`). Update the JSON tag to `\"host-gateway-ip,omitempty\"` for consistency with the CLI flag name. This improves semantic clarity without breaking the daemon config file format.",
+            "2. **Add logging for fallback failure**: In `daemon/daemon_unix.go`, when `controller.NetworkByName(\"bridge\")` fails, log a warning (e.g., `logrus.Warn(\"Failed to retrieve bridge network for host-gateway fallback; host.docker.internal may not resolve\")`). This aids debugging in custom network environments.",
+            "3. **Expand integration test coverage**: Add test cases for: (a) IPv6 fallback when no IPv4 gateway is present; (b) error handling when `--host-gateway-ip` is an invalid IP (should fail at daemon start, not container creation); (c) behavior when the bridge network is removed or custom-named.",
+            "4. **Update documentation**: Add a man page entry for `--host-gateway-ip` in `docs/reference/commandline/dockerd.md`. Include examples of usage with `--add-host` in the `docker run` documentation. Mention the Docker Desktop dependency in release notes.",
+            "5. **Extract validation helper**: In `opts/hosts.go`, extract the magic string check into a function like `isHostGateway(ip string) bool` to centralize the logic and make it reusable if more magic strings are added in the future."
           ]
         }
       ],
-      "md_title": "Technical Code Review: PR #40007 - host.docker.internal Support on Linux",
-      "input_attachments": [],
-      "expected_values": [
+      "md_title": "Code Review - PR #40007: host.docker.internal Support",
+      "input_attachments": [
         {
-          "description": "PR number referenced in the document",
-          "value": 40007,
-          "tolerance": null,
-          "location": "Title and Summary section"
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #40007 diff and description",
+          "content_blueprint": {
+            "title": "PR #40007 diff and description",
+            "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+          }
         },
         {
-          "description": "Repository name where the PR was submitted",
-          "value": "moby/moby",
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "integration/container/daemon_linux_test.go",
+          "content_blueprint": {
+            "title": "integration/container/daemon_linux_test",
+            "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+          }
+        },
+        {
+          "attachment_id": "att_2",
+          "filename": "input_2.md",
+          "format": "md",
+          "description": "daemon/config/config.go",
+          "content_blueprint": {
+            "title": "daemon/config/config",
+            "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+          }
+        }
+      ],
+      "expected_values": [
+        {
+          "description": "PR number referenced in title",
+          "value": "40007",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Title: Code Review - PR #40007: host.docker.internal Support"
         },
         {
           "description": "Primary issue addressed by the PR",
           "value": "docker/for-linux#264",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Summary section, first paragraph"
         },
         {
-          "description": "PR that was replaced and closed by this PR",
-          "value": "docker/libnetwork#2348",
+          "description": "Number of files changed by the PR",
+          "value": 8,
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Summary section, first paragraph"
         },
         {
-          "description": "The magic string used in --add-host for host resolution",
+          "description": "Number of additions in the PR",
+          "value": 95,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Number of deletions in the PR",
+          "value": 5,
+          "tolerance": null,
+          "location": "Summary section, first paragraph"
+        },
+        {
+          "description": "Constant name for the magic string",
+          "value": "HostGatewayName",
+          "tolerance": null,
+          "location": "Structural Analysis section, Networking Logic category"
+        },
+        {
+          "description": "The magic string value used in --add-host",
           "value": "host-gateway",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Structural Analysis section, Data Flow paragraph"
         },
         {
-          "description": "The DNS name that containers can resolve to reach the host",
-          "value": "host.docker.internal",
-          "tolerance": null,
-          "location": "Multiple sections"
-        },
-        {
-          "description": "File where HostGatewayIP field was added to DNSConfig",
+          "description": "File where HostGatewayIP is added to config struct",
           "value": "daemon/config/config.go",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Structural Analysis section, Configuration & CLI category"
         },
         {
-          "description": "Type of the HostGatewayIP field",
-          "value": "net.IP",
+          "description": "Config struct where HostGatewayIP field is placed",
+          "value": "DNSConfig",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Design Evaluation section, third paragraph"
         },
         {
-          "description": "JSON tag on the HostGatewayIP field",
-          "value": "host-gateway-ip,omitempty",
+          "description": "Default bridge network name used for fallback",
+          "value": "bridge",
           "tolerance": null,
-          "location": "Security Review section"
+          "location": "Design Evaluation section, second paragraph"
         },
         {
-          "description": "File where the --host-gateway-ip daemon flag is registered",
-          "value": "cmd/dockerd/config.go",
-          "tolerance": null,
-          "location": "Code Quality Assessment section"
-        },
-        {
-          "description": "Error message returned when HostGatewayIP is empty",
+          "description": "Error message returned when gateway is empty",
           "value": "unable to derive the IP value for host-gateway",
           "tolerance": null,
-          "location": "Security Review section"
+          "location": "Implementation Review section, second paragraph"
         },
         {
-          "description": "Constant name used for the host-gateway string comparison",
-          "value": "network.HostGatewayName",
+          "description": "Test function name for integration test",
+          "value": "TestDaemonHostGatewayIP",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Implementation Review section, third paragraph"
         },
         {
-          "description": "File containing the host-gateway string replacement logic",
-          "value": "daemon/container_operations.go",
+          "description": "Explicit IP used in second test scenario",
+          "value": "6.7.8.9",
           "tolerance": null,
-          "location": "Code Quality Assessment section"
+          "location": "Implementation Review section, third paragraph"
         },
         {
-          "description": "Default bridge network IP range mentioned as typical",
-          "value": "172.17.0.0/16",
+          "description": "Test helper function added for extra hosts",
+          "value": "WithExtraHost",
           "tolerance": null,
-          "location": "Security Review section"
+          "location": "Structural Analysis section, Testing category"
         },
         {
-          "description": "Example IP shown in PR verification for default behavior",
-          "value": "172.18.0.1",
+          "description": "File containing the ValidateExtraHost function",
+          "value": "opts/hosts.go",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Implementation Review section, first paragraph"
         },
         {
-          "description": "Example IP shown in PR verification for custom --host-gateway-ip",
-          "value": "1.2.3.4",
+          "description": "Daemon flag name for configuring the gateway IP",
+          "value": "host-gateway-ip",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Risk Assessment section, first paragraph"
         },
         {
-          "description": "Platform-specific file for Unix gateway IP handling",
-          "value": "daemon/daemon_unix.go",
-          "tolerance": null,
-          "location": "Code Quality Assessment section"
-        },
-        {
-          "description": "Docker Desktop component that handles host proxy routing",
+          "description": "Dependency mentioned for Docker Desktop",
           "value": "VPNkit",
           "tolerance": null,
-          "location": "Architecture and Design Analysis section"
+          "location": "Risk Assessment section, third paragraph"
         },
         {
-          "description": "PR merge date",
-          "value": "2020-01-27",
+          "description": "File where HostGatewayName constant is defined",
+          "value": "daemon/network/constants.go",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Structural Analysis section, Networking Logic category"
         },
         {
-          "description": "Community issue about Xdebug remote host on Linux",
-          "value": "jtreminio/dashtainer#2",
+          "description": "Network info method used to get IPAM details",
+          "value": "IpamInfo",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Design Evaluation section, second paragraph"
+        },
+        {
+          "description": "Test assertion used to check gateway IP in output",
+          "value": "is.Contains",
+          "tolerance": null,
+          "location": "Implementation Review section, third paragraph"
+        },
+        {
+          "description": "JSON tag for HostGatewayIP in the config struct",
+          "value": "host-gateway-ip,omitempty",
+          "tolerance": null,
+          "location": "Recommendations section, first recommendation"
         }
       ],
       "narrative_prompt": null,
@@ -797,10 +848,45 @@
     "estimated_hours": null,
     "seed_rng": 1144394049
   },
-  "input_attachment_specs": [],
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #40007 diff and description",
+      "content_blueprint": {
+        "title": "PR #40007 diff and description",
+        "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "integration/container/daemon_linux_test.go",
+      "content_blueprint": {
+        "title": "integration/container/daemon_linux_test",
+        "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+      }
+    },
+    {
+      "attachment_id": "att_2",
+      "filename": "input_2.md",
+      "format": "md",
+      "description": "daemon/config/config.go",
+      "content_blueprint": {
+        "title": "daemon/config/config",
+        "body": "# Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux\nSource: github_issue_pr\nIdentifier: pr:moby/moby#40007\n\nRepository: moby/moby\nPR Number: #40007\nPR Title: Support host.docker.internal in dockerd on Linux\nMerged At: 2020-01-27T12:42:27Z\nChanged Files: 8\nAdditions: +95, Deletions: -5\n\n## PR Description\n- addresses https://github.com/docker/for-linux/issues/264 Support host.docker.internal DNS name to host\r\n- replaces, closes https://github.com/docker/libnetwork/pull/2348 special DNS record for host.docker.internal + gateway.docker.internal\r\n\r\nOther issues (linking for discoverability)\r\n\r\n- addresses https://github.com/docker/for-win/issues/5167 Unable to connect to WSL2 host IP after update to 2.1.6.0\r\n- addresses https://github.com/docker/for-mac/issues/2705 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be bette\r\n- addresses https://github.com/moby/moby/issues/36625 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better\r\n- addresses https://github.com/docker/for-win/issues/1855 They're close, but \"docker.for.mac.host.*\" and \"docker.for.win.*\" should be better docker/for-win#1855\r\n- addresses https://github.com/jtreminio/dashtainer/issues/2 Xdebug on Linux needs a programmatic value for remote_host\r\n- addresses https://github.com/bscheshirwork/docker-yii2-app-advanced/issues/1 Docker image bscheshir/php:7.2.5-fpm-alpine-4yii2-xdebug cannot connect to the host machine for XDebug\r\n- addresses https://github.com/drud/ddev/issues/843 v0.18.0 xdebug instructions don't work on linux due to no \"host.docker.internal\" hostname\r\n- addresses https://github.com/jc21/nginx-proxy-manager/issues/259 host.docker.internal is not resolved by nginx\r\n- addresses https://github.com/cypress-io/cypress-docker-images/issues/183 http://host.docker.internal Does not work\r\n- addresses https://github.com/Decathlon/ara/issues/222 local installation does not work on Ubuntu (with Docker and docker compose)\r\n- addresses https://github.com/davidfowl/Micronetes/issues/22 Support for container networks / multicontainer workloads\r\n\r\n**- What I did**\r\nThis PR allows containers to connect to Linux hosts\r\n    by appending a special string \"host-gateway\" to --add-host\r\n    e.g. \"--add-host=host.docker.internal:host-gateway\" which adds\r\n    host.docker.internal DNS entry in /etc/hosts and maps it to host-gateway-ip\r\n    This PR also add a daemon flag call host-gateway-ip which defaults to\r\n    the default bridge IP\r\n    Docker Desktop will need to set this field to the Host Proxy IP\r\n    so DNS requests for host.docker.internal can be routed to VPNkit\r\n\r\n**- How to verify it**\r\n```\r\ndockerd &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n172.18.0.1\thost.docker.internal\r\n172.18.0.2\t9f74a81028b7\r\n```\r\n\r\n```\r\ndockerd --host-gateway-ip=1.2.3.4 &\r\ndocker run -it --add-host=host.docker.internal:host-gateway alpine cat /etc/hosts\r\n127.0.0.1\tlocalhost\r\n::1\tlocalhost ip6-localhost ip6-loopback\r\nfe00::0\tip6-localnet\r\nff00::0\tip6-mcastprefix\r\nff02::1\tip6-allnodes\r\nff02::2\tip6-allrouters\r\n1.2.3.4\thost.docker.internal\r\n172.18.0.2\ta5f53cc81d24\r\n```\r\n\n\n## Diff\ndiff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go\nindex f4b48a4097390..f75ea3c38ebe5 100644\n--- a/cmd/dockerd/config.go\n+++ b/cmd/dockerd/config.go\n@@ -64,6 +64,7 @@ func installCommonConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {\n \tflags.Var(opts.NewListOptsRef(&conf.DNS, opts.ValidateIPAddress), \"dns\", \"DNS server to use\")\n \tflags.Var(opts.NewNamedListOptsRef(\"dns-opts\", &conf.DNSOptions, nil), \"dns-opt\", \"DNS options to use\")\n \tflags.Var(opts.NewListOptsRef(&conf.DNSSearch, opts.ValidateDNSSearch), \"dns-search\", \"DNS search domains to use\")\n+\tflags.Var(opts.NewIPOpt(&conf.HostGatewayIP, \"\"), \"host-gateway-ip\", \"IP address that the special 'host-gateway' string in --add-host resolves to. Defaults to the IP address of the default bridge\")\n \tflags.Var(opts.NewNamedListOptsRef(\"labels\", &conf.Labels, opts.ValidateLabel), \"label\", \"Set key=value labels to the daemon\")\n \tflags.StringVar(&conf.LogConfig.Type, \"log-driver\", \"json-file\", \"Default driver for container logs\")\n \tflags.Var(opts.NewNamedMapOpts(\"log-opts\", conf.LogConfig.Config, nil), \"log-opt\", \"Default log driver options for containers\")\ndiff --git a/daemon/config/config.go b/daemon/config/config.go\nindex 0fbd81f02120f..247ac41cb92ce 100644\n--- a/daemon/config/config.go\n+++ b/daemon/config/config.go\n@@ -6,6 +6,7 @@ import (\n \t\"fmt\"\n \t\"io\"\n \t\"io/ioutil\"\n+\t\"net\"\n \t\"os\"\n \t\"reflect\"\n \t\"strings\"\n@@ -115,9 +116,10 @@ type CommonTLSOptions struct {\n \n // DNSConfig defines the DNS configurations.\n type DNSConfig struct {\n-\tDNS        []string `json:\"dns,omitempty\"`\n-\tDNSOptions []string `json:\"dns-opts,omitempty\"`\n-\tDNSSearch  []string `json:\"dns-search,omitempty\"`\n+\tDNS           []string `json:\"dns,omitempty\"`\n+\tDNSOptions    []string `json:\"dns-opts,omitempty\"`\n+\tDNSSearch     []string `json:\"dns-search,omitempty\"`\n+\tHostGatewayIP net.IP   `json:\"host-gateway-ip,omitempty\"`\n }\n \n // CommonConfig defines the configuration of a docker daemon which is\ndiff --git a/daemon/container_operations.go b/daemon/container_operations.go\nindex 205c0905017a1..d488d09f842c8 100644\n--- a/daemon/container_operations.go\n+++ b/daemon/container_operations.go\n@@ -115,6 +115,16 @@ func (daemon *Daemon) buildSandboxOptions(container *container.Container) ([]lib\n \t\t\treturn nil, err\n \t\t}\n \t\tparts := strings.SplitN(extraHost, \":\", 2)\n+\t\t// If the IP Address is a string called \"host-gateway\", replace this\n+\t\t// value with the IP address stored in the daemon level HostGatewayIP\n+\t\t// config variable\n+\t\tif parts[1] == network.HostGatewayName {\n+\t\t\tgateway := daemon.configStore.HostGatewayIP.String()\n+\t\t\tif gateway == \"\" {\n+\t\t\t\treturn nil, fmt.Errorf(\"unable to derive the IP value for host-gateway\")\n+\t\t\t}\n+\t\t\tparts[1] = gateway\n+\t\t}\n \t\tsboxOptions = append(sboxOptions, libnetwork.OptionExtraHost(parts[0], parts[1]))\n \t}\n \ndiff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go\nindex f2d1fc932fbc8..9f1422295d8e7 100644\n--- a/daemon/daemon_unix.go\n+++ b/daemon/daemon_unix.go\n@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox\n \t\tremoveDefaultBridgeInterface()\n \t}\n \n+\t// Set HostGatewayIP to the default bridge's IP  if it is empty\n+\tif daemon.configStore.HostGatewayIP == nil && controller != nil {\n+\t\tif n, err := controller.NetworkByName(\"bridge\"); err == nil {\n+\t\t\tv4Info, v6Info := n.Info().IpamInfo()\n+\t\t\tvar gateway net.IP\n+\t\t\tif len(v4Info) > 0 {\n+\t\t\t\tgateway = v4Info[0].Gateway.IP\n+\t\t\t} else if len(v6Info) > 0 {\n+\t\t\t\tgateway = v6Info[0].Gateway.IP\n+\t\t\t}\n+\t\t\tdaemon.configStore.HostGatewayIP = gateway\n+\t\t}\n+\t}\n \treturn controller, nil\n }\n \ndiff --git a/daemon/network/constants.go b/daemon/network/constants.go\nnew file mode 100644\nindex 0000000000000..e7d97018fd595\n--- /dev/null\n+++ b/daemon/network/constants.go\n@@ -0,0 +1,8 @@\n+package network\n+\n+const (\n+\t// HostGatewayName is the string value that can be passed\n+\t// to the IPAddr section in --add-host that is replaced by\n+\t// the value of HostGatewayIP daemon config value\n+\tHostGatewayName = \"host-gateway\"\n+)\ndiff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go\nindex 39f056fabe545..5e260a495d6ff 100644\n--- a/integration/container/daemon_linux_test.go\n+++ b/integration/container/daemon_linux_test.go\n@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {\n \tassert.NilError(t, err)\n \tassert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), \"shareable\"))\n }\n+\n+// TestDaemonHostGatewayIP verifies that when a magic string \"host-gateway\" is passed\n+// to ExtraHosts (--add-host) instead of an IP address, its value is set to\n+// 1. Daemon config flag value specified by host-gateway-ip or\n+// 2. IP of the default bridge network\n+// and is added to the /etc/hosts file\n+func TestDaemonHostGatewayIP(t *testing.T) {\n+\tskip.If(t, testEnv.IsRemoteDaemon)\n+\tskip.If(t, testEnv.DaemonInfo.OSType == \"windows\")\n+\tt.Parallel()\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td := daemon.New(t)\n+\t// Verify the IP in /etc/hosts is same as the default bridge's IP\n+\td.StartWithBusybox(t)\n+\tc := d.NewClientT(t)\n+\tctx := context.Background()\n+\tcID := container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err := container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tinspect, err := c.NetworkInspect(ctx, \"bridge\", types.NetworkInspectOptions{})\n+\tassert.NilError(t, err)\n+\tassert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+\t// Verify the IP in /etc/hosts is same as host-gateway-ip\n+\td.StartWithBusybox(t, \"--host-gateway-ip=6.7.8.9\")\n+\tcID = container.Run(ctx, t, c,\n+\t\tcontainer.WithExtraHost(\"host.docker.internal:host-gateway\"),\n+\t)\n+\tres, err = container.Exec(ctx, c, cID, []string{\"cat\", \"/etc/hosts\"})\n+\tassert.NilError(t, err)\n+\tassert.Assert(t, is.Len(res.Stderr(), 0))\n+\tassert.Equal(t, 0, res.ExitCode)\n+\tassert.Check(t, is.Contains(res.Stdout(), \"6.7.8.9\"))\n+\tc.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})\n+\td.Stop(t)\n+\n+}\ndiff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go\nindex b9ba8c4e85db8..c829ad1717a34 100644\n--- a/integration/internal/container/ops.go\n+++ b/integration/internal/container/ops.go\n@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {\n \t\tc.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)\n \t}\n }\n+\n+// WithExtraHost sets the user defined IP:Host mappings in the container's\n+// /etc/hosts file\n+func WithExtraHost(extraHost string) func(*TestContainerConfig) {\n+\treturn func(c *TestContainerConfig) {\n+\t\tc.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)\n+\t}\n+}\ndiff --git a/opts/hosts.go b/opts/hosts.go\nindex a6f2662df0888..41caae307271b 100644\n--- a/opts/hosts.go\n+++ b/opts/hosts.go\n@@ -8,6 +8,7 @@ import (\n \t\"strconv\"\n \t\"strings\"\n \n+\t\"github.com/docker/docker/daemon/network\"\n \t\"github.com/docker/docker/pkg/homedir\"\n )\n \n@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {\n \tif len(arr) != 2 || len(arr[0]) == 0 {\n \t\treturn \"\", fmt.Errorf(\"bad format for add-host: %q\", val)\n \t}\n-\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n-\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t// Skip IPaddr validation for special \"host-gateway\" string\n+\tif arr[1] != network.HostGatewayName {\n+\t\tif _, err := ValidateIPAddress(arr[1]); err != nil {\n+\t\t\treturn \"\", fmt.Errorf(\"invalid IP address in add-host: %q\", arr[1])\n+\t\t}\n \t}\n \treturn val, nil\n }\n"
+      }
+    }
+  ],
   "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_58db2129417d02b1/code_review.md",
-  "input_attachment_paths": [],
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_58db2129417d02b1/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_58db2129417d02b1/input_1.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_58db2129417d02b1/input_2.md"
+  ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T05:26:40.255428+00:00"
+  "created_at": "2026-05-15T10:36:20.711825+00:00"
 }

@@ -140,8 +140,15 @@ def _process_cell(
         except Exception as e:
             logger.warning("deliverable rendering failed for %s: %s", task.candidate_id, e)
 
-        # Render input attachments
+        # Render input attachments (skip duplicates with identical body)
+        seen_bodies: set[str] = set()
         for att in (task.canonical.reference_answer.input_attachments or []):
+            body = (att.content_blueprint or {}).get("body", "")
+            body_hash = hash(body)
+            if body_hash in seen_bodies:
+                logger.info("  skipping duplicate attachment: %s", att.attachment_id)
+                continue
+            seen_bodies.add(body_hash)
             try:
                 att_path = render_input_attachment(att, target_dir / task.candidate_id)
                 task.input_attachment_paths.append(str(att_path))

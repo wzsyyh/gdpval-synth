@@ -1,244 +1,286 @@
 {
   "candidate_id": "sc_b601c820d79f1147",
   "occupation": "software_engineer",
-  "archetype": "design_doc",
+  "archetype": "code_review",
   "difficulty": "light",
   "seed_id": "b601c820d79f1147",
-  "prompt": "You are a senior software engineer on the Flask core team. The team has just merged PR #3923, which introduces support for nested blueprints in Flask. This feature addresses two long-standing issues (#593 and #1548) and involves significant changes across documentation, application logic, and testing. The lead engineer has asked you to write a technical design document that will serve as an internal reference for the team and be used to onboard new contributors to this feature.\n\nYou are provided with the full PR diff for pallets/flask#3923, the PR description, and the original issue #593 that describes the desired behavior.\n\nYour task is to create a design document in Markdown format that covers the following:\n\n1. **Overview**: Summarize the problem being solved (the need for nested blueprints), the high-level solution approach, and the issues fixed (#593 and #1548).\n2. **Implementation Details**: Explain the technical approach used in the PR. Specifically, describe how endpoint names are constructed by joining blueprint names with a dot delimiter from parent to child. Explain the iteration order over blueprint names in the application (from most specific to most general). Reference the key changes in `src/flask/app.py`, particularly the modification to `update_template_context` and `register_blueprint`. Include the specific code snippet showing the new blueprint iteration in `update_template_context`.\n3. **Usage Example**: Provide the example from the documentation showing how to create and register nested blueprints, including the `url_for` call and expected URL result.\n4. **Behavioral Guarantees**: Document the inheritance behaviors mentioned in the PR: parent blueprint's before_request functions trigger for child blueprints, and error handler fallback from child to parent.\n5. **Changelog Entry**: Include the exact changelog entry added to `CHANGES.rst`.\n6. **Constraints and Considerations**: Note any limitations or considerations, such as the requirement for unique blueprint names across registrations and the backward compatibility of this change.\n\nUse the exact names, issue numbers, PR numbers, file paths, and code references from the provided materials. Do not invent new technical details not present in the diff or description.",
+  "prompt": "You are a senior software engineer on the Flask core team. The team has received PR #3923, which introduces support for nested blueprints in Flask. The PR was merged after a long-standing feature request (issues #593 and #1548). Before the next release, you've been asked to perform a thorough code review of the PR's changes to ensure they are correct, maintainable, and align with Flask's design principles.\n\nYou are provided with the PR description, the full diff, and the linked issue #593. Your review should focus on the architectural approach, correctness of the implementation, potential edge cases, and documentation completeness.\n\nYour deliverable is a structured code review document in Markdown format. The review must include the following sections:\n\n1.  **Summary**: A brief overview of the PR's purpose and scope.\n2.  **Architectural Analysis**: An evaluation of the core design decision (using `.` delimited endpoint names and iterating blueprints in reverse order). Discuss the pros and cons of this approach.\n3.  **Code Correctness**: Identify any potential bugs, race conditions, or logical errors in the implementation. Pay close attention to the changes in `src/flask/app.py` and `src/flask/blueprints.py`.\n4.  **Edge Cases**: List at least three potential edge cases or scenarios that the implementation might not handle correctly (e.g., deeply nested blueprints, name collisions, circular dependencies).\n5.  **Documentation Review**: Assess the changes to `docs/blueprints.rst` and `CHANGES.rst` for clarity, accuracy, and completeness.\n6.  **Test Coverage**: Evaluate the provided test in `tests/test_blueprints.py`. Does it sufficiently cover the new feature? What additional tests would you recommend?\n7.  **Overall Recommendation**: Provide a final verdict (Approve, Request Changes, or Comment) with a summary of key action items.\n\nFormat your review with clear headings for each section. Use code blocks to reference specific lines from the diff when making points. Be precise and base your analysis strictly on the provided material.",
   "deliverable": {
-    "deliverable_id": "design_doc",
+    "deliverable_id": "code_review",
     "primary_format": "markdown",
     "expected_size": null
   },
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file titled 'Design Doc - Flask Nested Blueprints (PR #3923)'.",
+      "criterion": "The submitted document is a Markdown file.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document title includes 'PR #3923' and 'Nested Blueprints'.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains an 'Overview' section with heading level 2.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains an 'Implementation Details' section with heading level 2.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a 'Usage Example' section with heading level 2.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a 'Behavioral Guarantees' section with heading level 2.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a 'Changelog Entry' section with heading level 2.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a 'Constraints and Considerations' section with heading level 2.",
+      "criterion": "The document contains a 'Summary' section.",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Overview section references both issues #593 and #1548 as being fixed by this change.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Overview section references PR #3923.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Overview section mentions the Blueprint.register_blueprint method as part of the solution.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Implementation Details section explains that endpoint names are constructed by joining blueprint names with a dot delimiter from parent to child.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Implementation Details section states that iteration over blueprint names occurs from most specific (deepest child) to most general (the application itself).",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Implementation Details section references changes to the update_template_context method in src/flask/app.py.",
+      "criterion": "The 'Summary' section states that the PR resolves issues #593 and #1548.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Implementation Details section references changes to the register_blueprint method in src/flask/app.py.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Implementation Details section includes a code snippet showing iteration using self._request_blueprints().",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Usage Example section contains the exact code example from the documentation: parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\") and child = Blueprint(\"child\", __name__, url_prefix=\"/child\").",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Usage Example section shows the url_for call with endpoint 'parent.child.create' and expected URL '/parent/child/create'.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Behavioral Guarantees section states that parent blueprint's before_request functions trigger for child blueprints.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Behavioral Guarantees section states that if a child does not have an error handler, the parent's error handler will be tried.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Changelog Entry section contains the exact changelog text: '-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`'.",
-      "category": "accuracy",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Constraints and Considerations section mentions the requirement for unique blueprint names.",
+      "criterion": "The 'Summary' section mentions the introduction of a `Blueprint.register_blueprint` method.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Constraints and Considerations section mentions backward compatibility of the change.",
-      "category": "content",
+      "criterion": "The document contains an 'Architectural Analysis' section.",
+      "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The Constraints and Considerations section references that tests, documentation updates, and pre-commit hooks were run.",
+      "score": 2,
+      "criterion": "The 'Architectural Analysis' section explains the endpoint naming convention using dot-delimited blueprint names.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Implementation Details section explains the simplification of the register_blueprint method, specifically mentioning removal of the blueprint name collision assertion.",
+      "criterion": "The 'Architectural Analysis' section describes the reverse iteration over blueprint names for request processing.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document uses Markdown formatting consistently with appropriate headings, code blocks, and paragraph structure.",
+      "criterion": "The 'Architectural Analysis' section discusses at least one pro of the design.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Architectural Analysis' section discusses at least one con of the design.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Code Correctness' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Code Correctness' section notes the movement of the name-collision assertion from `Flask.register_blueprint` in `app.py` to `Blueprint.register` in `blueprints.py`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Code Correctness' section mentions the new `_request_blueprints` helper method in `app.py`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Code Correctness' section references the `url_prefix` concatenation logic in `Blueprint.register`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Code Correctness' section identifies a potential issue (e.g., lack of validation in `_request_blueprints` or string splitting).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an 'Edge Cases' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Edge Cases' section lists at least three distinct edge cases.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "One of the edge cases is 'deeply nested blueprints' or equivalent.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "One of the edge cases is 'name collisions with dots in blueprint names' or equivalent.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "One of the edge cases is 'circular dependencies' or equivalent.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Documentation Review' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Documentation Review' section references the new 'Nesting Blueprints' section in `docs/blueprints.rst`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Documentation Review' section mentions the `CHANGES.rst` entry.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Documentation Review' section notes that the documentation includes code examples.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains a 'Test Coverage' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Test Coverage' section describes the provided test `test_nested_blueprint` from `tests/test_blueprints.py`.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Test Coverage' section identifies the three-level hierarchy tested (parent, child, grandchild).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Test Coverage' section recommends at least one additional test area (e.g., deeper nesting, before_request hooks).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document contains an 'Overall Recommendation' section.",
+      "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The 'Overall Recommendation' section provides a clear verdict (Approve, Request Changes, or Comment).",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Overall Recommendation' section lists at least one key action item for future work.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The 'Overall Recommendation' section summarizes the review.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses code blocks to reference specific lines from the diff (e.g., mentioning `app.py` or `blueprints.py` changes).",
       "category": "style",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The code examples are enclosed in appropriate Markdown code fences.",
-      "category": "format",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The changelog entry is presented in a code block or exact quote format.",
-      "category": "format",
+      "criterion": "The review is written in a professional, objective tone.",
+      "category": "style",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Overview section summarizes the problem: the need for nested blueprints in Flask.",
-      "category": "content",
+      "criterion": "The review demonstrates understanding of Flask's blueprint registration flow.",
+      "category": "accuracy",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document mentions that parent blueprint configuration cascades to child blueprints.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document explains that nested blueprints allow shared middleware (before_request) and error handling at the parent level.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document references the _request_blueprints() method by name.",
+      "criterion": "The review accurately references the file names changed in the diff: `src/flask/app.py` and `src/flask/blueprints.py`.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document references the template_context_processors dictionary.",
+      "criterion": "The review accurately references the test file `tests/test_blueprints.py`.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document mentions that the change maintains backward compatibility with existing blueprint registration code.",
+      "criterion": "The review mentions the `BlueprintSetupState` class in the context of registration.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The review correctly notes that the PR fixes issues #593 and #1548.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The review discusses the propagation of before_request/after_request hooks in nested blueprints.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document explains that the PR included updates to documentation in the docs folder and in code.",
-      "category": "content",
+      "criterion": "The review mentions the `name_prefix` attribute added to `BlueprintSetupState`.",
+      "category": "reference",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The document explains that the PR passed all pre-commit hooks, pytest, and tox tests.",
-      "category": "content",
+      "score": 2,
+      "criterion": "The review evaluates the correctness of the `url_prefix` concatenation logic in the diff.",
+      "category": "accuracy",
       "is_penalty": false
     },
     {
       "score": -2,
-      "criterion": "The document invents technical details, file names, or function names not present in the provided PR diff or description.",
-      "category": "accuracy",
+      "criterion": "The review fails to identify any potential issues or edge cases in the implementation.",
+      "category": "completeness",
       "is_penalty": true
     },
     {
-      "score": -1,
-      "criterion": "The document fails to reference at least one of the fixed issues (#593 or #1548).",
-      "category": "completeness",
+      "score": -2,
+      "criterion": "The review recommends approving the PR without any qualifications or action items.",
+      "category": "judgment",
       "is_penalty": true
     }
   ],
   "canonical": {
     "scenario_id": "sc_b601c820d79f1147",
     "occupation": "software_engineer",
-    "deliverable_id": "design_doc",
-    "archetype": "design_doc",
+    "deliverable_id": "code_review",
+    "archetype": "code_review",
     "difficulty": "light",
     "seed": {
       "source": "github",
@@ -249,157 +291,145 @@
       {
         "id": "ev_0",
         "kind": "person",
-        "name": "Design Doc - Flask Nested Blueprints (PR #3923)",
+        "name": "Code Review: PR #3923 - Nested Blueprints",
         "attrs": {}
       },
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "593",
+        "name": "593, 1548",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "1548",
+        "name": "Blueprint.register_blueprint",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "3923",
+        "name": "dot-delimited",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "Blueprint.register_blueprint",
+        "name": "reverse order",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "dot delimiter",
+        "name": "Flask.register_blueprint",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "most specific to most general",
+        "name": "_request_blueprints",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "update_template_context",
+        "name": "rstrip('/')",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "src/flask/app.py",
+        "name": "Deeply Nested Blueprints",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "self._request_blueprints()",
+        "name": "dots",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "/parent",
+        "name": "Circular Dependencies",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "/child",
+        "name": "Nesting Blueprints",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "parent.child.create",
+        "name": "CHANGES.rst",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "/parent/child/create",
+        "name": "test_nested_blueprint",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "before_request functions registered with the parent blueprint will trigger",
+        "name": "parent, child, grandchild",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "error handler that can handle a given exception, the application will attempt to use the parent blueprint's error handler",
+        "name": "Approve with minor comments",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`",
+        "name": "cycle detection guard",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "unique across all registrations",
+        "name": "Summary",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "backward compatibility",
+        "name": "Architectural Analysis",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "pre-commit",
+        "name": "Code Correctness",
         "attrs": {}
       },
       {
         "id": "ev_20",
         "kind": "person",
-        "name": "Overview",
+        "name": "Edge Cases",
         "attrs": {}
       },
       {
         "id": "ev_21",
         "kind": "person",
-        "name": "Implementation Details",
+        "name": "Documentation Review",
         "attrs": {}
       },
       {
         "id": "ev_22",
         "kind": "person",
-        "name": "Usage Example",
+        "name": "Test Coverage",
         "attrs": {}
       },
       {
         "id": "ev_23",
         "kind": "person",
-        "name": "Behavioral Guarantees",
-        "attrs": {}
-      },
-      {
-        "id": "ev_24",
-        "kind": "person",
-        "name": "Changelog Entry",
-        "attrs": {}
-      },
-      {
-        "id": "ev_25",
-        "kind": "person",
-        "name": "Constraints and Considerations",
+        "name": "Overall Recommendation",
         "attrs": {}
       }
     ],
@@ -408,182 +438,168 @@
       {
         "id": "fact_0",
         "kind": "string",
-        "value": "Design Doc - Flask Nested Blueprints (PR #3923)",
+        "value": "Code Review: PR #3923 - Nested Blueprints",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_1",
         "kind": "string",
-        "value": "593",
+        "value": "593, 1548",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_2",
         "kind": "string",
-        "value": "1548",
+        "value": "Blueprint.register_blueprint",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "string",
-        "value": "3923",
+        "value": "dot-delimited",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
         "kind": "string",
-        "value": "Blueprint.register_blueprint",
+        "value": "reverse order",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
         "kind": "string",
-        "value": "dot delimiter",
+        "value": "Flask.register_blueprint",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_6",
         "kind": "string",
-        "value": "most specific to most general",
+        "value": "_request_blueprints",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_7",
         "kind": "string",
-        "value": "update_template_context",
+        "value": "rstrip('/')",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_8",
         "kind": "string",
-        "value": "src/flask/app.py",
+        "value": "Deeply Nested Blueprints",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
         "kind": "string",
-        "value": "self._request_blueprints()",
+        "value": "dots",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
         "kind": "string",
-        "value": "/parent",
+        "value": "Circular Dependencies",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "/child",
+        "value": "Nesting Blueprints",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "parent.child.create",
+        "value": "CHANGES.rst",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "/parent/child/create",
+        "value": "test_nested_blueprint",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "before_request functions registered with the parent blueprint will trigger",
+        "value": "parent, child, grandchild",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "error handler that can handle a given exception, the application will attempt to use the parent blueprint's error handler",
+        "value": "Approve with minor comments",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`",
+        "value": "cycle detection guard",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "unique across all registrations",
+        "value": "Summary",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "backward compatibility",
+        "value": "Architectural Analysis",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "pre-commit",
+        "value": "Code Correctness",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_20",
         "kind": "string",
-        "value": "Overview",
+        "value": "Edge Cases",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_21",
         "kind": "string",
-        "value": "Implementation Details",
+        "value": "Documentation Review",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_22",
         "kind": "string",
-        "value": "Usage Example",
+        "value": "Test Coverage",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_23",
         "kind": "string",
-        "value": "Behavioral Guarantees",
-        "unit": null,
-        "source": null
-      },
-      {
-        "id": "fact_24",
-        "kind": "string",
-        "value": "Changelog Entry",
-        "unit": null,
-        "source": null
-      },
-      {
-        "id": "fact_25",
-        "kind": "string",
-        "value": "Constraints and Considerations",
+        "value": "Overall Recommendation",
         "unit": null,
         "source": null
       }
@@ -600,273 +616,284 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Overview",
+          "heading": "Code Review: PR #3923 - Nested Blueprints",
+          "heading_level": 1,
+          "required_content": [
+            "Document title referencing PR #3923 and nested blueprints"
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Summary",
           "heading_level": 2,
           "required_content": [
-            "Problem statement: need for nested blueprints in Flask",
+            "Purpose of PR #3923",
             "Issues fixed: #593 and #1548",
-            "High-level solution: Blueprint.register_blueprint method"
+            "Feature: nesting blueprints within blueprints",
+            "Method: Blueprint.register_blueprint method"
           ],
           "paragraphs": [
-            "This design document describes the implementation of nested blueprint support in Flask, merged as PR #3923. This feature addresses two long-standing community requests: issue #593, which proposed a `Blueprint.register_blueprint` method for nesting blueprints, and issue #1548. The solution allows a blueprint to be registered within another blueprint, with the parent blueprint's configuration cascading to the child. When the parent blueprint is subsequently registered with the Flask application, all child blueprints are automatically registered as well, preserving their relative URL prefixes and endpoint hierarchies."
+            "This review covers PR #3923, which implements support for nesting blueprints within other blueprints, a feature requested for over 10 years. The PR introduces a new `Blueprint.register_blueprint` method and modifies the core application logic to handle nested blueprint hierarchies. It resolves issues #593 and #1548."
           ]
         },
         {
-          "heading": "Implementation Details",
+          "heading": "Architectural Analysis",
           "heading_level": 2,
           "required_content": [
-            "Endpoint naming convention using dot delimiters",
-            "Iteration order from most specific to most general blueprint",
-            "Changes to update_template_context in src/flask/app.py",
-            "Changes to register_blueprint in src/flask/app.py",
-            "Code snippet showing new iteration in update_template_context"
+            "Endpoint naming convention using dot-delimited blueprint names",
+            "Reverse iteration over blueprint names for request processing",
+            "Design pros and cons"
           ],
           "paragraphs": [
-            "The core implementation constructs endpoint names by joining the full chain of blueprint names from parent to child with a dot delimiter. For a child blueprint nested two levels deep, the endpoint would be formatted as `parent.child.endpoint`.",
-            "The application iterates over blueprint names in reverse order, from the most specific (deepest child) to the most general (the application itself). This ensures that template context processors and other blueprint-specific behaviors are correctly resolved in the proper hierarchy.",
-            "In `src/flask/app.py`, the `update_template_context` method was modified to iterate over all blueprints in the request chain rather than just the direct blueprint. The previous implementation checked if the request's blueprint was in `self.template_context_processors` and used its context processors. The new implementation iterates over all blueprints in the request chain using `self._request_blueprints()`, chaining context processors from each blueprint that has them registered.",
-            "The `register_blueprint` method was also simplified by removing the previous blueprint name collision assertion and replacing it with a more robust registration mechanism that supports nested registration. The key change is the removal of the strict name collision check and the addition of logic to handle the parent-child blueprint relationship."
+            "The core architectural decision is to represent the blueprint hierarchy in endpoint names using a dot-delimited format. For a nested blueprint, the endpoint becomes `parent.child.endpoint`. The application then iterates over the blueprint names in reverse order (from most specific child to most general parent) when processing requests. This approach elegantly solves the problem of propagating hooks (like `before_request`) up the hierarchy.",
+            "Pros: This design is explicit and debuggable, as the endpoint name encodes the full path. It leverages Flask's existing blueprint name system with a well-understood delimiter. The reverse iteration ensures that a child's hooks take precedence, which is the expected behavior.",
+            "Cons: It introduces a new naming convention that all blueprint-aware code must now account for. The parsing and splitting of endpoint names on `.` could be fragile if blueprints or endpoints themselves contain dots. The modification to `Flask.register_blueprint` to remove the name-collision check and move it into `Blueprint.register` changes the registration flow significantly."
           ]
         },
         {
-          "heading": "Usage Example",
+          "heading": "Code Correctness",
           "heading_level": 2,
           "required_content": [
-            "Blueprint creation with url_prefix",
-            "Registration of child on parent",
-            "Registration of parent on app",
-            "url_for call with expected URL result"
+            "Movement of name-collision assertion from app.py to blueprints.py",
+            "Introduction of _request_blueprints helper",
+            "Changes to error handling, template context, preprocess, response, and teardown functions",
+            "Handling of url_prefix concatenation in Blueprint.register"
           ],
           "paragraphs": [
-            "The following example from the documentation shows how to create and register nested blueprints:\n\n```python\nparent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\nchild = Blueprint(\"child\", __name__, url_prefix=\"/child\")\nparent.register_blueprint(child)\napp.register_blueprint(parent)\n```\n\nAfter this registration, the child blueprint's endpoints are accessible with the parent's URL prefix. For example, using `url_for('parent.child.create')` would generate the URL `/parent/child/create`."
+            "The implementation appears correct in its primary mechanics. The name-collision assertion was moved from `Flask.register_blueprint` (in `app.py`) to `Blueprint.register` (in `blueprints.py`). This is a necessary change to support nested registration, where a child blueprint's name is prefixed with its parent's name, so collisions are checked against the app's `blueprints` dict during the recursive registration.",
+            "The new helper method `Flask._request_blueprints` splits the current request's blueprint name on `.` and returns it reversed. This is used in `preprocess_request`, `process_response`, `do_teardown_request`, `update_template_context`, and `_find_error_handler` to iterate over the hierarchy. This ensures parent blueprint hooks are invoked after child hooks where appropriate.",
+            "The `url_prefix` concatenation in `Blueprint.register` is handled by combining the parent's prefix with the child's, stripping leading/trailing slashes. The `name_prefix` is built recursively by prepending the parent's name and a dot. Both seem correct.",
+            "One potential issue: the `_request_blueprints` method splits on `.` but doesn't validate that the blueprint name exists in the app's registry. This could lead to a `KeyError` if the blueprint name was somehow malformed. However, this is unlikely given the controlled registration process."
           ]
         },
         {
-          "heading": "Behavioral Guarantees",
+          "heading": "Edge Cases",
           "heading_level": 2,
           "required_content": [
-            "Parent before_request functions trigger for child blueprints",
-            "Error handler fallback from child to parent"
+            "Deeply nested blueprints",
+            "Name collisions with dots",
+            "Circular blueprint dependencies",
+            "Blueprint registered multiple times",
+            "Empty url_prefix handling"
           ],
           "paragraphs": [
-            "The implementation ensures two important inheritance behaviors. First, blueprint-specific before_request functions registered with the parent blueprint will trigger for requests routed to child blueprints. This allows shared authentication, logging, or other middleware to be defined once at the parent level and automatically applied to all nested routes.",
-            "Second, if a child blueprint does not have an error handler that can handle a given exception, the application will attempt to use the parent blueprint's error handler. This provides a natural fallback mechanism for error handling across a blueprint hierarchy."
+            "1. **Deeply Nested Blueprints**: The test only checks two levels (parent, child, grandchild). The recursive `name_prefix` and `url_prefix` concatenation should handle arbitrary depth, but there's no test for, say, 4 or 5 levels of nesting. This could uncover string accumulation bugs or performance issues in long endpoint names.",
+            "2. **Name Collisions with Dots**: If a parent blueprint is named `a.b` and a child is named `c`, the endpoint becomes `a.b.c.endpoint`. Later, a parent `a` with child `b.c` would produce `a.b.c.endpoint`, causing a collision. The PR doesn't address this, as blueprint names are assumed to be dot-free.",
+            "3. **Circular Dependencies**: The code doesn't prevent a blueprint from being nested within itself (directly or indirectly). This could lead to infinite recursion during registration. A simple cycle check would be prudent.",
+            "4. **Multiple Registrations of the Same Blueprint**: A blueprint can be registered on multiple parents or multiple times on the same parent. The `name_prefix` would differ each time, creating different endpoints. This is probably intended but could lead to surprising behavior.",
+            "5. **Empty or None url_prefix**: The concatenation logic uses `rstrip('/')` and `lstrip('/')`. If a prefix is empty string or `None`, this could produce incorrect paths. The code assumes prefixes are strings, as set in the test."
           ]
         },
         {
-          "heading": "Changelog Entry",
+          "heading": "Documentation Review",
           "heading_level": 2,
           "required_content": [
-            "Exact entry from CHANGES.rst",
-            "Reference to issues #593 and #1548",
-            "Reference to PR #3923"
+            "New 'Nesting Blueprints' section in docs/blueprints.rst",
+            "Code examples in documentation",
+            "Entry in CHANGES.rst",
+            "Version notes"
           ],
           "paragraphs": [
-            "The following entry was added to `CHANGES.rst` under the Unreleased section:\n\n```\n-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n```"
+            "The documentation changes in `docs/blueprints.rst` add a new section titled 'Nesting Blueprints' with clear code examples demonstrating how to register a child blueprint on a parent and generate URLs. It correctly explains that the child's name is prefixed with the parent's name and that the child URLs are prefixed with the parent's URL prefix.",
+            "The `CHANGES.rst` entry is concise and correctly references issues #593, #1548, and PR #3923. However, the documentation does not mention the `.. versionadded::` directive for the new `Blueprint.register_blueprint` method itself, though one is present in the docstring of the method in `blueprints.py`. The docs also do not explicitly discuss the behavior of error handlers in nested blueprints, though the test covers it."
           ]
         },
         {
-          "heading": "Constraints and Considerations",
+          "heading": "Test Coverage",
           "heading_level": 2,
           "required_content": [
-            "Requirement for unique blueprint names",
-            "Backward compatibility note",
-            "Pre-commit and testing requirements mentioned in PR"
+            "Test for nested blueprints: parent, child, grandchild",
+            "Test of error handler inheritance",
+            "Gaps in test coverage"
           ],
           "paragraphs": [
-            "The implementation maintains backward compatibility; existing code that registers blueprints directly with the application will continue to work without modification. However, when using nested blueprints, developers must ensure that blueprint names are unique across all registrations to avoid conflicts. The PR included a comprehensive test suite to demonstrate correct behavior, updates to documentation in the `docs` folder and in code, and passes all pre-commit hooks, pytest, and tox test suites as verified by the contributor."
+            "The provided test `test_nested_blueprint` in `tests/test_blueprints.py` is a good starting point. It creates a three-level hierarchy (parent, child, grandchild), sets up routes and error handlers, and verifies URL generation and error propagation. Specifically, it checks that `/parent/child/no` triggers the parent's 403 handler, while `/parent/child/grandchild/no` triggers the grandchild's own handler.",
+            "However, the test coverage has gaps. There are no tests for:\n- The `name_prefix` mechanism explicitly (e.g., checking `request.endpoint` values).\n- Edge cases like blueprints with dots in their names.\n- The interaction of nested blueprints with `before_request`/`after_request` hooks (only error handlers are tested).\n- Registering the same child blueprint under multiple parents.\n- Circular nesting (which should raise an error)."
+          ]
+        },
+        {
+          "heading": "Overall Recommendation",
+          "heading_level": 2,
+          "required_content": [
+            "Final verdict: Approve with minor comments",
+            "Key action items",
+            "Summary of review"
+          ],
+          "paragraphs": [
+            "**Verdict: Approve with minor comments.**",
+            "The PR successfully implements a long-awaited feature with a clean, recursive design. The code changes are logical and the core mechanism is sound. The main concerns are around edge cases and test completeness, which are acceptable for an initial implementation.",
+            "Key action items for future improvement:\n1. Add tests for deeper nesting levels (e.g., 4+ levels).\n2. Consider adding a cycle detection guard in `Blueprint.register_blueprint`.\n3. Ensure documentation explicitly states that blueprint names must not contain dots to avoid collisions.\n4. Expand test coverage to include `before_request`/`after_request` hooks in nested blueprints.",
+            "Overall, the PR is a valuable addition to Flask and is ready for merge, with the understanding that edge cases can be addressed in follow-up work."
           ]
         }
       ],
-      "md_title": "Design Doc - Flask Nested Blueprints (PR #3923)",
+      "md_title": "Code Review: PR #3923 - Nested Blueprints",
       "input_attachments": [
         {
           "attachment_id": "att_0",
           "filename": "input_0.md",
           "format": "md",
-          "description": "Full PR diff for pallets/flask#3923 (Nested blueprints)",
+          "description": "PR #3923 diff and description",
           "content_blueprint": {
-            "title": "Full PR diff for pallets/flask#3923 (Nested blueprints)",
-            "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
+            "title": "PR #3923 diff and description",
+            "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-        else:\n-            self.blueprints[blueprint.name] = blueprint\n-            first_registration = True\n-\n-        blueprint.register(self, options, first_registration)\n+        blueprint.register(self, options)\n \n     def iter_blueprints(self):\n         \"\"\"Iterates over all blueprints by the order they were registered.\n@@ -1235,22 +1221,18 @@ def _find_error_handler(self, e):\n         \"\"\"\n         exc_class, code = self._get_exc_class_and_code(type(e))\n \n-        for name, c in (\n-            (request.blueprint, code),\n-            (None, code),\n-            (request.blueprint, None),\n-            (None, None),\n-        ):\n-            handler_map = self.error_handler_spec[name][c]\n+        for c in [code, None]:\n+            for name in chain(self._request_blueprints(), [None]):\n+                handler_map = self.error_handler_spec[name][c]\n \n-            if not handler_map:\n-                continue\n+                if not handler_map:\n+                    continue\n \n-            for cls in exc_class.__mro__:\n-                handler = handler_map.get(cls)\n+                for cls in exc_class.__mro__:\n+                    handler = handler_map.get(cls)\n \n-                if handler is not None:\n-                    return handler\n+                    if handler is not None:\n+                        return handler\n \n     def handle_http_exception(self, e):\n         \"\"\"Handles an HTTP exception.  By default this will invoke the\n@@ -1749,17 +1731,17 @@ def preprocess_request(self):\n         further request handling is stopped.\n         \"\"\"\n \n-        bp = _request_ctx_stack.top.request.blueprint\n-\n         funcs = self.url_value_preprocessors[None]\n-        if bp is not None and bp in self.url_value_preprocessors:\n-            funcs = chain(funcs, self.url_value_preprocessors[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.url_value_preprocessors:\n+                funcs = chain(funcs, self.url_value_preprocessors[bp])\n         for func in funcs:\n             func(request.endpoint, request.view_args)\n \n         funcs = self.before_request_funcs[None]\n-        if bp is not None and bp in self.before_request_funcs:\n-            funcs = chain(funcs, self.before_request_funcs[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.before_request_funcs:\n+                funcs = chain(funcs, self.before_request_funcs[bp])\n         for func in funcs:\n             rv = func()\n             if rv is not None:\n@@ -1779,10 +1761,10 @@ def process_response(self, response):\n                  instance of :attr:`response_class`.\n         \"\"\"\n         ctx = _request_ctx_stack.top\n-        bp = ctx.request.blueprint\n         funcs = ctx._after_request_functions\n-        if bp is not None and bp in self.after_request_funcs:\n-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.after_request_funcs:\n+                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n         if None in self.after_request_funcs:\n             funcs = chain(funcs, reversed(self.after_request_funcs[None]))\n         for handler in funcs:\n@@ -1815,9 +1797,9 @@ def do_teardown_request(self, exc=_sentinel):\n         if exc is _sentinel:\n             exc = sys.exc_info()[1]\n         funcs = reversed(self.teardown_request_funcs[None])\n-        bp = _request_ctx_stack.top.request.blueprint\n-        if bp is not None and bp in self.teardown_request_funcs:\n-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.teardown_request_funcs:\n+                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n         for func in funcs:\n             func(exc)\n         request_tearing_down.send(self, exc=exc)\n@@ -1985,3 +1967,9 @@ def __call__(self, environ, start_response):\n         wrapped to apply middleware.\n         \"\"\"\n         return self.wsgi_app(environ, start_response)\n+\n+    def _request_blueprints(self):\n+        if _request_ctx_stack.top.request.blueprint is None:\n+            return []\n+        else:\n+            return reversed(_request_ctx_stack.top.request.blueprint.split(\".\"))\ndiff --git a/src/flask/blueprints.py b/src/flask/blueprints.py\nindex d769cd58e3..92345cf2ba 100644\n--- a/src/flask/blueprints.py\n+++ b/src/flask/blueprints.py\n@@ -45,6 +45,8 @@ def __init__(self, blueprint, app, options, first_registration):\n         #: blueprint.\n         self.url_prefix = url_prefix\n \n+        self.name_prefix = self.options.get(\"name_prefix\", \"\")\n+\n         #: A dictionary with URL defaults that is added to each and every\n         #: URL that was defined with the blueprint.\n         self.url_defaults = dict(self.blueprint.url_values_defaults)\n@@ -68,7 +70,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n             defaults = dict(defaults, **options.pop(\"defaults\"))\n         self.app.add_url_rule(\n             rule,\n-            f\"{self.blueprint.name}.{endpoint}\",\n+            f\"{self.name_prefix}{self.blueprint.name}.{endpoint}\",\n             view_func,\n             defaults=defaults,\n             **options,\n@@ -168,6 +170,7 @@ def __init__(\n \n         self.url_values_defaults = url_defaults\n         self.cli_group = cli_group\n+        self._blueprints = []\n \n     def _is_setup_finished(self):\n         return self.warn_on_modifications and self._got_registered_once\n@@ -210,7 +213,16 @@ def make_setup_state(self, app, options, first_registration=False):\n         \"\"\"\n         return BlueprintSetupState(self, app, options, first_registration)\n \n-    def register(self, app, options, first_registration=False):\n+    def register_blueprint(self, blueprint, **options):\n+        \"\"\"Register a :class:`~flask.Blueprint` on this blueprint. Keyword\n+        arguments passed to this method will override the defaults set\n+        on the blueprint.\n+\n+        .. versionadded:: 2.0\n+        \"\"\"\n+        self._blueprints.append((blueprint, options))\n+\n+    def register(self, app, options):\n         \"\"\"Called by :meth:`Flask.register_blueprint` to register all\n         views and callbacks registered on the blueprint with the\n         application. Creates a :class:`.BlueprintSetupState` and calls\n@@ -223,6 +235,20 @@ def register(self, app, options, first_registration=False):\n         :param first_registration: Whether this is the first time this\n             blueprint has been registered on the application.\n         \"\"\"\n+        first_registration = False\n+\n+        if self.name in app.blueprints:\n+            assert app.blueprints[self.name] is self, (\n+                \"A name collision occurred between blueprints\"\n+                f\" {self!r} and {app.blueprints[self.name]!r}.\"\n+                f\" Both share the same name {self.name!r}.\"\n+                f\" Blueprints that are created on the fly need unique\"\n+                f\" names.\"\n+            )\n+        else:\n+            app.blueprints[self.name] = self\n+            first_registration = True\n+\n         self._got_registered_once = True\n         state = self.make_setup_state(app, options, first_registration)\n \n@@ -278,19 +304,28 @@ def extend(bp_dict, parent_dict, ensure_sync=False):\n         for deferred in self.deferred_functions:\n             deferred(state)\n \n-        if not self.cli.commands:\n-            return\n-\n         cli_resolved_group = options.get(\"cli_group\", self.cli_group)\n \n-        if cli_resolved_group is None:\n-            app.cli.commands.update(self.cli.commands)\n-        elif cli_resolved_group is _sentinel:\n-            self.cli.name = self.name\n-            app.cli.add_command(self.cli)\n-        else:\n-            self.cli.name = cli_resolved_group\n-            app.cli.add_command(self.cli)\n+        if self.cli.commands:\n+            if cli_resolved_group is None:\n+                app.cli.commands.update(self.cli.commands)\n+            elif cli_resolved_group is _sentinel:\n+                self.cli.name = self.name\n+                app.cli.add_command(self.cli)\n+            else:\n+                self.cli.name = cli_resolved_group\n+                app.cli.add_command(self.cli)\n+\n+        for blueprint, bp_options in self._blueprints:\n+            url_prefix = options.get(\"url_prefix\", \"\")\n+            if \"url_prefix\" in bp_options:\n+                url_prefix = (\n+                    url_prefix.rstrip(\"/\") + \"/\" + bp_options[\"url_prefix\"].lstrip(\"/\")\n+                )\n+\n+            bp_options[\"url_prefix\"] = url_prefix\n+            bp_options[\"name_prefix\"] = options.get(\"name_prefix\", \"\") + self.name + \".\"\n+            blueprint.register(app, bp_options)\n \n     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n         \"\"\"Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for\ndiff --git a/tests/test_blueprints.py b/tests/test_blueprints.py\nindex 903c7421bf..b986ca022d 100644\n--- a/tests/test_blueprints.py\n+++ b/tests/test_blueprints.py\n@@ -850,3 +850,52 @@ def about():\n \n     assert client.get(\"/de/\").data == b\"/de/about\"\n     assert client.get(\"/de/about\").data == b\"/de/\"\n+\n+\n+def test_nested_blueprint(app, client):\n+    parent = flask.Blueprint(\"parent\", __name__)\n+    child = flask.Blueprint(\"child\", __name__)\n+    grandchild = flask.Blueprint(\"grandchild\", __name__)\n+\n+    @parent.errorhandler(403)\n+    def forbidden(e):\n+        return \"Parent no\", 403\n+\n+    @parent.route(\"/\")\n+    def parent_index():\n+        return \"Parent yes\"\n+\n+    @parent.route(\"/no\")\n+    def parent_no():\n+        flask.abort(403)\n+\n+    @child.route(\"/\")\n+    def child_index():\n+        return \"Child yes\"\n+\n+    @child.route(\"/no\")\n+    def child_no():\n+        flask.abort(403)\n+\n+    @grandchild.errorhandler(403)\n+    def grandchild_forbidden(e):\n+        return \"Grandchild no\", 403\n+\n+    @grandchild.route(\"/\")\n+    def grandchild_index():\n+        return \"Grandchild yes\"\n+\n+    @grandchild.route(\"/no\")\n+    def grandchild_no():\n+        flask.abort(403)\n+\n+    child.register_blueprint(grandchild, url_prefix=\"/grandchild\")\n+    parent.register_blueprint(child, url_prefix=\"/child\")\n+    app.register_blueprint(parent, url_prefix=\"/parent\")\n+\n+    assert client.get(\"/parent/\").data == b\"Parent yes\"\n+    assert client.get(\"/parent/child/\").data == b\"Child yes\"\n+    assert client.get(\"/parent/child/grandchild/\").data == b\"Grandchild yes\"\n+    assert client.get(\"/parent/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/grandchild/no\").data == b\"Grandchild no\"\n"
           }
         },
         {
           "attachment_id": "att_1",
           "filename": "input_1.md",
           "format": "md",
-          "description": "PR description for pallets/flask#3923",
+          "description": "Linked Issue #593",
           "content_blueprint": {
-            "title": "PR description for pallets/flask#3923",
-            "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
-          }
-        },
-        {
-          "attachment_id": "att_2",
-          "filename": "input_2.md",
-          "format": "md",
-          "description": "Issue #593 excerpt describing the desired nested blueprint behavior",
-          "content_blueprint": {
-            "title": "Issue #593 excerpt describing the desired nested blueprint behavior",
-            "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
+            "title": "Linked Issue #593",
+            "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-        else:\n-            self.blueprints[blueprint.name] = blueprint\n-            first_registration = True\n-\n-        blueprint.register(self, options, first_registration)\n+        blueprint.register(self, options)\n \n     def iter_blueprints(self):\n         \"\"\"Iterates over all blueprints by the order they were registered.\n@@ -1235,22 +1221,18 @@ def _find_error_handler(self, e):\n         \"\"\"\n         exc_class, code = self._get_exc_class_and_code(type(e))\n \n-        for name, c in (\n-            (request.blueprint, code),\n-            (None, code),\n-            (request.blueprint, None),\n-            (None, None),\n-        ):\n-            handler_map = self.error_handler_spec[name][c]\n+        for c in [code, None]:\n+            for name in chain(self._request_blueprints(), [None]):\n+                handler_map = self.error_handler_spec[name][c]\n \n-            if not handler_map:\n-                continue\n+                if not handler_map:\n+                    continue\n \n-            for cls in exc_class.__mro__:\n-                handler = handler_map.get(cls)\n+                for cls in exc_class.__mro__:\n+                    handler = handler_map.get(cls)\n \n-                if handler is not None:\n-                    return handler\n+                    if handler is not None:\n+                        return handler\n \n     def handle_http_exception(self, e):\n         \"\"\"Handles an HTTP exception.  By default this will invoke the\n@@ -1749,17 +1731,17 @@ def preprocess_request(self):\n         further request handling is stopped.\n         \"\"\"\n \n-        bp = _request_ctx_stack.top.request.blueprint\n-\n         funcs = self.url_value_preprocessors[None]\n-        if bp is not None and bp in self.url_value_preprocessors:\n-            funcs = chain(funcs, self.url_value_preprocessors[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.url_value_preprocessors:\n+                funcs = chain(funcs, self.url_value_preprocessors[bp])\n         for func in funcs:\n             func(request.endpoint, request.view_args)\n \n         funcs = self.before_request_funcs[None]\n-        if bp is not None and bp in self.before_request_funcs:\n-            funcs = chain(funcs, self.before_request_funcs[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.before_request_funcs:\n+                funcs = chain(funcs, self.before_request_funcs[bp])\n         for func in funcs:\n             rv = func()\n             if rv is not None:\n@@ -1779,10 +1761,10 @@ def process_response(self, response):\n                  instance of :attr:`response_class`.\n         \"\"\"\n         ctx = _request_ctx_stack.top\n-        bp = ctx.request.blueprint\n         funcs = ctx._after_request_functions\n-        if bp is not None and bp in self.after_request_funcs:\n-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.after_request_funcs:\n+                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n         if None in self.after_request_funcs:\n             funcs = chain(funcs, reversed(self.after_request_funcs[None]))\n         for handler in funcs:\n@@ -1815,9 +1797,9 @@ def do_teardown_request(self, exc=_sentinel):\n         if exc is _sentinel:\n             exc = sys.exc_info()[1]\n         funcs = reversed(self.teardown_request_funcs[None])\n-        bp = _request_ctx_stack.top.request.blueprint\n-        if bp is not None and bp in self.teardown_request_funcs:\n-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.teardown_request_funcs:\n+                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n         for func in funcs:\n             func(exc)\n         request_tearing_down.send(self, exc=exc)\n@@ -1985,3 +1967,9 @@ def __call__(self, environ, start_response):\n         wrapped to apply middleware.\n         \"\"\"\n         return self.wsgi_app(environ, start_response)\n+\n+    def _request_blueprints(self):\n+        if _request_ctx_stack.top.request.blueprint is None:\n+            return []\n+        else:\n+            return reversed(_request_ctx_stack.top.request.blueprint.split(\".\"))\ndiff --git a/src/flask/blueprints.py b/src/flask/blueprints.py\nindex d769cd58e3..92345cf2ba 100644\n--- a/src/flask/blueprints.py\n+++ b/src/flask/blueprints.py\n@@ -45,6 +45,8 @@ def __init__(self, blueprint, app, options, first_registration):\n         #: blueprint.\n         self.url_prefix = url_prefix\n \n+        self.name_prefix = self.options.get(\"name_prefix\", \"\")\n+\n         #: A dictionary with URL defaults that is added to each and every\n         #: URL that was defined with the blueprint.\n         self.url_defaults = dict(self.blueprint.url_values_defaults)\n@@ -68,7 +70,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n             defaults = dict(defaults, **options.pop(\"defaults\"))\n         self.app.add_url_rule(\n             rule,\n-            f\"{self.blueprint.name}.{endpoint}\",\n+            f\"{self.name_prefix}{self.blueprint.name}.{endpoint}\",\n             view_func,\n             defaults=defaults,\n             **options,\n@@ -168,6 +170,7 @@ def __init__(\n \n         self.url_values_defaults = url_defaults\n         self.cli_group = cli_group\n+        self._blueprints = []\n \n     def _is_setup_finished(self):\n         return self.warn_on_modifications and self._got_registered_once\n@@ -210,7 +213,16 @@ def make_setup_state(self, app, options, first_registration=False):\n         \"\"\"\n         return BlueprintSetupState(self, app, options, first_registration)\n \n-    def register(self, app, options, first_registration=False):\n+    def register_blueprint(self, blueprint, **options):\n+        \"\"\"Register a :class:`~flask.Blueprint` on this blueprint. Keyword\n+        arguments passed to this method will override the defaults set\n+        on the blueprint.\n+\n+        .. versionadded:: 2.0\n+        \"\"\"\n+        self._blueprints.append((blueprint, options))\n+\n+    def register(self, app, options):\n         \"\"\"Called by :meth:`Flask.register_blueprint` to register all\n         views and callbacks registered on the blueprint with the\n         application. Creates a :class:`.BlueprintSetupState` and calls\n@@ -223,6 +235,20 @@ def register(self, app, options, first_registration=False):\n         :param first_registration: Whether this is the first time this\n             blueprint has been registered on the application.\n         \"\"\"\n+        first_registration = False\n+\n+        if self.name in app.blueprints:\n+            assert app.blueprints[self.name] is self, (\n+                \"A name collision occurred between blueprints\"\n+                f\" {self!r} and {app.blueprints[self.name]!r}.\"\n+                f\" Both share the same name {self.name!r}.\"\n+                f\" Blueprints that are created on the fly need unique\"\n+                f\" names.\"\n+            )\n+        else:\n+            app.blueprints[self.name] = self\n+            first_registration = True\n+\n         self._got_registered_once = True\n         state = self.make_setup_state(app, options, first_registration)\n \n@@ -278,19 +304,28 @@ def extend(bp_dict, parent_dict, ensure_sync=False):\n         for deferred in self.deferred_functions:\n             deferred(state)\n \n-        if not self.cli.commands:\n-            return\n-\n         cli_resolved_group = options.get(\"cli_group\", self.cli_group)\n \n-        if cli_resolved_group is None:\n-            app.cli.commands.update(self.cli.commands)\n-        elif cli_resolved_group is _sentinel:\n-            self.cli.name = self.name\n-            app.cli.add_command(self.cli)\n-        else:\n-            self.cli.name = cli_resolved_group\n-            app.cli.add_command(self.cli)\n+        if self.cli.commands:\n+            if cli_resolved_group is None:\n+                app.cli.commands.update(self.cli.commands)\n+            elif cli_resolved_group is _sentinel:\n+                self.cli.name = self.name\n+                app.cli.add_command(self.cli)\n+            else:\n+                self.cli.name = cli_resolved_group\n+                app.cli.add_command(self.cli)\n+\n+        for blueprint, bp_options in self._blueprints:\n+            url_prefix = options.get(\"url_prefix\", \"\")\n+            if \"url_prefix\" in bp_options:\n+                url_prefix = (\n+                    url_prefix.rstrip(\"/\") + \"/\" + bp_options[\"url_prefix\"].lstrip(\"/\")\n+                )\n+\n+            bp_options[\"url_prefix\"] = url_prefix\n+            bp_options[\"name_prefix\"] = options.get(\"name_prefix\", \"\") + self.name + \".\"\n+            blueprint.register(app, bp_options)\n \n     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n         \"\"\"Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for\ndiff --git a/tests/test_blueprints.py b/tests/test_blueprints.py\nindex 903c7421bf..b986ca022d 100644\n--- a/tests/test_blueprints.py\n+++ b/tests/test_blueprints.py\n@@ -850,3 +850,52 @@ def about():\n \n     assert client.get(\"/de/\").data == b\"/de/about\"\n     assert client.get(\"/de/about\").data == b\"/de/\"\n+\n+\n+def test_nested_blueprint(app, client):\n+    parent = flask.Blueprint(\"parent\", __name__)\n+    child = flask.Blueprint(\"child\", __name__)\n+    grandchild = flask.Blueprint(\"grandchild\", __name__)\n+\n+    @parent.errorhandler(403)\n+    def forbidden(e):\n+        return \"Parent no\", 403\n+\n+    @parent.route(\"/\")\n+    def parent_index():\n+        return \"Parent yes\"\n+\n+    @parent.route(\"/no\")\n+    def parent_no():\n+        flask.abort(403)\n+\n+    @child.route(\"/\")\n+    def child_index():\n+        return \"Child yes\"\n+\n+    @child.route(\"/no\")\n+    def child_no():\n+        flask.abort(403)\n+\n+    @grandchild.errorhandler(403)\n+    def grandchild_forbidden(e):\n+        return \"Grandchild no\", 403\n+\n+    @grandchild.route(\"/\")\n+    def grandchild_index():\n+        return \"Grandchild yes\"\n+\n+    @grandchild.route(\"/no\")\n+    def grandchild_no():\n+        flask.abort(403)\n+\n+    child.register_blueprint(grandchild, url_prefix=\"/grandchild\")\n+    parent.register_blueprint(child, url_prefix=\"/child\")\n+    app.register_blueprint(parent, url_prefix=\"/parent\")\n+\n+    assert client.get(\"/parent/\").data == b\"Parent yes\"\n+    assert client.get(\"/parent/child/\").data == b\"Child yes\"\n+    assert client.get(\"/parent/child/grandchild/\").data == b\"Grandchild yes\"\n+    assert client.get(\"/parent/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/grandchild/no\").data == b\"Grandchild no\"\n"
           }
         }
       ],
       "expected_values": [
         {
-          "description": "Document title mentions PR #3923",
-          "value": "Design Doc - Flask Nested Blueprints (PR #3923)",
+          "description": "Document title references PR #3923 and nested blueprints",
+          "value": "Code Review: PR #3923 - Nested Blueprints",
           "tolerance": null,
-          "location": "Markdown document title"
+          "location": "Document title"
         },
         {
-          "description": "Overview section references issue #593",
-          "value": "593",
+          "description": "Summary section mentions issues fixed: #593 and #1548",
+          "value": "593, 1548",
           "tolerance": null,
-          "location": "Overview section"
+          "location": "Summary section"
         },
         {
-          "description": "Overview section references issue #1548",
-          "value": "1548",
-          "tolerance": null,
-          "location": "Overview section"
-        },
-        {
-          "description": "Overview section references PR #3923",
-          "value": "3923",
-          "tolerance": null,
-          "location": "Overview section"
-        },
-        {
-          "description": "Overview mentions Blueprint.register_blueprint method",
+          "description": "Summary section mentions Blueprint.register_blueprint method",
           "value": "Blueprint.register_blueprint",
           "tolerance": null,
-          "location": "Overview section"
+          "location": "Summary section"
         },
         {
-          "description": "Implementation Details section references dot delimiter for endpoint names",
-          "value": "dot delimiter",
+          "description": "Architectural Analysis describes endpoint naming with dot delimiter",
+          "value": "dot-delimited",
           "tolerance": null,
-          "location": "Implementation Details section"
+          "location": "Architectural Analysis section"
         },
         {
-          "description": "Implementation Details mentions iteration from most specific to most general",
-          "value": "most specific to most general",
+          "description": "Architectural Analysis mentions reverse iteration for request processing",
+          "value": "reverse order",
           "tolerance": null,
-          "location": "Implementation Details section"
+          "location": "Architectural Analysis section"
         },
         {
-          "description": "Implementation Details references update_template_context method",
-          "value": "update_template_context",
+          "description": "Code Correctness notes movement of name-collision assertion from app.py to blueprints.py",
+          "value": "Flask.register_blueprint",
           "tolerance": null,
-          "location": "Implementation Details section"
+          "location": "Code Correctness section"
         },
         {
-          "description": "Implementation Details references src/flask/app.py file path",
-          "value": "src/flask/app.py",
+          "description": "Code Correctness references the _request_blueprints helper method",
+          "value": "_request_blueprints",
           "tolerance": null,
-          "location": "Implementation Details section"
+          "location": "Code Correctness section"
         },
         {
-          "description": "Implementation Details includes code snippet showing _request_blueprints() iteration",
-          "value": "self._request_blueprints()",
+          "description": "Code Correctness mentions url_prefix concatenation logic",
+          "value": "rstrip('/')",
           "tolerance": null,
-          "location": "Implementation Details section"
+          "location": "Code Correctness section"
         },
         {
-          "description": "Usage Example shows parent Blueprint with url_prefix /parent",
-          "value": "/parent",
+          "description": "Edge Cases lists deeply nested blueprints as first edge case",
+          "value": "Deeply Nested Blueprints",
           "tolerance": null,
-          "location": "Usage Example section"
+          "location": "Edge Cases section"
         },
         {
-          "description": "Usage Example shows child Blueprint with url_prefix /child",
-          "value": "/child",
+          "description": "Edge Cases mentions name collisions with dots in blueprint names",
+          "value": "dots",
           "tolerance": null,
-          "location": "Usage Example section"
+          "location": "Edge Cases section"
         },
         {
-          "description": "Usage Example shows url_for call with endpoint parent.child.create",
-          "value": "parent.child.create",
+          "description": "Edge Cases includes circular dependencies as an edge case",
+          "value": "Circular Dependencies",
           "tolerance": null,
-          "location": "Usage Example section"
+          "location": "Edge Cases section"
         },
         {
-          "description": "Usage Example shows expected URL /parent/child/create",
-          "value": "/parent/child/create",
+          "description": "Documentation Review references new 'Nesting Blueprints' section in docs/blueprints.rst",
+          "value": "Nesting Blueprints",
           "tolerance": null,
-          "location": "Usage Example section"
+          "location": "Documentation Review section"
         },
         {
-          "description": "Behavioral Guarantees section mentions parent before_request functions trigger for child",
-          "value": "before_request functions registered with the parent blueprint will trigger",
+          "description": "Documentation Review notes CHANGES.rst entry references issues and PR",
+          "value": "CHANGES.rst",
           "tolerance": null,
-          "location": "Behavioral Guarantees section"
+          "location": "Documentation Review section"
         },
         {
-          "description": "Behavioral Guarantees section mentions error handler fallback from child to parent",
-          "value": "error handler that can handle a given exception, the application will attempt to use the parent blueprint's error handler",
+          "description": "Test Coverage describes the test_nested_blueprint function from tests/test_blueprints.py",
+          "value": "test_nested_blueprint",
           "tolerance": null,
-          "location": "Behavioral Guarantees section"
+          "location": "Test Coverage section"
         },
         {
-          "description": "Changelog Entry section contains exact changelog text",
-          "value": "Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`",
+          "description": "Test Coverage mentions the three-level hierarchy tested (parent, child, grandchild)",
+          "value": "parent, child, grandchild",
           "tolerance": null,
-          "location": "Changelog Entry section"
+          "location": "Test Coverage section"
         },
         {
-          "description": "Constraints section mentions requirement for unique blueprint names",
-          "value": "unique across all registrations",
+          "description": "Overall Recommendation gives verdict: Approve with minor comments",
+          "value": "Approve with minor comments",
           "tolerance": null,
-          "location": "Constraints and Considerations section"
+          "location": "Overall Recommendation section"
         },
         {
-          "description": "Constraints section mentions backward compatibility",
-          "value": "backward compatibility",
+          "description": "Overall Recommendation lists cycle detection guard as a key action item",
+          "value": "cycle detection guard",
           "tolerance": null,
-          "location": "Constraints and Considerations section"
+          "location": "Overall Recommendation section"
         },
         {
-          "description": "Constraints section references pre-commit hooks",
-          "value": "pre-commit",
+          "description": "Document has a Summary section",
+          "value": "Summary",
           "tolerance": null,
-          "location": "Constraints and Considerations section"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Overview section heading",
-          "value": "Overview",
+          "description": "Document has an Architectural Analysis section",
+          "value": "Architectural Analysis",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Implementation Details section heading",
-          "value": "Implementation Details",
+          "description": "Document has a Code Correctness section",
+          "value": "Code Correctness",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Usage Example section heading",
-          "value": "Usage Example",
+          "description": "Document has an Edge Cases section",
+          "value": "Edge Cases",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Behavioral Guarantees section heading",
-          "value": "Behavioral Guarantees",
+          "description": "Document has a Documentation Review section",
+          "value": "Documentation Review",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Changelog Entry section heading",
-          "value": "Changelog Entry",
+          "description": "Document has a Test Coverage section",
+          "value": "Test Coverage",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         },
         {
-          "description": "Document has Constraints and Considerations section heading",
-          "value": "Constraints and Considerations",
+          "description": "Document has an Overall Recommendation section",
+          "value": "Overall Recommendation",
           "tolerance": null,
-          "location": "Markdown document section heading"
+          "location": "Markdown heading level 2"
         }
       ],
       "narrative_prompt": null,
@@ -881,40 +908,29 @@
       "attachment_id": "att_0",
       "filename": "input_0.md",
       "format": "md",
-      "description": "Full PR diff for pallets/flask#3923 (Nested blueprints)",
+      "description": "PR #3923 diff and description",
       "content_blueprint": {
-        "title": "Full PR diff for pallets/flask#3923 (Nested blueprints)",
-        "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
+        "title": "PR #3923 diff and description",
+        "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-        else:\n-            self.blueprints[blueprint.name] = blueprint\n-            first_registration = True\n-\n-        blueprint.register(self, options, first_registration)\n+        blueprint.register(self, options)\n \n     def iter_blueprints(self):\n         \"\"\"Iterates over all blueprints by the order they were registered.\n@@ -1235,22 +1221,18 @@ def _find_error_handler(self, e):\n         \"\"\"\n         exc_class, code = self._get_exc_class_and_code(type(e))\n \n-        for name, c in (\n-            (request.blueprint, code),\n-            (None, code),\n-            (request.blueprint, None),\n-            (None, None),\n-        ):\n-            handler_map = self.error_handler_spec[name][c]\n+        for c in [code, None]:\n+            for name in chain(self._request_blueprints(), [None]):\n+                handler_map = self.error_handler_spec[name][c]\n \n-            if not handler_map:\n-                continue\n+                if not handler_map:\n+                    continue\n \n-            for cls in exc_class.__mro__:\n-                handler = handler_map.get(cls)\n+                for cls in exc_class.__mro__:\n+                    handler = handler_map.get(cls)\n \n-                if handler is not None:\n-                    return handler\n+                    if handler is not None:\n+                        return handler\n \n     def handle_http_exception(self, e):\n         \"\"\"Handles an HTTP exception.  By default this will invoke the\n@@ -1749,17 +1731,17 @@ def preprocess_request(self):\n         further request handling is stopped.\n         \"\"\"\n \n-        bp = _request_ctx_stack.top.request.blueprint\n-\n         funcs = self.url_value_preprocessors[None]\n-        if bp is not None and bp in self.url_value_preprocessors:\n-            funcs = chain(funcs, self.url_value_preprocessors[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.url_value_preprocessors:\n+                funcs = chain(funcs, self.url_value_preprocessors[bp])\n         for func in funcs:\n             func(request.endpoint, request.view_args)\n \n         funcs = self.before_request_funcs[None]\n-        if bp is not None and bp in self.before_request_funcs:\n-            funcs = chain(funcs, self.before_request_funcs[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.before_request_funcs:\n+                funcs = chain(funcs, self.before_request_funcs[bp])\n         for func in funcs:\n             rv = func()\n             if rv is not None:\n@@ -1779,10 +1761,10 @@ def process_response(self, response):\n                  instance of :attr:`response_class`.\n         \"\"\"\n         ctx = _request_ctx_stack.top\n-        bp = ctx.request.blueprint\n         funcs = ctx._after_request_functions\n-        if bp is not None and bp in self.after_request_funcs:\n-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.after_request_funcs:\n+                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n         if None in self.after_request_funcs:\n             funcs = chain(funcs, reversed(self.after_request_funcs[None]))\n         for handler in funcs:\n@@ -1815,9 +1797,9 @@ def do_teardown_request(self, exc=_sentinel):\n         if exc is _sentinel:\n             exc = sys.exc_info()[1]\n         funcs = reversed(self.teardown_request_funcs[None])\n-        bp = _request_ctx_stack.top.request.blueprint\n-        if bp is not None and bp in self.teardown_request_funcs:\n-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.teardown_request_funcs:\n+                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n         for func in funcs:\n             func(exc)\n         request_tearing_down.send(self, exc=exc)\n@@ -1985,3 +1967,9 @@ def __call__(self, environ, start_response):\n         wrapped to apply middleware.\n         \"\"\"\n         return self.wsgi_app(environ, start_response)\n+\n+    def _request_blueprints(self):\n+        if _request_ctx_stack.top.request.blueprint is None:\n+            return []\n+        else:\n+            return reversed(_request_ctx_stack.top.request.blueprint.split(\".\"))\ndiff --git a/src/flask/blueprints.py b/src/flask/blueprints.py\nindex d769cd58e3..92345cf2ba 100644\n--- a/src/flask/blueprints.py\n+++ b/src/flask/blueprints.py\n@@ -45,6 +45,8 @@ def __init__(self, blueprint, app, options, first_registration):\n         #: blueprint.\n         self.url_prefix = url_prefix\n \n+        self.name_prefix = self.options.get(\"name_prefix\", \"\")\n+\n         #: A dictionary with URL defaults that is added to each and every\n         #: URL that was defined with the blueprint.\n         self.url_defaults = dict(self.blueprint.url_values_defaults)\n@@ -68,7 +70,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n             defaults = dict(defaults, **options.pop(\"defaults\"))\n         self.app.add_url_rule(\n             rule,\n-            f\"{self.blueprint.name}.{endpoint}\",\n+            f\"{self.name_prefix}{self.blueprint.name}.{endpoint}\",\n             view_func,\n             defaults=defaults,\n             **options,\n@@ -168,6 +170,7 @@ def __init__(\n \n         self.url_values_defaults = url_defaults\n         self.cli_group = cli_group\n+        self._blueprints = []\n \n     def _is_setup_finished(self):\n         return self.warn_on_modifications and self._got_registered_once\n@@ -210,7 +213,16 @@ def make_setup_state(self, app, options, first_registration=False):\n         \"\"\"\n         return BlueprintSetupState(self, app, options, first_registration)\n \n-    def register(self, app, options, first_registration=False):\n+    def register_blueprint(self, blueprint, **options):\n+        \"\"\"Register a :class:`~flask.Blueprint` on this blueprint. Keyword\n+        arguments passed to this method will override the defaults set\n+        on the blueprint.\n+\n+        .. versionadded:: 2.0\n+        \"\"\"\n+        self._blueprints.append((blueprint, options))\n+\n+    def register(self, app, options):\n         \"\"\"Called by :meth:`Flask.register_blueprint` to register all\n         views and callbacks registered on the blueprint with the\n         application. Creates a :class:`.BlueprintSetupState` and calls\n@@ -223,6 +235,20 @@ def register(self, app, options, first_registration=False):\n         :param first_registration: Whether this is the first time this\n             blueprint has been registered on the application.\n         \"\"\"\n+        first_registration = False\n+\n+        if self.name in app.blueprints:\n+            assert app.blueprints[self.name] is self, (\n+                \"A name collision occurred between blueprints\"\n+                f\" {self!r} and {app.blueprints[self.name]!r}.\"\n+                f\" Both share the same name {self.name!r}.\"\n+                f\" Blueprints that are created on the fly need unique\"\n+                f\" names.\"\n+            )\n+        else:\n+            app.blueprints[self.name] = self\n+            first_registration = True\n+\n         self._got_registered_once = True\n         state = self.make_setup_state(app, options, first_registration)\n \n@@ -278,19 +304,28 @@ def extend(bp_dict, parent_dict, ensure_sync=False):\n         for deferred in self.deferred_functions:\n             deferred(state)\n \n-        if not self.cli.commands:\n-            return\n-\n         cli_resolved_group = options.get(\"cli_group\", self.cli_group)\n \n-        if cli_resolved_group is None:\n-            app.cli.commands.update(self.cli.commands)\n-        elif cli_resolved_group is _sentinel:\n-            self.cli.name = self.name\n-            app.cli.add_command(self.cli)\n-        else:\n-            self.cli.name = cli_resolved_group\n-            app.cli.add_command(self.cli)\n+        if self.cli.commands:\n+            if cli_resolved_group is None:\n+                app.cli.commands.update(self.cli.commands)\n+            elif cli_resolved_group is _sentinel:\n+                self.cli.name = self.name\n+                app.cli.add_command(self.cli)\n+            else:\n+                self.cli.name = cli_resolved_group\n+                app.cli.add_command(self.cli)\n+\n+        for blueprint, bp_options in self._blueprints:\n+            url_prefix = options.get(\"url_prefix\", \"\")\n+            if \"url_prefix\" in bp_options:\n+                url_prefix = (\n+                    url_prefix.rstrip(\"/\") + \"/\" + bp_options[\"url_prefix\"].lstrip(\"/\")\n+                )\n+\n+            bp_options[\"url_prefix\"] = url_prefix\n+            bp_options[\"name_prefix\"] = options.get(\"name_prefix\", \"\") + self.name + \".\"\n+            blueprint.register(app, bp_options)\n \n     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n         \"\"\"Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for\ndiff --git a/tests/test_blueprints.py b/tests/test_blueprints.py\nindex 903c7421bf..b986ca022d 100644\n--- a/tests/test_blueprints.py\n+++ b/tests/test_blueprints.py\n@@ -850,3 +850,52 @@ def about():\n \n     assert client.get(\"/de/\").data == b\"/de/about\"\n     assert client.get(\"/de/about\").data == b\"/de/\"\n+\n+\n+def test_nested_blueprint(app, client):\n+    parent = flask.Blueprint(\"parent\", __name__)\n+    child = flask.Blueprint(\"child\", __name__)\n+    grandchild = flask.Blueprint(\"grandchild\", __name__)\n+\n+    @parent.errorhandler(403)\n+    def forbidden(e):\n+        return \"Parent no\", 403\n+\n+    @parent.route(\"/\")\n+    def parent_index():\n+        return \"Parent yes\"\n+\n+    @parent.route(\"/no\")\n+    def parent_no():\n+        flask.abort(403)\n+\n+    @child.route(\"/\")\n+    def child_index():\n+        return \"Child yes\"\n+\n+    @child.route(\"/no\")\n+    def child_no():\n+        flask.abort(403)\n+\n+    @grandchild.errorhandler(403)\n+    def grandchild_forbidden(e):\n+        return \"Grandchild no\", 403\n+\n+    @grandchild.route(\"/\")\n+    def grandchild_index():\n+        return \"Grandchild yes\"\n+\n+    @grandchild.route(\"/no\")\n+    def grandchild_no():\n+        flask.abort(403)\n+\n+    child.register_blueprint(grandchild, url_prefix=\"/grandchild\")\n+    parent.register_blueprint(child, url_prefix=\"/child\")\n+    app.register_blueprint(parent, url_prefix=\"/parent\")\n+\n+    assert client.get(\"/parent/\").data == b\"Parent yes\"\n+    assert client.get(\"/parent/child/\").data == b\"Child yes\"\n+    assert client.get(\"/parent/child/grandchild/\").data == b\"Grandchild yes\"\n+    assert client.get(\"/parent/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/grandchild/no\").data == b\"Grandchild no\"\n"
       }
     },
     {
       "attachment_id": "att_1",
       "filename": "input_1.md",
       "format": "md",
-      "description": "PR description for pallets/flask#3923",
+      "description": "Linked Issue #593",
       "content_blueprint": {
-        "title": "PR description for pallets/flask#3923",
-        "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
-      }
-    },
-    {
-      "attachment_id": "att_2",
-      "filename": "input_2.md",
-      "format": "md",
-      "description": "Issue #593 excerpt describing the desired nested blueprint behavior",
-      "content_blueprint": {
-        "title": "Issue #593 excerpt describing the desired nested blueprint behavior",
-        "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff (first 3000 chars)\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-   "
+        "title": "Linked Issue #593",
+        "body": "# Seed Material: pallets/flask#3923: Nested blueprints\nSource: github_issue_pr\nIdentifier: pr:pallets/flask#3923\n\nRepository: pallets/flask\nPR Number: #3923\nPR Title: Nested blueprints\nMerged At: 2021-04-14T16:30:48Z\nChanged Files: 5\nAdditions: +154, Deletions: -56\n\n## PR Description\nThis allows blueprints to be nested within blueprints via a new\r\nBlueprint.register_blueprint method. This should provide a use case\r\nthat has been desired for the past ~10 years.\r\n\r\nThis works by setting the endpoint name to be the blueprint names,\r\nfrom parent to child delimeted by \".\" and then iterating over the\r\nblueprint names in reverse order in the app (from most specific to\r\nmost general). This means that the expectation of nesting a blueprint\r\nwithin a nested blueprint is met.\r\n\r\n- fixes #593\r\n- fixes #1548\r\n\r\nChecklist:\r\n\r\n- [x] Add tests that demonstrate the correct behavior of the change. Tests should fail without the change.\r\n- [x] Add or update relevant docs, in the docs folder and in code.\r\n- [x] Add an entry in `CHANGES.rst` summarizing the change and linking to the issue.\r\n- [x] Add `.. versionchanged::` entries in any relevant code docs.\r\n- [x] Run `pre-commit` hooks and fix any issues.\r\n- [x] Run `pytest` and `tox`, no tests failed.\r\n\n\n## Linked Issue #593\nI'd like to be able to register \"sub-blueprints\" using `Blueprint.register_blueprint(*args, **kwargs)`. This would register the nested blueprints with an app when the \"parent\" is registered with it. All parameters are preserved, other than `url_prefix`, which is handled similarly to in `add_url_rule`. A naíve implementation could look like this:\n\n``` python\nclass Blueprint(object):\n    ...\n\n    def register_blueprint(self, blueprint, **options):\n        def deferred(state):\n            url_prefix = options.get('url_prefix')\n            if url_prefix is None:\n                url_prefix = blueprint.url_prefix\n            if 'url_prefix' in options:\n                del options['url_prefix']\n\n            state.app.register_blueprint(blueprint, url_prefix, **options)\n        self.record(deferred)\n```\n\n\n## Diff\ndiff --git a/CHANGES.rst b/CHANGES.rst\nindex 280a2dd5a5..8c615d5fb8 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -69,6 +69,7 @@ Unreleased\n     ``@app.route(\"/login\", methods=[\"POST\"])``. :pr:`3907`\n -   Support async views, error handlers, before and after request, and\n     teardown functions. :pr:`3412`\n+-   Support nesting blueprints. :issue:`593, 1548`, :pr:`3923`\n \n \n Version 1.1.2\ndiff --git a/docs/blueprints.rst b/docs/blueprints.rst\nindex 3bc11893e4..6e8217abc9 100644\n--- a/docs/blueprints.rst\n+++ b/docs/blueprints.rst\n@@ -120,6 +120,31 @@ On top of that you can register blueprints multiple times though not every\n blueprint might respond properly to that.  In fact it depends on how the\n blueprint is implemented if it can be mounted more than once.\n \n+Nesting Blueprints\n+------------------\n+\n+It is possible to register a blueprint on another blueprint.\n+\n+.. code-block:: python\n+\n+    parent = Blueprint(\"parent\", __name__, url_prefix=\"/parent\")\n+    child = Blueprint(\"child\", __name__, url_prefix=\"/child)\n+    parent.register_blueprint(child)\n+    app.register_blueprint(parent)\n+\n+The child blueprint will gain the parent's name as a prefix to its\n+name, and child URLs will be prefixed with the parent's URL prefix.\n+\n+.. code-block:: python\n+\n+    url_for('parent.child.create')\n+    /parent/child/create\n+\n+Blueprint-specific before request functions, etc. registered with the\n+parent will trigger for the child. If a child does not have an error\n+handler that can handle a given exception, the parent's will be tried.\n+\n+\n Blueprint Resources\n -------------------\n \ndiff --git a/src/flask/app.py b/src/flask/app.py\nindex 484881f45c..d6f15e8ce1 100644\n--- a/src/flask/app.py\n+++ b/src/flask/app.py\n@@ -723,9 +723,9 @@ def update_template_context(self, context):\n         funcs = self.template_context_processors[None]\n         reqctx = _request_ctx_stack.top\n         if reqctx is not None:\n-            bp = reqctx.request.blueprint\n-            if bp is not None and bp in self.template_context_processors:\n-                funcs = chain(funcs, self.template_context_processors[bp])\n+            for bp in self._request_blueprints():\n+                if bp in self.template_context_processors:\n+                    funcs = chain(funcs, self.template_context_processors[bp])\n         orig_ctx = context.copy()\n         for func in funcs:\n             context.update(func())\n@@ -987,21 +987,7 @@ def register_blueprint(self, blueprint, **options):\n \n         .. versionadded:: 0.7\n         \"\"\"\n-        first_registration = False\n-\n-        if blueprint.name in self.blueprints:\n-            assert self.blueprints[blueprint.name] is blueprint, (\n-                \"A name collision occurred between blueprints\"\n-                f\" {blueprint!r} and {self.blueprints[blueprint.name]!r}.\"\n-                f\" Both share the same name {blueprint.name!r}.\"\n-                f\" Blueprints that are created on the fly need unique\"\n-                f\" names.\"\n-            )\n-        else:\n-            self.blueprints[blueprint.name] = blueprint\n-            first_registration = True\n-\n-        blueprint.register(self, options, first_registration)\n+        blueprint.register(self, options)\n \n     def iter_blueprints(self):\n         \"\"\"Iterates over all blueprints by the order they were registered.\n@@ -1235,22 +1221,18 @@ def _find_error_handler(self, e):\n         \"\"\"\n         exc_class, code = self._get_exc_class_and_code(type(e))\n \n-        for name, c in (\n-            (request.blueprint, code),\n-            (None, code),\n-            (request.blueprint, None),\n-            (None, None),\n-        ):\n-            handler_map = self.error_handler_spec[name][c]\n+        for c in [code, None]:\n+            for name in chain(self._request_blueprints(), [None]):\n+                handler_map = self.error_handler_spec[name][c]\n \n-            if not handler_map:\n-                continue\n+                if not handler_map:\n+                    continue\n \n-            for cls in exc_class.__mro__:\n-                handler = handler_map.get(cls)\n+                for cls in exc_class.__mro__:\n+                    handler = handler_map.get(cls)\n \n-                if handler is not None:\n-                    return handler\n+                    if handler is not None:\n+                        return handler\n \n     def handle_http_exception(self, e):\n         \"\"\"Handles an HTTP exception.  By default this will invoke the\n@@ -1749,17 +1731,17 @@ def preprocess_request(self):\n         further request handling is stopped.\n         \"\"\"\n \n-        bp = _request_ctx_stack.top.request.blueprint\n-\n         funcs = self.url_value_preprocessors[None]\n-        if bp is not None and bp in self.url_value_preprocessors:\n-            funcs = chain(funcs, self.url_value_preprocessors[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.url_value_preprocessors:\n+                funcs = chain(funcs, self.url_value_preprocessors[bp])\n         for func in funcs:\n             func(request.endpoint, request.view_args)\n \n         funcs = self.before_request_funcs[None]\n-        if bp is not None and bp in self.before_request_funcs:\n-            funcs = chain(funcs, self.before_request_funcs[bp])\n+        for bp in self._request_blueprints():\n+            if bp in self.before_request_funcs:\n+                funcs = chain(funcs, self.before_request_funcs[bp])\n         for func in funcs:\n             rv = func()\n             if rv is not None:\n@@ -1779,10 +1761,10 @@ def process_response(self, response):\n                  instance of :attr:`response_class`.\n         \"\"\"\n         ctx = _request_ctx_stack.top\n-        bp = ctx.request.blueprint\n         funcs = ctx._after_request_functions\n-        if bp is not None and bp in self.after_request_funcs:\n-            funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.after_request_funcs:\n+                funcs = chain(funcs, reversed(self.after_request_funcs[bp]))\n         if None in self.after_request_funcs:\n             funcs = chain(funcs, reversed(self.after_request_funcs[None]))\n         for handler in funcs:\n@@ -1815,9 +1797,9 @@ def do_teardown_request(self, exc=_sentinel):\n         if exc is _sentinel:\n             exc = sys.exc_info()[1]\n         funcs = reversed(self.teardown_request_funcs[None])\n-        bp = _request_ctx_stack.top.request.blueprint\n-        if bp is not None and bp in self.teardown_request_funcs:\n-            funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n+        for bp in self._request_blueprints():\n+            if bp in self.teardown_request_funcs:\n+                funcs = chain(funcs, reversed(self.teardown_request_funcs[bp]))\n         for func in funcs:\n             func(exc)\n         request_tearing_down.send(self, exc=exc)\n@@ -1985,3 +1967,9 @@ def __call__(self, environ, start_response):\n         wrapped to apply middleware.\n         \"\"\"\n         return self.wsgi_app(environ, start_response)\n+\n+    def _request_blueprints(self):\n+        if _request_ctx_stack.top.request.blueprint is None:\n+            return []\n+        else:\n+            return reversed(_request_ctx_stack.top.request.blueprint.split(\".\"))\ndiff --git a/src/flask/blueprints.py b/src/flask/blueprints.py\nindex d769cd58e3..92345cf2ba 100644\n--- a/src/flask/blueprints.py\n+++ b/src/flask/blueprints.py\n@@ -45,6 +45,8 @@ def __init__(self, blueprint, app, options, first_registration):\n         #: blueprint.\n         self.url_prefix = url_prefix\n \n+        self.name_prefix = self.options.get(\"name_prefix\", \"\")\n+\n         #: A dictionary with URL defaults that is added to each and every\n         #: URL that was defined with the blueprint.\n         self.url_defaults = dict(self.blueprint.url_values_defaults)\n@@ -68,7 +70,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n             defaults = dict(defaults, **options.pop(\"defaults\"))\n         self.app.add_url_rule(\n             rule,\n-            f\"{self.blueprint.name}.{endpoint}\",\n+            f\"{self.name_prefix}{self.blueprint.name}.{endpoint}\",\n             view_func,\n             defaults=defaults,\n             **options,\n@@ -168,6 +170,7 @@ def __init__(\n \n         self.url_values_defaults = url_defaults\n         self.cli_group = cli_group\n+        self._blueprints = []\n \n     def _is_setup_finished(self):\n         return self.warn_on_modifications and self._got_registered_once\n@@ -210,7 +213,16 @@ def make_setup_state(self, app, options, first_registration=False):\n         \"\"\"\n         return BlueprintSetupState(self, app, options, first_registration)\n \n-    def register(self, app, options, first_registration=False):\n+    def register_blueprint(self, blueprint, **options):\n+        \"\"\"Register a :class:`~flask.Blueprint` on this blueprint. Keyword\n+        arguments passed to this method will override the defaults set\n+        on the blueprint.\n+\n+        .. versionadded:: 2.0\n+        \"\"\"\n+        self._blueprints.append((blueprint, options))\n+\n+    def register(self, app, options):\n         \"\"\"Called by :meth:`Flask.register_blueprint` to register all\n         views and callbacks registered on the blueprint with the\n         application. Creates a :class:`.BlueprintSetupState` and calls\n@@ -223,6 +235,20 @@ def register(self, app, options, first_registration=False):\n         :param first_registration: Whether this is the first time this\n             blueprint has been registered on the application.\n         \"\"\"\n+        first_registration = False\n+\n+        if self.name in app.blueprints:\n+            assert app.blueprints[self.name] is self, (\n+                \"A name collision occurred between blueprints\"\n+                f\" {self!r} and {app.blueprints[self.name]!r}.\"\n+                f\" Both share the same name {self.name!r}.\"\n+                f\" Blueprints that are created on the fly need unique\"\n+                f\" names.\"\n+            )\n+        else:\n+            app.blueprints[self.name] = self\n+            first_registration = True\n+\n         self._got_registered_once = True\n         state = self.make_setup_state(app, options, first_registration)\n \n@@ -278,19 +304,28 @@ def extend(bp_dict, parent_dict, ensure_sync=False):\n         for deferred in self.deferred_functions:\n             deferred(state)\n \n-        if not self.cli.commands:\n-            return\n-\n         cli_resolved_group = options.get(\"cli_group\", self.cli_group)\n \n-        if cli_resolved_group is None:\n-            app.cli.commands.update(self.cli.commands)\n-        elif cli_resolved_group is _sentinel:\n-            self.cli.name = self.name\n-            app.cli.add_command(self.cli)\n-        else:\n-            self.cli.name = cli_resolved_group\n-            app.cli.add_command(self.cli)\n+        if self.cli.commands:\n+            if cli_resolved_group is None:\n+                app.cli.commands.update(self.cli.commands)\n+            elif cli_resolved_group is _sentinel:\n+                self.cli.name = self.name\n+                app.cli.add_command(self.cli)\n+            else:\n+                self.cli.name = cli_resolved_group\n+                app.cli.add_command(self.cli)\n+\n+        for blueprint, bp_options in self._blueprints:\n+            url_prefix = options.get(\"url_prefix\", \"\")\n+            if \"url_prefix\" in bp_options:\n+                url_prefix = (\n+                    url_prefix.rstrip(\"/\") + \"/\" + bp_options[\"url_prefix\"].lstrip(\"/\")\n+                )\n+\n+            bp_options[\"url_prefix\"] = url_prefix\n+            bp_options[\"name_prefix\"] = options.get(\"name_prefix\", \"\") + self.name + \".\"\n+            blueprint.register(app, bp_options)\n \n     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):\n         \"\"\"Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for\ndiff --git a/tests/test_blueprints.py b/tests/test_blueprints.py\nindex 903c7421bf..b986ca022d 100644\n--- a/tests/test_blueprints.py\n+++ b/tests/test_blueprints.py\n@@ -850,3 +850,52 @@ def about():\n \n     assert client.get(\"/de/\").data == b\"/de/about\"\n     assert client.get(\"/de/about\").data == b\"/de/\"\n+\n+\n+def test_nested_blueprint(app, client):\n+    parent = flask.Blueprint(\"parent\", __name__)\n+    child = flask.Blueprint(\"child\", __name__)\n+    grandchild = flask.Blueprint(\"grandchild\", __name__)\n+\n+    @parent.errorhandler(403)\n+    def forbidden(e):\n+        return \"Parent no\", 403\n+\n+    @parent.route(\"/\")\n+    def parent_index():\n+        return \"Parent yes\"\n+\n+    @parent.route(\"/no\")\n+    def parent_no():\n+        flask.abort(403)\n+\n+    @child.route(\"/\")\n+    def child_index():\n+        return \"Child yes\"\n+\n+    @child.route(\"/no\")\n+    def child_no():\n+        flask.abort(403)\n+\n+    @grandchild.errorhandler(403)\n+    def grandchild_forbidden(e):\n+        return \"Grandchild no\", 403\n+\n+    @grandchild.route(\"/\")\n+    def grandchild_index():\n+        return \"Grandchild yes\"\n+\n+    @grandchild.route(\"/no\")\n+    def grandchild_no():\n+        flask.abort(403)\n+\n+    child.register_blueprint(grandchild, url_prefix=\"/grandchild\")\n+    parent.register_blueprint(child, url_prefix=\"/child\")\n+    app.register_blueprint(parent, url_prefix=\"/parent\")\n+\n+    assert client.get(\"/parent/\").data == b\"Parent yes\"\n+    assert client.get(\"/parent/child/\").data == b\"Child yes\"\n+    assert client.get(\"/parent/child/grandchild/\").data == b\"Grandchild yes\"\n+    assert client.get(\"/parent/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/no\").data == b\"Parent no\"\n+    assert client.get(\"/parent/child/grandchild/no\").data == b\"Grandchild no\"\n"
       }
     }
   ],
-  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_b601c820d79f1147/design_doc.md",
+  "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_b601c820d79f1147/code_review.md",
   "input_attachment_paths": [
     "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b601c820d79f1147/input_0.md",
-    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b601c820d79f1147/input_1.md",
-    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b601c820d79f1147/input_2.md"
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_b601c820d79f1147/input_1.md"
   ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T05:04:27.245606+00:00"
+  "created_at": "2026-05-15T09:52:36.122928+00:00"
 }

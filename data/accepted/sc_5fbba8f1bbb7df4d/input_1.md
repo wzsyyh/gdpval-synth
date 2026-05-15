@@ -1,4 +1,4 @@
-# PR description text for psf/requests#6258
+# PR #6258 description and discussion
 
 
 # Seed Material: psf/requests#6258: Add an Example for automatic retries to the Advanced Usage docs
@@ -27,7 +27,7 @@ I'm curious if maintainers have any feedback about the content or code example. 
 
 Also, let me know if this is non-trivial enough to add a HISTORY entry for.
 
-## Diff (first 3000 chars)
+## Diff
 diff --git a/docs/user/advanced.rst b/docs/user/advanced.rst
 index c664a83d30..055c88a956 100644
 --- a/docs/user/advanced.rst

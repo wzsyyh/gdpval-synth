@@ -4,7 +4,7 @@
   "archetype": "design_doc",
   "difficulty": "medium",
   "seed_id": "e198b00f51d535a1",
-  "prompt": "You are a senior platform engineer at a mid-size cloud infrastructure company. The Docker project has just undergone a major architectural transformation—renaming the monolithic 'docker/docker' repository to 'moby/moby' and announcing the Moby Project (PR #32691). Your VP of Engineering has asked you to produce a technical design document evaluating how this upstream restructuring will affect your company's container platform, which currently depends heavily on Docker.\n\nMaterials provided:\n- The full PR #32691 diff and description from moby/moby, which outlines the transition from Docker to Moby, the componentization strategy, and the relationship between Docker the product and the Moby project.\n\nTask requirements:\n1. Write a design document titled 'Impact Assessment - Docker to Moby Transition' as a Markdown file.\n2. The document must contain the following sections:\n   - Executive Summary: A 2-3 paragraph overview of what the Moby transition entails, referencing the PR description's statement about Docker remaining unchanged from a user's perspective and the Moby project serving as a 'Lego set' of components.\n   - Technical Background: Describe the componentization history (runc, containerd, CNCF donation) as mentioned in the PR, and explain how Moby extends this modular approach.\n   - Impact Analysis: Evaluate the effects on three specific areas of your platform: (a) container runtime dependencies, (b) build and CI/CD pipelines, (c) container orchestration. For each area, describe what changes and what remains stable, citing specific facts from the PR.\n   - Migration Strategy: Propose a phased approach with at least three phases (e.g., Assessment, Adaptation, Optimization). Each phase should reference specific elements from the PR, such as the moby command-line tool for assembling components, or the transition of open source collaborations.\n   - Risk Register: Identify at least 4 risks with severity levels (High/Medium/Low) and mitigation strategies. Risks must relate to specific facts from the PR, such as the repo rename from docker/docker to moby/moby, or the continued use of the moby CLI tool.\n   - Recommendations: A concluding section with 3-5 actionable recommendations for engineering leadership.\n3. Include code blocks showing example references or configuration snippets relevant to the discussion (e.g., a Dockerfile FROM line, or a CI pipeline reference).\n4. Every section must contain at least one direct or indirect reference to the PR material—no invented facts.\n5. Use professional technical writing style appropriate for an internal engineering audience.",
+  "prompt": "You are a senior software engineer on the Moby Project team at Docker, Inc. The company has just completed a major organizational restructuring: Docker is transitioning all of its open-source collaborations to the Moby project, with the goal that the monolithic Docker repository eventually ceases to exist and is instead assembled from a set of independent components. PR #32691 on the moby/moby repository has already rewritten the README to reflect the new Moby identity, but no technical specification has been written to guide the actual component extraction work.\n\nYour staff engineer has asked you to produce a Design Document that will serve as the authoritative technical plan for breaking the Docker engine into modular, independently-buildable components under the Moby project. This document will be reviewed by the core maintainers and used to coordinate work across multiple teams.\n\n## Materials Provided\n- The full diff of PR #32691 (README.md rewrite and moby-project-logo.png addition)\n- The PR description explaining the motivation, scope, and transition plan\n\n## Task Requirements\n\nProduce a single Markdown document titled 'Design Doc - Moby Component Extraction Plan'. The document must contain the following sections:\n\n1. **Executive Summary**: A concise overview of why the Docker engine is being decomposed, what the Moby project is, and the end-state vision (the monolithic repo ceases to exist). Reference PR #32691 and the Moby project website http://mobyproject.org.\n\n2. **Motivation and Background**: Explain the historical context: runc and containerd were already extracted; containerd was donated to the CNCF. Describe what changes PR #32691 makes to the README (removing Docker-centric language, adding Moby branding, adding the moby-project-logo.png). List the five proposed changes from the README's 'Transitioning to Moby' section.\n\n3. **Target Audience Analysis**: Based on the README's Audience section, identify the two groups the Moby project IS recommended for and the three groups it is NOT recommended for. For each group, explain one concrete implication for how the component extraction should be designed (e.g., API stability for system engineers, ease of experimentation for hackers).\n\n4. **Component Extraction Architecture**: Propose a phased extraction plan with at least three phases. Each phase must name specific component categories listed in the README (OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution). Explain how the moby CLI tool (described in the README) will be used to assemble components. Address the three guiding principles from the README (batteries included but swappable, usable security, container centric).\n\n5. **Governance and Transition Risks**: Analyze the governance model mentioned in the README (inspired by the Fedora project). Identify at least two risks of the transition (e.g., contributor confusion, fragmented documentation) and propose mitigations. Reference the LICENSE change from docker/docker to moby/moby and the NOTICE document path.\n\n6. **Success Criteria**: Define measurable criteria for when the extraction is complete, aligned with the PR description's statement that 'Docker is, and will remain, a open source product that lets you build, ship and run containers' from a user perspective.\n\nFormatting: Use Markdown headings (## for major sections, ### for subsections). Include code blocks where referencing file paths or commands. The document must be self-contained and between 1800 and 3000 words.",
   "deliverable": {
     "deliverable_id": "design_doc",
     "primary_format": "markdown",
@@ -13,44 +13,56 @@
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file with the title containing 'Impact Assessment - Docker to Moby Transition'.",
+      "criterion": "The submitted document is a Markdown file titled exactly 'Design Doc - Moby Component Extraction Plan'.",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains an 'Executive Summary' section heading.",
-      "category": "structure",
+      "criterion": "The document uses Markdown heading syntax (## or ###) for at least four distinct section headings.",
+      "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a 'Technical Background' section heading.",
+      "criterion": "The document is between 1800 and 3000 words in total length.",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Executive Summary'.",
       "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The document contains an 'Impact Analysis' section heading.",
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Motivation and Background'.",
       "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The document contains a 'Migration Strategy' section heading.",
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Target Audience Analysis'.",
       "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The document contains a 'Risk Register' section heading.",
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Component Extraction Architecture'.",
       "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The document contains a 'Recommendations' section heading.",
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Governance and Transition Risks'.",
       "category": "structure",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document contains a section with an H2 heading 'Success Criteria'.",
+      "category": "success criteria",
       "is_penalty": false
     },
     {
@@ -61,224 +73,266 @@
     },
     {
       "score": 2,
-      "criterion": "The Executive Summary includes the phrase 'staying exactly the same from a user's perspective' or close paraphrase.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Executive Summary describes Moby as a 'Lego set' of components using that exact phrase or close variant.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Executive Summary explains the relationship between Docker the product and the Moby project.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Technical Background section mentions runc as a prior componentization example.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Technical Background section mentions containerd as a prior componentization example.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Technical Background section mentions the CNCF donation of containerd.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Technical Background section explains the Moby project's component library or framework.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Technical Background section references the moby command-line tool as an assembly mechanism.",
+      "criterion": "The Executive Summary references the URL http://mobyproject.org.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Impact Analysis section addresses container runtime dependencies as one of three impact areas.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Impact Analysis section addresses build and CI/CD pipelines as one of three impact areas.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Impact Analysis section addresses container orchestration as one of three impact areas.",
+      "criterion": "The Executive Summary explicitly states that the monolithic docker repo will cease to exist as the end-state vision.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "Each Impact Analysis sub-section discusses both what changes and what remains stable.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Impact Analysis cites at least one specific quote or fact from the PR in each of its three sub-sections.",
+      "criterion": "The Executive Summary describes Moby as a 'Lego set' of components (using the exact phrase from the PR description).",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Impact Analysis discusses the repository rename from docker/docker to moby/moby.",
+      "criterion": "The Motivation and Background section mentions runc as a prior extracted component.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Background section mentions containerd as a prior extracted component.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation and Background section mentions that containerd was donated to the CNCF.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation and Background section references the diff statistics: +50 additions and -269 deletions in the README.",
+      "category": "data",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Motivation and Background section mentions the addition of docs/static_files/moby-project-logo.png.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Motivation and Background section lists all five proposed changes from the 'Transitioning to Moby' section of the README.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The first proposed change is described as 'splitting up the engine into more open components'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The second proposed change is described as 'removing the docker UI, SDK etc to keep them in the Docker org'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The third proposed change is described as 'clarifying that the project is not limited to the engine but to the assembly of all individual components of the Docker platform'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fourth proposed change is described as 'open-sourcing new tools and components'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fifth proposed change is described as 'governance inspired by the Fedora project'.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Target Audience Analysis section identifies 'hackers who want to customize or patch their Docker build' as a group Moby IS recommended for.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Target Audience Analysis section identifies 'system engineers or integrators building a container system' as a group Moby IS recommended for.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Target Audience Analysis section identifies 'application developers' as a group Moby is NOT recommended for, with Docker CE as the alternative.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Target Audience Analysis section identifies 'enterprise IT and development teams' as a group Moby is NOT recommended for, with Docker EE as the alternative.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Target Audience Analysis section identifies 'anyone curious about containers' as a group Moby is NOT recommended for, with docker.com as the alternative.",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Target Audience Analysis section explains at least one concrete design implication for each identified audience group.",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'container runtime'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'orchestration'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'networking'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'storage'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'security'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'build'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'image distribution'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'OS'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The Component Extraction Architecture section names the component category 'infrastructure management'.",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Component Extraction Architecture section describes the moby CLI tool as a component assembly tool (consistent with the README description).",
+      "category": "accuracy",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Component Extraction Architecture section addresses the guiding principle 'batteries included but swappable'.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Migration Strategy contains at least three distinct phases.",
+      "criterion": "The Component Extraction Architecture section addresses the guiding principle 'usable security'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Component Extraction Architecture section addresses the guiding principle 'container centric'.",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 3,
+      "criterion": "The Component Extraction Architecture section proposes at least three distinct extraction phases, each clearly scoped to specific component categories.",
       "category": "structure",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The Migration Strategy Phase 1 references the transition period where open source activity continues as usual.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Migration Strategy Phase 2 references the moby command-line tool for assembling components.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
       "score": 2,
-      "criterion": "The Migration Strategy Phase 3 references assembling runnable artifacts for multiple platforms or architectures.",
+      "criterion": "The Governance and Transition Risks section references the Fedora project as the governance model inspiration.",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 3,
-      "criterion": "The document includes at least one code block such as a Dockerfile snippet, CI config example, or shell command.",
-      "category": "format",
+      "criterion": "The Governance and Transition Risks section identifies at least two distinct transition risks with concrete mitigations for each.",
+      "category": "judgment",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Risk Register identifies at least 4 distinct risks.",
+      "criterion": "The Governance and Transition Risks section references the LICENSE file path change from github.com/docker/docker/blob/master/LICENSE to github.com/moby/moby/blob/master/LICENSE.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Governance and Transition Risks section references the NOTICE document at github.com/moby/moby/blob/master/NOTICE.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Success Criteria section quotes or paraphrases the PR description statement that Docker will remain a product that lets users 'build, ship and run containers'.",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The Success Criteria section defines at least three measurable criteria for extraction completion.",
       "category": "completeness",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "Each risk in the Risk Register has a severity level of High, Medium, or Low.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Risk Register includes a risk related to the repository rename from docker/docker to moby/moby.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Risk Register includes a risk related to component fragmentation or version incompatibility.",
+      "criterion": "The Success Criteria section includes a criterion about Docker CE/EE being assemblable from Moby components without user-visible changes.",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Risk Register includes mitigation strategies for each risk.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Risk Register references the PR statement about transitioning open source collaborations to the Moby project.",
+      "criterion": "The document mentions OCI compatibility in the context of component extraction.",
       "category": "reference",
       "is_penalty": false
     },
     {
-      "score": 1,
-      "criterion": "The Recommendations section contains between 3 and 5 actionable recommendations.",
-      "category": "completeness",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Recommendations section includes a recommendation to update repository references from docker/docker to moby/moby.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Recommendations section includes a recommendation to prototype or evaluate the moby CLI tool.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Recommendations section includes a recommendation about open source participation in the Moby project.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references the mobyproject.org website URL.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document mentions that all Moby components are containers or references OCI-compatible containers.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document discusses Docker API surface stability during the transition.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The document references the PR merge date (April 2017) or the fact that the PR was merged.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document mentions dotCloud as part of Docker's history.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document mentions x86 and Arm architectures as target platforms.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": -2,
-      "criterion": "The document contains invented PR numbers, issue numbers, or file names not present in the original PR #32691 material.",
+      "score": -3,
+      "criterion": "The document invents component names, file paths, or issue numbers not present in the PR #32691 diff or description (e.g., references to specific Go packages, internal team names, or fabricated PR numbers).",
       "category": "accuracy",
       "is_penalty": true
     },
     {
-      "score": -3,
-      "criterion": "The document makes claims about specific code changes or file modifications beyond what is described in the provided PR diff which only changed README.md.",
-      "category": "accuracy",
+      "score": -2,
+      "criterion": "The document fails to mention at least one of the nine component categories listed in the README (OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution).",
+      "category": "completeness",
       "is_penalty": true
     }
   ],
@@ -297,25 +351,25 @@
       {
         "id": "ev_0",
         "kind": "person",
-        "name": "Impact Assessment - Docker to Moby Transition",
+        "name": "Design Doc - Moby Component Extraction Plan",
         "attrs": {}
       },
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "32691",
+        "name": "#32691",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "moby/moby",
+        "name": "http://mobyproject.org",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "staying exactly the same from a user's perspective",
+        "name": "monolithic docker repo ceases to exist",
         "attrs": {}
       },
       {
@@ -345,97 +399,217 @@
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "moby",
+        "name": "+50 additions, -269 deletions",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "runtime dependencies, CI/CD pipelines, orchestration",
+        "name": "docs/static_files/moby-project-logo.png",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "Assessment (Weeks 1-4)",
+        "name": "splitting up the engine into more open components",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "Adaptation (Weeks 5-12)",
+        "name": "removing the docker UI, SDK etc to keep them in the Docker org",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "Optimization (Weeks 13-24)",
+        "name": "clarifying that the project is not limited to the engine",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "R1, R2, R3, R4",
+        "name": "open-source new tools & components",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "High",
+        "name": "governance inspired by the Fedora project",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "split up into more components",
+        "name": "hackers who want to customize or patch their Docker build",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "x86 and Arm",
+        "name": "system engineers or integrators building a container system",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "Docker API",
+        "name": "application developers looking for an easy way to run applications in containers",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "OCI-compatible container",
+        "name": "enterprise IT and development teams looking for a ready-to-use, commercially supported container platform",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "code block",
+        "name": "anyone curious about containers and looking for an easy way to learn",
         "attrs": {}
       },
       {
         "id": "ev_20",
         "kind": "person",
-        "name": "dotCloud",
+        "name": "container runtime",
         "attrs": {}
       },
       {
         "id": "ev_21",
         "kind": "person",
-        "name": "mobyproject.org",
+        "name": "orchestration",
         "attrs": {}
       },
       {
         "id": "ev_22",
         "kind": "person",
-        "name": "2017-04-20",
+        "name": "networking",
         "attrs": {}
       },
       {
         "id": "ev_23",
         "kind": "person",
-        "name": "VM images",
+        "name": "storage",
+        "attrs": {}
+      },
+      {
+        "id": "ev_24",
+        "kind": "person",
+        "name": "security",
+        "attrs": {}
+      },
+      {
+        "id": "ev_25",
+        "kind": "person",
+        "name": "build",
+        "attrs": {}
+      },
+      {
+        "id": "ev_26",
+        "kind": "person",
+        "name": "image distribution",
+        "attrs": {}
+      },
+      {
+        "id": "ev_27",
+        "kind": "person",
+        "name": "infrastructure management",
+        "attrs": {}
+      },
+      {
+        "id": "ev_28",
+        "kind": "person",
+        "name": "moby CLI tool",
+        "attrs": {}
+      },
+      {
+        "id": "ev_29",
+        "kind": "person",
+        "name": "Batteries included but swappable",
+        "attrs": {}
+      },
+      {
+        "id": "ev_30",
+        "kind": "person",
+        "name": "usable security",
+        "attrs": {}
+      },
+      {
+        "id": "ev_31",
+        "kind": "person",
+        "name": "container centric",
+        "attrs": {}
+      },
+      {
+        "id": "ev_32",
+        "kind": "person",
+        "name": "3 phases",
+        "attrs": {}
+      },
+      {
+        "id": "ev_33",
+        "kind": "person",
+        "name": "Fedora project",
+        "attrs": {}
+      },
+      {
+        "id": "ev_34",
+        "kind": "person",
+        "name": "2 risks",
+        "attrs": {}
+      },
+      {
+        "id": "ev_35",
+        "kind": "person",
+        "name": "github.com/moby/moby/blob/master/LICENSE",
+        "attrs": {}
+      },
+      {
+        "id": "ev_36",
+        "kind": "person",
+        "name": "github.com/moby/moby/blob/master/NOTICE",
+        "attrs": {}
+      },
+      {
+        "id": "ev_37",
+        "kind": "person",
+        "name": "Docker is, and will remain, a open source product that lets you build, ship and run containers",
+        "attrs": {}
+      },
+      {
+        "id": "ev_38",
+        "kind": "person",
+        "name": "monolith elimination",
+        "attrs": {}
+      },
+      {
+        "id": "ev_39",
+        "kind": "person",
+        "name": "User Experience Preservation",
+        "attrs": {}
+      },
+      {
+        "id": "ev_40",
+        "kind": "person",
+        "name": "Component Independence",
+        "attrs": {}
+      },
+      {
+        "id": "ev_41",
+        "kind": "person",
+        "name": "Assembly Verification",
+        "attrs": {}
+      },
+      {
+        "id": "ev_42",
+        "kind": "person",
+        "name": "Community Governance",
+        "attrs": {}
+      },
+      {
+        "id": "ev_43",
+        "kind": "person",
+        "name": "OCI-compatible",
         "attrs": {}
       }
     ],
@@ -444,28 +618,28 @@
       {
         "id": "fact_0",
         "kind": "string",
-        "value": "Impact Assessment - Docker to Moby Transition",
+        "value": "Design Doc - Moby Component Extraction Plan",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_1",
         "kind": "string",
-        "value": "32691",
+        "value": "#32691",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_2",
         "kind": "string",
-        "value": "moby/moby",
+        "value": "http://mobyproject.org",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "string",
-        "value": "staying exactly the same from a user's perspective",
+        "value": "monolithic docker repo ceases to exist",
         "unit": null,
         "source": null
       },
@@ -500,119 +674,259 @@
       {
         "id": "fact_8",
         "kind": "string",
-        "value": "moby",
+        "value": "+50 additions, -269 deletions",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
         "kind": "string",
-        "value": "runtime dependencies, CI/CD pipelines, orchestration",
+        "value": "docs/static_files/moby-project-logo.png",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
         "kind": "string",
-        "value": "Assessment (Weeks 1-4)",
+        "value": "splitting up the engine into more open components",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "Adaptation (Weeks 5-12)",
+        "value": "removing the docker UI, SDK etc to keep them in the Docker org",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "Optimization (Weeks 13-24)",
+        "value": "clarifying that the project is not limited to the engine",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "R1, R2, R3, R4",
+        "value": "open-source new tools & components",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "High",
+        "value": "governance inspired by the Fedora project",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "split up into more components",
+        "value": "hackers who want to customize or patch their Docker build",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "5",
+        "value": "system engineers or integrators building a container system",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "x86 and Arm",
+        "value": "application developers looking for an easy way to run applications in containers",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "Docker API",
+        "value": "enterprise IT and development teams looking for a ready-to-use, commercially supported container platform",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "OCI-compatible container",
+        "value": "anyone curious about containers and looking for an easy way to learn",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_20",
         "kind": "string",
-        "value": "code block",
+        "value": "container runtime",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_21",
         "kind": "string",
-        "value": "dotCloud",
+        "value": "orchestration",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_22",
         "kind": "string",
-        "value": "mobyproject.org",
+        "value": "networking",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_23",
         "kind": "string",
-        "value": "2017-04-20",
+        "value": "storage",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_24",
         "kind": "string",
-        "value": "VM images",
+        "value": "security",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "string",
+        "value": "build",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_26",
+        "kind": "string",
+        "value": "image distribution",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_27",
+        "kind": "string",
+        "value": "OS",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_28",
+        "kind": "string",
+        "value": "infrastructure management",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_29",
+        "kind": "string",
+        "value": "moby CLI tool",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_30",
+        "kind": "string",
+        "value": "Batteries included but swappable",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_31",
+        "kind": "string",
+        "value": "usable security",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_32",
+        "kind": "string",
+        "value": "container centric",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_33",
+        "kind": "string",
+        "value": "3 phases",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_34",
+        "kind": "string",
+        "value": "Fedora project",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_35",
+        "kind": "string",
+        "value": "2 risks",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_36",
+        "kind": "string",
+        "value": "github.com/moby/moby/blob/master/LICENSE",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_37",
+        "kind": "string",
+        "value": "github.com/moby/moby/blob/master/NOTICE",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_38",
+        "kind": "string",
+        "value": "Docker is, and will remain, a open source product that lets you build, ship and run containers",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_39",
+        "kind": "string",
+        "value": "monolith elimination",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_40",
+        "kind": "string",
+        "value": "User Experience Preservation",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_41",
+        "kind": "string",
+        "value": "Component Independence",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_42",
+        "kind": "string",
+        "value": "Assembly Verification",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_43",
+        "kind": "string",
+        "value": "Community Governance",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_44",
+        "kind": "string",
+        "value": "OCI-compatible",
         "unit": null,
         "source": null
       }
@@ -629,260 +943,399 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
+          "heading": "Design Doc - Moby Component Extraction Plan",
+          "heading_level": 1,
+          "required_content": [
+            "Title matches exactly 'Design Doc - Moby Component Extraction Plan'"
+          ],
+          "paragraphs": []
+        },
+        {
           "heading": "Executive Summary",
           "heading_level": 2,
           "required_content": [
-            "References Docker remaining unchanged from user perspective",
-            "Describes Moby as 'Lego set' of components",
-            "Explains relationship between Docker product and Moby project"
+            "References PR #32691",
+            "References http://mobyproject.org",
+            "States that the monolithic Docker repo will cease to exist",
+            "Describes Moby as a Lego set of components"
           ],
           "paragraphs": [
-            "The Docker project has undergone a significant architectural restructuring, transitioning the monolithic docker/docker repository (now moby/moby) into a modular, component-based architecture under the newly announced Moby Project. As stated in PR #32691, \"Docker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user's perspective.\" This means that while the upstream project structure is fundamentally changing, the end-user experience of Docker as a container engine remains stable.",
-            "The Moby Project represents a new paradigm for container platform development. As described in the PR, \"Moby is a project which provides a 'Lego set' of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\" The project introduces a command-line tool called moby that currently assembles bootable OS images and will soon be used to assemble Docker itself from independent components.",
-            "This design document evaluates the impact of this transition on our container platform infrastructure. Our analysis must account for both the near-term stability (Docker users see no change) and the long-term implications of the componentization strategy, where \"the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\" Docker the product \"will be assembled from components that are packaged by the Moby project.\""
+            "This document outlines the technical plan for decomposing the Docker engine into modular, independently-buildable components under the Moby project, as initiated by PR #32691 on the moby/moby repository. The Moby project (http://mobyproject.org) provides a 'Lego set' of dozens of components, a framework for assembling them into custom container-based systems, and a community hub for container enthusiasts. The end-state vision is that the monolithic docker repo ceases to exist, replaced by a collection of independent projects assembled via the Moby toolchain. Docker the product will remain a user-facing open-source tool to build, ship, and run containers, but its internal architecture will be fully modularized.",
+            "PR #32691 represents the first concrete step: rewriting the README from Docker-centric language to Moby branding, adding the Moby project logo (docs/static_files/moby-project-logo.png), and documenting the transition plan. This design document extends that foundation into a full extraction architecture."
           ]
         },
         {
-          "heading": "Technical Background",
+          "heading": "Motivation and Background",
           "heading_level": 2,
           "required_content": [
-            "References runc and containerd as prior componentization examples",
-            "Mentions CNCF donation of containerd",
-            "Explains the Moby framework and component library"
+            "References runc and containerd as prior extractions",
+            "References containerd donation to CNCF",
+            "Describes README changes in PR #32691",
+            "Lists all five proposed changes from Transitioning to Moby section"
           ],
           "paragraphs": [
-            "The transition to the Moby Project did not occur in isolation. As the PR description notes, \"Work has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF.\" This prior work established the pattern and technical feasibility of extracting core functionality from the Docker monolith into standalone, independently maintainable projects.",
-            "The Moby project extends this modular philosophy to the entire container platform stack. According to the PR, the Moby framework provides a library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, and more. All Moby components are containers themselves, so creating new components is as easy as building a new OCI-compatible container.",
-            "The moby command-line tool serves as the assembly mechanism for these components. The PR states it currently assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects. This tool-based assembly approach means that Docker will ultimately become one particular assembly of Moby components, rather than a monolithic codebase."
+            "The Docker project has been progressively decomposing its monolithic architecture. Two major components have already been extracted: runc (the OCI-compliant container runtime) and containerd, which was donated to the Cloud Native Computing Foundation (CNCF). PR #32691 continues this trajectory by formally renaming the repository from docker/docker to moby/moby and rewriting the README to reflect the new identity.",
+            "The README diff in PR #32691 removes 269 lines of Docker-specific content (including sections on 'Better than VMs', 'Plays well with others', 'Escape dependency hell', build examples, community links, and the 'Other Docker Related Projects' list) and replaces them with 50 lines of Moby-focused documentation. A new logo file, docs/static_files/moby-project-logo.png, is added to visually anchor the new identity.",
+            "The 'Transitioning to Moby' section of the new README specifies five proposed changes: (1) splitting up the engine into more open components, (2) removing the Docker UI, SDK etc. to keep them in the Docker org, (3) clarifying that the project is not limited to the engine but to the assembly of all individual components of the Docker platform, (4) open-sourcing new tools and components currently used to assemble the Docker product but which could benefit the community, and (5) defining an open, community-centric governance inspired by the Fedora project."
           ]
         },
         {
-          "heading": "Impact Analysis",
+          "heading": "Target Audience Analysis",
           "heading_level": 2,
           "required_content": [
-            "Three impact areas: runtime dependencies, CI/CD pipelines, orchestration",
-            "Each area discusses what changes and what stays stable",
-            "Direct citations from PR material in each sub-area"
+            "Identifies two IS-recommended groups from README",
+            "Identifies three NOT-recommended groups from README",
+            "Links each group to an extraction design implication"
           ],
           "paragraphs": [
-            "### Container Runtime Dependencies\n\nOur current platform relies on the Docker Engine as a single dependency. With the Moby transition, this engine will eventually be decomposed into multiple independent components. The PR states that \"as the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\" In the near term, the docker/docker to moby/moby repository rename affects our dependency declarations, but \"during the transition, all open source activity should continue as usual.\" Our container runtime layer—which already uses containerd and runc as separate dependencies—will see minimal disruption.",
-            "### Build and CI/CD Pipelines\n\nOur CI/CD pipelines currently reference the docker/docker repository for source builds and contributions. The rename to moby/moby means all repository URLs, git remotes, and CI configuration referencing the old path must be updated. However, since \"Docker is transitioning all of its open source collaborations to the Moby project going forward,\" our open-source contributions and issue tracking will need to follow the Moby project conventions. The moby CLI tool will eventually become relevant for assembling custom Docker configurations, which may require us to integrate this tool into our build processes.",
-            "### Container Orchestration\n\nOur orchestration layer interacts with Docker through its API. Since \"Docker is staying exactly the same from a user's perspective,\" the Docker API surface should remain stable during the transition. However, the underlying implementation will be composed of Moby components, which introduces potential version skew between independently released components. The Moby project provides tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers."
+            "The Moby README explicitly defines its target audience. The project IS recommended for: (1) hackers who want to customize or patch their Docker build, and (2) system engineers or integrators building a container system. For hackers, the extraction must preserve deep customizability — every component should be replaceable without forking the entire system. For system engineers, the extraction must provide stable, well-documented interfaces between components so that integrators can assemble systems reliably.",
+            "The README also lists three groups for whom Moby is NOT recommended: (1) application developers looking for an easy way to run applications in containers (recommended Docker CE instead), (2) enterprise IT and development teams seeking a commercially supported platform (recommended Docker EE instead), and (3) anyone curious about containers looking for an easy learning path (recommended the docker.com website instead). These exclusions imply that the Moby extraction does not need to prioritize backward-compatible user-facing APIs or simplified onboarding flows; instead, it can optimize for composability and internal flexibility."
           ]
         },
         {
-          "heading": "Migration Strategy",
+          "heading": "Component Extraction Architecture",
           "heading_level": 2,
           "required_content": [
-            "At least three phases with specific names",
-            "Each phase references specific PR elements",
-            "Phase names and descriptions are concrete and actionable"
+            "Names specific component categories from README (OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution)",
+            "Describes moby CLI tool for assembly",
+            "Addresses three guiding principles (batteries included but swappable, usable security, container centric)",
+            "Proposes at least three phases"
           ],
           "paragraphs": [
-            "### Phase 1: Assessment (Weeks 1-4)\n\nConduct a comprehensive audit of all Docker-related dependencies, repository references, and integration points. Update all references from docker/docker to moby/moby. Evaluate which Moby components (runc, containerd, and others as they emerge) are already in use independently versus consumed as part of the monolithic Docker engine. The PR notes that \"during the transition, all open source activity should continue as usual,\" so this phase has low risk of service disruption.",
-            "### Phase 2: Adaptation (Weeks 5-12)\n\nBegin consuming Moby components directly where advantageous. Evaluate the moby command-line tool for assembling custom container system configurations. As the PR describes, \"the Moby project provides a command-line tool called moby which assembles components\"—we should prototype using this tool for our specific deployment targets. Update CI/CD pipelines to handle the new repository structure and contribute any necessary patches upstream through Moby's open source collaboration channels.",
-            "### Phase 3: Optimization (Weeks 13-24)\n\nFully leverage the modular architecture by independently upgrading Moby components. Since \"as the Docker Engine continues to be split up into more components the Moby project will also be the home for those components,\" we can adopt individual component releases on their own cadence. Build custom assemblies using the Moby framework's tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows. This phase positions our platform to benefit from the full flexibility of the Moby component model."
+            "The extraction will proceed in three phases, organized by dependency order and risk. Each phase extracts component categories identified in the README's Overview section: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, and image distribution.",
+            "**Phase 1 — Core Runtime Extraction** (container runtime, OS, security): Extract containerd integration, the daemon's OS abstraction layer, and security subsystems into standalone components. This phase has the fewest external dependencies and the most mature interfaces, thanks to the prior runc and containerd extractions. All components remain OCI-compatible as stated in the README: 'All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.'",
+            "**Phase 2 — Platform Services Extraction** (networking, storage, build, image distribution): Extract the libnetwork driver interface, volume/storage plugins, the build subsystem, and the image distribution/push-pull logic. These components have more complex interdependencies and require careful API boundary definition. The moby CLI tool — described in the README as assembling bootable OS images and soon to be used by Docker for assembling Docker out of components — will serve as the integration test harness, verifying that extracted components compose correctly.",
+            "**Phase 3 — Orchestration and Infrastructure** (orchestration, infrastructure management): Extract Swarm mode and infrastructure management integrations. These are the highest-level components and depend on everything extracted in Phases 1 and 2. This phase completes the dissolution of the monolith.",
+            "Each phase must respect the three guiding principles from the README: (1) 'Batteries included but swappable' — every extracted component must expose a well-defined interface so alternative implementations can be swapped in; (2) 'Usable security' — secure defaults must be preserved through the extraction, with no security regressions; (3) 'Container centric' — all Moby components are themselves containers, ensuring consistent build and deployment."
           ]
         },
         {
-          "heading": "Risk Register",
+          "heading": "Governance and Transition Risks",
           "heading_level": 2,
           "required_content": [
-            "At least 4 identified risks",
-            "Each risk has a severity level (High/Medium/Low)",
-            "Each risk references specific PR facts",
-            "Mitigation strategies for each risk"
+            "References Fedora-inspired governance model",
+            "Identifies at least two transition risks with mitigations",
+            "References LICENSE change from docker/docker to moby/moby",
+            "References NOTICE document at github.com/moby/moby/blob/master/NOTICE"
           ],
           "paragraphs": [
-            "| Risk ID | Risk Description | Severity | PR Reference | Mitigation Strategy |",
-            "|---------|-----------------|----------|--------------|---------------------|",
-            "| R1 | Repository rename from docker/docker to moby/moby breaks build scripts and dependency references | High | PR changes the README and kicks off the process of breaking up the engine under Moby | Automated find-and-replace across all CI configs; dual-registry caching during transition |",
-            "| R2 | Component fragmentation leads to version incompatibility between independently released Moby components | High | As the Docker Engine continues to be split up into more components | Pin component versions in assemblies; maintain compatibility matrix; use the moby CLI tool assembly specifications |",
-            "| R3 | Loss of upstream community focus as contributions migrate from Docker to Moby | Medium | Docker is transitioning all of its open source collaborations to the Moby project going forward | Assign dedicated engineers to Moby project participation; monitor both old and new issue trackers |",
-            "| R4 | Increased operational complexity from managing multiple component lifecycles instead of one Docker release | Medium | Docker product will be assembled from components that are packaged by the Moby project | Invest in automation for component updates; maintain internal component registry with tested combinations |",
-            "| R5 | Confusion among engineering teams about the distinction between Docker the product and Moby the project | Low | PR explicitly states relationship: Docker is staying exactly the same from a user's perspective while Moby is the framework | Internal documentation and training sessions; clear naming conventions in internal tooling |"
+            "The README specifies that the Moby project will adopt 'an open, community-centric governance inspired by the Fedora project,' balancing community needs with the constraints of Docker, Inc. as the primary corporate sponsor. This model requires clear maintainer roles, transparent decision-making processes, and formal contribution guidelines.",
+            "**Risk 1 — Contributor Confusion**: The rename from docker/docker to moby/moby may confuse existing contributors. Mitigation: maintain prominent transition documentation in the README (as PR #32691 already does with the 'Transitioning to Moby' section), provide redirect links from old URLs, and run community outreach sessions during the transition period.",
+            "**Risk 2 — Fragmented Documentation**: As components are extracted into separate repositories, documentation may become scattered and inconsistent. Mitigation: establish a central Moby documentation hub at mobyproject.org, enforce documentation standards for all extracted components, and require that the moby CLI tool's help system remains a unified entry point.",
+            "Legal considerations must also be addressed. The LICENSE file path changes from github.com/docker/docker/blob/master/LICENSE to github.com/moby/moby/blob/master/LICENSE. The NOTICE document at github.com/moby/moby/blob/master/NOTICE must be updated to reflect the new project structure. Both documents are referenced in the README's Legal and Licensing sections and must remain accurate throughout the extraction."
           ]
         },
         {
-          "heading": "Recommendations",
+          "heading": "Success Criteria",
           "heading_level": 2,
           "required_content": [
-            "3-5 actionable recommendations",
-            "Each recommendation ties back to PR material",
-            "Appropriate for engineering leadership audience"
+            "References PR description statement about Docker remaining a user-facing product",
+            "Defines measurable completion criteria",
+            "Aligns with end-state vision of monolithic repo ceasing to exist"
           ],
           "paragraphs": [
-            "1. **Immediate Repository Reference Update**: All internal tooling, CI/CD configurations, and documentation referencing docker/docker should be updated to moby/moby within the next sprint. The PR confirms this rename is the first step in the transition and kicks off the process of breaking up the engine under Moby.",
-            "2. **Establish Moby Component Tracking**: Create an internal registry of Moby components and their version compatibility. Since Docker will eventually be assembled from components that are packaged by the Moby project, understanding the component dependency graph is essential for long-term platform stability.",
-            "3. **Prototype the Moby CLI Tool**: Allocate engineering time to evaluate the moby command-line tool for assembling container systems. The PR states it currently assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components. Early adoption will give us a competitive advantage in customizing our container platform.",
-            "4. **Participate in Moby Open Source**: As Docker is transitioning all of its open source collaborations to the Moby project going forward, we should redirect our upstream contributions to the Moby project. This ensures our patches and features are incorporated into the evolving component ecosystem.",
-            "5. **Dual-Track Testing Strategy**: Maintain testing against both the current Docker releases and emerging Moby component assemblies. Since the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components, we must validate our platform against both the legacy and future architectures during the transition period."
+            "The extraction is complete when the following criteria are met, aligned with the PR description's assurance that 'Docker is, and will remain, a open source product that lets you build, ship and run containers' from a user perspective:",
+            "1. **Monolith Elimination**: The moby/moby repository contains only the moby CLI assembler and metadata; all engine functionality lives in independently-buildable component repositories.",
+            "2. **User Experience Preservation**: Docker CE and Docker EE can be assembled from Moby components via the moby tool with zero user-visible behavioral changes — users can 'download Docker from the docker.com website' as before.",
+            "3. **Component Independence**: Each extracted component (container runtime, orchestration, networking, storage, security, build, image distribution, OS abstraction, infrastructure management) has its own CI pipeline, test suite, and release cycle.",
+            "4. **Assembly Verification**: The moby CLI tool successfully assembles a fully functional Docker binary from extracted components on at least three target platforms (Linux x86, Linux Arm, macOS/Windows executables), consistent with the README's description of building 'runnable artifacts for a variety of platforms and architectures.'",
+            "5. **Community Governance**: The Fedora-inspired governance model is operational, with documented maintainer roles, contribution guidelines, and a transparent decision-making process."
           ]
         }
       ],
-      "md_title": "Impact Assessment - Docker to Moby Transition",
+      "md_title": "Design Doc - Moby Component Extraction Plan",
       "input_attachments": [
         {
           "attachment_id": "att_0",
           "filename": "input_0.md",
           "format": "md",
-          "description": "PR #32691 diff and description from moby/moby repository: 'A new upstream project to break up Docker into independent components', merged 2017-04-20",
+          "description": "PR #32691 diff: full changes to README.md (additions +50, deletions -269) and addition of docs/static_files/moby-project-logo.png",
           "content_blueprint": {
-            "title": "PR #32691 diff and description from moby/moby repository: 'A new upstream project to break up Docker into independent components', merged 2017-04-20",
-            "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compa"
+            "title": "PR #32691 diff: full changes to README",
+            "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.\n \n-A common method for distributing applications and sandboxing their\n-execution is to use virtual machines, or VMs. Typical VM formats are\n-VMware's vmdk, Oracle VirtualBox's vdi, and Amazon EC2's ami. In theory\n-these formats should allow every developer to automatically package\n-their application into a \"machine\" for easy distribution and deployment.\n-In practice, that almost never happens, for a few reasons:\n+## Principles\n \n-  * *Size*: VMs are very large which makes them impractical to store\n-     and transfer.\n-  * *Performance*: running VMs consumes significant CPU and memory,\n-    which makes them impractical in many scenarios, for example local\n-    development of multi-tier applications, and large-scale deployment\n-    of cpu and memory-intensive applications on large numbers of\n-    machines.\n-  * *Portability*: competing VM environments don't play well with each\n-     other. Although conversion tools do exist, they are limited and\n-     add even more overhead.\n-  * *Hardware-centric*: VMs were designed with machine operators in\n-    mind, not software developers. As a result, they offer very\n-    limited tooling for what developers need most: building, testing\n-    and running their software. For example, VMs offer no facilities\n-    for application versioning, monitoring, configuration, logging or\n-    service discovery.\n+Moby is an open project guided by strong principles, but modular, flexible and without too strong an opinion on user experience, so it is open to the community to help set its direction.\n+The guiding principles are:\n \n-By contrast, Docker relies on a different sandboxing method known as\n-*containerization*. Unlike traditional virtualization, containerization\n-takes place at the kernel level. Most modern operating system kernels\n-now support the primitives necessary for containerization, including\n-Linux with [openvz](https://openvz.org),\n-[vserver](http://linux-vserver.org) and more recently\n-[lxc](https://linuxcontainers.org/), Solaris with\n-[zones](https://docs.oracle.com/cd/E26502_01/html/E29024/preface-1.html#scrolltoc),\n-and FreeBSD with\n-[Jails](https://www.freebsd.org/doc/handbook/jails.html).\n+- Batteries included but swappable: Moby includes enough components to build fully featured container system, but its modular architecture ensures that most of the components can be swapped by different implementations.\n+- Usable security: Moby will provide secure defaults without compromising usability.\n+- Container centric: Moby is built with containers, for running containers.\n \n-Docker builds on top of these low-level primitives to offer developers a\n-portable format and runtime environment that solves all four problems.\n-Docker containers are small (and their transfer can be optimized with\n-layers), they have basically zero memory and cpu overhead, they are\n-completely portable, and are designed from the ground up with an\n-application-centric design.\n+With Moby, you should be able to describe all the components of your distributed application, from the high-level configuration files down to the kernel you would like to use and build and deploy it easily.\n \n-Perhaps best of all, because Docker operates at the OS level, it can still be\n-run inside a VM!\n+Moby uses [containerd](https://github.com/containerd/containerd) as the default container runtime.\n \n-## Plays well with others\n+## Audience\n \n-Docker does not require you to buy into a particular programming\n-language, framework, packaging system, or configuration language.\n+Moby is recommended for anyone who wants to assemble a container-based system. This includes:\n \n-Is your application a Unix process? Does it use files, tcp connections,\n-environment variables, standard Unix streams and command-line arguments\n-as inputs and outputs? Then Docker can run it.\n+- Hackers who want to customize or patch their Docker build\n+- System engineers or integrators building a container system\n+- Infrastructure providers looking to adapt existing container systems to their environment\n+- Container enthusiasts who want to experiment with the latest container tech\n+- Open-source developers looking to test their project in a variety of different systems\n+- Anyone curious about Docker internals and how it’s built\n \n-Can your application's build be expressed as a sequence of such\n-commands? Then Docker can build it.\n+Moby is NOT recommended for:\n \n-## Escape dependency hell\n+- Application developers looking for an easy way to run their applications in containers. We recommend Docker CE instead.\n+- Enterprise IT and development teams looking for a ready-to-use, commercially supported container platform. We recommend Docker EE instead.\n+- Anyone curious about containers and looking for an easy way to learn. We recommend the docker.com website instead.\n \n-A common problem for developers is the difficulty of managing all\n-their application's dependencies in a simple and automated way.\n+# Transitioning to Moby\n \n-This is usually difficult for several reasons:\n+Docker is transitioning all of its open source collaborations to the Moby project going forward.\n+During the transition, all open source activity should continue as usual.\n \n-  * *Cross-platform dependencies*. Modern applications often depend on\n-    a combination of system libraries and binaries, language-specific\n-    packages, framework-specific modules, internal components\n-    developed for another project, etc. These dependencies live in\n-    different \"worlds\" and require different tools - these tools\n-    typically don't work well with each other, requiring awkward\n-    custom integrations.\n+We are proposing the following list of changes:\n \n-  * *Conflicting dependencies*. Different applications may depend on\n-    different versions of the same dependency. Packaging tools handle\n-    these situations with various degrees of ease - but they all\n-    handle them in different and incompatible ways, which again forces\n-    the developer to do extra work.\n+- splitting up the engine into more open components\n+- removing the docker UI, SDK etc to keep them in the Docker org\n+- clarifying that the project is not limited to the engine, but to the assembly of all the individual components of the Docker platform\n+- open-source new tools & components which we currently use to assemble the Docker product, but could benefit the community\n+- defining an open, community-centric governance inspired by the Fedora project (a very successful example of balancing the needs of the community with the constraints of the primary corporate sponsor)\n \n-  * *Custom dependencies*. A developer may need to prepare a custom\n-    version of their application's dependency. Some packaging systems\n-    can handle custom versions of a dependency, others can't - and all\n-    of them handle it differently.\n+-----\n \n-\n-Docker solves the problem of dependency hell by giving developers a simple\n-way to express *all* their application's dependencies in one place, while\n-streamlining the process of assembling them. If this makes you think of\n-[XKCD 927](https://xkcd.com/927/), don't worry. Docker doesn't\n-*replace* your favorite packaging systems. It simply orchestrates\n-their use in a simple and repeatable way. How does it do that? With\n-layers.\n-\n-Docker defines a build as running a sequence of Unix commands, one\n-after the other, in the same container. Build commands modify the\n-contents of the container (usually by installing new files on the\n-filesystem), the next command modifies it some more, etc. Since each\n-build command inherits the result of the previous commands, the\n-*order* in which the commands are executed expresses *dependencies*.\n-\n-Here's a typical Docker build process:\n-\n-```bash\n-FROM ubuntu:12.04\n-RUN apt-get update && apt-get install -y python python-pip curl\n-RUN curl -sSL https://github.com/shykes/helloflask/archive/master.tar.gz | tar -xzv\n-RUN cd helloflask-master && pip install -r requirements.txt\n-```\n-\n-Note that Docker doesn't care *how* dependencies are built - as long\n-as they can be built by running a Unix command in a container.\n-\n-\n-Getting started\n-===============\n-\n-Docker can be installed either on your computer for building applications or\n-on servers for running them. To get started, [check out the installation\n-instructions in the\n-documentation](https://docs.docker.com/engine/installation/).\n-\n-Usage examples\n-==============\n-\n-Docker can be used to run short-lived commands, long-running daemons\n-(app servers, databases, etc.), interactive shell sessions, etc.\n-\n-You can find a [list of real-world\n-examples](https://docs.docker.com/engine/examples/) in the\n-documentation.\n-\n-Under the hood\n---------------\n-\n-Under the hood, Docker is built on the following components:\n-\n-* The\n-  [cgroups](https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt)\n-  and\n-  [namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)\n-  capabilities of the Linux kernel\n-* The [Go](https://golang.org) programming language\n-* The [Docker Image Specification](https://github.com/docker/docker/blob/master/image/spec/v1.md)\n-* The [Libcontainer Specification](https://github.com/opencontainers/runc/blob/master/libcontainer/SPEC.md)\n-\n-Contributing to Docker [![GoDoc](https://godoc.org/github.com/docker/docker?status.svg)](https://godoc.org/github.com/docker/docker)\n-======================\n-\n-| **Master** (Linux) | **Experimental** (Linux) | **Windows** | **FreeBSD** |\n-|------------------|----------------------|---------|---------|\n-| [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/) | [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/) |\n-\n-Want to hack on Docker? Awesome! We have [instructions to help you get\n-started contributing code or documentation](https://docs.docker.com/opensource/project/who-written-for/).\n-\n-These instructions are probably not perfect, please let us know if anything\n-feels wrong or incomplete. Better yet, submit a PR and improve them yourself.\n-\n-Getting the development builds\n-==============================\n-\n-Want to run Docker from a master build? You can download\n-master builds at [master.dockerproject.org](https://master.dockerproject.org).\n-They are updated with each commit merged into the master branch.\n-\n-Don't know how to use that super cool new feature in the master build? Check\n-out the master docs at\n-[docs.master.dockerproject.org](http://docs.master.dockerproject.org).\n-\n-How the project is run\n-======================\n-\n-Docker is a very, very active project. If you want to learn more about how it is run,\n-or want to get more involved, the best place to start is [the project directory](https://github.com/docker/docker/tree/master/project).\n-\n-We are always open to suggestions on process improvements, and are always looking for more maintainers.\n-\n-### Talking to other Docker users and contributors\n-\n-<table class=\"tg\">\n-  <col width=\"45%\">\n-  <col width=\"65%\">\n-  <tr>\n-    <td>Internet&nbsp;Relay&nbsp;Chat&nbsp;(IRC)</td>\n-    <td>\n-      <p>\n-        IRC is a direct line to our most knowledgeable Docker users; we have\n-        both the  <code>#docker</code> and <code>#docker-dev</code> group on\n-        <strong>irc.freenode.net</strong>.\n-        IRC is a rich chat protocol but it can overwhelm new users. You can search\n-        <a href=\"https://botbot.me/freenode/docker/#\" target=\"_blank\">our chat archives</a>.\n-      </p>\n-      Read our <a href=\"https://docs.docker.com/opensource/get-help/#/irc-quickstart\" target=\"_blank\">IRC quickstart guide</a> for an easy way to get started.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Docker Community Forums</td>\n-    <td>\n-      The <a href=\"https://forums.docker.com/c/open-source-projects/de\" target=\"_blank\">Docker Engine</a>\n-      group is for users of the Docker Engine project.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Google Groups</td>\n-    <td>\n-      The <a href=\"https://groups.google.com/forum/#!forum/docker-dev\"\n-      target=\"_blank\">docker-dev</a> group is for contributors and other people\n-      contributing to the Docker project.  You can join this group without a\n-      Google account by sending an email to <a\n-      href=\"mailto:docker-dev+subscribe@googlegroups.com\">docker-dev+subscribe@googlegroups.com</a>.\n-      You'll receive a join-request message; simply reply to the message to\n-      confirm your subscription.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Twitter</td>\n-    <td>\n-      You can follow <a href=\"https://twitter.com/docker/\" target=\"_blank\">Docker's Twitter feed</a>\n-      to get updates on our products. You can also tweet us questions or just\n-      share blogs or stories.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Stack Overflow</td>\n-    <td>\n-      Stack Overflow has thousands of Docker questions listed. We regularly\n-      monitor <a href=\"https://stackoverflow.com/search?tab=newest&q=docker\" target=\"_blank\">Docker questions</a>\n-      and so do many other knowledgeable Docker users.\n-    </td>\n-  </tr>\n-</table>\n-\n-### Legal\n+Legal\n+=====\n \n *Brought to you courtesy of our legal counsel. For more context,\n-please see the [NOTICE](https://github.com/docker/docker/blob/master/NOTICE) document in this repo.*\n+please see the [NOTICE](https://github.com/moby/moby/blob/master/NOTICE) document in this repo.*\n \n-Use and transfer of Docker may be subject to certain restrictions by the\n+Use and transfer of Moby may be subject to certain restrictions by the\n United States and other governments.\n \n It is your responsibility to ensure that your use and/or transfer does not\n@@ -278,30 +83,6 @@ For more information, please see https://www.bis.doc.gov\n \n Licensing\n =========\n-Docker is licensed under the Apache License, Version 2.0. See\n-[LICENSE](https://github.com/docker/docker/blob/master/LICENSE) for the full\n+Moby is licensed under the Apache License, Version 2.0. See\n+[LICENSE](https://github.com/moby/moby/blob/master/LICENSE) for the full\n license text.\n-\n-Other Docker Related Projects\n-=============================\n-There are a number of projects under development that are based on Docker's\n-core technology. These projects expand the tooling built around the\n-Docker platform to broaden its application and utility.\n-\n-* [Docker Registry](https://github.com/docker/distribution): Registry\n-server for Docker (hosting/delivery of repositories and images)\n-* [Docker Machine](https://github.com/docker/machine): Machine management\n-for a container-centric world\n-* [Docker Swarm](https://github.com/docker/swarm): A Docker-native clustering\n-system\n-* [Docker Compose](https://github.com/docker/compose) (formerly Fig):\n-Define and run multi-container apps\n-* [Kitematic](https://github.com/docker/kitematic): The easiest way to use\n-Docker on Mac and Windows\n-\n-If you know of another project underway that should be listed here, please help\n-us keep this list up-to-date by submitting a PR.\n-\n-Awesome-Docker\n-==============\n-You can find more projects, tools and articles related to Docker on the [awesome-docker list](https://github.com/veggiemonk/awesome-docker). Add your project there.\ndiff --git a/docs/static_files/moby-project-logo.png b/docs/static_files/moby-project-logo.png\nnew file mode 100644\nindex 0000000000000..2914186efdd0d\nBinary files /dev/null and b/docs/static_files/moby-project-logo.png differ\n"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "PR #32691 description: motivation, scope, and transition plan for breaking Docker into modular components",
+          "content_blueprint": {
+            "title": "PR #32691 description: motivation, scope, and transition plan for breaking Docker into modular components",
+            "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.\n \n-A common method for distributing applications and sandboxing their\n-execution is to use virtual machines, or VMs. Typical VM formats are\n-VMware's vmdk, Oracle VirtualBox's vdi, and Amazon EC2's ami. In theory\n-these formats should allow every developer to automatically package\n-their application into a \"machine\" for easy distribution and deployment.\n-In practice, that almost never happens, for a few reasons:\n+## Principles\n \n-  * *Size*: VMs are very large which makes them impractical to store\n-     and transfer.\n-  * *Performance*: running VMs consumes significant CPU and memory,\n-    which makes them impractical in many scenarios, for example local\n-    development of multi-tier applications, and large-scale deployment\n-    of cpu and memory-intensive applications on large numbers of\n-    machines.\n-  * *Portability*: competing VM environments don't play well with each\n-     other. Although conversion tools do exist, they are limited and\n-     add even more overhead.\n-  * *Hardware-centric*: VMs were designed with machine operators in\n-    mind, not software developers. As a result, they offer very\n-    limited tooling for what developers need most: building, testing\n-    and running their software. For example, VMs offer no facilities\n-    for application versioning, monitoring, configuration, logging or\n-    service discovery.\n+Moby is an open project guided by strong principles, but modular, flexible and without too strong an opinion on user experience, so it is open to the community to help set its direction.\n+The guiding principles are:\n \n-By contrast, Docker relies on a different sandboxing method known as\n-*containerization*. Unlike traditional virtualization, containerization\n-takes place at the kernel level. Most modern operating system kernels\n-now support the primitives necessary for containerization, including\n-Linux with [openvz](https://openvz.org),\n-[vserver](http://linux-vserver.org) and more recently\n-[lxc](https://linuxcontainers.org/), Solaris with\n-[zones](https://docs.oracle.com/cd/E26502_01/html/E29024/preface-1.html#scrolltoc),\n-and FreeBSD with\n-[Jails](https://www.freebsd.org/doc/handbook/jails.html).\n+- Batteries included but swappable: Moby includes enough components to build fully featured container system, but its modular architecture ensures that most of the components can be swapped by different implementations.\n+- Usable security: Moby will provide secure defaults without compromising usability.\n+- Container centric: Moby is built with containers, for running containers.\n \n-Docker builds on top of these low-level primitives to offer developers a\n-portable format and runtime environment that solves all four problems.\n-Docker containers are small (and their transfer can be optimized with\n-layers), they have basically zero memory and cpu overhead, they are\n-completely portable, and are designed from the ground up with an\n-application-centric design.\n+With Moby, you should be able to describe all the components of your distributed application, from the high-level configuration files down to the kernel you would like to use and build and deploy it easily.\n \n-Perhaps best of all, because Docker operates at the OS level, it can still be\n-run inside a VM!\n+Moby uses [containerd](https://github.com/containerd/containerd) as the default container runtime.\n \n-## Plays well with others\n+## Audience\n \n-Docker does not require you to buy into a particular programming\n-language, framework, packaging system, or configuration language.\n+Moby is recommended for anyone who wants to assemble a container-based system. This includes:\n \n-Is your application a Unix process? Does it use files, tcp connections,\n-environment variables, standard Unix streams and command-line arguments\n-as inputs and outputs? Then Docker can run it.\n+- Hackers who want to customize or patch their Docker build\n+- System engineers or integrators building a container system\n+- Infrastructure providers looking to adapt existing container systems to their environment\n+- Container enthusiasts who want to experiment with the latest container tech\n+- Open-source developers looking to test their project in a variety of different systems\n+- Anyone curious about Docker internals and how it’s built\n \n-Can your application's build be expressed as a sequence of such\n-commands? Then Docker can build it.\n+Moby is NOT recommended for:\n \n-## Escape dependency hell\n+- Application developers looking for an easy way to run their applications in containers. We recommend Docker CE instead.\n+- Enterprise IT and development teams looking for a ready-to-use, commercially supported container platform. We recommend Docker EE instead.\n+- Anyone curious about containers and looking for an easy way to learn. We recommend the docker.com website instead.\n \n-A common problem for developers is the difficulty of managing all\n-their application's dependencies in a simple and automated way.\n+# Transitioning to Moby\n \n-This is usually difficult for several reasons:\n+Docker is transitioning all of its open source collaborations to the Moby project going forward.\n+During the transition, all open source activity should continue as usual.\n \n-  * *Cross-platform dependencies*. Modern applications often depend on\n-    a combination of system libraries and binaries, language-specific\n-    packages, framework-specific modules, internal components\n-    developed for another project, etc. These dependencies live in\n-    different \"worlds\" and require different tools - these tools\n-    typically don't work well with each other, requiring awkward\n-    custom integrations.\n+We are proposing the following list of changes:\n \n-  * *Conflicting dependencies*. Different applications may depend on\n-    different versions of the same dependency. Packaging tools handle\n-    these situations with various degrees of ease - but they all\n-    handle them in different and incompatible ways, which again forces\n-    the developer to do extra work.\n+- splitting up the engine into more open components\n+- removing the docker UI, SDK etc to keep them in the Docker org\n+- clarifying that the project is not limited to the engine, but to the assembly of all the individual components of the Docker platform\n+- open-source new tools & components which we currently use to assemble the Docker product, but could benefit the community\n+- defining an open, community-centric governance inspired by the Fedora project (a very successful example of balancing the needs of the community with the constraints of the primary corporate sponsor)\n \n-  * *Custom dependencies*. A developer may need to prepare a custom\n-    version of their application's dependency. Some packaging systems\n-    can handle custom versions of a dependency, others can't - and all\n-    of them handle it differently.\n+-----\n \n-\n-Docker solves the problem of dependency hell by giving developers a simple\n-way to express *all* their application's dependencies in one place, while\n-streamlining the process of assembling them. If this makes you think of\n-[XKCD 927](https://xkcd.com/927/), don't worry. Docker doesn't\n-*replace* your favorite packaging systems. It simply orchestrates\n-their use in a simple and repeatable way. How does it do that? With\n-layers.\n-\n-Docker defines a build as running a sequence of Unix commands, one\n-after the other, in the same container. Build commands modify the\n-contents of the container (usually by installing new files on the\n-filesystem), the next command modifies it some more, etc. Since each\n-build command inherits the result of the previous commands, the\n-*order* in which the commands are executed expresses *dependencies*.\n-\n-Here's a typical Docker build process:\n-\n-```bash\n-FROM ubuntu:12.04\n-RUN apt-get update && apt-get install -y python python-pip curl\n-RUN curl -sSL https://github.com/shykes/helloflask/archive/master.tar.gz | tar -xzv\n-RUN cd helloflask-master && pip install -r requirements.txt\n-```\n-\n-Note that Docker doesn't care *how* dependencies are built - as long\n-as they can be built by running a Unix command in a container.\n-\n-\n-Getting started\n-===============\n-\n-Docker can be installed either on your computer for building applications or\n-on servers for running them. To get started, [check out the installation\n-instructions in the\n-documentation](https://docs.docker.com/engine/installation/).\n-\n-Usage examples\n-==============\n-\n-Docker can be used to run short-lived commands, long-running daemons\n-(app servers, databases, etc.), interactive shell sessions, etc.\n-\n-You can find a [list of real-world\n-examples](https://docs.docker.com/engine/examples/) in the\n-documentation.\n-\n-Under the hood\n---------------\n-\n-Under the hood, Docker is built on the following components:\n-\n-* The\n-  [cgroups](https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt)\n-  and\n-  [namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)\n-  capabilities of the Linux kernel\n-* The [Go](https://golang.org) programming language\n-* The [Docker Image Specification](https://github.com/docker/docker/blob/master/image/spec/v1.md)\n-* The [Libcontainer Specification](https://github.com/opencontainers/runc/blob/master/libcontainer/SPEC.md)\n-\n-Contributing to Docker [![GoDoc](https://godoc.org/github.com/docker/docker?status.svg)](https://godoc.org/github.com/docker/docker)\n-======================\n-\n-| **Master** (Linux) | **Experimental** (Linux) | **Windows** | **FreeBSD** |\n-|------------------|----------------------|---------|---------|\n-| [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/) | [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/) |\n-\n-Want to hack on Docker? Awesome! We have [instructions to help you get\n-started contributing code or documentation](https://docs.docker.com/opensource/project/who-written-for/).\n-\n-These instructions are probably not perfect, please let us know if anything\n-feels wrong or incomplete. Better yet, submit a PR and improve them yourself.\n-\n-Getting the development builds\n-==============================\n-\n-Want to run Docker from a master build? You can download\n-master builds at [master.dockerproject.org](https://master.dockerproject.org).\n-They are updated with each commit merged into the master branch.\n-\n-Don't know how to use that super cool new feature in the master build? Check\n-out the master docs at\n-[docs.master.dockerproject.org](http://docs.master.dockerproject.org).\n-\n-How the project is run\n-======================\n-\n-Docker is a very, very active project. If you want to learn more about how it is run,\n-or want to get more involved, the best place to start is [the project directory](https://github.com/docker/docker/tree/master/project).\n-\n-We are always open to suggestions on process improvements, and are always looking for more maintainers.\n-\n-### Talking to other Docker users and contributors\n-\n-<table class=\"tg\">\n-  <col width=\"45%\">\n-  <col width=\"65%\">\n-  <tr>\n-    <td>Internet&nbsp;Relay&nbsp;Chat&nbsp;(IRC)</td>\n-    <td>\n-      <p>\n-        IRC is a direct line to our most knowledgeable Docker users; we have\n-        both the  <code>#docker</code> and <code>#docker-dev</code> group on\n-        <strong>irc.freenode.net</strong>.\n-        IRC is a rich chat protocol but it can overwhelm new users. You can search\n-        <a href=\"https://botbot.me/freenode/docker/#\" target=\"_blank\">our chat archives</a>.\n-      </p>\n-      Read our <a href=\"https://docs.docker.com/opensource/get-help/#/irc-quickstart\" target=\"_blank\">IRC quickstart guide</a> for an easy way to get started.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Docker Community Forums</td>\n-    <td>\n-      The <a href=\"https://forums.docker.com/c/open-source-projects/de\" target=\"_blank\">Docker Engine</a>\n-      group is for users of the Docker Engine project.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Google Groups</td>\n-    <td>\n-      The <a href=\"https://groups.google.com/forum/#!forum/docker-dev\"\n-      target=\"_blank\">docker-dev</a> group is for contributors and other people\n-      contributing to the Docker project.  You can join this group without a\n-      Google account by sending an email to <a\n-      href=\"mailto:docker-dev+subscribe@googlegroups.com\">docker-dev+subscribe@googlegroups.com</a>.\n-      You'll receive a join-request message; simply reply to the message to\n-      confirm your subscription.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Twitter</td>\n-    <td>\n-      You can follow <a href=\"https://twitter.com/docker/\" target=\"_blank\">Docker's Twitter feed</a>\n-      to get updates on our products. You can also tweet us questions or just\n-      share blogs or stories.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Stack Overflow</td>\n-    <td>\n-      Stack Overflow has thousands of Docker questions listed. We regularly\n-      monitor <a href=\"https://stackoverflow.com/search?tab=newest&q=docker\" target=\"_blank\">Docker questions</a>\n-      and so do many other knowledgeable Docker users.\n-    </td>\n-  </tr>\n-</table>\n-\n-### Legal\n+Legal\n+=====\n \n *Brought to you courtesy of our legal counsel. For more context,\n-please see the [NOTICE](https://github.com/docker/docker/blob/master/NOTICE) document in this repo.*\n+please see the [NOTICE](https://github.com/moby/moby/blob/master/NOTICE) document in this repo.*\n \n-Use and transfer of Docker may be subject to certain restrictions by the\n+Use and transfer of Moby may be subject to certain restrictions by the\n United States and other governments.\n \n It is your responsibility to ensure that your use and/or transfer does not\n@@ -278,30 +83,6 @@ For more information, please see https://www.bis.doc.gov\n \n Licensing\n =========\n-Docker is licensed under the Apache License, Version 2.0. See\n-[LICENSE](https://github.com/docker/docker/blob/master/LICENSE) for the full\n+Moby is licensed under the Apache License, Version 2.0. See\n+[LICENSE](https://github.com/moby/moby/blob/master/LICENSE) for the full\n license text.\n-\n-Other Docker Related Projects\n-=============================\n-There are a number of projects under development that are based on Docker's\n-core technology. These projects expand the tooling built around the\n-Docker platform to broaden its application and utility.\n-\n-* [Docker Registry](https://github.com/docker/distribution): Registry\n-server for Docker (hosting/delivery of repositories and images)\n-* [Docker Machine](https://github.com/docker/machine): Machine management\n-for a container-centric world\n-* [Docker Swarm](https://github.com/docker/swarm): A Docker-native clustering\n-system\n-* [Docker Compose](https://github.com/docker/compose) (formerly Fig):\n-Define and run multi-container apps\n-* [Kitematic](https://github.com/docker/kitematic): The easiest way to use\n-Docker on Mac and Windows\n-\n-If you know of another project underway that should be listed here, please help\n-us keep this list up-to-date by submitting a PR.\n-\n-Awesome-Docker\n-==============\n-You can find more projects, tools and articles related to Docker on the [awesome-docker list](https://github.com/veggiemonk/awesome-docker). Add your project there.\ndiff --git a/docs/static_files/moby-project-logo.png b/docs/static_files/moby-project-logo.png\nnew file mode 100644\nindex 0000000000000..2914186efdd0d\nBinary files /dev/null and b/docs/static_files/moby-project-logo.png differ\n"
           }
         }
       ],
       "expected_values": [
         {
-          "description": "Document title is exactly 'Impact Assessment - Docker to Moby Transition'",
-          "value": "Impact Assessment - Docker to Moby Transition",
+          "description": "Document title is exactly 'Design Doc - Moby Component Extraction Plan'",
+          "value": "Design Doc - Moby Component Extraction Plan",
           "tolerance": null,
-          "location": "Markdown title heading"
+          "location": "Document title (H1 heading)"
         },
         {
-          "description": "PR number 32691 referenced in the document",
-          "value": "32691",
-          "tolerance": null,
-          "location": "Executive Summary section"
-        },
-        {
-          "description": "Repository rename from docker/docker to moby/moby mentioned",
-          "value": "moby/moby",
-          "tolerance": null,
-          "location": "Multiple sections"
-        },
-        {
-          "description": "Quote about Docker unchanged from user perspective",
-          "value": "staying exactly the same from a user's perspective",
+          "description": "PR number #32691 is referenced in the document",
+          "value": "#32691",
           "tolerance": null,
           "location": "Executive Summary section"
         },
         {
-          "description": "Moby described as Lego set of components",
+          "description": "Moby project website URL is referenced",
+          "value": "http://mobyproject.org",
+          "tolerance": null,
+          "location": "Executive Summary section"
+        },
+        {
+          "description": "The phrase 'monolithic docker repo eventually ceases to exist' or equivalent end-state vision is stated",
+          "value": "monolithic docker repo ceases to exist",
+          "tolerance": null,
+          "location": "Executive Summary section"
+        },
+        {
+          "description": "Moby is described as a 'Lego set' of components",
           "value": "Lego set",
           "tolerance": null,
           "location": "Executive Summary section"
         },
         {
-          "description": "runc mentioned as prior componentization example",
+          "description": "runc is mentioned as a prior extraction example",
           "value": "runc",
           "tolerance": null,
-          "location": "Technical Background section"
+          "location": "Motivation and Background section"
         },
         {
-          "description": "containerd mentioned as prior componentization example",
+          "description": "containerd is mentioned as a prior extraction and CNCF donation",
           "value": "containerd",
           "tolerance": null,
-          "location": "Technical Background section"
+          "location": "Motivation and Background section"
         },
         {
-          "description": "CNCF donation of containerd mentioned",
+          "description": "CNCF donation of containerd is mentioned",
           "value": "CNCF",
           "tolerance": null,
-          "location": "Technical Background section"
+          "location": "Motivation and Background section"
         },
         {
-          "description": "Moby CLI tool mentioned as assembly mechanism",
-          "value": "moby",
+          "description": "PR #32691 diff statistics are referenced: +50 additions, -269 deletions",
+          "value": "+50 additions, -269 deletions",
           "tolerance": null,
-          "location": "Technical Background and Migration Strategy sections"
+          "location": "Motivation and Background section"
         },
         {
-          "description": "Three impact areas explicitly addressed",
-          "value": "runtime dependencies, CI/CD pipelines, orchestration",
+          "description": "New logo file path docs/static_files/moby-project-logo.png is mentioned",
+          "value": "docs/static_files/moby-project-logo.png",
           "tolerance": null,
-          "location": "Impact Analysis section"
+          "location": "Motivation and Background section"
         },
         {
-          "description": "Phase 1 name Assessment with weeks 1-4 timeline",
-          "value": "Assessment (Weeks 1-4)",
+          "description": "First proposed change: splitting up the engine into more open components",
+          "value": "splitting up the engine into more open components",
           "tolerance": null,
-          "location": "Migration Strategy section"
+          "location": "Motivation and Background - five proposed changes"
         },
         {
-          "description": "Phase 2 name Adaptation with weeks 5-12 timeline",
-          "value": "Adaptation (Weeks 5-12)",
+          "description": "Second proposed change: removing the docker UI, SDK etc to keep them in the Docker org",
+          "value": "removing the docker UI, SDK etc to keep them in the Docker org",
           "tolerance": null,
-          "location": "Migration Strategy section"
+          "location": "Motivation and Background - five proposed changes"
         },
         {
-          "description": "Phase 3 name Optimization with weeks 13-24 timeline",
-          "value": "Optimization (Weeks 13-24)",
+          "description": "Third proposed change: clarifying project scope to assembly of all components",
+          "value": "clarifying that the project is not limited to the engine",
           "tolerance": null,
-          "location": "Migration Strategy section"
+          "location": "Motivation and Background - five proposed changes"
         },
         {
-          "description": "At least 4 risks identified in Risk Register",
-          "value": "R1, R2, R3, R4",
+          "description": "Fourth proposed change: open-sourcing new tools and components",
+          "value": "open-source new tools & components",
           "tolerance": null,
-          "location": "Risk Register table"
+          "location": "Motivation and Background - five proposed changes"
         },
         {
-          "description": "Risk R1 severity level High",
-          "value": "High",
+          "description": "Fifth proposed change: governance inspired by Fedora project",
+          "value": "governance inspired by the Fedora project",
           "tolerance": null,
-          "location": "Risk Register table row R1"
+          "location": "Motivation and Background - five proposed changes"
         },
         {
-          "description": "Risk R2 references component splitting from PR",
-          "value": "split up into more components",
+          "description": "Target audience IS group 1: hackers who want to customize or patch their Docker build",
+          "value": "hackers who want to customize or patch their Docker build",
           "tolerance": null,
-          "location": "Risk Register table row R2"
+          "location": "Target Audience Analysis section"
         },
         {
-          "description": "Five recommendations listed in Recommendations section",
-          "value": "5",
+          "description": "Target audience IS group 2: system engineers or integrators building a container system",
+          "value": "system engineers or integrators building a container system",
           "tolerance": null,
-          "location": "Recommendations section"
+          "location": "Target Audience Analysis section"
         },
         {
-          "description": "Bare metal architectures x86 and Arm mentioned",
-          "value": "x86 and Arm",
+          "description": "Target audience NOT group 1: application developers (recommended Docker CE)",
+          "value": "application developers looking for an easy way to run applications in containers",
           "tolerance": null,
-          "location": "Migration Strategy Phase 3 and Impact Analysis"
+          "location": "Target Audience Analysis section"
         },
         {
-          "description": "Docker API surface stability discussed",
-          "value": "Docker API",
+          "description": "Target audience NOT group 2: enterprise IT teams (recommended Docker EE)",
+          "value": "enterprise IT and development teams looking for a ready-to-use, commercially supported container platform",
           "tolerance": null,
-          "location": "Impact Analysis Container Orchestration subsection"
+          "location": "Target Audience Analysis section"
         },
         {
-          "description": "OCI-compatible container reference included",
-          "value": "OCI-compatible container",
+          "description": "Target audience NOT group 3: anyone curious about containers (recommended docker.com)",
+          "value": "anyone curious about containers and looking for an easy way to learn",
           "tolerance": null,
-          "location": "Technical Background section"
+          "location": "Target Audience Analysis section"
         },
         {
-          "description": "Code block present in the document",
-          "value": "code block",
+          "description": "Component category 'container runtime' is named in extraction architecture",
+          "value": "container runtime",
           "tolerance": null,
-          "location": "At least one code block in the document"
+          "location": "Component Extraction Architecture section"
         },
         {
-          "description": "dotCloud reference from Docker history included",
-          "value": "dotCloud",
+          "description": "Component category 'orchestration' is named in extraction architecture",
+          "value": "orchestration",
           "tolerance": null,
-          "location": "Technical Background section"
+          "location": "Component Extraction Architecture section"
         },
         {
-          "description": "mobyproject.org website URL referenced",
-          "value": "mobyproject.org",
+          "description": "Component category 'networking' is named in extraction architecture",
+          "value": "networking",
           "tolerance": null,
-          "location": "Technical Background or Recommendations section"
+          "location": "Component Extraction Architecture section"
         },
         {
-          "description": "PR merge date 2017-04-20 context present",
-          "value": "2017-04-20",
+          "description": "Component category 'storage' is named in extraction architecture",
+          "value": "storage",
           "tolerance": null,
-          "location": "Implicit context from PR material"
+          "location": "Component Extraction Architecture section"
         },
         {
-          "description": "VM images for cloud providers mentioned as assembly target",
-          "value": "VM images",
+          "description": "Component category 'security' is named in extraction architecture",
+          "value": "security",
           "tolerance": null,
-          "location": "Impact Analysis or Migration Strategy section"
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Component category 'build' is named in extraction architecture",
+          "value": "build",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Component category 'image distribution' is named in extraction architecture",
+          "value": "image distribution",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Component category 'OS' is named in extraction architecture",
+          "value": "OS",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Component category 'infrastructure management' is named in extraction architecture",
+          "value": "infrastructure management",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "moby CLI tool is described as assembling components",
+          "value": "moby CLI tool",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Guiding principle 'batteries included but swappable' is addressed",
+          "value": "Batteries included but swappable",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Guiding principle 'usable security' is addressed",
+          "value": "usable security",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Guiding principle 'container centric' is addressed",
+          "value": "container centric",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "At least three phases are proposed for extraction",
+          "value": "3 phases",
+          "tolerance": null,
+          "location": "Component Extraction Architecture section"
+        },
+        {
+          "description": "Fedora project governance inspiration is referenced",
+          "value": "Fedora project",
+          "tolerance": null,
+          "location": "Governance and Transition Risks section"
+        },
+        {
+          "description": "At least two transition risks are identified",
+          "value": "2 risks",
+          "tolerance": null,
+          "location": "Governance and Transition Risks section"
+        },
+        {
+          "description": "LICENSE path change from docker/docker to moby/moby is referenced",
+          "value": "github.com/moby/moby/blob/master/LICENSE",
+          "tolerance": null,
+          "location": "Governance and Transition Risks section"
+        },
+        {
+          "description": "NOTICE document path github.com/moby/moby/blob/master/NOTICE is referenced",
+          "value": "github.com/moby/moby/blob/master/NOTICE",
+          "tolerance": null,
+          "location": "Governance and Transition Risks section"
+        },
+        {
+          "description": "PR description quote about Docker remaining a user-facing product is referenced in Success Criteria",
+          "value": "Docker is, and will remain, a open source product that lets you build, ship and run containers",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "Success criterion about monolith elimination is defined",
+          "value": "monolith elimination",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "Success criterion about user experience preservation is defined",
+          "value": "User Experience Preservation",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "Success criterion about component independence is defined",
+          "value": "Component Independence",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "Success criterion about assembly verification on multiple platforms is defined",
+          "value": "Assembly Verification",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "Success criterion about community governance is defined",
+          "value": "Community Governance",
+          "tolerance": null,
+          "location": "Success Criteria section"
+        },
+        {
+          "description": "OCI compatibility is mentioned in the context of component extraction",
+          "value": "OCI-compatible",
+          "tolerance": null,
+          "location": "Component Extraction Architecture - Phase 1"
         }
       ],
       "narrative_prompt": null,
@@ -897,18 +1350,29 @@
       "attachment_id": "att_0",
       "filename": "input_0.md",
       "format": "md",
-      "description": "PR #32691 diff and description from moby/moby repository: 'A new upstream project to break up Docker into independent components', merged 2017-04-20",
+      "description": "PR #32691 diff: full changes to README.md (additions +50, deletions -269) and addition of docs/static_files/moby-project-logo.png",
       "content_blueprint": {
-        "title": "PR #32691 diff and description from moby/moby repository: 'A new upstream project to break up Docker into independent components', merged 2017-04-20",
-        "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff (first 3000 chars)\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compa"
+        "title": "PR #32691 diff: full changes to README",
+        "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.\n \n-A common method for distributing applications and sandboxing their\n-execution is to use virtual machines, or VMs. Typical VM formats are\n-VMware's vmdk, Oracle VirtualBox's vdi, and Amazon EC2's ami. In theory\n-these formats should allow every developer to automatically package\n-their application into a \"machine\" for easy distribution and deployment.\n-In practice, that almost never happens, for a few reasons:\n+## Principles\n \n-  * *Size*: VMs are very large which makes them impractical to store\n-     and transfer.\n-  * *Performance*: running VMs consumes significant CPU and memory,\n-    which makes them impractical in many scenarios, for example local\n-    development of multi-tier applications, and large-scale deployment\n-    of cpu and memory-intensive applications on large numbers of\n-    machines.\n-  * *Portability*: competing VM environments don't play well with each\n-     other. Although conversion tools do exist, they are limited and\n-     add even more overhead.\n-  * *Hardware-centric*: VMs were designed with machine operators in\n-    mind, not software developers. As a result, they offer very\n-    limited tooling for what developers need most: building, testing\n-    and running their software. For example, VMs offer no facilities\n-    for application versioning, monitoring, configuration, logging or\n-    service discovery.\n+Moby is an open project guided by strong principles, but modular, flexible and without too strong an opinion on user experience, so it is open to the community to help set its direction.\n+The guiding principles are:\n \n-By contrast, Docker relies on a different sandboxing method known as\n-*containerization*. Unlike traditional virtualization, containerization\n-takes place at the kernel level. Most modern operating system kernels\n-now support the primitives necessary for containerization, including\n-Linux with [openvz](https://openvz.org),\n-[vserver](http://linux-vserver.org) and more recently\n-[lxc](https://linuxcontainers.org/), Solaris with\n-[zones](https://docs.oracle.com/cd/E26502_01/html/E29024/preface-1.html#scrolltoc),\n-and FreeBSD with\n-[Jails](https://www.freebsd.org/doc/handbook/jails.html).\n+- Batteries included but swappable: Moby includes enough components to build fully featured container system, but its modular architecture ensures that most of the components can be swapped by different implementations.\n+- Usable security: Moby will provide secure defaults without compromising usability.\n+- Container centric: Moby is built with containers, for running containers.\n \n-Docker builds on top of these low-level primitives to offer developers a\n-portable format and runtime environment that solves all four problems.\n-Docker containers are small (and their transfer can be optimized with\n-layers), they have basically zero memory and cpu overhead, they are\n-completely portable, and are designed from the ground up with an\n-application-centric design.\n+With Moby, you should be able to describe all the components of your distributed application, from the high-level configuration files down to the kernel you would like to use and build and deploy it easily.\n \n-Perhaps best of all, because Docker operates at the OS level, it can still be\n-run inside a VM!\n+Moby uses [containerd](https://github.com/containerd/containerd) as the default container runtime.\n \n-## Plays well with others\n+## Audience\n \n-Docker does not require you to buy into a particular programming\n-language, framework, packaging system, or configuration language.\n+Moby is recommended for anyone who wants to assemble a container-based system. This includes:\n \n-Is your application a Unix process? Does it use files, tcp connections,\n-environment variables, standard Unix streams and command-line arguments\n-as inputs and outputs? Then Docker can run it.\n+- Hackers who want to customize or patch their Docker build\n+- System engineers or integrators building a container system\n+- Infrastructure providers looking to adapt existing container systems to their environment\n+- Container enthusiasts who want to experiment with the latest container tech\n+- Open-source developers looking to test their project in a variety of different systems\n+- Anyone curious about Docker internals and how it’s built\n \n-Can your application's build be expressed as a sequence of such\n-commands? Then Docker can build it.\n+Moby is NOT recommended for:\n \n-## Escape dependency hell\n+- Application developers looking for an easy way to run their applications in containers. We recommend Docker CE instead.\n+- Enterprise IT and development teams looking for a ready-to-use, commercially supported container platform. We recommend Docker EE instead.\n+- Anyone curious about containers and looking for an easy way to learn. We recommend the docker.com website instead.\n \n-A common problem for developers is the difficulty of managing all\n-their application's dependencies in a simple and automated way.\n+# Transitioning to Moby\n \n-This is usually difficult for several reasons:\n+Docker is transitioning all of its open source collaborations to the Moby project going forward.\n+During the transition, all open source activity should continue as usual.\n \n-  * *Cross-platform dependencies*. Modern applications often depend on\n-    a combination of system libraries and binaries, language-specific\n-    packages, framework-specific modules, internal components\n-    developed for another project, etc. These dependencies live in\n-    different \"worlds\" and require different tools - these tools\n-    typically don't work well with each other, requiring awkward\n-    custom integrations.\n+We are proposing the following list of changes:\n \n-  * *Conflicting dependencies*. Different applications may depend on\n-    different versions of the same dependency. Packaging tools handle\n-    these situations with various degrees of ease - but they all\n-    handle them in different and incompatible ways, which again forces\n-    the developer to do extra work.\n+- splitting up the engine into more open components\n+- removing the docker UI, SDK etc to keep them in the Docker org\n+- clarifying that the project is not limited to the engine, but to the assembly of all the individual components of the Docker platform\n+- open-source new tools & components which we currently use to assemble the Docker product, but could benefit the community\n+- defining an open, community-centric governance inspired by the Fedora project (a very successful example of balancing the needs of the community with the constraints of the primary corporate sponsor)\n \n-  * *Custom dependencies*. A developer may need to prepare a custom\n-    version of their application's dependency. Some packaging systems\n-    can handle custom versions of a dependency, others can't - and all\n-    of them handle it differently.\n+-----\n \n-\n-Docker solves the problem of dependency hell by giving developers a simple\n-way to express *all* their application's dependencies in one place, while\n-streamlining the process of assembling them. If this makes you think of\n-[XKCD 927](https://xkcd.com/927/), don't worry. Docker doesn't\n-*replace* your favorite packaging systems. It simply orchestrates\n-their use in a simple and repeatable way. How does it do that? With\n-layers.\n-\n-Docker defines a build as running a sequence of Unix commands, one\n-after the other, in the same container. Build commands modify the\n-contents of the container (usually by installing new files on the\n-filesystem), the next command modifies it some more, etc. Since each\n-build command inherits the result of the previous commands, the\n-*order* in which the commands are executed expresses *dependencies*.\n-\n-Here's a typical Docker build process:\n-\n-```bash\n-FROM ubuntu:12.04\n-RUN apt-get update && apt-get install -y python python-pip curl\n-RUN curl -sSL https://github.com/shykes/helloflask/archive/master.tar.gz | tar -xzv\n-RUN cd helloflask-master && pip install -r requirements.txt\n-```\n-\n-Note that Docker doesn't care *how* dependencies are built - as long\n-as they can be built by running a Unix command in a container.\n-\n-\n-Getting started\n-===============\n-\n-Docker can be installed either on your computer for building applications or\n-on servers for running them. To get started, [check out the installation\n-instructions in the\n-documentation](https://docs.docker.com/engine/installation/).\n-\n-Usage examples\n-==============\n-\n-Docker can be used to run short-lived commands, long-running daemons\n-(app servers, databases, etc.), interactive shell sessions, etc.\n-\n-You can find a [list of real-world\n-examples](https://docs.docker.com/engine/examples/) in the\n-documentation.\n-\n-Under the hood\n---------------\n-\n-Under the hood, Docker is built on the following components:\n-\n-* The\n-  [cgroups](https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt)\n-  and\n-  [namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)\n-  capabilities of the Linux kernel\n-* The [Go](https://golang.org) programming language\n-* The [Docker Image Specification](https://github.com/docker/docker/blob/master/image/spec/v1.md)\n-* The [Libcontainer Specification](https://github.com/opencontainers/runc/blob/master/libcontainer/SPEC.md)\n-\n-Contributing to Docker [![GoDoc](https://godoc.org/github.com/docker/docker?status.svg)](https://godoc.org/github.com/docker/docker)\n-======================\n-\n-| **Master** (Linux) | **Experimental** (Linux) | **Windows** | **FreeBSD** |\n-|------------------|----------------------|---------|---------|\n-| [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/) | [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/) |\n-\n-Want to hack on Docker? Awesome! We have [instructions to help you get\n-started contributing code or documentation](https://docs.docker.com/opensource/project/who-written-for/).\n-\n-These instructions are probably not perfect, please let us know if anything\n-feels wrong or incomplete. Better yet, submit a PR and improve them yourself.\n-\n-Getting the development builds\n-==============================\n-\n-Want to run Docker from a master build? You can download\n-master builds at [master.dockerproject.org](https://master.dockerproject.org).\n-They are updated with each commit merged into the master branch.\n-\n-Don't know how to use that super cool new feature in the master build? Check\n-out the master docs at\n-[docs.master.dockerproject.org](http://docs.master.dockerproject.org).\n-\n-How the project is run\n-======================\n-\n-Docker is a very, very active project. If you want to learn more about how it is run,\n-or want to get more involved, the best place to start is [the project directory](https://github.com/docker/docker/tree/master/project).\n-\n-We are always open to suggestions on process improvements, and are always looking for more maintainers.\n-\n-### Talking to other Docker users and contributors\n-\n-<table class=\"tg\">\n-  <col width=\"45%\">\n-  <col width=\"65%\">\n-  <tr>\n-    <td>Internet&nbsp;Relay&nbsp;Chat&nbsp;(IRC)</td>\n-    <td>\n-      <p>\n-        IRC is a direct line to our most knowledgeable Docker users; we have\n-        both the  <code>#docker</code> and <code>#docker-dev</code> group on\n-        <strong>irc.freenode.net</strong>.\n-        IRC is a rich chat protocol but it can overwhelm new users. You can search\n-        <a href=\"https://botbot.me/freenode/docker/#\" target=\"_blank\">our chat archives</a>.\n-      </p>\n-      Read our <a href=\"https://docs.docker.com/opensource/get-help/#/irc-quickstart\" target=\"_blank\">IRC quickstart guide</a> for an easy way to get started.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Docker Community Forums</td>\n-    <td>\n-      The <a href=\"https://forums.docker.com/c/open-source-projects/de\" target=\"_blank\">Docker Engine</a>\n-      group is for users of the Docker Engine project.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Google Groups</td>\n-    <td>\n-      The <a href=\"https://groups.google.com/forum/#!forum/docker-dev\"\n-      target=\"_blank\">docker-dev</a> group is for contributors and other people\n-      contributing to the Docker project.  You can join this group without a\n-      Google account by sending an email to <a\n-      href=\"mailto:docker-dev+subscribe@googlegroups.com\">docker-dev+subscribe@googlegroups.com</a>.\n-      You'll receive a join-request message; simply reply to the message to\n-      confirm your subscription.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Twitter</td>\n-    <td>\n-      You can follow <a href=\"https://twitter.com/docker/\" target=\"_blank\">Docker's Twitter feed</a>\n-      to get updates on our products. You can also tweet us questions or just\n-      share blogs or stories.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Stack Overflow</td>\n-    <td>\n-      Stack Overflow has thousands of Docker questions listed. We regularly\n-      monitor <a href=\"https://stackoverflow.com/search?tab=newest&q=docker\" target=\"_blank\">Docker questions</a>\n-      and so do many other knowledgeable Docker users.\n-    </td>\n-  </tr>\n-</table>\n-\n-### Legal\n+Legal\n+=====\n \n *Brought to you courtesy of our legal counsel. For more context,\n-please see the [NOTICE](https://github.com/docker/docker/blob/master/NOTICE) document in this repo.*\n+please see the [NOTICE](https://github.com/moby/moby/blob/master/NOTICE) document in this repo.*\n \n-Use and transfer of Docker may be subject to certain restrictions by the\n+Use and transfer of Moby may be subject to certain restrictions by the\n United States and other governments.\n \n It is your responsibility to ensure that your use and/or transfer does not\n@@ -278,30 +83,6 @@ For more information, please see https://www.bis.doc.gov\n \n Licensing\n =========\n-Docker is licensed under the Apache License, Version 2.0. See\n-[LICENSE](https://github.com/docker/docker/blob/master/LICENSE) for the full\n+Moby is licensed under the Apache License, Version 2.0. See\n+[LICENSE](https://github.com/moby/moby/blob/master/LICENSE) for the full\n license text.\n-\n-Other Docker Related Projects\n-=============================\n-There are a number of projects under development that are based on Docker's\n-core technology. These projects expand the tooling built around the\n-Docker platform to broaden its application and utility.\n-\n-* [Docker Registry](https://github.com/docker/distribution): Registry\n-server for Docker (hosting/delivery of repositories and images)\n-* [Docker Machine](https://github.com/docker/machine): Machine management\n-for a container-centric world\n-* [Docker Swarm](https://github.com/docker/swarm): A Docker-native clustering\n-system\n-* [Docker Compose](https://github.com/docker/compose) (formerly Fig):\n-Define and run multi-container apps\n-* [Kitematic](https://github.com/docker/kitematic): The easiest way to use\n-Docker on Mac and Windows\n-\n-If you know of another project underway that should be listed here, please help\n-us keep this list up-to-date by submitting a PR.\n-\n-Awesome-Docker\n-==============\n-You can find more projects, tools and articles related to Docker on the [awesome-docker list](https://github.com/veggiemonk/awesome-docker). Add your project there.\ndiff --git a/docs/static_files/moby-project-logo.png b/docs/static_files/moby-project-logo.png\nnew file mode 100644\nindex 0000000000000..2914186efdd0d\nBinary files /dev/null and b/docs/static_files/moby-project-logo.png differ\n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "PR #32691 description: motivation, scope, and transition plan for breaking Docker into modular components",
+      "content_blueprint": {
+        "title": "PR #32691 description: motivation, scope, and transition plan for breaking Docker into modular components",
+        "body": "# Seed Material: moby/moby#32691: A new upstream project to break up Docker into independent components\nSource: github_issue_pr\nIdentifier: pr:moby/moby#32691\n\nRepository: moby/moby\nPR Number: #32691\nPR Title: A new upstream project to break up Docker into independent components\nMerged At: 2017-04-20T22:32:33Z\nChanged Files: 2\nAdditions: +50, Deletions: -269\n\n## PR Description\nWork has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF. We are now completing this work with the goal being that the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components.\r\n\r\nDocker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user’s perspective. Users can download Docker from the docker.com website.\r\n\r\nMoby is a project which provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas. You can learn more at http://mobyproject.org\r\n\r\nDocker the product will be assembled from components that are packaged by the Moby project.\r\n\r\nThe Moby project provides a command-line tool called moby which assembles components. Currently it assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects.\r\n\r\nAs the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found.\r\n\r\nDocker is transitioning all of its open source collaborations to the Moby project going forward.\r\nDuring the transition, all open source activity should continue as usual.\r\n\r\nThis pull request changes the README and kicks off the process of breaking up the engine under Moby. Again: if you are a Docker user, nothing changes.\r\n\n\n## Diff\ndiff --git a/README.md b/README.md\nindex c4b9e74014422..5317b88090a8c 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,273 +1,78 @@\n-**Docker is transitioning to the Moby Project. [Click here for more information](https://github.com/moby/moby/pull/32691)**\n----------------\n+### Docker maintainers and contributors, see [Transitioning to Moby](#transitioning-to-moby) for more details\n \n-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)\n-============================\n+The Moby Project\n+================\n \n-Docker is an open source project to pack, ship and run any application\n-as a lightweight container.\n+![Moby Project logo](docs/static_files/moby-project-logo.png \"The Moby Project\")\n \n-Docker containers are both *hardware-agnostic* and *platform-agnostic*.\n-This means they can run anywhere, from your laptop to the largest\n-cloud compute instance and everything in between - and they don't require\n-you to use a particular language, framework or packaging system. That\n-makes them great building blocks for deploying and scaling web apps,\n-databases, and backend services without depending on a particular stack\n-or provider.\n+Moby is an open-source project created by Docker to advance the software containerization movement.\n+It provides a “Lego set” of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas.\n \n-Docker began as an open-source implementation of the deployment engine which\n-powered [dotCloud](http://web.archive.org/web/20130530031104/https://www.dotcloud.com/),\n-a popular Platform-as-a-Service. It benefits directly from the experience\n-accumulated over several years of large-scale operation and support of hundreds\n-of thousands of applications and databases.\n+# Moby\n \n-![Docker logo](docs/static_files/docker-logo-compressed.png \"Docker\")\n+## Overview\n \n-## Security Disclosure\n+At the core of Moby is a framework to assemble specialized container systems.\n+It provides:\n \n-Security is very important to us. If you have any issue regarding security,\n-please disclose the information responsibly by sending an email to\n-security@docker.com and not by creating a GitHub issue.\n+- A library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, etc.\n+- Tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.\n+- A set of reference assemblies which can be used as-is, modified, or used as inspiration to create your own.\n \n-## Better than VMs\n+All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.\n \n-A common method for distributing applications and sandboxing their\n-execution is to use virtual machines, or VMs. Typical VM formats are\n-VMware's vmdk, Oracle VirtualBox's vdi, and Amazon EC2's ami. In theory\n-these formats should allow every developer to automatically package\n-their application into a \"machine\" for easy distribution and deployment.\n-In practice, that almost never happens, for a few reasons:\n+## Principles\n \n-  * *Size*: VMs are very large which makes them impractical to store\n-     and transfer.\n-  * *Performance*: running VMs consumes significant CPU and memory,\n-    which makes them impractical in many scenarios, for example local\n-    development of multi-tier applications, and large-scale deployment\n-    of cpu and memory-intensive applications on large numbers of\n-    machines.\n-  * *Portability*: competing VM environments don't play well with each\n-     other. Although conversion tools do exist, they are limited and\n-     add even more overhead.\n-  * *Hardware-centric*: VMs were designed with machine operators in\n-    mind, not software developers. As a result, they offer very\n-    limited tooling for what developers need most: building, testing\n-    and running their software. For example, VMs offer no facilities\n-    for application versioning, monitoring, configuration, logging or\n-    service discovery.\n+Moby is an open project guided by strong principles, but modular, flexible and without too strong an opinion on user experience, so it is open to the community to help set its direction.\n+The guiding principles are:\n \n-By contrast, Docker relies on a different sandboxing method known as\n-*containerization*. Unlike traditional virtualization, containerization\n-takes place at the kernel level. Most modern operating system kernels\n-now support the primitives necessary for containerization, including\n-Linux with [openvz](https://openvz.org),\n-[vserver](http://linux-vserver.org) and more recently\n-[lxc](https://linuxcontainers.org/), Solaris with\n-[zones](https://docs.oracle.com/cd/E26502_01/html/E29024/preface-1.html#scrolltoc),\n-and FreeBSD with\n-[Jails](https://www.freebsd.org/doc/handbook/jails.html).\n+- Batteries included but swappable: Moby includes enough components to build fully featured container system, but its modular architecture ensures that most of the components can be swapped by different implementations.\n+- Usable security: Moby will provide secure defaults without compromising usability.\n+- Container centric: Moby is built with containers, for running containers.\n \n-Docker builds on top of these low-level primitives to offer developers a\n-portable format and runtime environment that solves all four problems.\n-Docker containers are small (and their transfer can be optimized with\n-layers), they have basically zero memory and cpu overhead, they are\n-completely portable, and are designed from the ground up with an\n-application-centric design.\n+With Moby, you should be able to describe all the components of your distributed application, from the high-level configuration files down to the kernel you would like to use and build and deploy it easily.\n \n-Perhaps best of all, because Docker operates at the OS level, it can still be\n-run inside a VM!\n+Moby uses [containerd](https://github.com/containerd/containerd) as the default container runtime.\n \n-## Plays well with others\n+## Audience\n \n-Docker does not require you to buy into a particular programming\n-language, framework, packaging system, or configuration language.\n+Moby is recommended for anyone who wants to assemble a container-based system. This includes:\n \n-Is your application a Unix process? Does it use files, tcp connections,\n-environment variables, standard Unix streams and command-line arguments\n-as inputs and outputs? Then Docker can run it.\n+- Hackers who want to customize or patch their Docker build\n+- System engineers or integrators building a container system\n+- Infrastructure providers looking to adapt existing container systems to their environment\n+- Container enthusiasts who want to experiment with the latest container tech\n+- Open-source developers looking to test their project in a variety of different systems\n+- Anyone curious about Docker internals and how it’s built\n \n-Can your application's build be expressed as a sequence of such\n-commands? Then Docker can build it.\n+Moby is NOT recommended for:\n \n-## Escape dependency hell\n+- Application developers looking for an easy way to run their applications in containers. We recommend Docker CE instead.\n+- Enterprise IT and development teams looking for a ready-to-use, commercially supported container platform. We recommend Docker EE instead.\n+- Anyone curious about containers and looking for an easy way to learn. We recommend the docker.com website instead.\n \n-A common problem for developers is the difficulty of managing all\n-their application's dependencies in a simple and automated way.\n+# Transitioning to Moby\n \n-This is usually difficult for several reasons:\n+Docker is transitioning all of its open source collaborations to the Moby project going forward.\n+During the transition, all open source activity should continue as usual.\n \n-  * *Cross-platform dependencies*. Modern applications often depend on\n-    a combination of system libraries and binaries, language-specific\n-    packages, framework-specific modules, internal components\n-    developed for another project, etc. These dependencies live in\n-    different \"worlds\" and require different tools - these tools\n-    typically don't work well with each other, requiring awkward\n-    custom integrations.\n+We are proposing the following list of changes:\n \n-  * *Conflicting dependencies*. Different applications may depend on\n-    different versions of the same dependency. Packaging tools handle\n-    these situations with various degrees of ease - but they all\n-    handle them in different and incompatible ways, which again forces\n-    the developer to do extra work.\n+- splitting up the engine into more open components\n+- removing the docker UI, SDK etc to keep them in the Docker org\n+- clarifying that the project is not limited to the engine, but to the assembly of all the individual components of the Docker platform\n+- open-source new tools & components which we currently use to assemble the Docker product, but could benefit the community\n+- defining an open, community-centric governance inspired by the Fedora project (a very successful example of balancing the needs of the community with the constraints of the primary corporate sponsor)\n \n-  * *Custom dependencies*. A developer may need to prepare a custom\n-    version of their application's dependency. Some packaging systems\n-    can handle custom versions of a dependency, others can't - and all\n-    of them handle it differently.\n+-----\n \n-\n-Docker solves the problem of dependency hell by giving developers a simple\n-way to express *all* their application's dependencies in one place, while\n-streamlining the process of assembling them. If this makes you think of\n-[XKCD 927](https://xkcd.com/927/), don't worry. Docker doesn't\n-*replace* your favorite packaging systems. It simply orchestrates\n-their use in a simple and repeatable way. How does it do that? With\n-layers.\n-\n-Docker defines a build as running a sequence of Unix commands, one\n-after the other, in the same container. Build commands modify the\n-contents of the container (usually by installing new files on the\n-filesystem), the next command modifies it some more, etc. Since each\n-build command inherits the result of the previous commands, the\n-*order* in which the commands are executed expresses *dependencies*.\n-\n-Here's a typical Docker build process:\n-\n-```bash\n-FROM ubuntu:12.04\n-RUN apt-get update && apt-get install -y python python-pip curl\n-RUN curl -sSL https://github.com/shykes/helloflask/archive/master.tar.gz | tar -xzv\n-RUN cd helloflask-master && pip install -r requirements.txt\n-```\n-\n-Note that Docker doesn't care *how* dependencies are built - as long\n-as they can be built by running a Unix command in a container.\n-\n-\n-Getting started\n-===============\n-\n-Docker can be installed either on your computer for building applications or\n-on servers for running them. To get started, [check out the installation\n-instructions in the\n-documentation](https://docs.docker.com/engine/installation/).\n-\n-Usage examples\n-==============\n-\n-Docker can be used to run short-lived commands, long-running daemons\n-(app servers, databases, etc.), interactive shell sessions, etc.\n-\n-You can find a [list of real-world\n-examples](https://docs.docker.com/engine/examples/) in the\n-documentation.\n-\n-Under the hood\n---------------\n-\n-Under the hood, Docker is built on the following components:\n-\n-* The\n-  [cgroups](https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt)\n-  and\n-  [namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)\n-  capabilities of the Linux kernel\n-* The [Go](https://golang.org) programming language\n-* The [Docker Image Specification](https://github.com/docker/docker/blob/master/image/spec/v1.md)\n-* The [Libcontainer Specification](https://github.com/opencontainers/runc/blob/master/libcontainer/SPEC.md)\n-\n-Contributing to Docker [![GoDoc](https://godoc.org/github.com/docker/docker?status.svg)](https://godoc.org/github.com/docker/docker)\n-======================\n-\n-| **Master** (Linux) | **Experimental** (Linux) | **Windows** | **FreeBSD** |\n-|------------------|----------------------|---------|---------|\n-| [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/) | [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/) |\n-\n-Want to hack on Docker? Awesome! We have [instructions to help you get\n-started contributing code or documentation](https://docs.docker.com/opensource/project/who-written-for/).\n-\n-These instructions are probably not perfect, please let us know if anything\n-feels wrong or incomplete. Better yet, submit a PR and improve them yourself.\n-\n-Getting the development builds\n-==============================\n-\n-Want to run Docker from a master build? You can download\n-master builds at [master.dockerproject.org](https://master.dockerproject.org).\n-They are updated with each commit merged into the master branch.\n-\n-Don't know how to use that super cool new feature in the master build? Check\n-out the master docs at\n-[docs.master.dockerproject.org](http://docs.master.dockerproject.org).\n-\n-How the project is run\n-======================\n-\n-Docker is a very, very active project. If you want to learn more about how it is run,\n-or want to get more involved, the best place to start is [the project directory](https://github.com/docker/docker/tree/master/project).\n-\n-We are always open to suggestions on process improvements, and are always looking for more maintainers.\n-\n-### Talking to other Docker users and contributors\n-\n-<table class=\"tg\">\n-  <col width=\"45%\">\n-  <col width=\"65%\">\n-  <tr>\n-    <td>Internet&nbsp;Relay&nbsp;Chat&nbsp;(IRC)</td>\n-    <td>\n-      <p>\n-        IRC is a direct line to our most knowledgeable Docker users; we have\n-        both the  <code>#docker</code> and <code>#docker-dev</code> group on\n-        <strong>irc.freenode.net</strong>.\n-        IRC is a rich chat protocol but it can overwhelm new users. You can search\n-        <a href=\"https://botbot.me/freenode/docker/#\" target=\"_blank\">our chat archives</a>.\n-      </p>\n-      Read our <a href=\"https://docs.docker.com/opensource/get-help/#/irc-quickstart\" target=\"_blank\">IRC quickstart guide</a> for an easy way to get started.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Docker Community Forums</td>\n-    <td>\n-      The <a href=\"https://forums.docker.com/c/open-source-projects/de\" target=\"_blank\">Docker Engine</a>\n-      group is for users of the Docker Engine project.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Google Groups</td>\n-    <td>\n-      The <a href=\"https://groups.google.com/forum/#!forum/docker-dev\"\n-      target=\"_blank\">docker-dev</a> group is for contributors and other people\n-      contributing to the Docker project.  You can join this group without a\n-      Google account by sending an email to <a\n-      href=\"mailto:docker-dev+subscribe@googlegroups.com\">docker-dev+subscribe@googlegroups.com</a>.\n-      You'll receive a join-request message; simply reply to the message to\n-      confirm your subscription.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Twitter</td>\n-    <td>\n-      You can follow <a href=\"https://twitter.com/docker/\" target=\"_blank\">Docker's Twitter feed</a>\n-      to get updates on our products. You can also tweet us questions or just\n-      share blogs or stories.\n-    </td>\n-  </tr>\n-  <tr>\n-    <td>Stack Overflow</td>\n-    <td>\n-      Stack Overflow has thousands of Docker questions listed. We regularly\n-      monitor <a href=\"https://stackoverflow.com/search?tab=newest&q=docker\" target=\"_blank\">Docker questions</a>\n-      and so do many other knowledgeable Docker users.\n-    </td>\n-  </tr>\n-</table>\n-\n-### Legal\n+Legal\n+=====\n \n *Brought to you courtesy of our legal counsel. For more context,\n-please see the [NOTICE](https://github.com/docker/docker/blob/master/NOTICE) document in this repo.*\n+please see the [NOTICE](https://github.com/moby/moby/blob/master/NOTICE) document in this repo.*\n \n-Use and transfer of Docker may be subject to certain restrictions by the\n+Use and transfer of Moby may be subject to certain restrictions by the\n United States and other governments.\n \n It is your responsibility to ensure that your use and/or transfer does not\n@@ -278,30 +83,6 @@ For more information, please see https://www.bis.doc.gov\n \n Licensing\n =========\n-Docker is licensed under the Apache License, Version 2.0. See\n-[LICENSE](https://github.com/docker/docker/blob/master/LICENSE) for the full\n+Moby is licensed under the Apache License, Version 2.0. See\n+[LICENSE](https://github.com/moby/moby/blob/master/LICENSE) for the full\n license text.\n-\n-Other Docker Related Projects\n-=============================\n-There are a number of projects under development that are based on Docker's\n-core technology. These projects expand the tooling built around the\n-Docker platform to broaden its application and utility.\n-\n-* [Docker Registry](https://github.com/docker/distribution): Registry\n-server for Docker (hosting/delivery of repositories and images)\n-* [Docker Machine](https://github.com/docker/machine): Machine management\n-for a container-centric world\n-* [Docker Swarm](https://github.com/docker/swarm): A Docker-native clustering\n-system\n-* [Docker Compose](https://github.com/docker/compose) (formerly Fig):\n-Define and run multi-container apps\n-* [Kitematic](https://github.com/docker/kitematic): The easiest way to use\n-Docker on Mac and Windows\n-\n-If you know of another project underway that should be listed here, please help\n-us keep this list up-to-date by submitting a PR.\n-\n-Awesome-Docker\n-==============\n-You can find more projects, tools and articles related to Docker on the [awesome-docker list](https://github.com/veggiemonk/awesome-docker). Add your project there.\ndiff --git a/docs/static_files/moby-project-logo.png b/docs/static_files/moby-project-logo.png\nnew file mode 100644\nindex 0000000000000..2914186efdd0d\nBinary files /dev/null and b/docs/static_files/moby-project-logo.png differ\n"
       }
     }
   ],
   "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_e198b00f51d535a1/design_doc.md",
   "input_attachment_paths": [
-    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e198b00f51d535a1/input_0.md"
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e198b00f51d535a1/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_e198b00f51d535a1/input_1.md"
   ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T05:37:40.855989+00:00"
+  "created_at": "2026-05-15T10:57:45.303616+00:00"
 }

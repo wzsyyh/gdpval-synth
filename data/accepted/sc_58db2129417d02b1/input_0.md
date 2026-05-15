@@ -1,4 +1,4 @@
-# PR #40007 description and list of linked issues
+# PR #40007 diff and description
 
 
 # Seed Material: moby/moby#40007: Support host.docker.internal in dockerd on Linux
@@ -68,7 +68,7 @@ ff02::2	ip6-allrouters
 ```
 
 
-## Diff (first 3000 chars)
+## Diff
 diff --git a/cmd/dockerd/config.go b/cmd/dockerd/config.go
 index f4b48a4097390..f75ea3c38ebe5 100644
 --- a/cmd/dockerd/config.go
@@ -132,4 +132,131 @@ diff --git a/daemon/daemon_unix.go b/daemon/daemon_unix.go
 index f2d1fc932fbc8..9f1422295d8e7 100644
 --- a/daemon/daemon_unix.go
 +++ b/daemon/daemon_unix.go
-@@ -925,6 +925,19 @@ fu
+@@ -925,6 +925,19 @@ func (daemon *Daemon) initNetworkController(config *config.Config, activeSandbox
+ 		removeDefaultBridgeInterface()
+ 	}
+ 
++	// Set HostGatewayIP to the default bridge's IP  if it is empty
++	if daemon.configStore.HostGatewayIP == nil && controller != nil {
++		if n, err := controller.NetworkByName("bridge"); err == nil {
++			v4Info, v6Info := n.Info().IpamInfo()
++			var gateway net.IP
++			if len(v4Info) > 0 {
++				gateway = v4Info[0].Gateway.IP
++			} else if len(v6Info) > 0 {
++				gateway = v6Info[0].Gateway.IP
++			}
++			daemon.configStore.HostGatewayIP = gateway
++		}
++	}
+ 	return controller, nil
+ }
+ 
+diff --git a/daemon/network/constants.go b/daemon/network/constants.go
+new file mode 100644
+index 0000000000000..e7d97018fd595
+--- /dev/null
++++ b/daemon/network/constants.go
+@@ -0,0 +1,8 @@
++package network
++
++const (
++	// HostGatewayName is the string value that can be passed
++	// to the IPAddr section in --add-host that is replaced by
++	// the value of HostGatewayIP daemon config value
++	HostGatewayName = "host-gateway"
++)
+diff --git a/integration/container/daemon_linux_test.go b/integration/container/daemon_linux_test.go
+index 39f056fabe545..5e260a495d6ff 100644
+--- a/integration/container/daemon_linux_test.go
++++ b/integration/container/daemon_linux_test.go
+@@ -120,3 +120,47 @@ func TestDaemonRestartIpcMode(t *testing.T) {
+ 	assert.NilError(t, err)
+ 	assert.Check(t, is.Equal(string(inspect.HostConfig.IpcMode), "shareable"))
+ }
++
++// TestDaemonHostGatewayIP verifies that when a magic string "host-gateway" is passed
++// to ExtraHosts (--add-host) instead of an IP address, its value is set to
++// 1. Daemon config flag value specified by host-gateway-ip or
++// 2. IP of the default bridge network
++// and is added to the /etc/hosts file
++func TestDaemonHostGatewayIP(t *testing.T) {
++	skip.If(t, testEnv.IsRemoteDaemon)
++	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
++	t.Parallel()
++
++	// Verify the IP in /etc/hosts is same as host-gateway-ip
++	d := daemon.New(t)
++	// Verify the IP in /etc/hosts is same as the default bridge's IP
++	d.StartWithBusybox(t)
++	c := d.NewClientT(t)
++	ctx := context.Background()
++	cID := container.Run(ctx, t, c,
++		container.WithExtraHost("host.docker.internal:host-gateway"),
++	)
++	res, err := container.Exec(ctx, c, cID, []string{"cat", "/etc/hosts"})
++	assert.NilError(t, err)
++	assert.Assert(t, is.Len(res.Stderr(), 0))
++	assert.Equal(t, 0, res.ExitCode)
++	inspect, err := c.NetworkInspect(ctx, "bridge", types.NetworkInspectOptions{})
++	assert.NilError(t, err)
++	assert.Check(t, is.Contains(res.Stdout(), inspect.IPAM.Config[0].Gateway))
++	c.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})
++	d.Stop(t)
++
++	// Verify the IP in /etc/hosts is same as host-gateway-ip
++	d.StartWithBusybox(t, "--host-gateway-ip=6.7.8.9")
++	cID = container.Run(ctx, t, c,
++		container.WithExtraHost("host.docker.internal:host-gateway"),
++	)
++	res, err = container.Exec(ctx, c, cID, []string{"cat", "/etc/hosts"})
++	assert.NilError(t, err)
++	assert.Assert(t, is.Len(res.Stderr(), 0))
++	assert.Equal(t, 0, res.ExitCode)
++	assert.Check(t, is.Contains(res.Stdout(), "6.7.8.9"))
++	c.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})
++	d.Stop(t)
++
++}
+diff --git a/integration/internal/container/ops.go b/integration/internal/container/ops.go
+index b9ba8c4e85db8..c829ad1717a34 100644
+--- a/integration/internal/container/ops.go
++++ b/integration/internal/container/ops.go
+@@ -180,3 +180,11 @@ func WithCgroupnsMode(mode string) func(*TestContainerConfig) {
+ 		c.HostConfig.CgroupnsMode = containertypes.CgroupnsMode(mode)
+ 	}
+ }
++
++// WithExtraHost sets the user defined IP:Host mappings in the container's
++// /etc/hosts file
++func WithExtraHost(extraHost string) func(*TestContainerConfig) {
++	return func(c *TestContainerConfig) {
++		c.HostConfig.ExtraHosts = append(c.HostConfig.ExtraHosts, extraHost)
++	}
++}
+diff --git a/opts/hosts.go b/opts/hosts.go
+index a6f2662df0888..41caae307271b 100644
+--- a/opts/hosts.go
++++ b/opts/hosts.go
+@@ -8,6 +8,7 @@ import (
+ 	"strconv"
+ 	"strings"
+ 
++	"github.com/docker/docker/daemon/network"
+ 	"github.com/docker/docker/pkg/homedir"
+ )
+ 
+@@ -169,8 +170,11 @@ func ValidateExtraHost(val string) (string, error) {
+ 	if len(arr) != 2 || len(arr[0]) == 0 {
+ 		return "", fmt.Errorf("bad format for add-host: %q", val)
+ 	}
+-	if _, err := ValidateIPAddress(arr[1]); err != nil {
+-		return "", fmt.Errorf("invalid IP address in add-host: %q", arr[1])
++	// Skip IPaddr validation for special "host-gateway" string
++	if arr[1] != network.HostGatewayName {
++		if _, err := ValidateIPAddress(arr[1]); err != nil {
++			return "", fmt.Errorf("invalid IP address in add-host: %q", arr[1])
++		}
+ 	}
+ 	return val, nil
+ }

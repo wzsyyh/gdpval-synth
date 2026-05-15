@@ -1,63 +1,60 @@
-# Release Design Doc - HTTPX 0.23.0
+# Release Engineering Plan - HTTPX 0.23.0
 
-# Release Design Doc - HTTPX 0.23.0
+# Release Engineering Plan - HTTPX 0.23.0
 
-Release Design Doc - HTTPX 0.23.0
+## Summary
 
-Version: 0.23.0 | Release Date: 23rd May, 2022
+HTTPX version 0.23.0 was released on 23rd May, 2022. This release bumps the project version from 0.22.0 to 0.23.0 in `httpx/__version__.py` and introduces two breaking changes: the removal of Python 3.6 support and the replacement of the `charset-normalizer` dependency with a default `utf-8` character set encoding. The release also includes ten bug fixes addressing issues across URL handling, authentication, the command-line client, streaming, multipart uploads, and redirect behavior.
 
-## Release Overview
+## Motivation
 
-HTTPX version 0.23.0, released on 23rd May, 2022, is a median point release that introduces two major changes alongside numerous bug fixes. The release drops support for Python 3.6 (issue #2097) and changes the default character-set handling for responses, eliminating the dependency on `charset-normalizer` in favor of a default `utf-8` encoding (PR #2165, addressing discussion #2083).
+The decision to drop Python 3.6 support was driven by the need to align with the Python ecosystem's lifecycle, as referenced in issue #2097. The replacement of `charset-normalizer` with a default `utf-8` encoding was motivated by discussion #2083, which proposed simplifying the dependency tree. PR #2165 introduced an alternative approach for users who require automatic character set detection, allowing the core library to remove the `charset-normalizer` dependency entirely. The median point bump from 0.22.0 to 0.23.0 was chosen to signal these breaking changes clearly to downstream consumers, as a minor version increment in the 0.x series indicates backward-incompatible modifications.
 
-The median point bump from 0.22.0 to 0.23.0 was chosen because dropping Python 3.6 support warrants a version increment that signals compatibility changes to downstream users. This release represents a focused effort to simplify the library's dependency tree and improve out-of-the-box behavior for the majority of use cases.
+## Affected Components
 
-## Character-Set Handling Change
+Two files were modified in PR #2214. First, `CHANGELOG.md` received a new section documenting the 0.23.0 release, including the two 'Changed' items and ten 'Fixed' items with their associated issue numbers. Second, `httpx/__version__.py` had its `__version__` string updated from `"0.22.0"` to `"0.23.0"` to reflect the new release. No other source code files were altered in this PR, as the functional changes were already merged in prior pull requests.
 
-Previously, HTTPX used `charset-normalizer` as a fallback to automatically detect the character encoding of responses when no explicit charset was specified in the Content-Type header. This approach added an external dependency and introduced variability in encoding detection across different environments.
+## Migration Guide for Downstream Users
 
-In version 0.23.0, the default behavior is simplified: responses are decoded using `utf-8` unless a charset is explicitly specified. This change removes the `charset-normalizer` dependency, reducing the library's dependency footprint and making behavior more predictable. For users who require automatic character-set detection (e.g., for legacy systems serving non-UTF-8 content), HTTPX provides opt-in functionality. The documentation at https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection explains how to re-enable this feature.
+For users currently running HTTPX on Python 3.6, the immediate migration step is to upgrade to Python 3.7 or later. Python 3.6 reached end-of-life in December 2021, and this release formalizes HTTPX's minimum supported version as Python 3.7. Users should update their CI configurations, dependency files, and deployment environments accordingly.
 
-This change was motivated by the discussion in issue #2083 and implemented in PR #2165. It aligns with the library's goal of providing sensible defaults while allowing advanced configuration when needed.
+For users who rely on automatic character set detection, the default behavior has changed from using `charset-normalizer` to assuming `utf-8`. To re-enable auto-detection, users must explicitly configure the client as described in the official documentation at https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection. This involves installing the optional dependency and passing the appropriate parameter when constructing the HTTPX client.
 
-## Bug Fix Summary
+## Bug Fixes Included
 
-The 0.23.0 release includes 10 bug fixes, categorized by subsystem as follows:
+The release includes ten bug fixes, grouped by subsystem as follows:
 
-**URL Handling**: Fix `URL.copy_with` for some oddly formed URL cases. (#2185)
+**URL Handling:**
+- Fix `URL.copy_with` for some oddly formed URL cases. (#2185)
 
-**Authentication**: Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)
+**Authentication:**
+- Digest authentication should use case-insensitive comparison for determining which algorithm is being used. (#2204)
 
-**Multipart Uploads**: When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)
+**Command-Line Client (CLI):**
+- Fix console markup escaping in command line client. (#1866)
+- When responses have binary output, don't print the output to the console in the command line client. Use output like `<16086 bytes of binary data>` instead. (#2076)
+- Fix display of `--proxies` argument in the command line client help. (#2125)
 
-**Stream Reading**: Ensure that `iter_bytes` never yields zero-length chunks. (#2068). Close responses when task cancellations occur during stream reading. (#2156).
+**Streaming:**
+- Ensure that `iter_bytes` never yields zero-length chunks. (#2068)
+- Close responses when task cancellations occur during stream reading. (#2156)
 
-**CLI Client**: Fix console markup escaping in command line client. (#1866). When responses have binary output, don't print the output to the console in the command line client; use output like `<16086 bytes of binary data>` instead. (#2076). Fix display of `--proxies` argument in the command line client help. (#2125).
+**Multipart Uploads:**
+- When files are used in multipart upload, ensure we always seek to the start of the file. (#2065)
 
-**Headers and Requests**: Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074).
+**Redirects:**
+- Preserve `Authorization` header for redirects that are to the same origin, but are an `http`-to-`https` upgrade. (#2074)
 
-**Exceptions**: Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158).
-
-## Migration Impact Assessment
-
-Users upgrading to HTTPX 0.23.0 should be aware of two primary impacts. First, applications running on Python 3.6 will need to upgrade their Python version to 3.7 or later, as support has been dropped (issue #2097). Second, applications that rely on automatic character-set detection for non-UTF-8 responses may experience decoding errors or incorrect text output.
-
-To mitigate these risks, users should follow these steps after upgrading: (1) Verify that their application no longer targets Python 3.6. (2) For any endpoint that serves non-UTF-8 encoded content, explicitly configure the character-set detection as described in the documentation: https://www.python-httpx.org/advanced/#character-set-encodings-and-auto-detection. (3) Run comprehensive integration tests that cover all response types, including binary and non-UTF-8 text responses. (4) Monitor application logs for encoding-related warnings or errors during the transition period.
-
-The migration path is designed to be straightforward for most users, as UTF-8 is the predominant encoding on the modern web. However, specialized applications interfacing with legacy systems should take extra care to validate their decoding behavior.
+**Exception Handling:**
+- Fix type error on accessing `.request` on `HTTPError` exceptions. (#2158)
 
 ## Release Checklist
 
-The following checklist should be completed before publishing the 0.23.0 release:
+Before tagging and publishing the 0.23.0 release, the following checklist should be completed:
 
-- [ ] **Version Bump Verification**: Confirm that `httpx/__version__.py` contains `__version__ = "0.23.0"` and that the CHANGELOG.md header matches.
-
-- [ ] **Changelog Review**: Ensure all changes listed in the CHANGELOG.md under 0.23.0 are accurate and include the correct issue/PR references.
-
-- [ ] **Dependency Updates**: Verify that `charset-normalizer` has been removed from the project's dependencies (e.g., in `setup.py` or `pyproject.toml`).
-
-- [ ] **Testing**: Run the full test suite on Python 3.7, 3.8, 3.9, 3.10, and 3.11 to ensure compatibility and correctness.
-
-- [ ] **Documentation Updates**: Confirm that the documentation for character-set encodings and auto-detection is published and accessible at the provided URL.
-
-- [ ] **Release Notes**: Draft and publish release notes on GitHub and PyPI summarizing the key changes and migration guidance.
+1. Verify that `httpx/__version__.py` contains `__version__ = "0.23.0"`.
+2. Confirm that `CHANGELOG.md` includes the full release notes for version 0.23.0 as merged in PR #2214.
+3. Run the complete test suite to ensure no regressions were introduced by the breaking changes or bug fixes.
+4. Update the project documentation site to reflect the new default character set behavior and the dropped Python 3.6 support.
+5. Create a git tag for `0.23.0` and publish the release to PyPI.
+6. Notify downstream consumers via the project's communication channels (GitHub releases, mailing list, social media).

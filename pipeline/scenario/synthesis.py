@@ -190,7 +190,7 @@ Produce 45-55 atomic, verifiable scoring criteria.
 - [+2] The motion argues that the court lacks personal jurisdiction under Rule 12(b)(2).
 - [+1] The contract redline preserves the indemnification clause in Section 4.2.
 
-Do NOT create criteria that check things not in your answer.
+Do NOT create criteria that check facts, dates, numbers, or references that are not in the seed material. Every rubric criterion must be answerable from the seed material alone.
 Do NOT merge multiple independent checks into one criterion.
 
 ## Output Format
@@ -254,6 +254,7 @@ Generate the COMPLETE deliverable content with enough detail to support 45-55 ru
 - When the seed data shows two entries for the same quarter (e.g., Q2 2025), check the date ranges: a range starting from the beginning of the year (e.g., 2025-01-01 to 2025-06-30) is a YTD cumulative, while a range starting mid-year (e.g., 2025-04-01 to 2025-06-30) is the single-quarter value.
 - For quarterly trend analysis, always use the **single-quarter** value (the one with a quarter-length date range, e.g., 3 months).
 - Only use YTD values when explicitly performing year-to-date analysis.
+- Use the EXACT XBRL concept names as they appear in the seed data. Do not substitute similar-sounding concepts (e.g., do not use "Revenues" when the seed has "RevenueFromContractWithCustomerExcludingAssessedTax"). When multiple concept names appear for similar data, use the one with the most recent and complete data.
 
 **For docx/pdf:**
 - **CRITICAL: You MUST populate the `docx_sections` field in your JSON output.** Each section must have a `heading` and 3-8 `paragraphs` of full text. Do NOT leave `docx_sections` empty or null.
@@ -285,7 +286,7 @@ Produce 45-55 atomic, verifiable scoring criteria.
 - [+2] The industry analysis discusses the impact of regulatory changes on competitive dynamics in Section 3.
 - [+1] The investment memo cites the company's Q1 FY2026 revenue of $83.1 billion.
 
-Do NOT create criteria that check things not in your answer.
+Do NOT create criteria that check facts, dates, numbers, or references that are not in the seed material. Every rubric criterion must be answerable from the seed material alone.
 Do NOT merge multiple independent checks into one criterion.
 
 ## Output Format
@@ -379,7 +380,7 @@ Produce 45-55 atomic, verifiable scoring criteria.
 - [+2] The code review identifies the race condition in `src/scheduler.py` line 142.
 - [+1] The incident postmortem links to issue #4427 in the Root Cause section.
 
-Do NOT create criteria that check things not in your answer.
+Do NOT create criteria that check facts, dates, numbers, or references that are not in the seed material. Every rubric criterion must be answerable from the seed material alone.
 Do NOT merge multiple independent checks into one criterion.
 
 ## Output Format
@@ -424,7 +425,7 @@ def _build_seed_text(seed: Seed) -> str:
         key_facts = p.get("key_facts", {})
         for concept, observations in key_facts.items():
             lines.append(f"\n### {concept}")
-            for obs in observations[:5]:  # Last 5 periods
+            for obs in observations:
                 val = obs.get("val")
                 if val is not None:
                     # Build period label with date range so LLM can distinguish YTD vs quarterly
@@ -445,7 +446,7 @@ def _build_seed_text(seed: Seed) -> str:
             "",
             "## Recent Filings",
         ])
-        for f in p.get("recent_filings", [])[:5]:
+        for f in p.get("recent_filings", []):
             lines.append(f"  {f.get('form')} — {f.get('date')}")
 
     elif seed.source == "github_issue_pr":
@@ -458,20 +459,20 @@ def _build_seed_text(seed: Seed) -> str:
             f"Additions: +{p.get('additions', 0)}, Deletions: -{p.get('deletions', 0)}",
             "",
             "## PR Description",
-            p.get("pr_body", "(no description)")[:4000],
+            p.get("pr_body", "(no description)"),
         ])
         if p.get("linked_issue"):
             lines.extend([
                 "",
                 f"## Linked Issue #{p.get('linked_issue')}",
-                p.get("issue_body", "(no issue body)")[:2000],
+                p.get("issue_body", "(no issue body)"),
             ])
         diff = p.get("diff", "")
         if diff:
             lines.extend([
                 "",
-                "## Diff (first 6000 chars)",
-                diff[:6000],
+                "## Diff",
+                diff,
             ])
 
     return "\n".join(lines)
@@ -538,13 +539,14 @@ def _build_canonical(
         md_title=unified.md_title,
         sheets=unified.xlsx_sheets,
         expected_values=unified.expected_values,
+        # Collapse to single attachment — all get same seed body, so multiple = duplicates
         input_attachments=[InputAttachment(
-            attachment_id=f"att_{i}",
-            filename=f"input_{i}.md",
+            attachment_id="att_0",
+            filename="input_0.md",
             format="md",  # type: ignore[arg-type]
-            description=desc,
-            content_blueprint={"title": desc.split(".")[0], "body": _build_seed_text(seed)},
-        ) for i, desc in enumerate(unified.attachments)],
+            description="; ".join(unified.attachments) if unified.attachments else "Reference Material",
+            content_blueprint={"title": "Reference Material", "body": _build_seed_text(seed)},
+        )],
     )
 
     return CanonicalScenario(

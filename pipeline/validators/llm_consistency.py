@@ -65,6 +65,9 @@ class ValidationResult(BaseModel):
     rubric_aligned: bool = Field(description="Every rubric criterion can be verified against the answer content")
     rubric_issues: list[str] = Field(default_factory=list, description="Rubric items with no evidence in the answer")
 
+    rubric_grounded: bool = Field(description="Every specific fact, number, or reference in rubric criteria exists in the seed material")
+    rubric_grounding_issues: list[str] = Field(default_factory=list, description="Rubric criteria that reference facts not found in the seed")
+
     prompt_aligned: bool = Field(description="The answer fully addresses all requirements in the prompt")
     prompt_issues: list[str] = Field(default_factory=list, description="Prompt requirements not reflected in the answer")
 
@@ -77,6 +80,7 @@ class LlmConsistencyReport:
     seed_aligned: bool
     calculations_correct: bool
     rubric_aligned: bool
+    rubric_grounded: bool
     prompt_aligned: bool
     issues: list[str] = field(default_factory=list)
 
@@ -117,6 +121,7 @@ _EXECUTOR_SYS = """You are a strict auditor executing a verification checklist. 
 3. **Show your work**: For calculation items, briefly note the raw numbers you used and your result.
 4. **Do not let the answer and rubric confirm each other.** They were generated together and may share the same error. The seed material is the ONLY ground truth.
 5. If you find ANY material factual error or calculation error, set overall_passed = false.
+6. For each rubric criterion that contains a specific fact, number, date, or citation, verify that this fact EXISTS in the seed material. Do not trust the answer to confirm the rubric — they were generated together and may share the same error. The seed is the only ground truth for rubric content. If a rubric criterion references a fact not in the seed, note it in rubric_grounding_issues.
 
 ## Output
 
@@ -155,7 +160,7 @@ def _build_seed_text(seed: Seed) -> str:
         key_facts = p.get("key_facts", {})
         for concept, observations in key_facts.items():
             lines.append(f"\n### {concept}")
-            for obs in observations[:5]:
+            for obs in observations:
                 val = obs.get("val")
                 if val is not None:
                     fp = obs.get("fp", "")
@@ -171,7 +176,7 @@ def _build_seed_text(seed: Seed) -> str:
                     else:
                         lines.append(f"  {label}: {val:,.0f}")
         lines.extend(["", "## Recent Filings"])
-        for f in p.get("recent_filings", [])[:5]:
+        for f in p.get("recent_filings", []):
             lines.append(f"  {f.get('form')} — {f.get('date')}")
 
     elif seed.source == "github_issue_pr":
@@ -183,17 +188,17 @@ def _build_seed_text(seed: Seed) -> str:
             f"Changed Files: {p.get('changed_files', 'N/A')}",
             "",
             "## PR Description",
-            p.get("pr_body", "(no description)")[:4000],
+            p.get("pr_body", "(no description)"),
         ])
         if p.get("linked_issue"):
             lines.extend([
                 "",
                 f"## Linked Issue #{p.get('linked_issue')}",
-                p.get("issue_body", "(no issue body)")[:2000],
+                p.get("issue_body", "(no issue body)"),
             ])
         diff = p.get("diff", "")
         if diff:
-            lines.extend(["", "## Diff (first 3000 chars)", diff[:3000]])
+            lines.extend(["", "## Diff", diff])
 
     return "\n".join(lines)
 
@@ -428,22 +433,28 @@ def validate(task: TaskCandidate, seed: Seed) -> LlmConsistencyReport:
     issues.extend(result.seed_issues)
     issues.extend(result.calculation_issues)
     issues.extend(result.rubric_issues)
+    issues.extend(result.rubric_grounding_issues)
     issues.extend(result.prompt_issues)
 
+    # Rubric grounding failure should fail the overall check
+    overall_passed = result.overall_passed and result.rubric_grounded
+
     logger.info(
-        "  consistency result: seed=%s calc=%s rubric=%s prompt=%s → %s",
+        "  consistency result: seed=%s calc=%s rubric=%s rubric_grounded=%s prompt=%s → %s",
         result.seed_aligned,
         result.calculations_correct,
         result.rubric_aligned,
+        result.rubric_grounded,
         result.prompt_aligned,
-        "PASS" if result.overall_passed else "FAIL",
+        "PASS" if overall_passed else "FAIL",
     )
 
     return LlmConsistencyReport(
-        passed=result.overall_passed,
+        passed=overall_passed,
         seed_aligned=result.seed_aligned,
         calculations_correct=result.calculations_correct,
         rubric_aligned=result.rubric_aligned,
+        rubric_grounded=result.rubric_grounded,
         prompt_aligned=result.prompt_aligned,
         issues=issues,
     )

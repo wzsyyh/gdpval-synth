@@ -4,7 +4,7 @@
   "archetype": "bug_fix_pr",
   "difficulty": "medium",
   "seed_id": "be055f60fd940495",
-  "prompt": "You are a senior software engineer on the pandas core team. The team has been triaging regressions reported after the 1.1 release cycle, and issue #36895 was filed: merging a DataFrame with a DatetimeIndex against an empty DataFrame raises a KeyError. A colleague has opened PR #36897 to fix this regression, targeting the v1.2.0 release. The PR modifies three files: the whatsnew document, the merge logic in `pandas/core/reshape/merge.py`, and a test file `pandas/tests/reshape/merge/test_multi.py`.\n\nYour task is to produce a bug-fix pull request write-up in Markdown that documents this change for the team's internal engineering review archive. This document should serve as a self-contained reference so that any engineer reviewing the release notes or investigating merge behavior can understand the fix without reading the raw diff.\n\n**Materials provided:**\n- The PR #36897 diff (additions and deletions across three files)\n- The PR description checklist (tests, black, flake8, whatsnew)\n- The linked issue number #36895\n- The merge target: v1.2.0 release\n\n**Task requirements:**\n1. Write a Markdown document with a title referencing PR #36897 and the regression fix.\n2. Include the following sections with the specified content:\n   - **Summary**: Describe the regression in one paragraph: what operation fails, what the error is, and which pandas version introduced it.\n   - **Root Cause**: Explain the logic in `_maybe_add_join_keys` that caused the bug. Identify the specific lines changed in `pandas/core/reshape/merge.py` (around line 830). Describe the asymmetry in the original code: it only checked if `left_indexer` was all -1 but did not handle the case where `right_indexer` was all -1 (i.e., the right DataFrame was empty).\n   - **Fix Description**: Detail the three-part fix: (a) renaming `mask` to `mask_left` and introducing `mask_right`, (b) adding the `elif mask_right.all(): key_col = lvals` branch, and (c) updating the final `where` call to use `mask_left` instead of `mask`.\n   - **Test Added**: Describe the test case added in `test_multi.py`. Mention the `Timestamp` import added to the test file's imports. Describe the test scenario (merging a DataFrame with a DatetimeIndex against an empty DataFrame) and that it verifies the merge completes without error and produces the expected result.\n   - **Whatsnew Entry**: Note that the fix is documented in `doc/source/whatsnew/v1.2.0.rst` under the Reshaping section, referencing issue #36895.\n   - **Checklist Verification**: Confirm that the PR description checked off: tests added/passed, passes black, passes flake8, and whatsnew entry added.\n3. Use code snippets where appropriate, referencing the actual variable names and line numbers from the diff.\n4. Keep the document to 600-1000 words.\n5. Output as a single Markdown file.",
+  "prompt": "You are a senior software engineer on the pandas core team. A regression has been reported where merging a DataFrame with a datetime index against an empty DataFrame fails. PR #36897 was submitted to fix this, and you are now responsible for creating the technical documentation and review artifacts for this change.\n\nYour task is to produce a complete bug fix review package that includes:\n\n1. A Root Cause Analysis document explaining the defect in `pandas/core/reshape/merge.py`'s `_maybe_add_join_keys` method, specifically identifying the logic error in how the code handled the case where the right indexer contained all -1 values (indicating an empty DataFrame on the right side of the merge).\n\n2. A detailed walkthrough of the patch applied in PR #36897, explaining each line change and why it resolves the regression.\n\n3. A summary of the test coverage added in `pandas/tests/reshape/merge/test_multi.py`, including the new test method `test_merge_datetime_multi_index_empty_df` and its parametrized variations.\n\n4. An assessment of the fix's completeness: Does the patch handle all edge cases? Are there any remaining risks?\n\nProduce this as a single Markdown document with clear section headings. Reference specific line numbers, variable names, and issue numbers from the provided materials.",
   "deliverable": {
     "deliverable_id": "bug_fix_pr",
     "primary_format": "markdown",
@@ -13,266 +13,284 @@
   "rubric": [
     {
       "score": 1,
-      "criterion": "The submitted document is a Markdown file.",
-      "category": "format",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Markdown document has a title that references PR #36897 and the regression fix for merging DatetimeIndex with empty DataFrame.",
+      "criterion": "The submitted document is a Markdown file with a clear title referencing PR #36897",
       "category": "format",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a Summary section with an H2 heading.",
+      "criterion": "The document contains a section heading 'Root Cause Analysis'",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section mentions issue #36895.",
-      "category": "reference",
+      "criterion": "The document contains a section heading 'Patch Analysis'",
+      "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section describes the regression as occurring when merging a DataFrame with a DatetimeIndex against an empty DataFrame.",
-      "category": "content",
+      "criterion": "The document contains a section heading 'Test Coverage'",
+      "category": "structure",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section mentions that the operation raises a KeyError.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Summary section states the fix is targeted for the v1.2.0 release.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a Root Cause section with an H2 heading.",
+      "criterion": "The document contains a section heading 'Fix Completeness Assessment'",
       "category": "structure",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Root Cause section references the file path pandas/core/reshape/merge.py.",
-      "category": "reference",
+      "criterion": "The root cause analysis identifies the flaw in the `_maybe_add_join_keys` method in `pandas/core/reshape/merge.py`",
+      "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Root Cause section identifies the method _maybe_add_join_keys as the location of the bug.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Root Cause section mentions line 830 as the approximate location of the changed code.",
-      "category": "reference",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Root Cause section explains that the original code only checked left_indexer == -1 and did not handle the case where right_indexer == -1.",
+      "criterion": "The root cause analysis explains the original `mask` variable logic and its failure case",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a Fix Description section with an H2 heading.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Fix Description section identifies the renaming of the variable mask to mask_left.",
+      "criterion": "The root cause analysis mentions that `left_indexer == -1` indicates rows from the right DataFrame",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Fix Description section identifies the introduction of a new variable mask_right checking right_indexer == -1.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Fix Description section includes the elif branch with condition mask_right.all() and assignment key_col = lvals.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Fix Description section notes the update to the where clause to use mask_left instead of mask.",
+      "criterion": "The root cause analysis explains why the original code failed when the right DataFrame was empty",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a Test Added section with an H2 heading.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 2,
-      "criterion": "The Test Added section references the test file pandas/tests/reshape/merge/test_multi.py.",
+      "criterion": "The patch analysis references the exact line numbers 830-842 of `pandas/core/reshape/merge.py`",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Test Added section mentions that Timestamp was added to the imports in the test file.",
+      "criterion": "The patch analysis describes the introduction of `mask_left` and `mask_right` variables",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Test Added section describes the test scenario as merging a DataFrame with a DatetimeIndex against an empty DataFrame.",
+      "criterion": "The patch analysis explains the addition of the `elif mask_right.all():` branch",
       "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Test Added section states that the test verifies the merge completes without error.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The document contains a Whatsnew Entry section with an H2 heading.",
-      "category": "structure",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Whatsnew Entry section references the file doc/source/whatsnew/v1.2.0.rst.",
+      "criterion": "The patch analysis describes the change from `~mask` to `~mask_left` in the `where` condition",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The patch analysis mentions the updated comment about 'or vice-versa'",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The test coverage section describes the new test method `test_merge_datetime_multi_index_empty_df`",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The test coverage section explains the parametrization with 'left' and 'right' merge types",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The test coverage section references the test file `pandas/tests/reshape/merge/test_multi.py`",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The test coverage section mentions issue #36895 in the test description",
       "category": "reference",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Whatsnew Entry section includes the exact whatsnew entry text from the diff referencing issue #36895.",
+      "criterion": "The test coverage section describes the structure of the left DataFrame with datetime MultiIndex",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document contains a Checklist Verification section with an H2 heading.",
-      "category": "structure",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Checklist Verification section confirms tests added/passed was checked.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Checklist Verification section confirms passes black formatting was checked.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Checklist Verification section confirms passes flake8 diff was checked.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Checklist Verification section confirms whatsnew entry was checked.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Root Cause section explains that the asymmetry caused the regression when the DatetimeIndex merge path was used.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Fix Description section describes the three-part fix as coordinated changes within _maybe_add_join_keys.",
-      "category": "content",
-      "is_penalty": false
-    },
-    {
-      "score": 1,
-      "criterion": "The Test Added section states the test was added to reproduce the scenario from issue #36895.",
+      "criterion": "The test coverage section mentions the Timestamp values '1950-01-01' and '1950-01-02'",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Root Cause section explains that the original else branch attempted Index(lvals).where(~mask, rvals) which failed with empty right DataFrame.",
+      "criterion": "The test coverage section explains that the right DataFrame is empty with MultiIndex",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 2,
-      "criterion": "The Fix Description section explains that the elif branch populates key_col with lvals when all right_indexer entries are -1.",
+      "criterion": "The test coverage section describes testing both merge and join operations",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document uses code snippets referencing actual variable names from the diff such as mask_left, mask_right, lvals, rvals.",
+      "criterion": "The test coverage section mentions the import of `Timestamp` in the test file",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Summary section mentions that the bug was introduced during the 1.1 development cycle.",
+      "criterion": "The test coverage section mentions the index level names 'date' and 'panel'",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document mentions that the PR modifies three files.",
+      "criterion": "The test coverage section mentions the column names 'data' and 'state'",
+      "category": "content",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix completeness assessment discusses whether the fix handles all symmetric cases",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix completeness assessment considers inner and outer merge types",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fix completeness assessment mentions that the fix is generic for any index type",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix completeness assessment references the whatsnew entry in `doc/source/whatsnew/v1.2.0.rst`",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The fix completeness assessment mentions the v1.2.0 release version",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The fix completeness assessment provides an overall risk assessment of the fix",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document references the merge date of November 3, 2020",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document explains the purpose of the `_maybe_add_join_keys` method",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The document is structured with exactly six H2 sections: Summary, Root Cause, Fix Description, Test Added, Whatsnew Entry, Checklist Verification.",
-      "category": "structure",
+      "criterion": "The document mentions that the regression was reported in issue #36895",
+      "category": "reference",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Root Cause section explains that left_indexer entries equal -1 indicate no match.",
+      "criterion": "The document mentions the changes to three files in the PR",
+      "category": "completeness",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the additions count of 56 lines in the PR",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document mentions the deletions count of 6 lines in the PR",
+      "category": "reference",
+      "is_penalty": false
+    },
+    {
+      "score": 2,
+      "criterion": "The document correctly identifies that `rvals` would contain NaN/missing values when right DataFrame is empty",
       "category": "content",
       "is_penalty": false
     },
     {
       "score": 1,
-      "criterion": "The Fix Description section describes the fix as minimal and targeted.",
+      "criterion": "The document mentions the use of `tm.assert_frame_equal` in the test",
       "category": "content",
       "is_penalty": false
     },
     {
+      "score": 2,
+      "criterion": "The document explains that the fix makes the code more robust with symmetric handling",
+      "category": "judgment",
+      "is_penalty": false
+    },
+    {
       "score": 1,
-      "criterion": "The Whatsnew Entry section states the entry is under the Reshaping section of the whatsnew file.",
-      "category": "content",
+      "criterion": "The document uses proper Markdown formatting with section headings",
+      "category": "format",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document is well-organized with logical flow between sections",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document uses technical but accessible language appropriate for engineering review",
+      "category": "style",
+      "is_penalty": false
+    },
+    {
+      "score": 1,
+      "criterion": "The document does not contain any invented facts not present in the provided materials",
+      "category": "accuracy",
       "is_penalty": false
     },
     {
       "score": -2,
-      "criterion": "The document incorrectly attributes the bug to a method other than _maybe_add_join_keys or a file other than pandas/core/reshape/merge.py.",
+      "criterion": "The document fails to identify the correct file path `pandas/core/reshape/merge.py` for the bug fix",
       "category": "accuracy",
       "is_penalty": true
     },
     {
       "score": -2,
-      "criterion": "The document fails to mention the asymmetry in the root cause where only left_indexer was checked but not right_indexer.",
-      "category": "completeness",
+      "criterion": "The document fails to reference issue #36895 as the source of the regression report",
+      "category": "accuracy",
+      "is_penalty": true
+    },
+    {
+      "score": -3,
+      "criterion": "The document incorrectly states that the fix adds handling for inner or outer merge types in a new branch",
+      "category": "accuracy",
       "is_penalty": true
     }
   ],
@@ -291,121 +309,145 @@
       {
         "id": "ev_0",
         "kind": "person",
-        "name": "Bug Fix Write-Up: PR #36897 – Regression Fix for Merging DataFrame with DatetimeIndex with Empty DataFrame",
+        "name": "#36897",
         "attrs": {}
       },
       {
         "id": "ev_1",
         "kind": "person",
-        "name": "issue #36895",
+        "name": "#36895",
         "attrs": {}
       },
       {
         "id": "ev_2",
         "kind": "person",
-        "name": "merge a DataFrame that has a DatetimeIndex against an empty DataFrame",
+        "name": "pandas/core/reshape/merge.py",
         "attrs": {}
       },
       {
         "id": "ev_3",
         "kind": "person",
-        "name": "pandas/core/reshape/merge.py",
+        "name": "_maybe_add_join_keys",
         "attrs": {}
       },
       {
         "id": "ev_4",
         "kind": "person",
-        "name": "_maybe_add_join_keys",
+        "name": "pandas/tests/reshape/merge/test_multi.py",
         "attrs": {}
       },
       {
         "id": "ev_5",
         "kind": "person",
-        "name": "830",
+        "name": "test_merge_datetime_multi_index_empty_df",
         "attrs": {}
       },
       {
         "id": "ev_6",
         "kind": "person",
-        "name": "asymmetric check",
+        "name": "left",
         "attrs": {}
       },
       {
         "id": "ev_7",
         "kind": "person",
-        "name": "mask_left",
+        "name": "right",
         "attrs": {}
       },
       {
         "id": "ev_8",
         "kind": "person",
-        "name": "mask_right",
+        "name": "1950-01-01",
         "attrs": {}
       },
       {
         "id": "ev_9",
         "kind": "person",
-        "name": "elif mask_right.all(): key_col = lvals",
+        "name": "1950-01-02",
         "attrs": {}
       },
       {
         "id": "ev_10",
         "kind": "person",
-        "name": "Index(lvals).where(~mask_left, rvals)",
+        "name": "2020-11-03",
         "attrs": {}
       },
       {
         "id": "ev_11",
         "kind": "person",
-        "name": "pandas/tests/reshape/merge/test_multi.py",
+        "name": "830-842",
         "attrs": {}
       },
       {
         "id": "ev_12",
         "kind": "person",
-        "name": "Timestamp",
+        "name": "mask_left",
         "attrs": {}
       },
       {
         "id": "ev_13",
         "kind": "person",
-        "name": "doc/source/whatsnew/v1.2.0.rst",
+        "name": "mask_right",
         "attrs": {}
       },
       {
         "id": "ev_14",
         "kind": "person",
-        "name": "Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)",
+        "name": "elif mask_right.all():",
         "attrs": {}
       },
       {
         "id": "ev_15",
         "kind": "person",
-        "name": "tests were added and passed",
+        "name": "~mask_left",
         "attrs": {}
       },
       {
         "id": "ev_16",
         "kind": "person",
-        "name": "passes `black pandas` formatting",
+        "name": "doc/source/whatsnew/v1.2.0.rst",
         "attrs": {}
       },
       {
         "id": "ev_17",
         "kind": "person",
-        "name": "passes `flake8 --diff` linting",
+        "name": "Fixed regression in merge on merging DatetimeIndex with empty DataFrame",
         "attrs": {}
       },
       {
         "id": "ev_18",
         "kind": "person",
-        "name": "whatsnew entry was included",
+        "name": "v1.2.0",
         "attrs": {}
       },
       {
         "id": "ev_19",
         "kind": "person",
-        "name": "v1.2.0",
+        "name": "Timestamp",
+        "attrs": {}
+      },
+      {
+        "id": "ev_20",
+        "kind": "person",
+        "name": "date",
+        "attrs": {}
+      },
+      {
+        "id": "ev_21",
+        "kind": "person",
+        "name": "panel",
+        "attrs": {}
+      },
+      {
+        "id": "ev_22",
+        "kind": "person",
+        "name": "data",
+        "attrs": {}
+      },
+      {
+        "id": "ev_23",
+        "kind": "person",
+        "name": "state",
         "attrs": {}
       }
     ],
@@ -414,140 +456,182 @@
       {
         "id": "fact_0",
         "kind": "string",
-        "value": "Bug Fix Write-Up: PR #36897 – Regression Fix for Merging DataFrame with DatetimeIndex with Empty DataFrame",
+        "value": "#36897",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_1",
         "kind": "string",
-        "value": "issue #36895",
+        "value": "#36895",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_2",
         "kind": "string",
-        "value": "merge a DataFrame that has a DatetimeIndex against an empty DataFrame",
+        "value": "pandas/core/reshape/merge.py",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_3",
         "kind": "string",
-        "value": "pandas/core/reshape/merge.py",
+        "value": "_maybe_add_join_keys",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_4",
         "kind": "string",
-        "value": "_maybe_add_join_keys",
+        "value": "pandas/tests/reshape/merge/test_multi.py",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_5",
         "kind": "string",
-        "value": "830",
+        "value": "test_merge_datetime_multi_index_empty_df",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_6",
         "kind": "string",
-        "value": "asymmetric check",
+        "value": "left",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_7",
         "kind": "string",
-        "value": "mask_left",
+        "value": "right",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_8",
         "kind": "string",
-        "value": "mask_right",
+        "value": "1950-01-01",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_9",
         "kind": "string",
-        "value": "elif mask_right.all(): key_col = lvals",
+        "value": "1950-01-02",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_10",
         "kind": "string",
-        "value": "Index(lvals).where(~mask_left, rvals)",
+        "value": "2020-11-03",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_11",
         "kind": "string",
-        "value": "pandas/tests/reshape/merge/test_multi.py",
+        "value": "830-842",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_12",
         "kind": "string",
-        "value": "Timestamp",
+        "value": "mask_left",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_13",
         "kind": "string",
-        "value": "doc/source/whatsnew/v1.2.0.rst",
+        "value": "mask_right",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_14",
         "kind": "string",
-        "value": "Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)",
+        "value": "elif mask_right.all():",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_15",
         "kind": "string",
-        "value": "tests were added and passed",
+        "value": "~mask_left",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_16",
         "kind": "string",
-        "value": "passes `black pandas` formatting",
+        "value": "doc/source/whatsnew/v1.2.0.rst",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_17",
         "kind": "string",
-        "value": "passes `flake8 --diff` linting",
+        "value": "Fixed regression in merge on merging DatetimeIndex with empty DataFrame",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_18",
         "kind": "string",
-        "value": "whatsnew entry was included",
+        "value": "v1.2.0",
         "unit": null,
         "source": null
       },
       {
         "id": "fact_19",
         "kind": "string",
-        "value": "v1.2.0",
+        "value": "Timestamp",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_20",
+        "kind": "string",
+        "value": "date",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_21",
+        "kind": "string",
+        "value": "panel",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_22",
+        "kind": "string",
+        "value": "data",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_23",
+        "kind": "string",
+        "value": "state",
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_24",
+        "kind": "money",
+        "value": 56,
+        "unit": null,
+        "source": null
+      },
+      {
+        "id": "fact_25",
+        "kind": "money",
+        "value": 6,
         "unit": null,
         "source": null
       }
@@ -564,212 +648,267 @@
       "page_settings": "single_spaced",
       "md_sections": [
         {
-          "heading": "Summary",
-          "heading_level": 2,
+          "heading": "Bug Fix Review: PR #36897 - Regression in merge with DatetimeIndex and empty DataFrame",
+          "heading_level": 1,
           "required_content": [
-            "Regression description",
-            "Merging a DataFrame with a DatetimeIndex against an empty DataFrame raises a KeyError",
-            "Linked to issue #36895",
-            "Targets v1.2.0 release"
+            "Introduction summarizing the regression issue #36895",
+            "Reference to PR #36897 and its merge date"
           ],
           "paragraphs": [
-            "This document describes the bug fix implemented in PR #36897, which addresses a regression reported in issue #36895. The regression occurs when attempting to merge a DataFrame that has a DatetimeIndex against an empty DataFrame. The operation raises a KeyError instead of completing successfully. This bug was introduced during the 1.1 development cycle and affects users who rely on merging indexed DataFrames with potentially empty counterparts. The fix is targeted for the pandas v1.2.0 release."
+            "This document provides a comprehensive review of PR #36897, which addresses a regression in pandas where merging a DataFrame with a datetime index against an empty DataFrame would fail. The regression was reported in issue #36895 and was merged on November 3, 2020. The fix modifies the `_maybe_add_join_keys` method in `pandas/core/reshape/merge.py` to correctly handle the case where the right indexer contains all -1 values, indicating an empty DataFrame on the right side of the merge operation."
           ]
         },
         {
-          "heading": "Root Cause",
+          "heading": "Root Cause Analysis",
           "heading_level": 2,
           "required_content": [
-            "Explanation of _maybe_add_join_keys logic",
-            "Lines around 830 in pandas/core/reshape/merge.py",
-            "Asymmetry: only left_indexer checked for -1",
-            "Right empty case not handled"
+            "Explanation of the `_maybe_add_join_keys` method's purpose",
+            "Description of the original logic flaw with `mask` variable",
+            "Explanation of how the left and right indexers work in merge operations",
+            "Why the original code failed when the right DataFrame was empty"
           ],
           "paragraphs": [
-            "The root cause is in the `_maybe_add_join_keys` method of the merge operation, located in `pandas/core/reshape/merge.py` around line 830. This method is responsible for constructing the key columns in the merged result when the merge is performed on columns derived from the index. The original code contained an asymmetric check: it computed a mask for the left_indexer where entries equal -1 (indicating no match) and tested if the mask was entirely true. If so, it used the right-side values exclusively. However, it did not perform the analogous check for the right_indexer. When the right DataFrame was empty, the right_indexer was entirely -1, but the code fell through to the else branch, attempting to use `Index(lvals).where(~mask, rvals)`. This operation failed because `rvals` contained invalid placeholder values, leading to the KeyError.",
-            "The asymmetry meant that merging a non-empty left DataFrame with an empty right DataFrame (where all right_indexer values are -1) was not handled correctly, while the reverse case (empty left, non-empty right) was handled by the `mask.all()` check. This oversight caused the regression when the DatetimeIndex merge path was used."
+            "The `_maybe_add_join_keys` method in `pandas/core/reshape/merge.py` is responsible for constructing the join key columns in the result of a merge operation. When merging on index levels, this method determines which values to use for the key columns based on the left_indexer and right_indexer arrays.",
+            "In the original code (lines 833-839), there was a single variable `mask` that checked if `left_indexer == -1`. A value of -1 in the left_indexer indicates that the corresponding row in the result came from the right DataFrame (i.e., there was no match on the left side). The original logic had only two cases: if all values in mask were True (meaning all rows came from the right), it used `rvals` (right values); otherwise, it used `Index(lvals).where(~mask, rvals)` to conditionally select between left and right values.",
+            "The critical flaw was that the code did not account for the symmetric case where the right_indexer contained all -1 values. When merging a non-empty DataFrame with an empty DataFrame using a left merge, the left_indexer would contain valid indices (not -1), while the right_indexer would contain all -1 values. The original `mask` (checking left_indexer == -1) would be all False, causing the code to fall through to the `else` branch, which incorrectly tried to use the right values that were all missing, leading to errors.",
+            "Specifically, when the right DataFrame is empty, `rvals` would contain NaN or missing values for all rows, and `Index(lvals).where(~mask, rvals)` would still attempt to align these values incorrectly, resulting in the reported regression where the merge operation would fail or produce incorrect results."
           ]
         },
         {
-          "heading": "Fix Description",
+          "heading": "Patch Analysis",
           "heading_level": 2,
           "required_content": [
-            "Renaming mask to mask_left and introducing mask_right",
-            "Adding elif mask_right.all() branch with key_col = lvals",
-            "Updating where call to use mask_left instead of mask",
-            "Three-part fix summary"
+            "Line-by-line changes in merge.py lines 830-842",
+            "Introduction of `mask_left` and `mask_right` variables",
+            "Addition of the `elif mask_right.all():` branch",
+            "Update to the `where` condition from `~mask` to `~mask_left`",
+            "Reference to the exact line changes in the diff"
           ],
           "paragraphs": [
-            "The fix in PR #36897 consists of three coordinated changes within the `_maybe_add_join_keys` method:",
-            "1. **Variable Renaming**: The original `mask` variable, which checked `left_indexer == -1`, was renamed to `mask_left` for clarity. A new variable `mask_right` was introduced to check `right_indexer == -1`. This makes the intent explicit: we are masking out unmatched entries on each side.",
-            "2. **Symmetrical Handling**: An `elif` branch was added: `elif mask_right.all(): key_col = lvals`. This ensures that when all entries in the right_indexer are -1 (i.e., the right DataFrame is empty or has no matches), the result key column is populated entirely with the left-side values (`lvals`). This mirrors the existing `if mask_left.all()` branch that uses the right-side values.",
-            "3. **Corrected Where Clause**: The final `where` call was updated from `Index(lvals).where(~mask, rvals)` to `Index(lvals).where(~mask_left, rvals)`. This ensures that only entries unmatched on the left are replaced with right-side values, which is the correct behavior for the mixed case where neither side is entirely unmatched.",
-            "Together, these changes ensure that merging a DataFrame with a DatetimeIndex against an empty DataFrame completes without error and produces the correct result. The fix is minimal and targeted, affecting only the key column assembly logic."
+            "The patch in PR #36897 modifies lines 830-842 of `pandas/core/reshape/merge.py`. The changes can be broken down as follows:",
+            "First, the single `mask` variable is replaced with two separate masks: `mask_left = left_indexer == -1` and `mask_right = right_indexer == -1`. This allows the code to independently check both sides of the merge for missing indices.",
+            "Second, a new conditional branch is added: `elif mask_right.all(): key_col = lvals`. This handles the case where the right indexer contains all -1 values (meaning the result came entirely from the left DataFrame). In this scenario, the key column should use the left values (`lvals`), which was not handled in the original code.",
+            "Third, the `else` branch is updated to use `~mask_left` instead of `~mask` in the `where` condition: `key_col = Index(lvals).where(~mask_left, rvals)`. This ensures that when neither side is entirely missing, the code correctly uses the left values where the left index is valid (not -1) and substitutes with right values only where the left index is -1.",
+            "The comment on line 834 is also updated from 'make sure to just use the right values' to 'make sure to just use the right values or vice-versa' to reflect the new symmetric handling."
           ]
         },
         {
-          "heading": "Test Added",
+          "heading": "Test Coverage",
           "heading_level": 2,
           "required_content": [
-            "Test in pandas/tests/reshape/merge/test_multi.py",
-            "Timestamp import added",
-            "Test scenario: merge DatetimeIndex DF with empty DF",
-            "Verifies merge completes without KeyError"
+            "Description of the new test method `test_merge_datetime_multi_index_empty_df`",
+            "Parametrization with merge_type \"left\" and \"right\"",
+            "Structure of left and right DataFrames with datetime MultiIndex",
+            "Expected results for both left and right merges",
+            "Testing both merge and join operations",
+            "Reference to issue #36895 in the test"
           ],
           "paragraphs": [
-            "A new test case was added to `pandas/tests/reshape/merge/test_multi.py` to verify the fix. The test file's imports were updated to include `Timestamp` from pandas (i.e., `from pandas import DataFrame, Index, MultiIndex, Series, Timestamp`). The test, defined as a method within the existing test class, creates a DataFrame with a DatetimeIndex and merges it with an empty DataFrame. The test verifies that the merge operation completes without raising a KeyError and that the result matches the expected output. This test directly reproduces the scenario from issue #36895, ensuring the regression is fixed and does not recur."
+            "The fix includes comprehensive test coverage in `pandas/tests/reshape/merge/test_multi.py`. A new test method `test_merge_datetime_multi_index_empty_df` is added at line 484, following the existing `test_merge_datetime_index` method.",
+            "The test is parametrized with `merge_type` values \"left\" and \"right\", ensuring both merge directions are covered. It creates a `left` DataFrame with a datetime MultiIndex (levels 'date' and 'panel') containing two rows of data, and a `right` DataFrame with the same MultiIndex structure but completely empty (no rows).",
+            "For a 'left' merge, the expected result is a DataFrame with the original two rows from the left DataFrame, plus a 'state' column filled with None values, preserving the datetime MultiIndex. The test verifies both `left.merge(right, how='left')` and `left.join(right, how='left')` operations produce this expected result.",
+            "For a 'right' merge, the expected result similarly contains the original data but with columns reordered (state first, then data), and the test verifies `right.merge(left, how='right')` and `right.join(left, how='right')` operations.",
+            "The test uses `Timestamp('1950-01-01')` and `Timestamp('1950-01-02')` for the datetime index values, and explicitly references issue #36895 in the test comment. All assertions use `tm.assert_frame_equal` to ensure exact equality of the result DataFrames with the expected ones."
           ]
         },
         {
-          "heading": "Whatsnew Entry",
+          "heading": "Fix Completeness Assessment",
           "heading_level": 2,
           "required_content": [
-            "Entry in doc/source/whatsnew/v1.2.0.rst",
-            "Under Reshaping section",
-            "References issue #36895",
-            "Exact text from diff"
+            "Assessment of whether the fix handles all symmetric cases",
+            "Consideration of inner and outer merge types",
+            "Evaluation of potential edge cases with non-datetime indices",
+            "Review of whatsnew entry for v1.2.0",
+            "Overall risk assessment"
           ],
           "paragraphs": [
-            "The fix is documented in the pandas v1.2.0 release notes. In `doc/source/whatsnew/v1.2.0.rst`, under the Reshaping section, the following entry was added: \"Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)\". This entry ensures users are aware of the regression fix and can locate the relevant issue for more details."
-          ]
-        },
-        {
-          "heading": "Checklist Verification",
-          "heading_level": 2,
-          "required_content": [
-            "Tests added and passed",
-            "Passes black formatting",
-            "Passes flake8 diff",
-            "Whatsnew entry added",
-            "All items checked in PR description"
-          ],
-          "paragraphs": [
-            "The PR description includes a checklist confirming that all standard quality gates were met: tests were added and passed, the code passes `black pandas` formatting, the diff passes `flake8 --diff` linting, and a whatsnew entry was included. All items are checked off, indicating the PR is ready for merge pending review. This checklist verifies that the fix adheres to the pandas project's contribution standards."
+            "The fix appears to be complete for the reported regression. By adding symmetric handling for both `mask_left.all()` and `mask_right.all()`, the code now correctly handles cases where either the left or right DataFrame is empty during a merge operation. The existing `else` branch handles the general case where neither side is entirely missing.",
+            "The test coverage specifically verifies left and right merges with empty DataFrames, which are the merge types most likely to trigger this bug. Inner and outer merges would also be affected, but they are implicitly covered by the logic change since the same code path is executed regardless of merge type.",
+            "A potential edge case not explicitly tested is merging with an empty DataFrame that has a regular (non-datetime) index. However, the fix in `_maybe_add_join_keys` is generic and operates on indexers rather than index types, so it should work for any index type. The datetime index in the test case is likely chosen because it was the specific scenario reported in issue #36895.",
+            "The whatsnew entry in `doc/source/whatsnew/v1.2.0.rst` is updated correctly at line 536, adding the entry 'Fixed regression in merge on merging DatetimeIndex with empty DataFrame (:issue:`36895`)' under the Reshaping section. This ensures users are informed of the fix in the v1.2.0 release.",
+            "Overall, the fix is low-risk. The changes are minimal and localized to the specific logic error. The addition of proper test coverage ensures the regression will not recur. The symmetric handling of left and right indexers makes the code more robust and should prevent similar issues in the future."
           ]
         }
       ],
-      "md_title": "Bug Fix Write-Up: PR #36897 – Regression Fix for Merging DataFrame with DatetimeIndex with Empty DataFrame",
-      "input_attachments": [],
+      "md_title": "Bug Fix Review: PR #36897 - Regression in merge with DatetimeIndex and empty DataFrame",
+      "input_attachments": [
+        {
+          "attachment_id": "att_0",
+          "filename": "input_0.md",
+          "format": "md",
+          "description": "PR #36897 diff showing changes to three files: doc/source/whatsnew/v1.2.0.rst, pandas/core/reshape/merge.py, and pandas/tests/reshape/merge/test_multi.py",
+          "content_blueprint": {
+            "title": "PR #36897 diff showing changes to three files: doc/source/whatsnew/v1",
+            "body": "# Seed Material: pandas-dev/pandas#36897: regression fix for merging DF with datetime index with empty DF\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#36897\n\nRepository: pandas-dev/pandas\nPR Number: #36897\nPR Title: regression fix for merging DF with datetime index with empty DF\nMerged At: 2020-11-03T13:30:03Z\nChanged Files: 3\nAdditions: +56, Deletions: -6\n\n## PR Description\n- [X ] closes https://github.com/pandas-dev/pandas/issues/36895\r\n- [X ] tests added / passed\r\n- [X ] passes `black pandas`\r\n- [ X] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [ X] whatsnew entry\r\n\n\n## Diff\ndiff --git a/doc/source/whatsnew/v1.2.0.rst b/doc/source/whatsnew/v1.2.0.rst\nindex 6f137302d4994..167af1e5e282e 100644\n--- a/doc/source/whatsnew/v1.2.0.rst\n+++ b/doc/source/whatsnew/v1.2.0.rst\n@@ -467,7 +467,6 @@ MultiIndex\n \n - Bug in :meth:`DataFrame.xs` when used with :class:`IndexSlice` raises ``TypeError`` with message ``\"Expected label or tuple of labels\"`` (:issue:`35301`)\n - Bug in :meth:`DataFrame.reset_index` with ``NaT`` values in index raises ``ValueError`` with message ``\"cannot convert float NaN to integer\"`` (:issue:`36541`)\n--\n \n I/O\n ^^^\n@@ -534,6 +533,7 @@ Reshaping\n - Bug in :meth:`DataFrame.pivot` did not preserve :class:`MultiIndex` level names for columns when rows and columns both multiindexed (:issue:`36360`)\n - Bug in :func:`join` returned a non deterministic level-order for the resulting :class:`MultiIndex` (:issue:`36910`)\n - Bug in :meth:`DataFrame.combine_first()` caused wrong alignment with dtype ``string`` and one level of ``MultiIndex`` containing only ``NA`` (:issue:`37591`)\n+- Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)\n \n Sparse\n ^^^^^^\ndiff --git a/pandas/core/reshape/merge.py b/pandas/core/reshape/merge.py\nindex 5012be593820e..516ae90360be7 100644\n--- a/pandas/core/reshape/merge.py\n+++ b/pandas/core/reshape/merge.py\n@@ -830,12 +830,15 @@ def _maybe_add_join_keys(self, result, left_indexer, right_indexer):\n                     rvals = algos.take_1d(take_right, right_indexer, fill_value=rfill)\n \n                 # if we have an all missing left_indexer\n-                # make sure to just use the right values\n-                mask = left_indexer == -1\n-                if mask.all():\n+                # make sure to just use the right values or vice-versa\n+                mask_left = left_indexer == -1\n+                mask_right = right_indexer == -1\n+                if mask_left.all():\n                     key_col = rvals\n+                elif mask_right.all():\n+                    key_col = lvals\n                 else:\n-                    key_col = Index(lvals).where(~mask, rvals)\n+                    key_col = Index(lvals).where(~mask_left, rvals)\n \n                 if result._is_label_reference(name):\n                     result[name] = key_col\ndiff --git a/pandas/tests/reshape/merge/test_multi.py b/pandas/tests/reshape/merge/test_multi.py\nindex b1922241c7843..260a0e9d486b2 100644\n--- a/pandas/tests/reshape/merge/test_multi.py\n+++ b/pandas/tests/reshape/merge/test_multi.py\n@@ -2,7 +2,7 @@\n import pytest\n \n import pandas as pd\n-from pandas import DataFrame, Index, MultiIndex, Series\n+from pandas import DataFrame, Index, MultiIndex, Series, Timestamp\n import pandas._testing as tm\n from pandas.core.reshape.concat import concat\n from pandas.core.reshape.merge import merge\n@@ -481,6 +481,53 @@ def test_merge_datetime_index(self, klass):\n         result = df.merge(df, on=[df.index.year], how=\"inner\")\n         tm.assert_frame_equal(result, expected)\n \n+    @pytest.mark.parametrize(\"merge_type\", [\"left\", \"right\"])\n+    def test_merge_datetime_multi_index_empty_df(self, merge_type):\n+        # see gh-36895\n+\n+        left = DataFrame(\n+            data={\n+                \"data\": [1.5, 1.5],\n+            },\n+            index=MultiIndex.from_tuples(\n+                [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+                names=[\"date\", \"panel\"],\n+            ),\n+        )\n+\n+        right = DataFrame(\n+            index=MultiIndex.from_tuples([], names=[\"date\", \"panel\"]), columns=[\"state\"]\n+        )\n+\n+        expected_index = MultiIndex.from_tuples(\n+            [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+            names=[\"date\", \"panel\"],\n+        )\n+\n+        if merge_type == \"left\":\n+            expected = DataFrame(\n+                data={\n+                    \"data\": [1.5, 1.5],\n+                    \"state\": [None, None],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = left.merge(right, how=\"left\", on=[\"date\", \"panel\"])\n+            results_join = left.join(right, how=\"left\")\n+        else:\n+            expected = DataFrame(\n+                data={\n+                    \"state\": [None, None],\n+                    \"data\": [1.5, 1.5],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = right.merge(left, how=\"right\", on=[\"date\", \"panel\"])\n+            results_join = right.join(left, how=\"right\")\n+\n+        tm.assert_frame_equal(results_merge, expected)\n+        tm.assert_frame_equal(results_join, expected)\n+\n     def test_join_multi_levels(self):\n \n         # GH 3662\n"
+          }
+        },
+        {
+          "attachment_id": "att_1",
+          "filename": "input_1.md",
+          "format": "md",
+          "description": "Issue #36895 description indicating the regression in merging DatetimeIndex with empty DataFrame",
+          "content_blueprint": {
+            "title": "Issue #36895 description indicating the regression in merging DatetimeIndex with empty DataFrame",
+            "body": "# Seed Material: pandas-dev/pandas#36897: regression fix for merging DF with datetime index with empty DF\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#36897\n\nRepository: pandas-dev/pandas\nPR Number: #36897\nPR Title: regression fix for merging DF with datetime index with empty DF\nMerged At: 2020-11-03T13:30:03Z\nChanged Files: 3\nAdditions: +56, Deletions: -6\n\n## PR Description\n- [X ] closes https://github.com/pandas-dev/pandas/issues/36895\r\n- [X ] tests added / passed\r\n- [X ] passes `black pandas`\r\n- [ X] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [ X] whatsnew entry\r\n\n\n## Diff\ndiff --git a/doc/source/whatsnew/v1.2.0.rst b/doc/source/whatsnew/v1.2.0.rst\nindex 6f137302d4994..167af1e5e282e 100644\n--- a/doc/source/whatsnew/v1.2.0.rst\n+++ b/doc/source/whatsnew/v1.2.0.rst\n@@ -467,7 +467,6 @@ MultiIndex\n \n - Bug in :meth:`DataFrame.xs` when used with :class:`IndexSlice` raises ``TypeError`` with message ``\"Expected label or tuple of labels\"`` (:issue:`35301`)\n - Bug in :meth:`DataFrame.reset_index` with ``NaT`` values in index raises ``ValueError`` with message ``\"cannot convert float NaN to integer\"`` (:issue:`36541`)\n--\n \n I/O\n ^^^\n@@ -534,6 +533,7 @@ Reshaping\n - Bug in :meth:`DataFrame.pivot` did not preserve :class:`MultiIndex` level names for columns when rows and columns both multiindexed (:issue:`36360`)\n - Bug in :func:`join` returned a non deterministic level-order for the resulting :class:`MultiIndex` (:issue:`36910`)\n - Bug in :meth:`DataFrame.combine_first()` caused wrong alignment with dtype ``string`` and one level of ``MultiIndex`` containing only ``NA`` (:issue:`37591`)\n+- Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)\n \n Sparse\n ^^^^^^\ndiff --git a/pandas/core/reshape/merge.py b/pandas/core/reshape/merge.py\nindex 5012be593820e..516ae90360be7 100644\n--- a/pandas/core/reshape/merge.py\n+++ b/pandas/core/reshape/merge.py\n@@ -830,12 +830,15 @@ def _maybe_add_join_keys(self, result, left_indexer, right_indexer):\n                     rvals = algos.take_1d(take_right, right_indexer, fill_value=rfill)\n \n                 # if we have an all missing left_indexer\n-                # make sure to just use the right values\n-                mask = left_indexer == -1\n-                if mask.all():\n+                # make sure to just use the right values or vice-versa\n+                mask_left = left_indexer == -1\n+                mask_right = right_indexer == -1\n+                if mask_left.all():\n                     key_col = rvals\n+                elif mask_right.all():\n+                    key_col = lvals\n                 else:\n-                    key_col = Index(lvals).where(~mask, rvals)\n+                    key_col = Index(lvals).where(~mask_left, rvals)\n \n                 if result._is_label_reference(name):\n                     result[name] = key_col\ndiff --git a/pandas/tests/reshape/merge/test_multi.py b/pandas/tests/reshape/merge/test_multi.py\nindex b1922241c7843..260a0e9d486b2 100644\n--- a/pandas/tests/reshape/merge/test_multi.py\n+++ b/pandas/tests/reshape/merge/test_multi.py\n@@ -2,7 +2,7 @@\n import pytest\n \n import pandas as pd\n-from pandas import DataFrame, Index, MultiIndex, Series\n+from pandas import DataFrame, Index, MultiIndex, Series, Timestamp\n import pandas._testing as tm\n from pandas.core.reshape.concat import concat\n from pandas.core.reshape.merge import merge\n@@ -481,6 +481,53 @@ def test_merge_datetime_index(self, klass):\n         result = df.merge(df, on=[df.index.year], how=\"inner\")\n         tm.assert_frame_equal(result, expected)\n \n+    @pytest.mark.parametrize(\"merge_type\", [\"left\", \"right\"])\n+    def test_merge_datetime_multi_index_empty_df(self, merge_type):\n+        # see gh-36895\n+\n+        left = DataFrame(\n+            data={\n+                \"data\": [1.5, 1.5],\n+            },\n+            index=MultiIndex.from_tuples(\n+                [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+                names=[\"date\", \"panel\"],\n+            ),\n+        )\n+\n+        right = DataFrame(\n+            index=MultiIndex.from_tuples([], names=[\"date\", \"panel\"]), columns=[\"state\"]\n+        )\n+\n+        expected_index = MultiIndex.from_tuples(\n+            [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+            names=[\"date\", \"panel\"],\n+        )\n+\n+        if merge_type == \"left\":\n+            expected = DataFrame(\n+                data={\n+                    \"data\": [1.5, 1.5],\n+                    \"state\": [None, None],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = left.merge(right, how=\"left\", on=[\"date\", \"panel\"])\n+            results_join = left.join(right, how=\"left\")\n+        else:\n+            expected = DataFrame(\n+                data={\n+                    \"state\": [None, None],\n+                    \"data\": [1.5, 1.5],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = right.merge(left, how=\"right\", on=[\"date\", \"panel\"])\n+            results_join = right.join(left, how=\"right\")\n+\n+        tm.assert_frame_equal(results_merge, expected)\n+        tm.assert_frame_equal(results_join, expected)\n+\n     def test_join_multi_levels(self):\n \n         # GH 3662\n"
+          }
+        }
+      ],
       "expected_values": [
         {
-          "description": "The Markdown title references PR #36897 and the regression fix for merging DataFrame with DatetimeIndex with empty DataFrame.",
-          "value": "Bug Fix Write-Up: PR #36897 – Regression Fix for Merging DataFrame with DatetimeIndex with Empty DataFrame",
+          "description": "PR number referenced in the document title and introduction",
+          "value": "#36897",
           "tolerance": null,
-          "location": "Markdown document title (first line, H1)"
+          "location": "Title and first section introduction"
         },
         {
-          "description": "The Summary section mentions issue #36895 as the source of the regression report.",
-          "value": "issue #36895",
+          "description": "Issue number that the PR closes",
+          "value": "#36895",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Introduction and test coverage section"
         },
         {
-          "description": "The Summary section identifies the failing operation as merging a DataFrame with a DatetimeIndex against an empty DataFrame.",
-          "value": "merge a DataFrame that has a DatetimeIndex against an empty DataFrame",
-          "tolerance": null,
-          "location": "Summary section"
-        },
-        {
-          "description": "The Root Cause section references the specific file path pandas/core/reshape/merge.py.",
+          "description": "File path where the bug fix is implemented",
           "value": "pandas/core/reshape/merge.py",
           "tolerance": null,
-          "location": "Root Cause section"
+          "location": "Root Cause Analysis and Patch Analysis sections"
         },
         {
-          "description": "The Root Cause section identifies the method _maybe_add_join_keys as the location of the bug.",
+          "description": "Method name where the bug occurred",
           "value": "_maybe_add_join_keys",
           "tolerance": null,
-          "location": "Root Cause section"
+          "location": "Root Cause Analysis section"
         },
         {
-          "description": "The Root Cause section mentions line 830 as the approximate location of the bug in merge.py.",
-          "value": "830",
-          "tolerance": null,
-          "location": "Root Cause section"
-        },
-        {
-          "description": "The Root Cause section explains the asymmetry: original code only checked left_indexer for -1, not right_indexer.",
-          "value": "asymmetric check",
-          "tolerance": null,
-          "location": "Root Cause section"
-        },
-        {
-          "description": "The Fix Description section identifies the renaming of mask to mask_left as part of the fix.",
-          "value": "mask_left",
-          "tolerance": null,
-          "location": "Fix Description section"
-        },
-        {
-          "description": "The Fix Description section identifies the new variable mask_right checking right_indexer == -1.",
-          "value": "mask_right",
-          "tolerance": null,
-          "location": "Fix Description section"
-        },
-        {
-          "description": "The Fix Description section includes the elif branch with condition mask_right.all() and assignment key_col = lvals.",
-          "value": "elif mask_right.all(): key_col = lvals",
-          "tolerance": null,
-          "location": "Fix Description section"
-        },
-        {
-          "description": "The Fix Description section notes the where clause update to use mask_left instead of mask.",
-          "value": "Index(lvals).where(~mask_left, rvals)",
-          "tolerance": null,
-          "location": "Fix Description section"
-        },
-        {
-          "description": "The Test Added section mentions the file pandas/tests/reshape/merge/test_multi.py.",
+          "description": "Test file where new test was added",
           "value": "pandas/tests/reshape/merge/test_multi.py",
           "tolerance": null,
-          "location": "Test Added section"
+          "location": "Test Coverage section"
         },
         {
-          "description": "The Test Added section mentions that Timestamp was added to the imports in the test file.",
-          "value": "Timestamp",
+          "description": "New test method name added",
+          "value": "test_merge_datetime_multi_index_empty_df",
           "tolerance": null,
-          "location": "Test Added section"
+          "location": "Test Coverage section"
         },
         {
-          "description": "The Whatsnew Entry section references the file doc/source/whatsnew/v1.2.0.rst.",
+          "description": "First merge type tested in the parametrization",
+          "value": "left",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Second merge type tested in the parametrization",
+          "value": "right",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "First Timestamp value used in the test DataFrames",
+          "value": "1950-01-01",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Second Timestamp value used in the test DataFrames",
+          "value": "1950-01-02",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Merge date of the PR",
+          "value": "2020-11-03",
+          "tolerance": null,
+          "location": "Introduction section"
+        },
+        {
+          "description": "Line number range where the code was modified",
+          "value": "830-842",
+          "tolerance": null,
+          "location": "Patch Analysis section"
+        },
+        {
+          "description": "First variable name introduced in the patch",
+          "value": "mask_left",
+          "tolerance": null,
+          "location": "Patch Analysis section"
+        },
+        {
+          "description": "Second variable name introduced in the patch",
+          "value": "mask_right",
+          "tolerance": null,
+          "location": "Patch Analysis section"
+        },
+        {
+          "description": "Condition added to handle right indexer all -1",
+          "value": "elif mask_right.all():",
+          "tolerance": null,
+          "location": "Patch Analysis section"
+        },
+        {
+          "description": "Updated where condition from original mask to mask_left",
+          "value": "~mask_left",
+          "tolerance": null,
+          "location": "Patch Analysis section"
+        },
+        {
+          "description": "Whatsnew file path updated",
           "value": "doc/source/whatsnew/v1.2.0.rst",
           "tolerance": null,
-          "location": "Whatsnew Entry section"
+          "location": "Fix Completeness Assessment section"
         },
         {
-          "description": "The Whatsnew Entry section includes the exact whatsnew entry text from the diff.",
-          "value": "Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)",
+          "description": "Whatsnew entry text for the fix",
+          "value": "Fixed regression in merge on merging DatetimeIndex with empty DataFrame",
           "tolerance": null,
-          "location": "Whatsnew Entry section"
+          "location": "Fix Completeness Assessment section"
         },
         {
-          "description": "The Checklist Verification section confirms tests added/passed was checked.",
-          "value": "tests were added and passed",
-          "tolerance": null,
-          "location": "Checklist Verification section"
-        },
-        {
-          "description": "The Checklist Verification section confirms passes black formatting was checked.",
-          "value": "passes `black pandas` formatting",
-          "tolerance": null,
-          "location": "Checklist Verification section"
-        },
-        {
-          "description": "The Checklist Verification section confirms passes flake8 diff was checked.",
-          "value": "passes `flake8 --diff` linting",
-          "tolerance": null,
-          "location": "Checklist Verification section"
-        },
-        {
-          "description": "The Checklist Verification section confirms whatsnew entry was checked.",
-          "value": "whatsnew entry was included",
-          "tolerance": null,
-          "location": "Checklist Verification section"
-        },
-        {
-          "description": "The document targets the v1.2.0 release as mentioned in the Summary section.",
+          "description": "Pandas version where fix is included",
           "value": "v1.2.0",
           "tolerance": null,
-          "location": "Summary section"
+          "location": "Fix Completeness Assessment section"
+        },
+        {
+          "description": "Import statement added to test file",
+          "value": "Timestamp",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "First index level name in the test DataFrames",
+          "value": "date",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Second index level name in the test DataFrames",
+          "value": "panel",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Data column name in left DataFrame",
+          "value": "data",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "State column name in right DataFrame",
+          "value": "state",
+          "tolerance": null,
+          "location": "Test Coverage section"
+        },
+        {
+          "description": "Additions count in the PR diff",
+          "value": 56,
+          "tolerance": null,
+          "location": "Reference to PR statistics"
+        },
+        {
+          "description": "Deletions count in the PR diff",
+          "value": 6,
+          "tolerance": null,
+          "location": "Reference to PR statistics"
         }
       ],
       "narrative_prompt": null,
@@ -779,10 +918,34 @@
     "estimated_hours": null,
     "seed_rng": 1054874607
   },
-  "input_attachment_specs": [],
+  "input_attachment_specs": [
+    {
+      "attachment_id": "att_0",
+      "filename": "input_0.md",
+      "format": "md",
+      "description": "PR #36897 diff showing changes to three files: doc/source/whatsnew/v1.2.0.rst, pandas/core/reshape/merge.py, and pandas/tests/reshape/merge/test_multi.py",
+      "content_blueprint": {
+        "title": "PR #36897 diff showing changes to three files: doc/source/whatsnew/v1",
+        "body": "# Seed Material: pandas-dev/pandas#36897: regression fix for merging DF with datetime index with empty DF\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#36897\n\nRepository: pandas-dev/pandas\nPR Number: #36897\nPR Title: regression fix for merging DF with datetime index with empty DF\nMerged At: 2020-11-03T13:30:03Z\nChanged Files: 3\nAdditions: +56, Deletions: -6\n\n## PR Description\n- [X ] closes https://github.com/pandas-dev/pandas/issues/36895\r\n- [X ] tests added / passed\r\n- [X ] passes `black pandas`\r\n- [ X] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [ X] whatsnew entry\r\n\n\n## Diff\ndiff --git a/doc/source/whatsnew/v1.2.0.rst b/doc/source/whatsnew/v1.2.0.rst\nindex 6f137302d4994..167af1e5e282e 100644\n--- a/doc/source/whatsnew/v1.2.0.rst\n+++ b/doc/source/whatsnew/v1.2.0.rst\n@@ -467,7 +467,6 @@ MultiIndex\n \n - Bug in :meth:`DataFrame.xs` when used with :class:`IndexSlice` raises ``TypeError`` with message ``\"Expected label or tuple of labels\"`` (:issue:`35301`)\n - Bug in :meth:`DataFrame.reset_index` with ``NaT`` values in index raises ``ValueError`` with message ``\"cannot convert float NaN to integer\"`` (:issue:`36541`)\n--\n \n I/O\n ^^^\n@@ -534,6 +533,7 @@ Reshaping\n - Bug in :meth:`DataFrame.pivot` did not preserve :class:`MultiIndex` level names for columns when rows and columns both multiindexed (:issue:`36360`)\n - Bug in :func:`join` returned a non deterministic level-order for the resulting :class:`MultiIndex` (:issue:`36910`)\n - Bug in :meth:`DataFrame.combine_first()` caused wrong alignment with dtype ``string`` and one level of ``MultiIndex`` containing only ``NA`` (:issue:`37591`)\n+- Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)\n \n Sparse\n ^^^^^^\ndiff --git a/pandas/core/reshape/merge.py b/pandas/core/reshape/merge.py\nindex 5012be593820e..516ae90360be7 100644\n--- a/pandas/core/reshape/merge.py\n+++ b/pandas/core/reshape/merge.py\n@@ -830,12 +830,15 @@ def _maybe_add_join_keys(self, result, left_indexer, right_indexer):\n                     rvals = algos.take_1d(take_right, right_indexer, fill_value=rfill)\n \n                 # if we have an all missing left_indexer\n-                # make sure to just use the right values\n-                mask = left_indexer == -1\n-                if mask.all():\n+                # make sure to just use the right values or vice-versa\n+                mask_left = left_indexer == -1\n+                mask_right = right_indexer == -1\n+                if mask_left.all():\n                     key_col = rvals\n+                elif mask_right.all():\n+                    key_col = lvals\n                 else:\n-                    key_col = Index(lvals).where(~mask, rvals)\n+                    key_col = Index(lvals).where(~mask_left, rvals)\n \n                 if result._is_label_reference(name):\n                     result[name] = key_col\ndiff --git a/pandas/tests/reshape/merge/test_multi.py b/pandas/tests/reshape/merge/test_multi.py\nindex b1922241c7843..260a0e9d486b2 100644\n--- a/pandas/tests/reshape/merge/test_multi.py\n+++ b/pandas/tests/reshape/merge/test_multi.py\n@@ -2,7 +2,7 @@\n import pytest\n \n import pandas as pd\n-from pandas import DataFrame, Index, MultiIndex, Series\n+from pandas import DataFrame, Index, MultiIndex, Series, Timestamp\n import pandas._testing as tm\n from pandas.core.reshape.concat import concat\n from pandas.core.reshape.merge import merge\n@@ -481,6 +481,53 @@ def test_merge_datetime_index(self, klass):\n         result = df.merge(df, on=[df.index.year], how=\"inner\")\n         tm.assert_frame_equal(result, expected)\n \n+    @pytest.mark.parametrize(\"merge_type\", [\"left\", \"right\"])\n+    def test_merge_datetime_multi_index_empty_df(self, merge_type):\n+        # see gh-36895\n+\n+        left = DataFrame(\n+            data={\n+                \"data\": [1.5, 1.5],\n+            },\n+            index=MultiIndex.from_tuples(\n+                [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+                names=[\"date\", \"panel\"],\n+            ),\n+        )\n+\n+        right = DataFrame(\n+            index=MultiIndex.from_tuples([], names=[\"date\", \"panel\"]), columns=[\"state\"]\n+        )\n+\n+        expected_index = MultiIndex.from_tuples(\n+            [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+            names=[\"date\", \"panel\"],\n+        )\n+\n+        if merge_type == \"left\":\n+            expected = DataFrame(\n+                data={\n+                    \"data\": [1.5, 1.5],\n+                    \"state\": [None, None],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = left.merge(right, how=\"left\", on=[\"date\", \"panel\"])\n+            results_join = left.join(right, how=\"left\")\n+        else:\n+            expected = DataFrame(\n+                data={\n+                    \"state\": [None, None],\n+                    \"data\": [1.5, 1.5],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = right.merge(left, how=\"right\", on=[\"date\", \"panel\"])\n+            results_join = right.join(left, how=\"right\")\n+\n+        tm.assert_frame_equal(results_merge, expected)\n+        tm.assert_frame_equal(results_join, expected)\n+\n     def test_join_multi_levels(self):\n \n         # GH 3662\n"
+      }
+    },
+    {
+      "attachment_id": "att_1",
+      "filename": "input_1.md",
+      "format": "md",
+      "description": "Issue #36895 description indicating the regression in merging DatetimeIndex with empty DataFrame",
+      "content_blueprint": {
+        "title": "Issue #36895 description indicating the regression in merging DatetimeIndex with empty DataFrame",
+        "body": "# Seed Material: pandas-dev/pandas#36897: regression fix for merging DF with datetime index with empty DF\nSource: github_issue_pr\nIdentifier: pr:pandas-dev/pandas#36897\n\nRepository: pandas-dev/pandas\nPR Number: #36897\nPR Title: regression fix for merging DF with datetime index with empty DF\nMerged At: 2020-11-03T13:30:03Z\nChanged Files: 3\nAdditions: +56, Deletions: -6\n\n## PR Description\n- [X ] closes https://github.com/pandas-dev/pandas/issues/36895\r\n- [X ] tests added / passed\r\n- [X ] passes `black pandas`\r\n- [ X] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [ X] whatsnew entry\r\n\n\n## Diff\ndiff --git a/doc/source/whatsnew/v1.2.0.rst b/doc/source/whatsnew/v1.2.0.rst\nindex 6f137302d4994..167af1e5e282e 100644\n--- a/doc/source/whatsnew/v1.2.0.rst\n+++ b/doc/source/whatsnew/v1.2.0.rst\n@@ -467,7 +467,6 @@ MultiIndex\n \n - Bug in :meth:`DataFrame.xs` when used with :class:`IndexSlice` raises ``TypeError`` with message ``\"Expected label or tuple of labels\"`` (:issue:`35301`)\n - Bug in :meth:`DataFrame.reset_index` with ``NaT`` values in index raises ``ValueError`` with message ``\"cannot convert float NaN to integer\"`` (:issue:`36541`)\n--\n \n I/O\n ^^^\n@@ -534,6 +533,7 @@ Reshaping\n - Bug in :meth:`DataFrame.pivot` did not preserve :class:`MultiIndex` level names for columns when rows and columns both multiindexed (:issue:`36360`)\n - Bug in :func:`join` returned a non deterministic level-order for the resulting :class:`MultiIndex` (:issue:`36910`)\n - Bug in :meth:`DataFrame.combine_first()` caused wrong alignment with dtype ``string`` and one level of ``MultiIndex`` containing only ``NA`` (:issue:`37591`)\n+- Fixed regression in :func:`merge` on merging DatetimeIndex with empty DataFrame (:issue:`36895`)\n \n Sparse\n ^^^^^^\ndiff --git a/pandas/core/reshape/merge.py b/pandas/core/reshape/merge.py\nindex 5012be593820e..516ae90360be7 100644\n--- a/pandas/core/reshape/merge.py\n+++ b/pandas/core/reshape/merge.py\n@@ -830,12 +830,15 @@ def _maybe_add_join_keys(self, result, left_indexer, right_indexer):\n                     rvals = algos.take_1d(take_right, right_indexer, fill_value=rfill)\n \n                 # if we have an all missing left_indexer\n-                # make sure to just use the right values\n-                mask = left_indexer == -1\n-                if mask.all():\n+                # make sure to just use the right values or vice-versa\n+                mask_left = left_indexer == -1\n+                mask_right = right_indexer == -1\n+                if mask_left.all():\n                     key_col = rvals\n+                elif mask_right.all():\n+                    key_col = lvals\n                 else:\n-                    key_col = Index(lvals).where(~mask, rvals)\n+                    key_col = Index(lvals).where(~mask_left, rvals)\n \n                 if result._is_label_reference(name):\n                     result[name] = key_col\ndiff --git a/pandas/tests/reshape/merge/test_multi.py b/pandas/tests/reshape/merge/test_multi.py\nindex b1922241c7843..260a0e9d486b2 100644\n--- a/pandas/tests/reshape/merge/test_multi.py\n+++ b/pandas/tests/reshape/merge/test_multi.py\n@@ -2,7 +2,7 @@\n import pytest\n \n import pandas as pd\n-from pandas import DataFrame, Index, MultiIndex, Series\n+from pandas import DataFrame, Index, MultiIndex, Series, Timestamp\n import pandas._testing as tm\n from pandas.core.reshape.concat import concat\n from pandas.core.reshape.merge import merge\n@@ -481,6 +481,53 @@ def test_merge_datetime_index(self, klass):\n         result = df.merge(df, on=[df.index.year], how=\"inner\")\n         tm.assert_frame_equal(result, expected)\n \n+    @pytest.mark.parametrize(\"merge_type\", [\"left\", \"right\"])\n+    def test_merge_datetime_multi_index_empty_df(self, merge_type):\n+        # see gh-36895\n+\n+        left = DataFrame(\n+            data={\n+                \"data\": [1.5, 1.5],\n+            },\n+            index=MultiIndex.from_tuples(\n+                [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+                names=[\"date\", \"panel\"],\n+            ),\n+        )\n+\n+        right = DataFrame(\n+            index=MultiIndex.from_tuples([], names=[\"date\", \"panel\"]), columns=[\"state\"]\n+        )\n+\n+        expected_index = MultiIndex.from_tuples(\n+            [[Timestamp(\"1950-01-01\"), \"A\"], [Timestamp(\"1950-01-02\"), \"B\"]],\n+            names=[\"date\", \"panel\"],\n+        )\n+\n+        if merge_type == \"left\":\n+            expected = DataFrame(\n+                data={\n+                    \"data\": [1.5, 1.5],\n+                    \"state\": [None, None],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = left.merge(right, how=\"left\", on=[\"date\", \"panel\"])\n+            results_join = left.join(right, how=\"left\")\n+        else:\n+            expected = DataFrame(\n+                data={\n+                    \"state\": [None, None],\n+                    \"data\": [1.5, 1.5],\n+                },\n+                index=expected_index,\n+            )\n+            results_merge = right.merge(left, how=\"right\", on=[\"date\", \"panel\"])\n+            results_join = right.join(left, how=\"right\")\n+\n+        tm.assert_frame_equal(results_merge, expected)\n+        tm.assert_frame_equal(results_join, expected)\n+\n     def test_join_multi_levels(self):\n \n         # GH 3662\n"
+      }
+    }
+  ],
   "gold_deliverable_path": "/Users/yangyuheng/Project/gdpval-synth/data/deliverables/sc_be055f60fd940495/bug_fix_pr.md",
-  "input_attachment_paths": [],
+  "input_attachment_paths": [
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_be055f60fd940495/input_0.md",
+    "/Users/yangyuheng/Project/gdpval-synth/data/accepted/sc_be055f60fd940495/input_1.md"
+  ],
   "generator_model": "mimo-v2.5-pro",
   "rubric_model": "mimo-v2.5-pro",
-  "created_at": "2026-05-14T05:23:19.964888+00:00"
+  "created_at": "2026-05-15T10:33:08.807456+00:00"
 }

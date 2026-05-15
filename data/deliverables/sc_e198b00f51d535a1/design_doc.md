@@ -1,73 +1,59 @@
-# Impact Assessment - Docker to Moby Transition
+# Design Doc - Moby Component Extraction Plan
+
+# Design Doc - Moby Component Extraction Plan
 
 ## Executive Summary
 
-The Docker project has undergone a significant architectural restructuring, transitioning the monolithic docker/docker repository (now moby/moby) into a modular, component-based architecture under the newly announced Moby Project. As stated in PR #32691, "Docker is, and will remain, a open source product that lets you build, ship and run containers. It is staying exactly the same from a user's perspective." This means that while the upstream project structure is fundamentally changing, the end-user experience of Docker as a container engine remains stable.
+This document outlines the technical plan for decomposing the Docker engine into modular, independently-buildable components under the Moby project, as initiated by PR #32691 on the moby/moby repository. The Moby project (http://mobyproject.org) provides a 'Lego set' of dozens of components, a framework for assembling them into custom container-based systems, and a community hub for container enthusiasts. The end-state vision is that the monolithic docker repo ceases to exist, replaced by a collection of independent projects assembled via the Moby toolchain. Docker the product will remain a user-facing open-source tool to build, ship, and run containers, but its internal architecture will be fully modularized.
 
-The Moby Project represents a new paradigm for container platform development. As described in the PR, "Moby is a project which provides a 'Lego set' of dozens of components, the framework for assembling them into custom container-based systems, and a place for all container enthusiasts to experiment and exchange ideas." The project introduces a command-line tool called moby that currently assembles bootable OS images and will soon be used to assemble Docker itself from independent components.
+PR #32691 represents the first concrete step: rewriting the README from Docker-centric language to Moby branding, adding the Moby project logo (docs/static_files/moby-project-logo.png), and documenting the transition plan. This design document extends that foundation into a full extraction architecture.
 
-This design document evaluates the impact of this transition on our container platform infrastructure. Our analysis must account for both the near-term stability (Docker users see no change) and the long-term implications of the componentization strategy, where "the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components." Docker the product "will be assembled from components that are packaged by the Moby project."
+## Motivation and Background
 
-## Technical Background
+The Docker project has been progressively decomposing its monolithic architecture. Two major components have already been extracted: runc (the OCI-compliant container runtime) and containerd, which was donated to the Cloud Native Computing Foundation (CNCF). PR #32691 continues this trajectory by formally renaming the repository from docker/docker to moby/moby and rewriting the README to reflect the new identity.
 
-The transition to the Moby Project did not occur in isolation. As the PR description notes, "Work has been ongoing to break Docker into modular components for some time, with runc and containerd as examples. Containerd for example has been donated to the CNCF." This prior work established the pattern and technical feasibility of extracting core functionality from the Docker monolith into standalone, independently maintainable projects.
+The README diff in PR #32691 removes 269 lines of Docker-specific content (including sections on 'Better than VMs', 'Plays well with others', 'Escape dependency hell', build examples, community links, and the 'Other Docker Related Projects' list) and replaces them with 50 lines of Moby-focused documentation. A new logo file, docs/static_files/moby-project-logo.png, is added to visually anchor the new identity.
 
-The Moby project extends this modular philosophy to the entire container platform stack. According to the PR, the Moby framework provides a library of containerized components for all vital aspects of a container system: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, image distribution, and more. All Moby components are containers themselves, so creating new components is as easy as building a new OCI-compatible container.
+The 'Transitioning to Moby' section of the new README specifies five proposed changes: (1) splitting up the engine into more open components, (2) removing the Docker UI, SDK etc. to keep them in the Docker org, (3) clarifying that the project is not limited to the engine but to the assembly of all individual components of the Docker platform, (4) open-sourcing new tools and components currently used to assemble the Docker product but which could benefit the community, and (5) defining an open, community-centric governance inspired by the Fedora project.
 
-The moby command-line tool serves as the assembly mechanism for these components. The PR states it currently assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components, many of which will be independent projects. This tool-based assembly approach means that Docker will ultimately become one particular assembly of Moby components, rather than a monolithic codebase.
+## Target Audience Analysis
 
-## Impact Analysis
+The Moby README explicitly defines its target audience. The project IS recommended for: (1) hackers who want to customize or patch their Docker build, and (2) system engineers or integrators building a container system. For hackers, the extraction must preserve deep customizability — every component should be replaceable without forking the entire system. For system engineers, the extraction must provide stable, well-documented interfaces between components so that integrators can assemble systems reliably.
 
-### Container Runtime Dependencies
+The README also lists three groups for whom Moby is NOT recommended: (1) application developers looking for an easy way to run applications in containers (recommended Docker CE instead), (2) enterprise IT and development teams seeking a commercially supported platform (recommended Docker EE instead), and (3) anyone curious about containers looking for an easy learning path (recommended the docker.com website instead). These exclusions imply that the Moby extraction does not need to prioritize backward-compatible user-facing APIs or simplified onboarding flows; instead, it can optimize for composability and internal flexibility.
 
-Our current platform relies on the Docker Engine as a single dependency. With the Moby transition, this engine will eventually be decomposed into multiple independent components. The PR states that "as the Docker Engine continues to be split up into more components the Moby project will also be the home for those components until a more appropriate location is found." In the near term, the docker/docker to moby/moby repository rename affects our dependency declarations, but "during the transition, all open source activity should continue as usual." Our container runtime layer—which already uses containerd and runc as separate dependencies—will see minimal disruption.
+## Component Extraction Architecture
 
-### Build and CI/CD Pipelines
+The extraction will proceed in three phases, organized by dependency order and risk. Each phase extracts component categories identified in the README's Overview section: OS, container runtime, orchestration, infrastructure management, networking, storage, security, build, and image distribution.
 
-Our CI/CD pipelines currently reference the docker/docker repository for source builds and contributions. The rename to moby/moby means all repository URLs, git remotes, and CI configuration referencing the old path must be updated. However, since "Docker is transitioning all of its open source collaborations to the Moby project going forward," our open-source contributions and issue tracking will need to follow the Moby project conventions. The moby CLI tool will eventually become relevant for assembling custom Docker configurations, which may require us to integrate this tool into our build processes.
+**Phase 1 — Core Runtime Extraction** (container runtime, OS, security): Extract containerd integration, the daemon's OS abstraction layer, and security subsystems into standalone components. This phase has the fewest external dependencies and the most mature interfaces, thanks to the prior runc and containerd extractions. All components remain OCI-compatible as stated in the README: 'All Moby components are containers, so creating new components is as easy as building a new OCI-compatible container.'
 
-### Container Orchestration
+**Phase 2 — Platform Services Extraction** (networking, storage, build, image distribution): Extract the libnetwork driver interface, volume/storage plugins, the build subsystem, and the image distribution/push-pull logic. These components have more complex interdependencies and require careful API boundary definition. The moby CLI tool — described in the README as assembling bootable OS images and soon to be used by Docker for assembling Docker out of components — will serve as the integration test harness, verifying that extracted components compose correctly.
 
-Our orchestration layer interacts with Docker through its API. Since "Docker is staying exactly the same from a user's perspective," the Docker API surface should remain stable during the transition. However, the underlying implementation will be composed of Moby components, which introduces potential version skew between independently released components. The Moby project provides tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows; VM images for popular cloud and virtualization providers.
+**Phase 3 — Orchestration and Infrastructure** (orchestration, infrastructure management): Extract Swarm mode and infrastructure management integrations. These are the highest-level components and depend on everything extracted in Phases 1 and 2. This phase completes the dissolution of the monolith.
 
-## Migration Strategy
+Each phase must respect the three guiding principles from the README: (1) 'Batteries included but swappable' — every extracted component must expose a well-defined interface so alternative implementations can be swapped in; (2) 'Usable security' — secure defaults must be preserved through the extraction, with no security regressions; (3) 'Container centric' — all Moby components are themselves containers, ensuring consistent build and deployment.
 
-### Phase 1: Assessment (Weeks 1-4)
+## Governance and Transition Risks
 
-Conduct a comprehensive audit of all Docker-related dependencies, repository references, and integration points. Update all references from docker/docker to moby/moby. Evaluate which Moby components (runc, containerd, and others as they emerge) are already in use independently versus consumed as part of the monolithic Docker engine. The PR notes that "during the transition, all open source activity should continue as usual," so this phase has low risk of service disruption.
+The README specifies that the Moby project will adopt 'an open, community-centric governance inspired by the Fedora project,' balancing community needs with the constraints of Docker, Inc. as the primary corporate sponsor. This model requires clear maintainer roles, transparent decision-making processes, and formal contribution guidelines.
 
-### Phase 2: Adaptation (Weeks 5-12)
+**Risk 1 — Contributor Confusion**: The rename from docker/docker to moby/moby may confuse existing contributors. Mitigation: maintain prominent transition documentation in the README (as PR #32691 already does with the 'Transitioning to Moby' section), provide redirect links from old URLs, and run community outreach sessions during the transition period.
 
-Begin consuming Moby components directly where advantageous. Evaluate the moby command-line tool for assembling custom container system configurations. As the PR describes, "the Moby project provides a command-line tool called moby which assembles components"—we should prototype using this tool for our specific deployment targets. Update CI/CD pipelines to handle the new repository structure and contribute any necessary patches upstream through Moby's open source collaboration channels.
+**Risk 2 — Fragmented Documentation**: As components are extracted into separate repositories, documentation may become scattered and inconsistent. Mitigation: establish a central Moby documentation hub at mobyproject.org, enforce documentation standards for all extracted components, and require that the moby CLI tool's help system remains a unified entry point.
 
-### Phase 3: Optimization (Weeks 13-24)
+Legal considerations must also be addressed. The LICENSE file path changes from github.com/docker/docker/blob/master/LICENSE to github.com/moby/moby/blob/master/LICENSE. The NOTICE document at github.com/moby/moby/blob/master/NOTICE must be updated to reflect the new project structure. Both documents are referenced in the README's Legal and Licensing sections and must remain accurate throughout the extraction.
 
-Fully leverage the modular architecture by independently upgrading Moby components. Since "as the Docker Engine continues to be split up into more components the Moby project will also be the home for those components," we can adopt individual component releases on their own cadence. Build custom assemblies using the Moby framework's tools to assemble the components into runnable artifacts for a variety of platforms and architectures: bare metal (both x86 and Arm); executables for Linux, Mac and Windows. This phase positions our platform to benefit from the full flexibility of the Moby component model.
+## Success Criteria
 
-## Risk Register
+The extraction is complete when the following criteria are met, aligned with the PR description's assurance that 'Docker is, and will remain, a open source product that lets you build, ship and run containers' from a user perspective:
 
-| Risk ID | Risk Description | Severity | PR Reference | Mitigation Strategy |
+1. **Monolith Elimination**: The moby/moby repository contains only the moby CLI assembler and metadata; all engine functionality lives in independently-buildable component repositories.
 
-|---------|-----------------|----------|--------------|---------------------|
+2. **User Experience Preservation**: Docker CE and Docker EE can be assembled from Moby components via the moby tool with zero user-visible behavioral changes — users can 'download Docker from the docker.com website' as before.
 
-| R1 | Repository rename from docker/docker to moby/moby breaks build scripts and dependency references | High | PR changes the README and kicks off the process of breaking up the engine under Moby | Automated find-and-replace across all CI configs; dual-registry caching during transition |
+3. **Component Independence**: Each extracted component (container runtime, orchestration, networking, storage, security, build, image distribution, OS abstraction, infrastructure management) has its own CI pipeline, test suite, and release cycle.
 
-| R2 | Component fragmentation leads to version incompatibility between independently released Moby components | High | As the Docker Engine continues to be split up into more components | Pin component versions in assemblies; maintain compatibility matrix; use the moby CLI tool assembly specifications |
+4. **Assembly Verification**: The moby CLI tool successfully assembles a fully functional Docker binary from extracted components on at least three target platforms (Linux x86, Linux Arm, macOS/Windows executables), consistent with the README's description of building 'runnable artifacts for a variety of platforms and architectures.'
 
-| R3 | Loss of upstream community focus as contributions migrate from Docker to Moby | Medium | Docker is transitioning all of its open source collaborations to the Moby project going forward | Assign dedicated engineers to Moby project participation; monitor both old and new issue trackers |
-
-| R4 | Increased operational complexity from managing multiple component lifecycles instead of one Docker release | Medium | Docker product will be assembled from components that are packaged by the Moby project | Invest in automation for component updates; maintain internal component registry with tested combinations |
-
-| R5 | Confusion among engineering teams about the distinction between Docker the product and Moby the project | Low | PR explicitly states relationship: Docker is staying exactly the same from a user's perspective while Moby is the framework | Internal documentation and training sessions; clear naming conventions in internal tooling |
-
-## Recommendations
-
-1. **Immediate Repository Reference Update**: All internal tooling, CI/CD configurations, and documentation referencing docker/docker should be updated to moby/moby within the next sprint. The PR confirms this rename is the first step in the transition and kicks off the process of breaking up the engine under Moby.
-
-2. **Establish Moby Component Tracking**: Create an internal registry of Moby components and their version compatibility. Since Docker will eventually be assembled from components that are packaged by the Moby project, understanding the component dependency graph is essential for long-term platform stability.
-
-3. **Prototype the Moby CLI Tool**: Allocate engineering time to evaluate the moby command-line tool for assembling container systems. The PR states it currently assembles bootable OS images, but soon it will also be used by Docker for assembling Docker out of components. Early adoption will give us a competitive advantage in customizing our container platform.
-
-4. **Participate in Moby Open Source**: As Docker is transitioning all of its open source collaborations to the Moby project going forward, we should redirect our upstream contributions to the Moby project. This ensures our patches and features are incorporated into the evolving component ecosystem.
-
-5. **Dual-Track Testing Strategy**: Maintain testing against both the current Docker releases and emerging Moby component assemblies. Since the monolithic docker repo eventually ceases to exist, instead being assembled from a set of components, we must validate our platform against both the legacy and future architectures during the transition period.
+5. **Community Governance**: The Fedora-inspired governance model is operational, with documented maintainer roles, contribution guidelines, and a transparent decision-making process.
