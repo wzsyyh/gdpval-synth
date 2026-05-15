@@ -43,8 +43,8 @@ Accepted or rejected
 Instead of inventing scenarios, we ground every task in real public data:
 
 - **Lawyer**: Full opinion texts from the U.S. Supreme Court, 9th Circuit, 2nd Circuit, etc. (via CourtListener REST API). Previously truncated at 2,000 chars; now harvested at **10,000 chars** to capture holdings, reasoning, and factual details.
-- **Financial Analyst**: Structured XBRL financial statements (revenue, net income, assets, liabilities, EPS) from SEC EDGAR for AAPL, MSFT, NVDA, GOOGL, META, AMZN, TSLA, BAC, JPM.
-- **Software Engineer**: Merged PR diffs, descriptions, and linked issues from high-impact open-source repos (scikit-learn, pandas, matplotlib, pytorch).
+- **Financial Analyst**: Structured XBRL financial statements (revenue, net income, assets, liabilities, EPS) from SEC EDGAR for 25 large-cap companies (AAPL, MSFT, NVDA, GOOGL, META, AMZN, TSLA, BAC, JPM, BA, CVX, HD, DIS, etc.).
+- **Software Engineer**: Merged PR diffs, descriptions, and linked issues from 19 high-impact open-source repos (scikit-learn, pandas, numpy, pytorch, vercel/next.js, facebook/react, etc.).
 
 ### 2.2 Unified Generation
 
@@ -96,8 +96,8 @@ Tasks pass through two quality gates before acceptance:
 
 ```
 Total accepted tasks: 84
-Total generated: 112 (84 accepted + 28 rejected)
-Acceptance rate through quality gate: ~75%
+Total generated: 112 (84 accepted + 28 rejected, including 4 from non-target occupations in early testing)
+Acceptance rate through quality gate: ~75% (~78% for target 3 occupations: 84/108)
 ```
 
 ### 3.2 By Occupation

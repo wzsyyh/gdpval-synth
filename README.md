@@ -16,7 +16,7 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 
 | 职业 | GDPval 对应职业 | 真实种子来源 |
 |---|---|---|
-| 律师 | Lawyers | CourtListener API（联邦及州法院判例） |
+| 律师 | Lawyers | CourtListener API（联邦法院判例） |
 | 金融分析师 | Financial and Investment Analysts | SEC EDGAR XBRL 财报 |
 | 软件工程师 | Software Developers | GitHub Issues & PRs（scikit-learn、pandas 等） |
 
@@ -108,8 +108,8 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 将每道题锚定在真实公开数据上：
 
 - **律师**：美国最高法院、第九巡回上诉法院、第二巡回上诉法院等的完整判决书原文（通过 CourtListener REST API）。**10,000 字符**，完整捕获判决理由、推理过程和事实细节。
-- **金融分析师**：SEC EDGAR 结构化 XBRL 财务报表（营收、净利润、资产、负债、EPS），覆盖 AAPL、MSFT、NVDA、GOOGL、META、AMZN、TSLA、BAC、JPM。
-- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、matplotlib、pytorch）。PR diff **6,000 字符** + PR description + issue body。
+- **金融分析师**：SEC EDGAR 结构化 XBRL 财务报表（营收、净利润、资产、负债、EPS），覆盖 25 家大型上市公司（AAPL、MSFT、NVDA、GOOGL、META、AMZN、TSLA、BAC、JPM、BA、CVX、HD、DIS 等）。
+- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、numpy、pytorch、vercel/next.js、facebook/react 等 19 个仓库）。PR diff **6,000 字符** + PR description + issue body。
 
 ### 3.2 统一生成
 
@@ -190,7 +190,7 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 
 ### 4.2 金融领域通过率提升：XBRL 数据修复
 
-金融任务是三个领域中**通过率最低的**（初始约 43%），核心原因是 XBRL 数据的结构性陷阱。
+金融任务是三个领域中**通过率最低的**（当前约 43%），核心原因是 XBRL 数据的结构性陷阱。
 
 #### 问题根源
 
@@ -239,8 +239,8 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 ```
 已验收任务总数：84
-总生成数：112（84 验收 + 28 拒绝）
-质量门通过率：~75%
+总生成数：112（84 验收 + 28 拒绝，含早期测试中非目标职业的 4 次拒绝）
+质量门通过率：~75%（按目标三职业计算：84/108 ≈ 78%）
 ```
 
 ### 5.2 按职业分布
@@ -323,7 +323,7 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 > You are a senior credit analyst in the Leveraged Finance group at a major commercial bank. Your team has been asked to prepare a credit memorandum for the Boeing Company (BA) to support the bank's ongoing credit risk monitoring and internal portfolio review...
 
 **Rubric 片段**（5 条）：
-- `[+1]` The submitted document is a PDF file titled exactly 'Credit Memo - The Boeing Company'.
+- `[+1]` The submitted document is a Word document or PDF titled 'Credit Memo - The Boeing Company'.
 - `[+1]` The document header includes 'To: Credit Risk Committee'.
 - `[+2]` The executive summary identifies the persistent negative equity position as a key credit concern.
 - `[+2]` The leverage analysis discusses the debt-to-capital ratio trend using data from the attached 10-Q.
@@ -374,8 +374,8 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 ### 8.3 种子覆盖范围有限
 
 - **律师**：仅覆盖联邦法院判例，未包含州法院、行政裁决、合同原文等
-- **财务**：仅覆盖 9 家大型上市公司，缺少中型公司、私有公司、非美国公司
-- **SWE**：仅覆盖 Python/JavaScript 生态，缺少 C++、Rust、Go 等语言
+- **财务**：覆盖 25 家大型上市公司，缺少中型公司、私有公司、非美国公司
+- **SWE**：覆盖 19 个仓库（Python/JavaScript/Rust 生态），缺少 C++、Go 等语言
 
 ### 8.4 评分标准依赖确定性检查
 
