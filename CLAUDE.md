@@ -27,7 +27,7 @@ Key insight: The LLM reads the full seed material and designs the task, answer, 
 1. **Unified generation**: Single LLM call reads full seed → outputs structured `UnifiedTask` with prompt, answer blueprint, and rubric. All facts must come from the seed material.
 2. **Blueprint-based rendering**: ReferenceAnswer contains `SectionBlueprint` / `SheetBlueprint` / `CellBlueprint` — structured data rendered by deterministic code (openpyxl, python-docx) into real files with live formulas.
 3. **Seed-driven diversity**: Each occupation uses real seeds (CourtListener for lawyer, SEC EDGAR for financial, GitHub issues for SWE) so canonical facts are grounded.
-4. **Quality gate**: Hard validators (6 deterministic checks: prompt length, rubric count, score distribution, vague language, attachment quality, answer content) + LLM-based consistency validation.
+4. **Quality gate**: Hard validators (8 deterministic checks: prompt length, rubric count, expected values, score distribution, vague language, attachment quality, answer content, rubric grounding) + two-stage LLM-based consistency validation (Planner + Executor).
 5. **Per-occupation system prompts**: Independent prompts for lawyer, financial_analyst, software_engineer to prevent cross-domain interference.
 
 ## How to Run
@@ -37,7 +37,7 @@ Key insight: The LLM reads the full seed material and designs the task, answer, 
 uv sync
 
 # Run pipeline batch (n=10, grid seed=45)
-uv run python -m pipeline.orchestrator --batch-size 10 --grid-seed 45
+uv run python -m pipeline.orchestrator -n 10 --grid-seed 45
 
 # Verify alignment metrics
 uv run python pipeline/verify/gdpval_alignment.py
@@ -55,8 +55,8 @@ Uses Mimo API (`mimo-v2.5-pro`) via OpenAI-compatible endpoint. Config in `pipel
 
 ## Current Status (as of latest commit)
 
-- **96 accepted tasks** with real deliverables (lawyer: 34, financial: 24, SWE: 38)
-- **Acceptance rate**: ~91% (96/105) through hard quality + consistency validation
+- **50 accepted tasks** with real deliverables (lawyer: 15, financial: 16, SWE: 19)
+- **Acceptance rate**: ~43% (50/117) through hard quality + consistency validation
 - **Key deliverable types**:
   - Lawyer: `legal_memo` (docx/pdf)
   - Financial: `credit_memo`, `investment_memo` (docx)
@@ -74,7 +74,7 @@ Uses Mimo API (`mimo-v2.5-pro`) via OpenAI-compatible endpoint. Config in `pipel
 | `pipeline/scenario/reference_answer.py` | Blueprint models (ReferenceAnswer, SectionBlueprint, etc.) |
 | `pipeline/artifacts/renderer.py` | Deterministic deliverable rendering |
 | `pipeline/artifacts/input_renderer.py` | Input attachment rendering |
-| `pipeline/validators/hard_quality.py` | Hard quality validators (6 deterministic checks) |
+| `pipeline/validators/hard_quality.py` | Hard quality validators (8 deterministic checks) |
 | `pipeline/validators/llm_consistency.py` | LLM-based consistency validation |
 | `pipeline/orchestrator.py` | Main pipeline orchestration |
 | `pipeline/verify/gdpval_alignment.py` | Automated alignment metrics |
