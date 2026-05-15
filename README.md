@@ -317,23 +317,25 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 ## 七、典型任务示例
 
-### 示例 1：金融分析师——波音信用备忘录
+### 示例 1：金融分析师——特斯拉信用备忘录
 
-**种子**：Boeing Q1 FY2026 10-Q XBRL 数据（营收、负债、负股东权益等）
+**种子**：Tesla, Inc. (TSLA) SEC EDGAR XBRL 财务数据
 
 **任务类型**：`credit_memo`
 
 **Prompt 开头**（节选）：
-> You are a senior credit analyst in the Leveraged Finance group at a major commercial bank. Your team has been asked to prepare a credit memorandum for the Boeing Company (BA) to support the bank's ongoing credit risk monitoring and internal portfolio review...
+> You are a credit analyst in the Leveraged Finance Group at a major investment bank. Your team is evaluating Tesla, Inc. (TSLA) for a potential $5 billion term loan facility to fund expansion of its energy generation and storage segment. The senior credit officer has asked you to prepare a Credit Memo assessing Tesla's creditworthiness based on its most recent financial performance.
+>
+> You are provided with Tesla's XBRL financial data extracted from its SEC filings, covering quarterly and annual re...
 
 **Rubric 片段**（5 条）：
-- `[+1]` The submitted document is a Word document or PDF titled 'Credit Memo - The Boeing Company'.
-- `[+1]` The document header includes 'To: Credit Risk Committee'.
-- `[+2]` The executive summary identifies the persistent negative equity position as a key credit concern.
-- `[+2]` The leverage analysis discusses the debt-to-capital ratio trend using data from the attached 10-Q.
-- `[+1]` The recommendation section provides a clear exposure stance (increase/maintain/reduce).
+- `[+1]` The submitted document is a Word document (.docx) file.
+- `[+2]` The document includes a memorandum-style header with To, From, Date, and Re fields, where the Re field references Tesla, Inc. and the $5 billion term loan facility.
+- `[+1]` The memo includes a clearly labeled 'Executive Summary' section.
+- `[+1]` The memo includes a clearly labeled 'Financial Performance Analysis' section.
+- `[+1]` The memo includes a clearly labeled 'Balance Sheet Strength' section.
 
-**交付物**：`credit_memo.docx`（含标准信用备忘录格式：header、executive summary、leverage analysis、covenants、recommendation）
+**交付物**：`credit_memo.docx`（含标准信用备忘录格式：header、executive summary、financial performance analysis、balance sheet strength、recommendation）
 
 ### 示例 2：软件工程师——Next.js PR 代码评审
 
@@ -342,16 +344,18 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 **任务类型**：`code_review`
 
 **Prompt 开头**（节选）：
-> You are a senior frontend engineer on the Next.js core team. Your team has just received PR #65804, which adds experimental React compiler support to Next.js via a new `experimental.reactCompiler` configuration option. Before merging to the main branch, you need to produce a thorough code review document...
+> You are a senior frontend engineer on the Next.js platform team. The team has recently received a significant pull request (#65804) from a fellow engineer that adds experimental React Compiler support to the Next.js build system. This feature allows users to optionally enable the React Compiler via a new `experimental.reactCompiler` configuration option, which integrates a Babel plugin for the compiler into both the webpack and Turbopack build pipelines.
+>
+> The team lead has asked you to perform a...
 
 **Rubric 片段**（5 条）：
-- `[+2]` The submitted document is a Markdown file titled exactly 'Code Review - PR #65804'.
-- `[+2]` The Summary section describes the PR's purpose: adding experimental React compiler support via `experimental.reactCompiler`.
-- `[+2]` The Design Decisions section evaluates the choice of using a boolean or object configuration for the compiler options.
-- `[+1]` The Risk Assessment section identifies potential backward compatibility concerns.
-- `[+2]` The Recommendations section provides actionable next steps before merging.
+- `[+1]` The submitted document is a Markdown file.
+- `[+1]` The document has a main heading (H1) that includes the PR number '#65804'.
+- `[+1]` The document has a main heading (H1) that includes the PR title fragment 'experimental react compiler support'.
+- `[+1]` The document contains a section with the heading 'Executive Summary'.
+- `[+1]` The document contains a section with the heading 'Design & Architecture'.
 
-**交付物**：`code_review.md`（含 Summary、Design Decisions、Implementation Quality、Risk Assessment、Recommendations 章节）
+**交付物**：`code_review.md`（含 Executive Summary、Design & Architecture、Implementation Quality、Risk Assessment、Recommendations 章节）
 
 ---
 
