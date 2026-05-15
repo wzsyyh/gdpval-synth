@@ -86,7 +86,7 @@ Tasks pass through two quality gates before acceptance:
 - Rubric items match answer content (rubric alignment)
 - Prompt requirements addressed in answer (prompt coverage)
 
-**Acceptance rate: ~75%** (84/112). Lawyer ~83%, SWE ~97%, Financial ~43% — the lower financial rate is due to XBRL data complexity (YTD/quarterly confusion, rounding precision).
+**Acceptance rate: ~78%** (84/108). Lawyer ~83%, SWE ~97%, Financial ~43% — the lower financial rate is due to XBRL data complexity (YTD/quarterly confusion, rounding precision).
 
 ---
 
@@ -96,8 +96,8 @@ Tasks pass through two quality gates before acceptance:
 
 ```
 Total accepted tasks: 84
-Total generated: 112 (84 accepted + 28 rejected, including 4 from non-target occupations in early testing)
-Acceptance rate through quality gate: ~75% (~78% for target 3 occupations: 84/108)
+Total generated: 108 (84 accepted + 24 rejected)
+Acceptance rate through quality gate: ~78%
 ```
 
 ### 3.2 By Occupation
