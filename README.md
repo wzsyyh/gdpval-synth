@@ -2,7 +2,7 @@
 
 > 一种基于真实种子材料的流水线，可生成与真实 [GDPval](https://openai.com/index/introducing-swe-bench-verified/)（OpenAI 发布的 220 题、覆盖 44 种职业的基准测试）无法区分的专业评估任务。
 >
-> **当前语料库：84 道已验收任务**（律师：34，金融分析师：12，软件工程师：38），含真实交付物（.docx、.xlsx、.md、.pdf）。
+> **当前语料库：50 道已验收任务**（律师：15，金融分析师：16，软件工程师：19），含真实交付物（.docx、.xlsx、.md、.pdf）。
 
 ---
 
@@ -33,11 +33,11 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 
 | 指标 | 结果 | 说明 |
 |---|---|---|
-| 已验收任务 | **84** | 律师 34 / 金融 12 / SWE 38 |
-| 质量门通过率 | **~78%** | 84 验收 / 108 总生成 |
+| 已验收任务 | **50** | 律师 15 / 金融 16 / SWE 19 |
+| 质量门通过率 | **~44%** | 50 验收 / 114 总生成 |
 | 事实锚定率 | **100%** | 所有名字、数字、引用均来自种子材料 |
-| 每领域任务数 | 12–38 | 原始 GDPval 的 2–8 倍 |
-| 输入附件率 | **~91%** | 高于 GDPval 目标 (~57%) |
+| 每领域任务数 | 15–19 | 原始 GDPval 的 3–4 倍 |
+| 输入附件率 | **100%** | 所有任务均附带种子材料作为输入附件 |
 
 ---
 
@@ -85,7 +85,7 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 统一任务 { 题目 + 答案蓝图 + 评分标准 }
     ↓  [确定性代码渲染]
 交付物文件（.docx / .xlsx / .md / .pdf）
-    ↓  [硬质量校验器]
+    ↓  [硬质量校验器 + LLM 一致性验证]
 验收或拒绝
 ```
 
@@ -107,13 +107,13 @@ GDPval 评估精通各领域的智能体在 44 种职业上的表现，每种职
 
 将每道题锚定在真实公开数据上：
 
-- **律师**：美国最高法院、第九巡回上诉法院、第二巡回上诉法院等的完整判决书原文（通过 CourtListener REST API）。**10,000 字符**，完整捕获判决理由、推理过程和事实细节。
+- **律师**：美国最高法院、第九巡回上诉法院、第二巡回上诉法院等的完整判决书原文（通过 CourtListener REST API）。完整捕获判决理由、推理过程和事实细节。
 - **金融分析师**：SEC EDGAR 结构化 XBRL 财务报表（营收、净利润、资产、负债、EPS），覆盖 25 家大型上市公司（AAPL、MSFT、NVDA、GOOGL、META、AMZN、TSLA、BAC、JPM、BA、CVX、HD、DIS 等）。
-- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、numpy、pytorch、vercel/next.js、facebook/react 等 19 个仓库）。PR diff **6,000 字符** + PR description + issue body。
+- **软件工程师**：高质量开源仓库的已合并 PR diff、描述及关联 issue（scikit-learn、pandas、numpy、pytorch、vercel/next.js、facebook/react 等 19 个仓库）。
 
 ### 3.2 统一生成
 
-单次大模型调用（Mimo v2.5 Pro）读取完整种子材料，输出结构化的 `统一任务`。
+单次大模型调用（Mimo v2.5 Pro）读取**完整**种子材料，输出结构化的 `统一任务`。
 
 #### 3.2.1 任务类型由种子内容决定（启发式映射）
 
@@ -139,6 +139,9 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 用户 prompt 中明确约束：
 > "ALL facts in the answer must come from the material above. Do not invent names, numbers, or citations not in the material."
 
+评分标准同样受约束：
+> "Do NOT create criteria that check facts, dates, numbers, or references that are not in the seed material. Every rubric criterion must be answerable from the seed material alone."
+
 ### 3.3 确定性渲染
 
 答案蓝图由代码渲染为真实文件（无大模型参与）：
@@ -147,28 +150,29 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 |---|---|---|
 | `.docx` | python-docx | 法律备忘录、信用备忘录、投资备忘录 |
 | `.xlsx` | openpyxl | 含实时公式的财务模型 |
-| `.md` | 纯文本 | 代码评审、设计文档、事故复盘 |
+| `.md` | 纯文本 | 代码评审、设计文档 |
 | `.pdf` | LibreOffice headless | 从 docx 渲染的法律文档 |
 
 ### 3.4 质量漏斗
 
 任务在验收前通过两层质量检查：
 
-**硬质量校验**（确定性）：
+**硬质量校验**（确定性，8 项检查）：
 - 题目长度 ≥ 1,300 字符
 - 评分项数量 ≥ 35 且 ≤ 80
 - 预期值数量 ≥ 3
 - 分值分布不倾斜（单一分值不超过 85%）
 - 评分项具体且可验证（不模糊）
 - 输入附件有真实内容（≥ 100 字符）
+- 答案有实际正文内容（非仅标题）
+- 评分标准中的引用事实来自种子材料（rubric grounding）
 
-**LLM 一致性验证**（基于大模型）：
-- 种子事实是否正确引用（seed alignment）
-- 数字计算是否正确（calculation accuracy）
-- 评分标准是否与答案匹配（rubric alignment）
-- 题目要求是否在答案中体现（prompt coverage）
+**LLM 一致性验证**（两阶段设计）：
+- **Stage 1 (Planner)**：读取 prompt + rubric + answer，生成逐条验证清单
+- **Stage 2 (Executor)**：逐条执行验证清单，对照种子材料核查每个事实和计算
+- 检查维度：seed alignment / calculation accuracy / rubric alignment / rubric grounding / prompt coverage
 
-**通过率：~78%**（84/108）。其中律师 ~83%、SWE ~97%、金融 ~43%——金融通过率较低是因为 XBRL 数据的 YTD/季度混淆和数字精度问题（见 §4.2）。
+**通过率：~44%**（50/114）。其中律师 ~48%、SWE ~59%、金融 ~35%——金融通过率较低是因为 XBRL 数据的 YTD/季度混淆和数字精度问题（见 §4.2）。
 
 ---
 
@@ -176,21 +180,24 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 
 ![质量漏斗图](assets/quality_funnel.png)
 
-我们手动抽检了多个任务的**题目-答案-rubric 一致性**。以下问题是开发过程中**发现并已修正**的，当前版本的已验收任务中已不存在这些问题。
+我们对已验收任务进行了多轮人工抽检（累计覆盖约 60% 的任务），重点检查题目-答案-rubric 一致性。以下问题是开发过程中**发现并已修正**的，当前版本的已验收任务中已不存在这些问题。
 
-### 4.1 已修正的关键问题（开发迭代记录）
+### 4.1 六项流水线修复（v2 质量提升）
 
-| 问题 | 影响 | 修正措施 |
-|---|---|---|
-| XBRL 数据 YTD/季度混淆 | 同一期间出现两条记录（YTD 累计 + 单季度），LLM 混用导致财务数字错误 | 在渲染种子文本时加入日期范围（`start` to `end`），系统提示明确区分 YTD 与单季度值；详见 §4.2 |
-| 金融任务中 LLM 记错 XBRL 数字 | 答案中的财务数字与种子不符 | 将金融任务从**定量分析**（DCF、差异分析）改为**定性分析**（信用备忘录、投资备忘录） |
-| 共用系统提示导致跨领域干扰 | 金融任务中出现"专利侵权"等法律术语 | 拆分为 3 个独立系统提示（`_LAWYER_SYS`、`_FINANCIAL_SYS`、`_SWE_SYS`） |
-| 种子截断过小（2,000 字符） | LLM 看不到完整 holding 和推理过程，只能编造 | 将截断上限提升至 **10,000 字符**（律师）和 **6,000 字符**（SWE diff） |
-| 评分项语言模糊 | "demonstrates quality" 等无法客观评分 | hard_quality validator 增加模糊语言检测（`is good/well/appropriately/correctly`） |
+在专家审计中发现了 6 个系统性问题，已全部修复：
 
-### 4.2 金融领域通过率提升：XBRL 数据修复
+| # | 问题 | 影响范围 | 修复方案 | 修改文件 |
+|---|---|---|---|---|
+| 1 | Markdown 交付物出现重复 H1 标题 | SWE 任务 | `md_title` 存在时将 section heading_level 钳制到 ≥2，跳过与 md_title 相同的 heading | `artifacts/renderer.py` |
+| 2 | 输入附件 body 与种子文本重复 | 所有任务 | 多 attachment 折叠为单个，body 始终为完整种子文本 | `scenario/synthesis.py` |
+| 3 | 评分标准引用种子中不存在的事实 | 所有任务 | 新增 `_check_rubric_seed_grounding()`：提取 rubric 中的引用字符串，验证是否出现在种子文本中，≥3 条未锚定则拒绝 | `validators/hard_quality.py` |
+| 4 | 系统提示对 rubric 约束不够强 | 所有任务 | rubric 指令从"不检查答案中没有的内容"改为"不检查种子材料中没有的事实"；金融提示增加 XBRL 概念名警告 | `scenario/synthesis.py` |
+| 5 | LLM 一致性验证未检查 rubric grounding | 所有任务 | `ValidationResult` 增加 `rubric_grounded` 字段；executor 系统提示增加第 6 条指令；overall_passed 包含 rubric_grounded | `validators/llm_consistency.py` |
+| 6 | 多 attachment 渲染时 body 相同的副本 | 所有任务 | orchestrator 中按 body hash 去重，跳过已渲染的重复 attachment | `orchestrator.py` |
 
-金融任务是三个领域中**通过率最低的**（当前约 43%），核心原因是 XBRL 数据的结构性陷阱。
+### 4.2 金融领域通过率：XBRL 数据挑战
+
+金融任务是三个领域中**通过率最低的**（当前约 35%），核心原因是 XBRL 数据的结构性陷阱。
 
 #### 问题根源
 
@@ -198,38 +205,35 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 - **YTD 累计值**：如 Q2 2025 的 `start=2025-01-01, end=2025-06-30`（半年累计）
 - **单季度值**：如 Q2 2025 的 `start=2025-04-01, end=2025-06-30`（仅 Q2）
 
-两者共享相同的 `fp`（Q2）和 `fy`（2025），仅靠 `start` 日期区分。此前代码在渲染种子文本时丢弃了日期范围，导致 LLM 无法区分，经常把 YTD 累计值当成单季度值使用。
+两者共享相同的 `fp`（Q2）和 `fy`（2025），仅靠 `start` 日期区分。LLM 容易把 YTD 累计值当成单季度值使用。
 
-#### 修复措施（三层防护）
+#### 防护措施（三层）
 
 1. **种子渲染层**：`_build_seed_text()` 在周期标签中加入日期范围
    ```
    # 修复前：Q2 2025: 164,636,000,000
    # 修复后：Q2 2025 (2025-01-01 to 2025-06-30): 164,636,000,000
    ```
-   同时修改了 `synthesis.py`（生成）和 `llm_consistency.py`（验证）两处渲染代码。
 
-2. **系统提示层**：在 `_FINANCIAL_SYS` 中加入显式指令
-   > XBRL data contains both quarterly and year-to-date (YTD) cumulative values for the same period. When two entries share the same quarter, check the date ranges: a range starting from Jan 1 is YTD; a range starting mid-year is the single-quarter value. For quarterly trend analysis, always use the **single-quarter** value.
+2. **系统提示层**：在 `_FINANCIAL_SYS` 中加入显式 YTD/季度区分指令和 XBRL 概念名警告（不要用 "Revenues" 代替 "RevenueFromContractWithCustomerExcludingAssessedTax"）
 
 3. **验证层**：LLM consistency validator 同样获得日期范围上下文，能正确识别 YTD/季度差异
 
-#### 效果
+#### 剩余拒绝原因
 
-| 阶段 | 金融任务通过率 | 主要拒绝原因 |
-|---|---|---|
-| 修复前 | ~30%（定性分析） | YTD/季度混淆、数字编造 |
-| 修复后 | ~43%（28 个中通过 12 个） | 剩余为四舍五入精度和计算错误 |
-
-剩余拒绝主要来自：LLM 将 `$2.375B` 四舍五入为 `$2.4B`（被 validator 判为不精确）、debt-to-equity 分母用错（用 total assets 代替 stockholders' equity）、以及从 YTD 推算单季度时的算术错误。
+金融任务的主要拒绝原因：
+- LLM 将 `$2.375B` 四舍五入为 `$2.4B`（被 validator 判为不精确）
+- debt-to-equity 分母用错（用 total assets 代替 stockholders' equity）
+- 从 YTD 推算单季度时的算术错误
 
 ### 4.3 验证方法
 
 对每批次任务，我们执行以下检查：
 1. **事实溯源**：答案中的 case citation / 财务数字 / 代码引用是否来自种子材料？
 2. **Rubric 可验证性**：每条评分标准是否都能在答案中找到对应？
-3. **题目-答案匹配**：题目要求的内容是否都在答案中体现？
-4. **交付物完整性**：渲染后的文件是否包含所有要求的章节和格式元素？
+3. **Rubric grounding**：评分标准中的具体事实是否存在于种子材料中？
+4. **题目-答案匹配**：题目要求的内容是否都在答案中体现？
+5. **交付物完整性**：渲染后的文件是否包含所有要求的章节和格式元素？
 
 ---
 
@@ -238,18 +242,19 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 ### 5.1 整体语料
 
 ```
-已验收任务总数：84
-总生成数：108（84 验收 + 24 拒绝）
-质量门通过率：~78%
+已验收任务总数：50
+总生成数：114（50 验收 + 64 拒绝）
+质量门通过率：~44%
+交付物渲染率：100%（50/50）
 ```
 
 ### 5.2 按职业分布
 
 | 职业 | 任务数 | 占比 | 通过率 | GDPval 对应职业 | GDPval 数量 |
 |---|---|---|---|---|---|
-| 软件工程师 | 38 | 45% | ~97%（38/39） | Software Developers | 5 |
-| 律师 | 34 | 40% | ~83%（34/41） | Lawyers | 5 |
-| 金融分析师 | 12 | 14% | ~43%（12/28） | Financial and Investment Analysts | 5 |
+| 软件工程师 | 19 | 38% | ~59%（19/32） | Software Developers | 5 |
+| 金融分析师 | 16 | 32% | ~35%（16/46） | Financial and Investment Analysts | 5 |
+| 律师 | 15 | 30% | ~48%（15/31） | Lawyers | 5 |
 
 ### 5.3 交付物类型
 
@@ -257,28 +262,28 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 | 类型 | 数量 | 说明 |
 |---|---|---|
-| `legal_memo` | 34 | 分析法院判例的正式法律备忘录 |
-| `code_review` | 24 | PR 合并后的技术评审 |
-| `design_doc` | 12 | 新功能的架构/设计文档 |
-| `investment_memo` | 8 | 含财务指标的投资分析备忘录 |
-| `credit_memo` | 4 | 含杠杆分析的信贷委员会备忘录 |
-| `bug_fix_pr` | 2 | 缺陷修复 PR 描述 |
+| `legal_memo` | 15 | 分析法院判例的正式法律备忘录 |
+| `code_review` | 14 | PR 合并后的技术评审 |
+| `credit_memo` | 9 | 含杠杆分析的信贷委员会备忘录 |
+| `investment_memo` | 7 | 含财务指标的投资分析备忘录 |
+| `design_doc` | 4 | 新功能的架构/设计文档 |
+| `bug_fix_pr` | 1 | 缺陷修复 PR 描述 |
 
 ### 5.4 文件格式
 
 | 格式 | 数量 | 适用职业 |
 |---|---|---|
-| `.docx` | 43 | 律师、金融分析师 |
-| `.md` | 38 | 软件工程师、部分金融分析师 |
-| `.pdf` | 3 | 金融分析师（投资备忘录） |
+| `.docx` | 27 | 律师、金融分析师 |
+| `.md` | 19 | 软件工程师 |
+| `.pdf` | 4 | 律师（法律文档） |
 
 ### 5.5 难度分布
 
 | 难度带 | 数量 | 占比 |
 |---|---|---|
-| 中等 | 48 | 57% |
-| 困难 | 19 | 23% |
-| 简单 | 17 | 20% |
+| 中等 | 26 | 52% |
+| 困难 | 12 | 24% |
+| 简单 | 12 | 24% |
 
 难度在种子选择阶段分配（见 `pipeline/seeds/selector.py`），并通过大模型提示中的时间指导强化：
 - **简单**（1–3 小时）：范围有限、较直接的种子。
@@ -289,12 +294,11 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 ### 5.6 质量指标
 
-| 指标 | 中位数 | 平均值 | 范围 |
-|---|---|---|---|
-| 题目长度（字符） | 2,526 | 2,519 | 1,492 – 4,111 |
-| 评分项数量 | 48 | 47.3 | 35 – 57 |
-| 预期值数量 | 25 | 27.1 | 15 – 48 |
-| 交付物文件大小 | ~40 KB | — | — |
+| 指标 | 中位数 | 范围 |
+|---|---|---|
+| 题目长度（字符） | 2,531 | 1,303 – 3,569 |
+| 评分项数量 | 51 | 35 – 60 |
+| 预期值数量 | 30 | 19 – 51 |
 
 ---
 
@@ -302,10 +306,10 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 | 维度 | 我们的流水线 | GDPval 目标 |
 |---|---|---|
-| 每领域任务数 | 12–38 | 5 |
-| 题目长度（中位数） | 2,526 字符 | ~2,024 字符 |
-| 评分标准粒度 | 35–57 项 | 相近 |
-| 输入附件率 | ~91% | ~57% |
+| 每领域任务数 | 15–19 | 5 |
+| 题目长度（中位数） | 2,531 字符 | ~2,024 字符 |
+| 评分标准粒度 | 35–60 项 | 相近 |
+| 输入附件率 | 100% | ~57% |
 | 种子锚定事实 | 100%（所有事实来自真实数据） | 100%（专家设计） |
 | 交付物格式 | docx、xlsx、md、pdf | docx、xlsx、md、pdf |
 
@@ -329,7 +333,7 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 - `[+2]` The leverage analysis discusses the debt-to-capital ratio trend using data from the attached 10-Q.
 - `[+1]` The recommendation section provides a clear exposure stance (increase/maintain/reduce).
 
-**交付物**：`credit_memo.docx`（~45 KB，含标准信用备忘录格式：header、executive summary、leverage analysis、covenants、recommendation）
+**交付物**：`credit_memo.docx`（含标准信用备忘录格式：header、executive summary、leverage analysis、covenants、recommendation）
 
 ### 示例 2：软件工程师——Next.js PR 代码评审
 
@@ -347,7 +351,7 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 - `[+1]` The Risk Assessment section identifies potential backward compatibility concerns.
 - `[+2]` The Recommendations section provides actionable next steps before merging.
 
-**交付物**：`code_review.md`（~12 KB，含 Summary、Design Decisions、Implementation Quality、Risk Assessment、Recommendations 章节）
+**交付物**：`code_review.md`（含 Summary、Design Decisions、Implementation Quality、Risk Assessment、Recommendations 章节）
 
 ---
 
@@ -363,13 +367,14 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 ### 8.2 金融任务通过率较低
 
-金融任务的通过率（~43%）显著低于律师（~83%）和软件工程师（~97%）。主要挑战：
+金融任务的通过率（~35%）显著低于律师（~48%）和软件工程师（~59%）。主要挑战：
 
 - **XBRL 数据复杂性**：同一期间存在 YTD 累计和单季度两条记录，LLM 容易混用（已通过日期范围标注修复，见 §4.2）
 - **数字精度敏感**：LLM 倾向于四舍五入（`$2.375B` → `$2.4B`），被 consistency validator 判为不精确
 - **推算错误**：从 YTD 减去前期推算单季度时，LLM 偶尔选错被减数或减数
+- **XBRL 概念名混淆**：LLM 用 "Revenues" 代替 "RevenueFromContractWithCustomerExcludingAssessedTax" 等长概念名（已通过系统提示警告修复）
 
-当前金融任务包含 margin 计算、EPS 分析、debt-to-equity ratio 等定量元素，但不包含 DCF 估值等复杂建模——后者需要更高精度的数字推理能力。
+当前金融任务均为定性分析（信用备忘录、投资备忘录），不包含 DCF 估值等复杂定量建模。
 
 ### 8.3 种子覆盖范围有限
 
@@ -377,14 +382,9 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 - **财务**：覆盖 25 家大型上市公司，缺少中型公司、私有公司、非美国公司
 - **SWE**：覆盖 19 个仓库（Python/JavaScript/Rust 生态），缺少 C++、Go 等语言
 
-### 8.4 评分标准依赖确定性检查
+### 8.4 质量验证的局限
 
-Hard quality validators 只能检查结构性属性（rubric 数量、分值分布、语言模糊度），无法判断：
-- 评分项是否与答案内容匹配
-- 评分项是否覆盖了题目要求的所有方面
-- 评分标准的难度是否合理
-
-这些需要人工抽检，当前批次抽检覆盖率约 10%。
+硬质量 validators 只能检查结构性属性（rubric 数量、分值分布、语言模糊度、rubric grounding），LLM 一致性验证依赖模型判断。两者都无法替代人工领域专家的深度审查。当前批次的人工抽检覆盖率约 60%。
 
 ---
 
@@ -421,7 +421,7 @@ uv run python -m pipeline.seeds.edgar_xbrl
 uv run python -m pipeline.seeds.github_issues
 
 # 运行流水线
-uv run python -m pipeline.orchestrator -n 117 --workers 4 --skip-validation
+uv run python -m pipeline.orchestrator -n 117 --workers 4
 
 # 生成报告图表
 uv run python scripts/generate_charts.py
@@ -459,13 +459,15 @@ pipeline/
     renderer.py           # 确定性渲染（docx/xlsx/md/pdf）
     input_renderer.py     # 输入附件渲染
   validators/
-    hard_quality.py       # 确定性质量检查
+    hard_quality.py       # 确定性质量检查（8 项）
+    llm_consistency.py    # 两阶段 LLM 一致性验证
   diversity/
     grid.py               # 种子采样网格
   orchestrator.py         # 流水线主入口
 
 data/
   accepted/               # 已验收任务 JSON + 输入附件
+  rejected/               # 被拒绝的任务
   deliverables/           # 渲染后的交付物文件
   gdpval_reference/       # 真实 GDPval 任务（用于比对）
 ```
@@ -478,14 +480,13 @@ data/
 |---|---|
 | `pipeline/scenario/synthesis.py` | 统一生成核心：3 套系统提示 + 结构化输出 |
 | `pipeline/seeds/selector.py` | 按职业和难度筛选种子的算法 |
-| `pipeline/validators/hard_quality.py` | 硬质量校验器（6 项确定性检查） |
+| `pipeline/validators/hard_quality.py` | 硬质量校验器（8 项确定性检查） |
+| `pipeline/validators/llm_consistency.py` | 两阶段 LLM 一致性验证（Planner + Executor） |
 | `pipeline/artifacts/renderer.py` | 确定性渲染：蓝图 → 真实文件 |
 | `scripts/validate_deliverables.py` | 验证交付物文件完整性（docx/xlsx/md） |
 
 ---
 
-**英文版**：见 [README_EN.md](README_EN.md)
-
-**报告生成时间**：2026 年 5 月 15 日  
-**实验周期**：约 3 天  
-**项目状态**：核心目标已达成，语料库可扩展
+**报告生成时间**：2026 年 5 月 15 日
+**实验周期**：约 3 天
+**项目状态**：核心流水线已稳定，语料库可扩展
