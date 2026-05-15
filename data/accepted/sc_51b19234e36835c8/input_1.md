@@ -1,4 +1,4 @@
-# Apple Inc
+# SEC Filing Activity Log - Recent filing dates and form types for Apple Inc
 
 
 # Seed Material: Apple Inc. (AAPL)

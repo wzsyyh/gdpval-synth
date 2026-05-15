@@ -250,6 +250,11 @@ Generate the COMPLETE deliverable content with enough detail to support 45-55 ru
 - Include specific facts about the company's operations, competitive position, or risk factors.
 - expected_values is NOT optional. Generate 10-25 items minimum.
 
+**IMPORTANT: XBRL data contains both quarterly and year-to-date (YTD) cumulative values for the same period.**
+- When the seed data shows two entries for the same quarter (e.g., Q2 2025), check the date ranges: a range starting from the beginning of the year (e.g., 2025-01-01 to 2025-06-30) is a YTD cumulative, while a range starting mid-year (e.g., 2025-04-01 to 2025-06-30) is the single-quarter value.
+- For quarterly trend analysis, always use the **single-quarter** value (the one with a quarter-length date range, e.g., 3 months).
+- Only use YTD values when explicitly performing year-to-date analysis.
+
 **For docx/pdf:**
 - **CRITICAL: You MUST populate the `docx_sections` field in your JSON output.** Each section must have a `heading` and 3-8 `paragraphs` of full text. Do NOT leave `docx_sections` empty or null.
 - Provide full paragraph text for each section (3-8 paragraphs per major section)
@@ -422,11 +427,20 @@ def _build_seed_text(seed: Seed) -> str:
             for obs in observations[:5]:  # Last 5 periods
                 val = obs.get("val")
                 if val is not None:
+                    # Build period label with date range so LLM can distinguish YTD vs quarterly
+                    fp = obs.get("fp", "")
+                    fy = obs.get("fy", "")
+                    start = obs.get("start", "")
+                    end = obs.get("end", "")
+                    if start and end and start != end:
+                        label = f"{fp} {fy} ({start} to {end})"
+                    else:
+                        label = f"{fp} {fy}"
                     # Preserve precision for small values (EPS, ratios) while formatting large ones
                     if abs(val) < 1000 or val != int(val):
-                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val}")
+                        lines.append(f"  {label}: {val}")
                     else:
-                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val:,.0f}")
+                        lines.append(f"  {label}: {val:,.0f}")
         lines.extend([
             "",
             "## Recent Filings",

@@ -2,7 +2,7 @@
 
 > A seed-driven pipeline that generates professional assessment tasks indistinguishable from real [GDPval](https://openai.com/index/introducing-swe-bench-verified/) (OpenAI's 220-task benchmark across 44 occupations).
 >
-> **Current corpus: 97 accepted tasks** (lawyer: 34, financial analyst: 25, software engineer: 38) with real deliverables (.docx, .xlsx, .md, .pdf).
+> **Current corpus: 84 accepted tasks** (lawyer: 34, financial analyst: 12, software engineer: 38) with real deliverables (.docx, .xlsx, .md, .pdf).
 
 ---
 
@@ -70,8 +70,9 @@ The answer blueprint is rendered to a real file by code (no LLM involved):
 
 ### 2.4 Quality Funnel
 
-Tasks pass through deterministic checks before acceptance:
+Tasks pass through two quality gates before acceptance:
 
+**Hard quality checks** (deterministic):
 - Prompt length ≥ 1,300 chars
 - Rubric items ≥ 35 and ≤ 80
 - Expected values ≥ 3
@@ -79,7 +80,13 @@ Tasks pass through deterministic checks before acceptance:
 - Rubric items are specific and verifiable (not vague)
 - Input attachments have real content (≥ 100 chars)
 
-**Acceptance rate: ~92%** (97/105 in the latest full batch).
+**LLM consistency validation** (model-based):
+- Seed facts correctly cited (seed alignment)
+- Numerical calculations correct (calculation accuracy)
+- Rubric items match answer content (rubric alignment)
+- Prompt requirements addressed in answer (prompt coverage)
+
+**Acceptance rate: ~75%** (84/112). Lawyer ~83%, SWE ~97%, Financial ~43% — the lower financial rate is due to XBRL data complexity (YTD/quarterly confusion, rounding precision).
 
 ---
 
@@ -88,20 +95,20 @@ Tasks pass through deterministic checks before acceptance:
 ### 3.1 Overall Corpus
 
 ```
-Total accepted tasks: 97
-Total generated: 105 (97 accepted + 8 rejected)
-Acceptance rate through quality gate: ~92%
+Total accepted tasks: 84
+Total generated: 112 (84 accepted + 28 rejected)
+Acceptance rate through quality gate: ~75%
 ```
 
 ### 3.2 By Occupation
 
-| Occupation | Tasks | % of Corpus | GDPval Equivalent | GDPval Count |
-|---|---|---|---|---|
-| Software Engineer | 38 | 39% | Software Developers | 5 |
-| Lawyer | 34 | 35% | Lawyers | 5 |
-| Financial Analyst | 25 | 26% | Financial and Investment Analysts | 5 |
+| Occupation | Tasks | % of Corpus | Accept Rate | GDPval Equivalent | GDPval Count |
+|---|---|---|---|---|---|
+| Software Engineer | 38 | 45% | ~97% (38/39) | Software Developers | 5 |
+| Lawyer | 34 | 40% | ~83% (34/41) | Lawyers | 5 |
+| Financial Analyst | 12 | 14% | ~43% (12/28) | Financial and Investment Analysts | 5 |
 
-We generated **5–8x more tasks per domain** than the original GDPval benchmark, while maintaining comparable granularity and grounding.
+We generated **2–8x more tasks per domain** than the original GDPval benchmark, while maintaining comparable granularity and grounding.
 
 ### 3.3 Deliverable Types
 
@@ -109,26 +116,26 @@ We generated **5–8x more tasks per domain** than the original GDPval benchmark
 |---|---|---|
 | `legal_memo` | 34 | Formal legal memoranda analyzing court opinions |
 | `code_review` | 24 | Post-merge technical reviews of PRs |
-| `investment_memo` | 13 | One-page investment overviews with financial metrics |
-| `credit_memo` | 12 | Credit committee memos with leverage analysis |
 | `design_doc` | 12 | Architecture/design documents for new features |
+| `investment_memo` | 8 | Investment analysis memos with financial metrics |
+| `credit_memo` | 4 | Credit committee memos with leverage analysis |
 | `bug_fix_pr` | 2 | Bug fix pull request descriptions |
 
 ### 3.4 File Formats
 
 | Format | Count | Occupations |
 |---|---|---|
-| `.docx` | 44 | Lawyer, Financial Analyst |
+| `.docx` | 43 | Lawyer, Financial Analyst |
 | `.md` | 38 | Software Engineer, some Financial Analyst |
-| `.pdf` | 15 | Lawyer (rendered from docx via LibreOffice) |
+| `.pdf` | 3 | Financial Analyst (investment memos) |
 
 ### 3.5 Difficulty Distribution
 
 | Band | Count | % |
 |---|---|---|
-| Medium | 54 | 56% |
-| Hard | 22 | 23% |
-| Light | 21 | 21% |
+| Medium | 48 | 57% |
+| Hard | 19 | 23% |
+| Light | 17 | 20% |
 
 Difficulty is assigned at seed-selection time (see `pipeline/seeds/selector.py`) and reinforced by time-guidance in the LLM prompt:
 - **Light** (1–3 hours): Straightforward seeds with limited scope.
@@ -141,9 +148,9 @@ The 55%/25%/20% target distribution is a pipeline design choice, not derived fro
 
 | Metric | Median | Mean | Range |
 |---|---|---|---|
-| Prompt length (chars) | 2,572 | 2,599 | 1,492 – 4,465 |
-| Rubric items | 47 | 46.9 | 35 – 57 |
-| Expected values | 25 | 25.9 | 15 – 48 |
+| Prompt length (chars) | 2,526 | 2,519 | 1,492 – 4,111 |
+| Rubric items | 48 | 47.3 | 35 – 57 |
+| Expected values | 25 | 27.1 | 15 – 48 |
 | Deliverable file size | ~40 KB | — | — |
 
 ---
@@ -154,10 +161,10 @@ We benchmark our synthetic tasks against the real GDPval reference corpus (220 t
 
 | Dimension | Our Pipeline | GDPval Target |
 |---|---|---|
-| Tasks per domain | 25–38 | 5 |
-| Prompt length (median) | 2,572 chars | ~2,024 chars |
+| Tasks per domain | 12–38 | 5 |
+| Prompt length (median) | 2,526 chars | ~2,024 chars |
 | Rubric granularity | 35–57 items | similar |
-| Input attachment rate | ~60% | ~57% |
+| Input attachment rate | ~91% | ~57% |
 | Seed-grounded facts | 100% (all facts from real data) | 100% (expert-designed) |
 | Deliverable formats | docx, xlsx, md, pdf | docx, xlsx, md, pdf |
 
@@ -251,6 +258,6 @@ data/
 
 2. **No preset taxonomy**: We do not hard-code deliverable types. The LLM inspects the seed material and decides what type of task makes sense (e.g., a contract-interpretation opinion → `legal_memo`; a PR with new API → `design_doc`).
 
-3. **Financial tasks are qualitative**: After discovering that LLMs misremember XBRL numbers when asked to perform calculations, we switched financial tasks to qualitative analysis (credit memos, investment memos, industry analysis) rather than quantitative models (DCF, variance analysis).
+3. **Financial tasks are the hardest domain**: XBRL data contains both YTD cumulative and single-quarter values for the same period, which LLMs frequently confuse. We addressed this through three layers: (a) date-range annotations in seed text, (b) explicit system prompt instructions distinguishing YTD vs quarterly, and (c) LLM consistency validation with the same enriched context. Even so, financial tasks have a lower acceptance rate (~43%) due to rounding precision and calculation errors. The tasks include quantitative elements (margins, EPS, debt-to-equity) but not complex modeling (DCF, variance analysis).
 
 4. **Per-occupation prompts**: A shared prompt caused cross-domain interference (e.g., a financial task mentioning "patent infringement"). We split into three independent system prompts, eliminating this issue.

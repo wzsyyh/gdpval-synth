@@ -1,4 +1,4 @@
-# Goldman Sachs Group Inc (GS) XBRL Financial Data Package: Contains quarterly and annual financial data extracted from SEC filings, covering FY2025 through Q1 2026
+# Goldman Sachs Q1 2026 / FY 2025 financial data package (extracted from SEC EDGAR XBRL filings)
 
 
 # Seed Material: The Goldman Sachs Group, Inc. (GS)
@@ -13,11 +13,11 @@ Sector: investment_banking
 ## Financial Data (XBRL)
 
 ### NetIncomeLoss
-  Q1 2026: 5,630,000,000
-  FY 2025: 17,176,000,000
-  Q3 2025: 12,559,000,000
-  Q3 2025: 4,098,000,000
-  Q2 2025: 8,461,000,000
+  Q1 2026 (2026-01-01 to 2026-03-31): 5,630,000,000
+  FY 2025 (2025-01-01 to 2025-12-31): 17,176,000,000
+  Q3 2025 (2025-01-01 to 2025-09-30): 12,559,000,000
+  Q3 2025 (2025-07-01 to 2025-09-30): 4,098,000,000
+  Q2 2025 (2025-01-01 to 2025-06-30): 8,461,000,000
 
 ### Assets
   Q1 2026: 2,060,180,000,000
@@ -48,11 +48,11 @@ Sector: investment_banking
   Q2 2025: 152,967,000,000
 
 ### EarningsPerShareDiluted
-  Q1 2026: 17.55
-  FY 2025: 51.32
-  Q3 2025: 37.33
-  Q3 2025: 12.25
-  Q2 2025: 25.07
+  Q1 2026 (2026-01-01 to 2026-03-31): 17.55
+  FY 2025 (2025-01-01 to 2025-12-31): 51.32
+  Q3 2025 (2025-01-01 to 2025-09-30): 37.33
+  Q3 2025 (2025-07-01 to 2025-09-30): 12.25
+  Q2 2025 (2025-01-01 to 2025-06-30): 25.07
 
 ## Recent Filings
   424B2 — 2026-05-13

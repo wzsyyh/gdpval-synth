@@ -158,10 +158,18 @@ def _build_seed_text(seed: Seed) -> str:
             for obs in observations[:5]:
                 val = obs.get("val")
                 if val is not None:
-                    if abs(val) < 1000 or val != int(val):
-                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val}")
+                    fp = obs.get("fp", "")
+                    fy = obs.get("fy", "")
+                    start = obs.get("start", "")
+                    end = obs.get("end", "")
+                    if start and end and start != end:
+                        label = f"{fp} {fy} ({start} to {end})"
                     else:
-                        lines.append(f"  {obs.get('fp', '')} {obs.get('fy', '')}: {val:,.0f}")
+                        label = f"{fp} {fy}"
+                    if abs(val) < 1000 or val != int(val):
+                        lines.append(f"  {label}: {val}")
+                    else:
+                        lines.append(f"  {label}: {val:,.0f}")
         lines.extend(["", "## Recent Filings"])
         for f in p.get("recent_filings", [])[:5]:
             lines.append(f"  {f.get('form')} — {f.get('date')}")
@@ -211,6 +219,8 @@ def _build_seed_structured(seed: Seed) -> str:
                     {
                         "period": obs.get("fp"),
                         "year": obs.get("fy"),
+                        "start": obs.get("start"),
+                        "end": obs.get("end"),
                         "value": display_val,
                         "unit": unit,
                         "form": obs.get("form"),
