@@ -172,7 +172,7 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 - **Stage 2 (Executor)**：逐条执行验证清单，对照种子材料核查每个事实和计算
 - 检查维度：seed alignment / calculation accuracy / rubric alignment / rubric grounding / prompt coverage
 
-**通过率：~43%**（50/117）。其中律师 ~38%、SWE ~49%、金融 ~41%——金融通过率较低是因为 XBRL 数据的 YTD/季度混淆和数字精度问题（见 §4.2）。
+**通过率：~43%**（50/117）。其中 SWE ~49%、金融 ~41%、律师 ~38%。各领域拒绝原因不同：律师主要是 rubric grounding 不足，金融主要是 XBRL 数字精度问题（见 §4.2），SWE 主要是 rubric 覆盖不全。
 
 ---
 
@@ -195,9 +195,9 @@ LLM 根据种子材料**自行判断**最终类型，不是套用模板。
 | 5 | LLM 一致性验证未检查 rubric grounding | 所有任务 | `ValidationResult` 增加 `rubric_grounded` 字段；executor 系统提示增加第 6 条指令；overall_passed 包含 rubric_grounded | `validators/llm_consistency.py` |
 | 6 | 多 attachment 渲染时 body 相同的副本 | 所有任务 | orchestrator 中按 body hash 去重，跳过已渲染的重复 attachment | `orchestrator.py` |
 
-### 4.2 金融领域通过率：XBRL 数据挑战
+### 4.2 金融领域的 XBRL 数据挑战
 
-金融任务是三个领域中**通过率最低的**（当前约 41%），核心原因是 XBRL 数据的结构性陷阱。
+金融任务的通过率（~41%）处于中等水平，但面临独特的数据复杂性——XBRL 结构性陷阱。
 
 #### 问题根源
 
@@ -369,14 +369,22 @@ SEC EDGAR 的 XBRL `companyfacts` API 对同一期间返回**两条记录**：
 
 我们没有让模型**实际做题**来验证难度。Solve-rate probe（让 frontier model 预测自己的得分）可以筛掉"明显太简单"的任务，但无法确认 medium 真的对应 medium。
 
-### 8.2 金融任务通过率较低
+### 8.2 各领域的主要挑战
 
-金融任务的通过率（~41%）与律师（~38%）和软件工程师（~49%）相近。主要挑战：
+三个领域的通过率相近（SWE ~49%、金融 ~41%、律师 ~38%），但拒绝原因各有特点：
 
-- **XBRL 数据复杂性**：同一期间存在 YTD 累计和单季度两条记录，LLM 容易混用（已通过日期范围标注修复，见 §4.2）
-- **数字精度敏感**：LLM 倾向于四舍五入（`$2.375B` → `$2.4B`），被 consistency validator 判为不精确
-- **推算错误**：从 YTD 减去前期推算单季度时，LLM 偶尔选错被减数或减数
-- **XBRL 概念名混淆**：LLM 用 "Revenues" 代替 "RevenueFromContractWithCustomerExcludingAssessedTax" 等长概念名（已通过系统提示警告修复）
+**金融**：
+- XBRL 数据的 YTD/季度混淆（已通过日期范围标注修复，见 §4.2）
+- 数字精度敏感：LLM 倾向于四舍五入（`$2.375B` → `$2.4B`），被 consistency validator 判为不精确
+- XBRL 概念名混淆：LLM 用 "Revenues" 代替 "RevenueFromContractWithCustomerExcludingAssessedTax" 等长概念名（已通过系统提示警告修复）
+
+**律师**：
+- Rubric 中引用种子材料以外的事实（如编造的案例引用日期）
+- 答案中的法律推理与种子判例的 holding 不完全一致
+
+**SWE**：
+- Rubric 覆盖不全：部分评分标准未能涵盖 prompt 要求的所有方面
+- 代码引用精度：偶有虚构的文件路径或函数名
 
 当前金融任务均为定性分析（信用备忘录、投资备忘录），不包含 DCF 估值等复杂定量建模。
 
@@ -471,7 +479,6 @@ pipeline/
 
 data/
   accepted/               # 已验收任务 JSON + 输入附件
-  rejected/               # 被拒绝的任务
   deliverables/           # 渲染后的交付物文件
   gdpval_reference/       # 真实 GDPval 任务（用于比对）
 ```
